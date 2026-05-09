@@ -1,7 +1,3 @@
-// ShizaProject module for Sora (AsyncJS)
-// Author: emp0ry
-// Version: 1.0.0
-
 const SITE_BASES = [
   "https://shizaproject.com",
   "https://shiza-project.com"
@@ -118,7 +114,9 @@ async function _graphqlOnBase(base, operationName, variables, query) {
   const response = await fetchv2(site + "/graphql", _graphqlHeaders(site), "POST", body);
   const data = await response.json();
 
-  if (data?.errors?.length) throw new Error("GraphQL error");
+  if (data?.errors?.length) {
+    throw new Error("GraphQL error");
+  }
 
   return {
     data: data?.data || {},
@@ -168,6 +166,14 @@ query search($query: String!, $type: SearchType!) {
           rating
           viewCount
           score
+          posters {
+            original {
+              url
+            }
+            preview: resize(width: 360, height: 500) {
+              url
+            }
+          }
           genres {
             id
             slug
@@ -240,6 +246,19 @@ async function _getRelease(slug, preferredBase) {
   };
 }
 
+function _pickPoster(release) {
+  const posters = Array.isArray(release?.posters) ? release.posters : [];
+  if (!posters.length) return "";
+
+  const first = posters[0];
+
+  return (
+    _normalizeUrl(first?.original?.url || "") ||
+    _normalizeUrl(first?.preview?.url || "") ||
+    ""
+  );
+}
+
 function _releaseAliases(release) {
   const parts = [];
 
@@ -268,9 +287,6 @@ function _scoreTitle(title, keyword) {
   return 3;
 }
 
-// ------------------------------------------------------------
-// Search -> JSON string
-// ------------------------------------------------------------
 async function searchResults(keyword) {
   try {
     const query = String(keyword || "").trim();
@@ -285,8 +301,9 @@ async function searchResults(keyword) {
       .filter(node => node?.__typename === "Release" && node?.slug)
       .map(release => {
         const title = release?.name || release?.originalName || "Unknown title";
+        const image = _pickPoster(release);
 
-        return {
+        const item = {
           title,
           href: _packRelease({
             slug: release.slug,
@@ -294,6 +311,7 @@ async function searchResults(keyword) {
             title,
             originalName: release?.originalName || "",
             airedOn: release?.airedOn || release?.releasedOn || "",
+            image,
             siteBase
           }),
           _score: Math.min(
@@ -301,18 +319,22 @@ async function searchResults(keyword) {
             _scoreTitle(release?.originalName || "", query)
           )
         };
+
+        if (image) {
+          item.image = image;
+        }
+
+        return item;
       });
 
     out.sort((a, b) => a._score - b._score);
+
     return JSON.stringify(out.map(({ _score, ...rest }) => rest));
   } catch (_) {
     return JSON.stringify([]);
   }
 }
 
-// ------------------------------------------------------------
-// Details -> JSON string
-// ------------------------------------------------------------
 async function extractDetails(href) {
   try {
     const slug = _extractSlug(href);
@@ -347,9 +369,6 @@ async function extractDetails(href) {
   }
 }
 
-// ------------------------------------------------------------
-// Episodes -> JSON string
-// ------------------------------------------------------------
 async function extractEpisodes(href) {
   try {
     const slug = _extractSlug(href);
@@ -433,13 +452,11 @@ function _streamHeaders(siteBase) {
 }
 
 function _buildStreamsFromQualities(qualities, siteBase) {
-  const url1080 = _pickQualityUrl(qualities, 1080);
   const url720 = _pickQualityUrl(qualities, 720);
   const url480 = _pickQualityUrl(qualities, 480);
   const url360 = _pickQualityUrl(qualities, 360);
 
   const known = {
-    1080: url1080,
     720: url720,
     480: url480,
     360: url360
@@ -448,14 +465,13 @@ function _buildStreamsFromQualities(qualities, siteBase) {
   const headers = _streamHeaders(siteBase);
   const streams = [];
 
-  for (const quality of [1080, 720, 480, 360]) {
+  for (const quality of [720, 480, 360]) {
     const streamUrl = known[quality];
     if (!streamUrl) continue;
 
     streams.push({
       title: `${quality}p`,
       streamUrl,
-      url1080,
       url720,
       url480,
       url360,
@@ -482,8 +498,7 @@ function _buildStreamsFromQualities(qualities, siteBase) {
       streams.push({
         title: bestQuality ? `${bestQuality}p` : "Kodik",
         streamUrl: bestUrl,
-        url1080: bestQuality >= 1080 ? bestUrl : null,
-        url720: bestQuality >= 720 && bestQuality < 1080 ? bestUrl : null,
+        url720: bestQuality >= 720 ? bestUrl : null,
         url480: bestQuality >= 480 && bestQuality < 720 ? bestUrl : null,
         url360: bestQuality >= 360 && bestQuality < 480 ? bestUrl : null,
         headers
@@ -499,9 +514,6 @@ function _isKodikUrl(url) {
   return raw.includes("kodikplayer.com") || raw.includes("kodik.info");
 }
 
-// ------------------------------------------------------------
-// Stream -> quality picker JSON
-// ------------------------------------------------------------
 async function extractStreamUrl(href) {
   try {
     const payload = _unpackEpisode(href);
@@ -544,7 +556,6 @@ async function extractStreamUrl(href) {
   }
 }
 
-// Kodik parser adapted from yummyanime/onwave-style logic.
 async function kodikParser(url, siteBase) {
   try {
     const site = _cleanBase(siteBase || SITE_BASE);

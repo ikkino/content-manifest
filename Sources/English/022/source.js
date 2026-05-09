@@ -1,125 +1,118 @@
 async function searchResults(keyword) {
+    const regex = /<a href="([^"]*)" class="mse">[\s\S]*?<img src="([^"]*)" class="media-object">[\s\S]*?<h2>([^<]*?)<\/h2>/g;
     const results = [];
+    try {
+        const response = await fetchv2("https://www.animegg.org/search/?q=" + encodeURIComponent(keyword));
+        const html = await response.text();
 
-    results.push({
-        title: "Use External Player",
-        image: "https://git.luna-app.eu/ibro/services/raw/branch/main/narucannon/UseExternalPlayer.png",
-        href: ""
-    });
+        let match;
+        while ((match = regex.exec(html)) !== null) {
+            results.push({
+                title: match[3].trim(),
+                image: match[2].trim(),
+                href: "https://www.animegg.org" + match[1].trim()
+            });
+        }
 
-    results.push({
-        title: "Rebuild of Naruto (2019) - Season 1 - Naruto",
-        image: "https://pixeldrain.net/api/file/tseMo66v",
-        href: "https://pixeldrain.net/l/SmsFwCAT"
-    });
-
-    results.push({
-        title: "Rebuild of Naruto (2019) - Season 2 - Naruto Gaiden",
-        image: "https://pixeldrain.net/api/file/PqkviitQ",
-        href: "https://pixeldrain.net/l/1YKx5EWn"
-    });
-
-    results.push({
-        title: "Rebuild of Naruto (2019) - Season 3 - Kakashi Gaiden",
-        image: "https://pixeldrain.net/api/file/WWbQ5efe",
-        href: "https://pixeldrain.net/l/bc226sF1"
-    });
-
-    results.push({
-        title: "Rebuild of Naruto (2019) - Season 4 - Naruto Shippuden",
-        image: "https://pixeldrain.net/api/file/jjW3hhCL",
-        href: "https://pixeldrain.net/l/E1EuRcLU"
-    });
-
-    results.push({
-        title: "Rebuild of Naruto (2019) - Season 5 - Naruto Senjou",
-        image: "https://pixeldrain.net/api/file/eZUREmqQ",
-        href: "https://pixeldrain.net/l/vKm6yFu4"
-    });
-
-    results.push({
-        title: "Rebuild of Naruto (2019) - Season 6 - Itachi Shinden",
-        image: "https://pixeldrain.net/api/file/xZ4qFLcz",
-        href: "https://pixeldrain.net/l/6HKj825x"
-    });
-
-    results.push({
-        title: "Rebuild of Naruto (2019) - Season 7 - Naruto Hiden",
-        image: "https://pixeldrain.net/api/file/YeBS7udw",
-        href: "https://pixeldrain.net/l/hif36HTr"
-    });
-
-    results.push({
-        title: "Rebuild of Naruto (2019) - Season 8 - Next Generations",
-        image: "",
-        href: "https://pixeldrain.net/l/mTCVETnp"
-    });
-    
-    console.log(`Results: ${JSON.stringify(results)}`);
-    return JSON.stringify(results);
+        return JSON.stringify(results);
+    } catch (err) {
+        return JSON.stringify([{
+            title: "Error",
+            image: "Error",
+            href: "Error"
+        }]);
+    }
 }
 
 async function extractDetails(url) {
-    const match = url.match(/https:\/\/pixeldrain\.net\/l\/([^\/]+)/);
-    if (!match) throw new Error("Invalid URL format");
-            
-    const arcId = match[1];
+    try {
+        const response = await fetchv2(url);
+        const html = await response.text();
 
-    const response = await soraFetch(`https://pixeldrain.net/api/list/${arcId}`);
-    const data = await response.json();
+        const descMatch = html.match(/<p class="ptext">(.*?)<\/p>/s);
+        const description = descMatch ? descMatch[1].trim() : "N/A";
 
-    const hasImage = data.files.some(file => file.mime_type.startsWith("image/"));
-    const fileCount = hasImage ? data.file_count - 1 : data.file_count;
-
-    const transformedResults = [{
-        description: `Title: ${data.title}\nFile Count: ${fileCount}`,
-        aliases: `Title: ${data.title}\nFile Count: ${fileCount}`,
-        airdate: ''
-    }];
-
-    console.log(`Details: ${JSON.stringify(transformedResults)}`);
-    return JSON.stringify(transformedResults);
+        return JSON.stringify([{
+            description: description,
+            aliases: "N/A",
+            airdate: "N/A"
+        }]);
+    } catch (err) {
+        return JSON.stringify([{
+            description: "Error",
+            aliases: "Error",
+            airdate: "Error"
+        }]);
+    }
 }
 
 async function extractEpisodes(url) {
-    const match = url.match(/https:\/\/pixeldrain\.net\/l\/([^\/]+)/);
-    if (!match) throw new Error("Invalid URL format");
-            
-    const arcId = match[1];
+    const results = [];
+    try {
+        const response = await fetchv2(url);
+        const html = await response.text();
 
-    const response = await soraFetch(`https://pixeldrain.net/api/list/${arcId}`);
-    const data = await response.json();
+        const regex = /<a href="([^"]*)" class="anm_det_pop">[\s\S]*?<i class="anititle">(Episode (\d+)|Movie)<\/i>/g;
+        let match;
+        while ((match = regex.exec(html)) !== null) {
+            const href = "https://www.animegg.org" + match[1].trim();
+            let number;
+            if (match[2] === "Movie") {
+                number = 1;
+            } else {
+                number = parseInt(match[3], 10);
+            }
+            results.push({
+                href: href,
+                number: number
+            });
+        }
 
-    const transformedResults = data.files
-        .filter(result => !result.mime_type.startsWith("image/"))
-        .map((result, index) => {
-            return {
-                href: `${result.id}`,
-                number: index + 1,
-            };
-        });
-
-    console.log(`Episodes: ${JSON.stringify(transformedResults)}`);
-    return JSON.stringify(transformedResults);
+        return JSON.stringify(results.reverse());
+    } catch (err) {
+        return JSON.stringify([{
+            href: "Error",
+            number: "Error"
+        }]);
+    }
 }
-
-// searchResults("all");
-// extractDetails("https://pixeldrain.net/l/dX3cF5Q3");
-// extractEpisodes("https://pixeldrain.net/l/dX3cF5Q3");
-// extractStreamUrl(`EDg7Q9Uu`);
 
 async function extractStreamUrl(url) {
-    return `https://pixeldrain.net/api/file/${url}?download`;
-}
-
-async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
     try {
-        return await fetchv2(url, options.headers ?? {}, options.method ?? 'GET', options.body ?? null);
-    } catch(e) {
-        try {
-            return await fetch(url, options);
-        } catch(error) {
-            return null;
+        const response = await fetchv2(url);
+        const html = await response.text();
+        const ulMatch = html.match(/<ul id="videos"[^>]*>(.*?)<\/ul>/s);
+        if (!ulMatch) return JSON.stringify({streams: [], subtitle: "none"});
+        const ulHtml = ulMatch[1];
+        const liRegex = /<li><a[^>]*data-id='(\d+)'[^>]*data-version="(subbed|dubbed)"[^>]*>/g;
+        const versions = [];
+        let liMatch;
+        while ((liMatch = liRegex.exec(ulHtml)) !== null) {
+            versions.push({id: liMatch[1], type: liMatch[2]});
         }
+        const embedPromises = versions.map(async (ver) => {
+            const embedUrl = `https://www.animegg.org/embed/${ver.id}`;
+            const embedResponse = await fetchv2(embedUrl);
+            const embedHtml = await embedResponse.text();
+            const vsMatch = embedHtml.match(/(?:var|const|let) videoSources = (\[[\s\S]*?\]);/);
+            if (!vsMatch) return [];
+            const jsonString = vsMatch[1].replace(/([{,]\s*)([a-zA-Z_][a-zA-Z0-9_]*)\s*:/g, '$1"$2":');
+            const vsJson = JSON.parse(jsonString);
+            return vsJson.map(src => {
+                const quality = src.label;
+                const fileUrl = "https://www.animegg.org" + src.file;
+                const title = (ver.type === 'subbed' ? 'Sub' : 'Dub') + ' • ' + quality;
+                return {
+                    title: title,
+                    streamUrl: fileUrl,
+                    headers: { "Referer": "https://www.animegg.org/" }
+                };
+            });
+        });
+        const streamArrays = await Promise.all(embedPromises);
+        const streams = streamArrays.flat();
+        return JSON.stringify({streams: streams, subtitle: "none"});
+    } catch (err) {
+        return JSON.stringify({streams: [], subtitle: "none"});
     }
 }

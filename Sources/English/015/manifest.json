@@ -1,18 +1,26 @@
 {
-  "sourceName": "Borucut",
-  "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/borucut/icon.png",
+  "sourceName": "AnimeKai",
+  "iconUrl": "https://apktodo.io/uploads/2025/5/animekai-icon.jpg",
   "author": {
-    "name": "ibro",
-    "icon": "https://git.luna-app.eu/ibro/services/raw/branch/main/profile.jpg",
-    "url": "https://github.com/xibrox"
+    "name": "50/50",
+    "icon": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ3122kQwublLkZ6rf1fEpUP79BxZOFmH9BSA&s"
   },
   "version": "1.0.2",
   "language": "English",
-  "streamType": "MP4",
-  "quality": "1080p - 720p - 480p",
-  "baseUrl": "https://pixeldrain.net/",
-  "searchBaseUrl": "https://pixeldrain.net/",
+  "streamType": "HLS",
+  "quality": "1080p",
+  "baseUrl": "https://animekai.to/",
+  "searchBaseUrl": "https://animekai.to/",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/015/source.js",
   "type": "anime",
-  "asyncJS": true
+  "asyncJS": true,
+  "softsub": false,
+  "downloadSupport": true,
+  "supportsMojuru": true,
+  "supportsDartotsu": true,
+  "supportsSora": true,
+  "supportsLuna": true,
+  "supportsAnymex": true,
+  "supportsTsumi": true,
+  "supportsHiyoku": true
 }
