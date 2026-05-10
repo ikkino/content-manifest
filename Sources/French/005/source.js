@@ -27,27 +27,6 @@ async function sendSupabaseLog(moduleName, actionType, dataPayload) {
 // ⚙️ LOGIQUE DU MODULE ANIME-SAMA
 // ==========================================
 
-async function getDomainsList() {
-    console.log(`[Domaines] 🌐 Récupération des domaines actifs...`);
-    try {
-        const response = await fetchv2("https://anime-sama.pw/");
-        const html = await response.text();
-
-        const domainRegex = /{ name: '([^']+)' }/g;
-        const domains = [];
-        let match;
-        while ((match = domainRegex.exec(html)) !== null) {
-            domains.push(match[1]);
-        }
-        
-        console.log(`[Domaines] ✅ Domaines trouvés : ${domains.join(', ')}`);
-        return domains.length > 0 ? domains : ["anime-sama.to"];
-    } catch (err) {
-        console.log(`[Domaines] 🚨 Erreur, fallback sur anime-sama.to`);
-        return ["anime-sama.to"];
-    }
-}
-
 async function trySearch(domain, keyword) {
     console.log(`[Recherche AS] 🔍 Tentative sur : ${domain} pour "${keyword}"`);
     try {
@@ -88,24 +67,13 @@ async function trySearch(domain, keyword) {
 
 async function searchResults(keyword) {
     try {
-        const domains = await getDomainsList();
+        const domains = ["anime-sama.to"];
         console.log(`[Recherche AS] 🔍 Démarrage de la recherche sur ${domains.length} domaines.`);
         
         let finalResults = [];
 
         for (let i = 0; i < domains.length; i++) {
             let currentDomain = domains[i];
-            console.log(`[Recherche AS] 📡 Vérification du radar pour : ${currentDomain}...`);
-            
-            try {
-                const checkRes = await fetchv2(`https://anime-sama.pw/?check=${currentDomain}`, { "User-Agent": "Mozilla/5.0" }, "GET");
-                const checkData = JSON.parse(await checkRes.text());
-                if (checkData.code !== 200) {
-                    console.log(`[Recherche AS] ⏭️ ${currentDomain} ignoré.`);
-                    continue; 
-                }
-            } catch (e) {}
-
             try {
                 let searchAttempt = await trySearch(currentDomain, keyword);
                 if (searchAttempt.results && searchAttempt.results.length > 0) {
