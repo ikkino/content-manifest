@@ -1,16 +1,18 @@
 async function searchResults(keyword) {
-    const regex = /<a href="([^"]*)" class="mse">[\s\S]*?<img src="([^"]*)" class="media-object">[\s\S]*?<h2>([^<]*?)<\/h2>/g;
     const results = [];
     try {
-        const response = await fetchv2("https://www.animegg.org/search/?q=" + encodeURIComponent(keyword));
+        const response = await fetchv2("https://www.tokyoinsider.com/anime/search?k=" + encodeURIComponent(keyword));
         const html = await response.text();
+
+        const regex = /<img class="a_img" src="([^"]*)"[^>]*><\/a>[\s\S]*?<a href="([^"]*)" style="font: bold 14px verdana;">([^<]*(?:<span[^>]*>[^<]*<\/span>[^<]*)*)<\/a>/g;
 
         let match;
         while ((match = regex.exec(html)) !== null) {
+            const titleText = match[3].replace(/<span class="searchhighlight">(.*?)<\/span>/g, '$1').replace(/&nbsp;/g, ' ');
             results.push({
-                title: match[3].trim(),
-                image: match[2].trim(),
-                href: "https://www.animegg.org" + match[1].trim()
+                title: titleText.trim(),
+                image: match[1].trim(),
+                href: match[2].trim()
             });
         }
 
@@ -24,18 +26,34 @@ async function searchResults(keyword) {
     }
 }
 
-async function extractDetails(url) {
+async function extractDetails(slug) {
     try {
-        const response = await fetchv2(url);
+        const response = await fetchv2("https://www.tokyoinsider.com" + slug);
         const html = await response.text();
 
-        const descMatch = html.match(/<p class="ptext">(.*?)<\/p>/s);
-        const description = descMatch ? descMatch[1].trim() : "N/A";
+        let titles = "N/A";
+        let airdate = "N/A";
+        let description = "N/A";
+
+        const titlesMatch = html.match(/<td width="80" valign="top"><b>Title\(s\):<\/b><\/td>\s*<td>([\s\S]*?)<\/td>\s*<\/tr>/);
+        if (titlesMatch) {
+            titles = titlesMatch[1].replace(/<br>/g, ', ').replace(/\s+/g, ' ').trim();
+        }
+
+        const airdateMatch = html.match(/<td valign="top"><b>Vintage:<\/b><\/td>\s*<td>([\s\S]*?)<\/td>\s*<\/tr>/);
+        if (airdateMatch) {
+            airdate = airdateMatch[1].replace(/\s+/g, ' ').trim();
+        }
+
+        const summaryMatch = html.match(/<td valign="top" style="border-bottom: 0;"><b>Summary:<\/b><\/td>\s*<td style="border-bottom: 0;">([\s\S]*?)<\/td>\s*<\/tr>/);
+        if (summaryMatch) {
+            description = summaryMatch[1].replace(/\s+/g, ' ').trim();
+        }
 
         return JSON.stringify([{
-            description: description,
-            aliases: "N/A",
-            airdate: "N/A"
+            aliases: titles,
+            airdate: airdate,
+            description: description
         }]);
     } catch (err) {
         return JSON.stringify([{
@@ -49,22 +67,18 @@ async function extractDetails(url) {
 async function extractEpisodes(url) {
     const results = [];
     try {
-        const response = await fetchv2(url);
+        const response = await fetchv2("https://www.tokyoinsider.com" + url);
         const html = await response.text();
 
-        const regex = /<a href="([^"]*)" class="anm_det_pop">[\s\S]*?<i class="anititle">(Episode (\d+)|Movie)<\/i>/g;
+        const regex = /<div class="episode[^"]*">\s*<div><a class="download-link" href="([^"]*)">[^<]*<em>(\w+)<\/em>\s*<strong>(\d+)<\/strong>(?:<i[^>]*>\s*:\s*([^<]*)<\/i>)?/g;
+
         let match;
         while ((match = regex.exec(html)) !== null) {
-            const href = "https://www.animegg.org" + match[1].trim();
-            let number;
-            if (match[2] === "Movie") {
-                number = 1;
-            } else {
-                number = parseInt(match[3], 10);
-            }
+            const number = parseInt(match[3], 10);
+
             results.push({
-                href: href,
-                number: number
+                href: match[1].trim(),
+                number: number,
             });
         }
 
@@ -72,47 +86,49 @@ async function extractEpisodes(url) {
     } catch (err) {
         return JSON.stringify([{
             href: "Error",
-            number: "Error"
+            type: "Error",
+            number: "Error",
+            title: "Error"
         }]);
     }
 }
 
-async function extractStreamUrl(url) {
+async function extractStreamUrl(slug) {
     try {
-        const response = await fetchv2(url);
+        const response = await fetchv2("https://www.tokyoinsider.com" + slug);
         const html = await response.text();
-        const ulMatch = html.match(/<ul id="videos"[^>]*>(.*?)<\/ul>/s);
-        if (!ulMatch) return JSON.stringify({streams: [], subtitle: "none"});
-        const ulHtml = ulMatch[1];
-        const liRegex = /<li><a[^>]*data-id='(\d+)'[^>]*data-version="(subbed|dubbed)"[^>]*>/g;
-        const versions = [];
-        let liMatch;
-        while ((liMatch = liRegex.exec(ulHtml)) !== null) {
-            versions.push({id: liMatch[1], type: liMatch[2]});
-        }
-        const embedPromises = versions.map(async (ver) => {
-            const embedUrl = `https://www.animegg.org/embed/${ver.id}`;
-            const embedResponse = await fetchv2(embedUrl);
-            const embedHtml = await embedResponse.text();
-            const vsMatch = embedHtml.match(/(?:var|const|let) videoSources = (\[[\s\S]*?\]);/);
-            if (!vsMatch) return [];
-            const jsonString = vsMatch[1].replace(/([{,]\s*)([a-zA-Z_][a-zA-Z0-9_]*)\s*:/g, '$1"$2":');
-            const vsJson = JSON.parse(jsonString);
-            return vsJson.map(src => {
-                const quality = src.label;
-                const fileUrl = "https://www.animegg.org" + src.file;
-                const title = (ver.type === 'subbed' ? 'Sub' : 'Dub') + ' • ' + quality;
-                return {
-                    title: title,
-                    streamUrl: fileUrl,
-                    headers: { "Referer": "https://www.animegg.org/" }
-                };
+
+        const streams = [];
+        
+        const containerMatch = html.match(/<div\s+id="inner_page">([\s\S]*?)<div\s+class="fsplit">/);
+        if (!containerMatch) {
+            return JSON.stringify({
+                streams: [],
+                subtitle: "Error"
             });
+        }
+        
+        const container = containerMatch[1];
+        
+        const downloadRegex = /<a\s+href="(https:\/\/media\.tokyoinsider\.com:8080\/[^"]+)"\s*>([^<]+)<\/a>/g;
+        
+        let match;
+        while ((match = downloadRegex.exec(container)) !== null) {
+            streams.push({
+                title: match[2].trim(),
+                streamUrl: match[1].trim(),
+                headers: {}
+            });
+        }
+
+        return JSON.stringify({
+            streams: streams,
+            subtitle: "None"
         });
-        const streamArrays = await Promise.all(embedPromises);
-        const streams = streamArrays.flat();
-        return JSON.stringify({streams: streams, subtitle: "none"});
     } catch (err) {
-        return JSON.stringify({streams: [], subtitle: "none"});
+        return JSON.stringify({
+            streams: [],
+            subtitle: "Error"
+        });
     }
 }

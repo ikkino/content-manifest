@@ -1,50 +1,68 @@
 async function searchResults(keyword) {
     const results = [];
+    const headers = {
+        'Content-Type': 'application/json',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+    };
+    
     try {
-        const response = await fetchv2("https://api3.devcorp.me/vod/search?page=1&keyword=" + encodeURIComponent(keyword.toLowerCase()));
-        const encrypted = await response.text();
-
-        const headers = { "Content-Type": "application/json" };
-        const postData = JSON.stringify({ text: encrypted });
-
-        const decryptedResponse = await fetchv2("https://enc-dec.app/api/dec-onetouchtv", headers, "POST", postData);
-        const decryptedData = await decryptedResponse.json();
-        console.log(JSON.stringify(decryptedData));
-        if (decryptedData.status === 200 && Array.isArray(decryptedData.result)) {
-            for (const item of decryptedData.result) {
+        if (keyword.includes('tiktok.com')) {
+            const detailResponse = await fetchv2(`https://tikwm.com/api/?url=${encodeURIComponent(keyword)}`);
+            const detailData = await detailResponse.json();
+            
+            if (detailData.code === 0) {
                 results.push({
-                    title: item.title || "Unknown",
-                    image: item.image || "",
-                    href: item.id
+                    title: detailData.data.title.trim(),
+                    image: detailData.data.cover.trim(),
+                    href: detailData.data.play.trim()
+                });
+            }
+            return JSON.stringify(results);
+        }
+        
+        const body = JSON.stringify({
+            keywords: keyword,
+            count: 20,
+            cursor: 0
+        });
+        
+        const response = await fetchv2('https://tikwm.com/api/feed/search', headers, "POST", body);
+        const data = await response.json();
+
+        for (const video of data.data.videos) {
+            const videoUrl = `https://www.tiktok.com/@${video.author.unique_id}/video/${video.video_id}`;
+            const detailResponse = await fetchv2(`https://tikwm.com/api/?url=${encodeURIComponent(videoUrl)}`);
+            const detailData = await detailResponse.json();
+
+            if (detailData.code === 0) {
+                results.push({
+                    title: detailData.data.title.trim(),
+                    image: detailData.data.cover.trim(),
+                    href: detailData.data.play.trim()
                 });
             }
         }
-        console.log(results);
+
         return JSON.stringify(results);
     } catch (err) {
         console.error(err);
-        return JSON.stringify([{ title: "Error", image: "Error", href: "Error" }]);
+        return JSON.stringify([{
+            title: "Please wait",
+            image: "Error",
+            href: "Error"
+        }]);
     }
 }
 
-async function extractDetails(ID) {
+async function extractDetails(url) {
     try {
-        const response = await fetchv2("https://api3.devcorp.me/web/vod/" + ID + "/detail");
-        const encrypted = await response.text();
-
-        const headers = { "Content-Type": "application/json" };
-        const postData = JSON.stringify({ text: encrypted });
-
-        const decryptedResponse = await fetchv2("https://enc-dec.app/api/dec-onetouchtv", headers, "POST", postData);
-        const decryptedText = await decryptedResponse.text();
-        const decryptedData = JSON.parse(decryptedText);
-
-        const result = decryptedData.result;
+        const response = await fetchv2(url);
+        const html = await response.text();
 
         return JSON.stringify([{
-            description: result.description || "N/A",
-            aliases: Array.isArray(result.otherTitles) ? result.otherTitles.join(", ") : "N/A",
-            airdate: result.year || "N/A"
+            description: "N/A",
+            aliases: "N/A",
+            airdate: "N/A"
         }]);
     } catch (err) {
         return JSON.stringify([{
@@ -55,74 +73,29 @@ async function extractDetails(ID) {
     }
 }
 
-async function extractEpisodes(ID) {
+async function extractEpisodes(url) {
     const results = [];
     try {
-        const response = await fetchv2("https://api3.devcorp.me/web/vod/" + ID + "/detail");
-        const encrypted = await response.text();
 
-        const headers = { "Content-Type": "application/json" };
-        const postData = JSON.stringify({ text: encrypted });
-
-        const decryptedResponse = await fetchv2("https://enc-dec.app/api/dec-onetouchtv", headers, "POST", postData);
-        const decryptedText = await decryptedResponse.text();
-        const decryptedData = JSON.parse(decryptedText);
-
-        const episodes = decryptedData.result.episodes || [];
-
-        for (const ep of episodes) {
             results.push({
-                href: ep.id,
-                number: parseInt(ep.episode, 10)
+                href: url,
+                number: 1
             });
-        }
 
-        return JSON.stringify(results.reverse());
+
+        return JSON.stringify(results);
     } catch (err) {
-        return JSON.stringify([{ href: "Error", number: "Error" }]);
+        return JSON.stringify([{
+            href: "Error",
+            number: "Error"
+        }]);
     }
 }
 
-async function extractStreamUrl(href) {
+async function extractStreamUrl(url) {
     try {
-        const parts = href.split("-episode-");
-        const id = parts[0];
-        const episodeNumber = parts[1];
-
-        const response = await fetchv2("https://api3.devcorp.me/web/vod/" + id + "/episode/" + episodeNumber);
-        const encrypted = await response.text();
-
-        const headers = { "Content-Type": "application/json" };
-        const postData = JSON.stringify({ text: encrypted });
-
-        const decryptedResponse = await fetchv2("https://enc-dec.app/api/dec-onetouchtv", headers, "POST", postData);
-        const decryptedText = await decryptedResponse.text();
-        const decryptedData = JSON.parse(decryptedText);
-
-        const sources = decryptedData.result.sources;
-        const tracks = decryptedData.result.track;
-
-        const stream = sources.find(s => s.url.includes(".mp4") || s.url.includes(".m3u8"));
-        const subtitle = tracks.find(t => t.name && t.name.toLowerCase().includes("english"));
-        
-        return JSON.stringify({
-            streams: [{
-                title: "Default",
-                streamUrl: stream ? stream.url : "https://error.org/",
-                headers: stream ? stream.headers : {}
-            }],
-            subtitle: subtitle ? subtitle.file : null
-        });
+        return url;
     } catch (err) {
-        return JSON.stringify({
-            streams: [{
-                title: "Error",
-                streamUrl: "https://error.org/",
-                headers: {}
-            }],
-            subtitle: null
-        });
+        return "https://error.org/";
     }
 }
-
-
