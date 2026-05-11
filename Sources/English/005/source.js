@@ -1,288 +1,95 @@
-async function searchResults(query) {
-  const encodeQuery = keyword => encodeURIComponent(keyword);
-  const searchBaseUrl = "https://anikai.to/browser?keyword=";
-  const baseUrl = "https://anikai.to";
-  
-  const posterHrefRegex = /href="[^"]*" class="poster"/g;
-  const titleRegex = /class="title"[^>]*title="[^"]*"/g;
-  const imageRegex = /data-src="[^"]*"/g;
-  const extractHrefRegex = /href="([^"]*)"/;
-  const extractImageRegex = /data-src="([^"]*)"/;
-  const extractTitleRegex = /title="([^"]*)"/;
-  
-  try {
-    const encodedQuery = encodeQuery(query);
-    const searchUrl = searchBaseUrl + encodedQuery;
-    const response = await fetchv2("https://deno-proxies-sznvnpnxwhbv.deno.dev/?url=" + encodeURIComponent(searchUrl));
-    const htmlText = await response.text();
-    
+async function searchResults(keyword) {
     const results = [];
-    const posterMatches = htmlText.match(posterHrefRegex) || [];
-    const titleMatches = htmlText.match(titleRegex) || [];
-    const imageMatches = htmlText.match(imageRegex) || [];
+
+    results.push({
+        title: "Saiyan Arc",
+        image: "https://ugc.production.linktr.ee/5fe54b0e-0381-4ca2-a1da-260e5b09da3a_image.png?io=true&size=thumbnail-stack_v1_0",
+        href: "https://pixeldrain.net/l/wCsLUVni"
+    });
+
+    results.push({
+        title: "Freeza Arc",
+        image: "https://ugc.production.linktr.ee/bad5121e-debd-4d09-8d07-a047fb791526_image.png?io=true&size=thumbnail-stack_v1_0",
+        href: "https://pixeldrain.net/l/UFw6sshg"
+    });
+
+    results.push({
+        title: "Cell Arc",
+        image: "https://ugc.production.linktr.ee/1d3c535f-8f02-45ca-b8cd-d0cf3abd77ec_image.png?io=true&size=thumbnail-stack_v1_0",
+        href: "https://pixeldrain.net/l/C3TS8gGk"
+    });
+
+    results.push({
+        title: "Boo Arc",
+        image: "https://ugc.production.linktr.ee/71f7161c-0ae3-41ec-8bb0-43a75ecaaaac_image.png?io=true&size=thumbnail-stack_v1_0",
+        href: "https://pixeldrain.net/l/NGxFsN2P"
+    });
     
-    const minLength = Math.min(posterMatches.length, titleMatches.length, imageMatches.length);
-    
-    for (let index = 0; index < minLength; index++) {
-      const hrefMatch = posterMatches[index].match(extractHrefRegex);
-      const fullHref = hrefMatch ? 
-        (hrefMatch[1].startsWith("http") ? hrefMatch[1] : baseUrl + hrefMatch[1]) : 
-        null;
-      
-      const imageMatch = imageMatches[index].match(extractImageRegex);
-      const imageSrc = imageMatch ? imageMatch[1] : null;
-      
-      const titleMatch = titleMatches[index].match(extractTitleRegex);
-      const cleanTitle = titleMatch ? 
-        decodeHtmlEntities(titleMatch[1]) : 
-        null;
-      
-      if (fullHref && imageSrc && cleanTitle) {
-        results.push({
-          href: fullHref,
-          image: "https://deno-proxies-sznvnpnxwhbv.deno.dev/?url=" + encodeURIComponent(imageSrc),
-          title: cleanTitle
-        });
-      }
-    }
-    
+    console.log(`Results: ${JSON.stringify(results)}`);
     return JSON.stringify(results);
-  } catch (error) {
-    return JSON.stringify([{
-      href: "",
-      image: "",
-      title: "Search failed: " + error.message
-    }]);
-  }
 }
 
 async function extractDetails(url) {
-  try {
-    const response = await fetchv2("https://deno-proxies-sznvnpnxwhbv.deno.dev/?url=" + encodeURIComponent(url));
-    const htmlText = await response.text();
-    console.log(htmlText);
-    
-    const descriptionMatch = (/<div class="desc text-expand">([\s\S]*?)<\/div>/.exec(htmlText) || [])[1];
-    const aliasesMatch = (/<small class="al-title text-expand">([\s\S]*?)<\/small>/.exec(htmlText) || [])[1];
-    
-    return JSON.stringify([{
-      description: descriptionMatch ? cleanHtmlSymbols(descriptionMatch) : "Not available",
-      aliases: aliasesMatch ? cleanHtmlSymbols(aliasesMatch) : "Not available",
-      airdate: "If stream doesn't load try later or disable VPN/DNS"
-    }]);
-  } catch (error) {
-    console.error("Error fetching details:" + error);
-    return [{
-      description: "Error loading description",
-      aliases: "Aliases: Unknown",
-      airdate: "Aired: Unknown"
+    const match = url.match(/https:\/\/pixeldrain\.net\/l\/([^\/]+)/);
+    if (!match) throw new Error("Invalid URL format");
+            
+    const arcId = match[1];
+
+    const response = await soraFetch(`https://pixeldrain.net/api/list/${arcId}`);
+    const data = await response.json();
+
+    const hasImage = data.files.some(file => file.mime_type.startsWith("image/"));
+    const fileCount = hasImage ? data.file_count - 1 : data.file_count;
+
+    const transformedResults = [{
+        description: `Title: ${data.title}\nFile Count: ${fileCount}`,
+        aliases: `Title: ${data.title}\nFile Count: ${fileCount}`,
+        airdate: ''
     }];
-  }
+
+    console.log(`Details: ${JSON.stringify(transformedResults)}`);
+    return JSON.stringify(transformedResults);
 }
 
-async function extractEpisodes(url) {  
-  try {
-      const actualUrl = url.replace("Animekai:", "").trim();
-      const htmlText = await (await fetchv2("https://deno-proxies-sznvnpnxwhbv.deno.dev/?url=" + encodeURIComponent(actualUrl))).text();
-      const animeIdMatch = (htmlText.match(/<div class="rate-box"[^>]*data-id="([^"]+)"/) || [])[1];
-      if (!animeIdMatch) return JSON.stringify([{ error: "AniID not found" }]);
+async function extractEpisodes(url) {
+    const match = url.match(/https:\/\/pixeldrain\.net\/l\/([^\/]+)/);
+    if (!match) throw new Error("Invalid URL format");
+            
+    const arcId = match[1];
 
-      const tokenResponse = await fetchv2(`https://enc-dec.app/api/enc-kai?text=${encodeURIComponent(animeIdMatch)}`);
-      const tokenData = await tokenResponse.json();
-      const token = tokenData.result;
+    const response = await soraFetch(`https://pixeldrain.net/api/list/${arcId}`);
+    const data = await response.json();
 
-      const episodeListUrl = `https://anikai.to/ajax/episodes/list?ani_id=${animeIdMatch}&_=${token}`;
-      const episodeListData = await (await fetchv2("https://deno-proxies-sznvnpnxwhbv.deno.dev/?url=" + encodeURIComponent(episodeListUrl))).json();
-      const cleanedHtml = cleanJsonHtml(episodeListData.result);
+    const transformedResults = data.files
+        .filter(result => !result.mime_type.startsWith("image/"))
+        .map((result, index) => {
+            return {
+                href: `${result.id}`,
+                number: index + 1,
+            };
+        });
 
-      const episodeRegex = /<a[^>]+num="([^"]+)"[^>]+token="([^"]+)"[^>]*>/g;
-      const episodeMatches = [...cleanedHtml.matchAll(episodeRegex)];
-
-      const episodes = episodeMatches.map(([_, episodeNum, episodeToken]) => ({
-        number: parseInt(episodeNum, 10),
-        href: `https://anikai.to/ajax/links/list?token=${episodeToken}&_=ENCRYPT_ME`
-      }));
-
-      return JSON.stringify(episodes);
-  } catch (err) {
-    console.error("Error fetching episodes:" + err);
-    return [{
-      number: 1,
-      href: "Error fetching episodes"
-    }];
-  }
+    console.log(`Episodes: ${JSON.stringify(transformedResults)}`);
+    return JSON.stringify(transformedResults);
 }
+
+// searchResults("all");
+// extractDetails("https://pixeldrain.net/l/dX3cF5Q3");
+// extractEpisodes("https://pixeldrain.net/l/dX3cF5Q3");
+// extractStreamUrl(`EDg7Q9Uu`);
 
 async function extractStreamUrl(url) {
-  const headers = {
-    "Referer": "https://anikai.to/",
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36"
-  };
+    return `https://pixeldrain.net/api/file/${url}?download`;
+}
 
-  try {
-    const tokenMatch = url.match(/token=([^&]+)/);
-    if (tokenMatch && tokenMatch[1]) {
-      const rawToken = tokenMatch[1];
-      const encryptResponse = await fetchv2(`https://enc-dec.app/api/enc-kai?text=${encodeURIComponent(rawToken)}`);
-      const encryptData = await encryptResponse.json();
-      const encryptedToken = encryptData.result;
-      url = url.replace('&_=ENCRYPT_ME', `&_=${encryptedToken}`);
-    }
-    
-    const response = await fetchv2("https://deno-proxies-sznvnpnxwhbv.deno.dev/?url=" + encodeURIComponent(url));
-    const text = await response.text();
-
-    let ajaxResultHtml = "";
+async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
     try {
-      const parsedAjax = JSON.parse(text);
-      ajaxResultHtml = parsedAjax?.result || "";
-    } catch {}
-
-    const cleanedHtml = cleanJsonHtml(text);
-    const cleanedAjaxResultHtml = cleanJsonHtml(ajaxResultHtml);
-    const serverHtmlSource = cleanedAjaxResultHtml || cleanedHtml;
-
-    const subRegex = /<div class="server-items lang-group" data-id="sub"[^>]*>([\s\S]*?)<\/div>/;
-    const softsubRegex = /<div class="server-items lang-group" data-id="softsub"[^>]*>([\s\S]*?)<\/div>/;
-    const dubRegex = /<div class="server-items lang-group" data-id="dub"[^>]*>([\s\S]*?)<\/div>/;
-    const subContent = subRegex.exec(serverHtmlSource)?.[1]?.trim() || "";
-    const softsubContent = softsubRegex.exec(serverHtmlSource)?.[1]?.trim() || "";
-    const dubContent = dubRegex.exec(serverHtmlSource)?.[1]?.trim() || "";
-
-    const extractServerId = (content) => {
-      if (!content) return null;
-      const preferred = /<span class="server"[^>]*data-lid="([^"]+)"[^>]*>\s*Server\s*1\s*<\/span>/i.exec(content);
-      if (preferred?.[1]) return preferred[1];
-      return /<span class="server"[^>]*data-lid="([^"]+)"/i.exec(content)?.[1] || null;
-    };
-
-    const serverIdDub = extractServerId(dubContent);
-    const serverIdSoftsub = extractServerId(softsubContent);
-    const serverIdSub = extractServerId(subContent);
-
-    const tokenRequestData = [
-      { name: "Dub", data: serverIdDub },
-      { name: "Softsub", data: serverIdSoftsub },
-      { name: "Sub", data: serverIdSub }
-    ].filter(item => item.data);
-
-    const tokenPromises = tokenRequestData.map(item => 
-      fetchv2(`https://enc-dec.app/api/enc-kai?text=${encodeURIComponent(item.data)}`)
-        .then(res => res.json())
-        .then(json => ({ name: item.name, data: json.result }))
-        .catch(err => ({ name: item.name, error: err.toString() }))
-    );
-    const tokenResults = await Promise.all(tokenPromises);
-
-    const serverIdMap = {
-      "Dub": serverIdDub,
-      "Softsub": serverIdSoftsub,
-      "Sub": serverIdSub
-    };
-
-    const streamUrls = tokenResults.map(result => ({
-      type: result.name,
-      url: `https://anikai.to/ajax/links/view?id=${serverIdMap[result.name]}&_=${result.data}`
-    }));
-
-    // Step 1: fetch links/view via proxy
-    const streamResponses = await Promise.all(
-      streamUrls.map(async ({ type, url }) => {
+        return await fetchv2(url, options.headers ?? {}, options.method ?? 'GET', options.body ?? null);
+    } catch(e) {
         try {
-          const res = await fetchv2("https://deno-proxies-sznvnpnxwhbv.deno.dev/?url=" + encodeURIComponent(url));
-          const json = await res.json();
-          return { type, result: json.result };
-        } catch (error) {
-          console.log(`Error fetching ${type} stream:`, error);
-          return { type, result: null };
+            return await fetch(url, options);
+        } catch(error) {
+            return null;
         }
-      })
-    );
-
-    // Step 2: decrypt with browser UA — no encodeURIComponent
-    const decryptPromises = streamResponses
-      .filter(item => item.result)
-      .map(item =>
-        fetchv2(`https://enc-dec.app/api/dec-kai?text=${item.result}`, headers)
-          .then(res => res.json())
-          .then(json => {
-            console.log(`decrypted ${item.type} URL:`, json.result?.url);
-            return { name: item.type, url: json.result?.url || null };
-          })
-          .catch(err => ({ name: item.type, url: null }))
-      );
-    const decryptResults = await Promise.all(decryptPromises);
-
-    const urlMap = Object.fromEntries(decryptResults.map(i => [i.name, i.url]));
-    const decryptedDub = urlMap.Dub || urlMap.Sub || urlMap.Softsub;
-
-    console.log("Using URL:", decryptedDub);
-
-    if (decryptedDub) {
-      const mediaResponse = await fetchv2(decryptedDub.replace("/e/", "/media/"), headers);
-      const responseJson = await mediaResponse.json();
-      const result = responseJson?.result;
-
-      const postData = {
-        "text": result,
-        "agent": headers["User-Agent"]
-      };
-
-      const finalResponse = await fetchv2(
-        "https://enc-dec.app/api/dec-mega",
-        { "Content-Type": "application/json" },
-        "POST",
-        JSON.stringify(postData)
-      );
-      const finalJson = await finalResponse.json();
-      console.log("dec-mega result:", finalJson);
-      const m3u8Link = finalJson?.result?.sources?.[0]?.file;
-
-      return m3u8Link;
     }
-
-    return "error";
-  } catch (error) {
-    console.log("Fetch error:" + error);
-    return "https://error.org";
-  }
-}
-
-function cleanHtmlSymbols(string) {
-  if (!string) {
-    return "";
-  }
-  return string
-    .replace(/&#8217;/g, "'")
-    .replace(/&#8211;/g, "-")
-    .replace(/&#[0-9]+;/g, "")
-    .replace(/\r?\n|\r/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-function cleanJsonHtml(jsonHtml) {
-  if (!jsonHtml) {
-    return "";
-  }
-  return jsonHtml
-    .replace(/\\"/g, "\"")
-    .replace(/\\'/g, "'")
-    .replace(/\\\\/g, "\\")
-    .replace(/\\n/g, "\n")
-    .replace(/\\t/g, "\t")
-    .replace(/\\r/g, "\r");
-}
-
-function decodeHtmlEntities(text) {
-  if (!text) {
-    return "";
-  }
-  return text
-    .replace(/&#039;/g, "'")
-    .replace(/&quot;/g, "\"")
-    .replace(/&amp;/g, "&")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&nbsp;/g, " ");
 }
