@@ -1,125 +1,134 @@
 async function searchResults(keyword) {
     const results = [];
+    try {
+        const response = await fetchv2("https://www.tokyoinsider.com/anime/search?k=" + encodeURIComponent(keyword));
+        const html = await response.text();
 
-    results.push({
-        title: "Use External Player",
-        image: "https://git.luna-app.eu/ibro/services/raw/branch/main/narucannon/UseExternalPlayer.png",
-        href: ""
-    });
+        const regex = /<img class="a_img" src="([^"]*)"[^>]*><\/a>[\s\S]*?<a href="([^"]*)" style="font: bold 14px verdana;">([^<]*(?:<span[^>]*>[^<]*<\/span>[^<]*)*)<\/a>/g;
 
-    results.push({
-        title: "Rebuild of Naruto (2019) - Season 1 - Naruto",
-        image: "https://pixeldrain.net/api/file/tseMo66v",
-        href: "https://pixeldrain.net/l/SmsFwCAT"
-    });
+        let match;
+        while ((match = regex.exec(html)) !== null) {
+            const titleText = match[3].replace(/<span class="searchhighlight">(.*?)<\/span>/g, '$1').replace(/&nbsp;/g, ' ');
+            results.push({
+                title: titleText.trim(),
+                image: match[1].trim(),
+                href: match[2].trim()
+            });
+        }
 
-    results.push({
-        title: "Rebuild of Naruto (2019) - Season 2 - Naruto Gaiden",
-        image: "https://pixeldrain.net/api/file/PqkviitQ",
-        href: "https://pixeldrain.net/l/1YKx5EWn"
-    });
-
-    results.push({
-        title: "Rebuild of Naruto (2019) - Season 3 - Kakashi Gaiden",
-        image: "https://pixeldrain.net/api/file/WWbQ5efe",
-        href: "https://pixeldrain.net/l/bc226sF1"
-    });
-
-    results.push({
-        title: "Rebuild of Naruto (2019) - Season 4 - Naruto Shippuden",
-        image: "https://pixeldrain.net/api/file/jjW3hhCL",
-        href: "https://pixeldrain.net/l/E1EuRcLU"
-    });
-
-    results.push({
-        title: "Rebuild of Naruto (2019) - Season 5 - Naruto Senjou",
-        image: "https://pixeldrain.net/api/file/eZUREmqQ",
-        href: "https://pixeldrain.net/l/vKm6yFu4"
-    });
-
-    results.push({
-        title: "Rebuild of Naruto (2019) - Season 6 - Itachi Shinden",
-        image: "https://pixeldrain.net/api/file/xZ4qFLcz",
-        href: "https://pixeldrain.net/l/6HKj825x"
-    });
-
-    results.push({
-        title: "Rebuild of Naruto (2019) - Season 7 - Naruto Hiden",
-        image: "https://pixeldrain.net/api/file/YeBS7udw",
-        href: "https://pixeldrain.net/l/hif36HTr"
-    });
-
-    results.push({
-        title: "Rebuild of Naruto (2019) - Season 8 - Next Generations",
-        image: "",
-        href: "https://pixeldrain.net/l/mTCVETnp"
-    });
-    
-    console.log(`Results: ${JSON.stringify(results)}`);
-    return JSON.stringify(results);
+        return JSON.stringify(results);
+    } catch (err) {
+        return JSON.stringify([{
+            title: "Error",
+            image: "Error",
+            href: "Error"
+        }]);
+    }
 }
 
-async function extractDetails(url) {
-    const match = url.match(/https:\/\/pixeldrain\.net\/l\/([^\/]+)/);
-    if (!match) throw new Error("Invalid URL format");
-            
-    const arcId = match[1];
+async function extractDetails(slug) {
+    try {
+        const response = await fetchv2("https://www.tokyoinsider.com" + slug);
+        const html = await response.text();
 
-    const response = await soraFetch(`https://pixeldrain.net/api/list/${arcId}`);
-    const data = await response.json();
+        let titles = "N/A";
+        let airdate = "N/A";
+        let description = "N/A";
 
-    const hasImage = data.files.some(file => file.mime_type.startsWith("image/"));
-    const fileCount = hasImage ? data.file_count - 1 : data.file_count;
+        const titlesMatch = html.match(/<td width="80" valign="top"><b>Title\(s\):<\/b><\/td>\s*<td>([\s\S]*?)<\/td>\s*<\/tr>/);
+        if (titlesMatch) {
+            titles = titlesMatch[1].replace(/<br>/g, ', ').replace(/\s+/g, ' ').trim();
+        }
 
-    const transformedResults = [{
-        description: `Title: ${data.title}\nFile Count: ${fileCount}`,
-        aliases: `Title: ${data.title}\nFile Count: ${fileCount}`,
-        airdate: ''
-    }];
+        const airdateMatch = html.match(/<td valign="top"><b>Vintage:<\/b><\/td>\s*<td>([\s\S]*?)<\/td>\s*<\/tr>/);
+        if (airdateMatch) {
+            airdate = airdateMatch[1].replace(/\s+/g, ' ').trim();
+        }
 
-    console.log(`Details: ${JSON.stringify(transformedResults)}`);
-    return JSON.stringify(transformedResults);
+        const summaryMatch = html.match(/<td valign="top" style="border-bottom: 0;"><b>Summary:<\/b><\/td>\s*<td style="border-bottom: 0;">([\s\S]*?)<\/td>\s*<\/tr>/);
+        if (summaryMatch) {
+            description = summaryMatch[1].replace(/\s+/g, ' ').trim();
+        }
+
+        return JSON.stringify([{
+            aliases: titles,
+            airdate: airdate,
+            description: description
+        }]);
+    } catch (err) {
+        return JSON.stringify([{
+            description: "Error",
+            aliases: "Error",
+            airdate: "Error"
+        }]);
+    }
 }
 
 async function extractEpisodes(url) {
-    const match = url.match(/https:\/\/pixeldrain\.net\/l\/([^\/]+)/);
-    if (!match) throw new Error("Invalid URL format");
-            
-    const arcId = match[1];
-
-    const response = await soraFetch(`https://pixeldrain.net/api/list/${arcId}`);
-    const data = await response.json();
-
-    const transformedResults = data.files
-        .filter(result => !result.mime_type.startsWith("image/"))
-        .map((result, index) => {
-            return {
-                href: `${result.id}`,
-                number: index + 1,
-            };
-        });
-
-    console.log(`Episodes: ${JSON.stringify(transformedResults)}`);
-    return JSON.stringify(transformedResults);
-}
-
-// searchResults("all");
-// extractDetails("https://pixeldrain.net/l/dX3cF5Q3");
-// extractEpisodes("https://pixeldrain.net/l/dX3cF5Q3");
-// extractStreamUrl(`EDg7Q9Uu`);
-
-async function extractStreamUrl(url) {
-    return `https://pixeldrain.net/api/file/${url}?download`;
-}
-
-async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
+    const results = [];
     try {
-        return await fetchv2(url, options.headers ?? {}, options.method ?? 'GET', options.body ?? null);
-    } catch(e) {
-        try {
-            return await fetch(url, options);
-        } catch(error) {
-            return null;
+        const response = await fetchv2("https://www.tokyoinsider.com" + url);
+        const html = await response.text();
+
+        const regex = /<div class="episode[^"]*">\s*<div><a class="download-link" href="([^"]*)">[^<]*<em>(\w+)<\/em>\s*<strong>(\d+)<\/strong>(?:<i[^>]*>\s*:\s*([^<]*)<\/i>)?/g;
+
+        let match;
+        while ((match = regex.exec(html)) !== null) {
+            const number = parseInt(match[3], 10);
+
+            results.push({
+                href: match[1].trim(),
+                number: number,
+            });
         }
+
+        return JSON.stringify(results.reverse());
+    } catch (err) {
+        return JSON.stringify([{
+            href: "Error",
+            type: "Error",
+            number: "Error",
+            title: "Error"
+        }]);
+    }
+}
+
+async function extractStreamUrl(slug) {
+    try {
+        const response = await fetchv2("https://www.tokyoinsider.com" + slug);
+        const html = await response.text();
+
+        const streams = [];
+        
+        const containerMatch = html.match(/<div\s+id="inner_page">([\s\S]*?)<div\s+class="fsplit">/);
+        if (!containerMatch) {
+            return JSON.stringify({
+                streams: [],
+                subtitle: "Error"
+            });
+        }
+        
+        const container = containerMatch[1];
+        
+        const downloadRegex = /<a\s+href="(https:\/\/media\.tokyoinsider\.com:8080\/[^"]+)"\s*>([^<]+)<\/a>/g;
+        
+        let match;
+        while ((match = downloadRegex.exec(container)) !== null) {
+            streams.push({
+                title: match[2].trim(),
+                streamUrl: match[1].trim(),
+                headers: {}
+            });
+        }
+
+        return JSON.stringify({
+            streams: streams,
+            subtitle: "None"
+        });
+    } catch (err) {
+        return JSON.stringify({
+            streams: [],
+            subtitle: "Error"
+        });
     }
 }
