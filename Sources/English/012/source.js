@@ -1,134 +1,72 @@
 async function searchResults(keyword) {
     const results = [];
-    try {
-        const response = await fetchv2("https://www.tokyoinsider.com/anime/search?k=" + encodeURIComponent(keyword));
-        const html = await response.text();
 
-        const regex = /<img class="a_img" src="([^"]*)"[^>]*><\/a>[\s\S]*?<a href="([^"]*)" style="font: bold 14px verdana;">([^<]*(?:<span[^>]*>[^<]*<\/span>[^<]*)*)<\/a>/g;
-
-        let match;
-        while ((match = regex.exec(html)) !== null) {
-            const titleText = match[3].replace(/<span class="searchhighlight">(.*?)<\/span>/g, '$1').replace(/&nbsp;/g, ' ');
-            results.push({
-                title: titleText.trim(),
-                image: match[1].trim(),
-                href: match[2].trim()
-            });
-        }
-
-        return JSON.stringify(results);
-    } catch (err) {
-        return JSON.stringify([{
-            title: "Error",
-            image: "Error",
-            href: "Error"
-        }]);
-    }
+    results.push({
+        title: "Onigashima Paced",
+        image: "https://git.luna-app.eu/ibro/services/raw/branch/main/onigashima/icon.png",
+        href: "https://pixeldrain.net/l/JVMSKn7c"
+    });
+    
+    console.log(`Results: ${JSON.stringify(results)}`);
+    return JSON.stringify(results);
 }
 
-async function extractDetails(slug) {
-    try {
-        const response = await fetchv2("https://www.tokyoinsider.com" + slug);
-        const html = await response.text();
+async function extractDetails(url) {
+    const match = url.match(/https:\/\/pixeldrain\.net\/l\/([^\/]+)/);
+    if (!match) throw new Error("Invalid URL format");
+            
+    const arcId = match[1];
 
-        let titles = "N/A";
-        let airdate = "N/A";
-        let description = "N/A";
+    const response = await soraFetch(`https://pixeldrain.net/api/list/${arcId}`);
+    const data = await response.json();    
 
-        const titlesMatch = html.match(/<td width="80" valign="top"><b>Title\(s\):<\/b><\/td>\s*<td>([\s\S]*?)<\/td>\s*<\/tr>/);
-        if (titlesMatch) {
-            titles = titlesMatch[1].replace(/<br>/g, ', ').replace(/\s+/g, ' ').trim();
-        }
+    const transformedResults = [{
+        description: `Title: ${data.title}\nFile Count: ${data.file_count}`,
+        aliases: `Title: ${data.title}\nFile Count: ${data.file_count}`,
+        airdate: ''
+    }];
 
-        const airdateMatch = html.match(/<td valign="top"><b>Vintage:<\/b><\/td>\s*<td>([\s\S]*?)<\/td>\s*<\/tr>/);
-        if (airdateMatch) {
-            airdate = airdateMatch[1].replace(/\s+/g, ' ').trim();
-        }
-
-        const summaryMatch = html.match(/<td valign="top" style="border-bottom: 0;"><b>Summary:<\/b><\/td>\s*<td style="border-bottom: 0;">([\s\S]*?)<\/td>\s*<\/tr>/);
-        if (summaryMatch) {
-            description = summaryMatch[1].replace(/\s+/g, ' ').trim();
-        }
-
-        return JSON.stringify([{
-            aliases: titles,
-            airdate: airdate,
-            description: description
-        }]);
-    } catch (err) {
-        return JSON.stringify([{
-            description: "Error",
-            aliases: "Error",
-            airdate: "Error"
-        }]);
-    }
+    console.log(`Details: ${JSON.stringify(transformedResults)}`);
+    return JSON.stringify(transformedResults);
 }
 
 async function extractEpisodes(url) {
-    const results = [];
-    try {
-        const response = await fetchv2("https://www.tokyoinsider.com" + url);
-        const html = await response.text();
+    const match = url.match(/https:\/\/pixeldrain\.net\/l\/([^\/]+)/);
+    if (!match) throw new Error("Invalid URL format");
+            
+    const arcId = match[1];
 
-        const regex = /<div class="episode[^"]*">\s*<div><a class="download-link" href="([^"]*)">[^<]*<em>(\w+)<\/em>\s*<strong>(\d+)<\/strong>(?:<i[^>]*>\s*:\s*([^<]*)<\/i>)?/g;
+    const response = await soraFetch(`https://pixeldrain.net/api/list/${arcId}`);
+    const data = await response.json();
 
-        let match;
-        while ((match = regex.exec(html)) !== null) {
-            const number = parseInt(match[3], 10);
+    const transformedResults = data.files.map((result, index) => {
+        return {
+            href: `${result.id}`,
+            number: index + 1,
+        };
+    });
 
-            results.push({
-                href: match[1].trim(),
-                number: number,
-            });
-        }
-
-        return JSON.stringify(results.reverse());
-    } catch (err) {
-        return JSON.stringify([{
-            href: "Error",
-            type: "Error",
-            number: "Error",
-            title: "Error"
-        }]);
-    }
+    console.log(`Episodes: ${JSON.stringify(transformedResults)}`);
+    return JSON.stringify(transformedResults);
 }
 
-async function extractStreamUrl(slug) {
+// searchResults("all");
+// extractDetails("https://pixeldrain.net/l/dX3cF5Q3");
+// extractEpisodes("https://pixeldrain.net/l/dX3cF5Q3");
+// extractStreamUrl(`EDg7Q9Uu`);
+
+async function extractStreamUrl(url) {
+    return `https://pixeldrain.net/api/file/${url}?download`;
+}
+
+async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
     try {
-        const response = await fetchv2("https://www.tokyoinsider.com" + slug);
-        const html = await response.text();
-
-        const streams = [];
-        
-        const containerMatch = html.match(/<div\s+id="inner_page">([\s\S]*?)<div\s+class="fsplit">/);
-        if (!containerMatch) {
-            return JSON.stringify({
-                streams: [],
-                subtitle: "Error"
-            });
+        return await fetchv2(url, options.headers ?? {}, options.method ?? 'GET', options.body ?? null);
+    } catch(e) {
+        try {
+            return await fetch(url, options);
+        } catch(error) {
+            return null;
         }
-        
-        const container = containerMatch[1];
-        
-        const downloadRegex = /<a\s+href="(https:\/\/media\.tokyoinsider\.com:8080\/[^"]+)"\s*>([^<]+)<\/a>/g;
-        
-        let match;
-        while ((match = downloadRegex.exec(container)) !== null) {
-            streams.push({
-                title: match[2].trim(),
-                streamUrl: match[1].trim(),
-                headers: {}
-            });
-        }
-
-        return JSON.stringify({
-            streams: streams,
-            subtitle: "None"
-        });
-    } catch (err) {
-        return JSON.stringify({
-            streams: [],
-            subtitle: "Error"
-        });
     }
 }

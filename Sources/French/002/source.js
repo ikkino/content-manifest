@@ -1,13 +1,8 @@
 // ==========================================
-// ⚙️ MODULE SORA — NAKIOS (Supabase + Xalaflix Fix)
+// ⚙️ MODULE SORA — ANIME-KAMI.COM (Supabase + Vitesse Max + Sibnet Pro)
 // ==========================================
 
-const TMDB_API_KEY = "f3d757824f08ea2cff45eb8f47ca3a1e";
-
-// Variables globales
-let BASE_URL = "";
-let API_URL = "";
-let HOSTNAME = "";
+const BASE_URL = "https://anime-kami.com";
 
 // ==========================================
 // 🗄️ TRACKER SUPABASE (Base de données)
@@ -31,487 +26,397 @@ async function sendSupabaseLog(moduleName, actionType, dataPayload) {
             "Prefer": "return=minimal" 
         };
         
-        if (typeof fetchv2 !== 'undefined') {
-            await fetchv2(`${SUPABASE_URL}/rest/v1/app_logs`, headers, "POST", JSON.stringify(payload));
-        } else {
-            await fetch(`${SUPABASE_URL}/rest/v1/app_logs`, { method: "POST", headers: headers, body: JSON.stringify(payload) });
-        }
+        await fetchv2(`${SUPABASE_URL}/rest/v1/app_logs`, headers, "POST", JSON.stringify(payload));
     } catch (e) { 
         console.log(`[Tracker] 🚨 Erreur d'envoi vers Supabase : ${e.message}`); 
     }
 }
 
 // ==========================================
-// ⚙️ LOGIQUE DU MODULE NAKIOS
+// ⚙️ LOGIQUE DU MODULE ANIME-KAMI
 // ==========================================
-
-function slugify(text) {
-    return text.toString().toLowerCase()
-        .normalize("NFKD").replace(/[\u0300-\u036f]/g, "") // Enlève les accents
-        .replace(/[^a-z0-9 -]/g, "") // Garde juste les lettres et chiffres
-        .replace(/\s+/g, '-') // Remplace les espaces par des tirets
-        .replace(/-+/g, '-').trim();
-}
-
-async function initUrls() {
-    if (BASE_URL !== "") return;
-
-    try {
-        console.log("[Nakios] Recherche de la nouvelle adresse officielle sur nakios.online...");
-        
-        const response = await soraFetch("https://nakios.online/");
-        let text = await response.text();
-        let match = null;
-
-        match = text.match(/href="([^"]+)"[^>]*>.*?Visiter/i) || text.match(/(https:\/\/nakios\.[a-z]+)/i);
-
-        if (!match) {
-            console.log("[Nakios] Site dynamique détecté, analyse du fichier JavaScript...");
-            const jsFileMatch = text.match(/src="(\/assets\/[^"]+\.js)"/i) || text.match(/src="([^"]+\.js)"/i);
-            
-            if (jsFileMatch && jsFileMatch[1]) {
-                const jsUrl = `https://nakios.online${jsFileMatch[1]}`;
-                const jsResponse = await soraFetch(jsUrl);
-                const jsText = await jsResponse.text();
-                match = jsText.match(/(https:\/\/nakios\.[a-z]+)/i);
-            }
-        }
-
-        if (match && match[1] && !match[1].includes("nakios.online")) {
-            BASE_URL = match[1];
-            if (BASE_URL.endsWith('/')) BASE_URL = BASE_URL.slice(0, -1);
-            console.log(`[Nakios] Nouvelle URL trouvée : ${BASE_URL}`);
-        } else {
-            throw new Error("Aucun lien trouvé ni dans le HTML ni dans le JS.");
-        }
-
-    } catch (e) {
-        console.log(`[Nakios] Échec de la recherche : ${e.message}. Utilisation du secours.`);
-        BASE_URL = "https://nakios.fit";
-    }
-
-    try {
-        HOSTNAME = BASE_URL.replace(/^https?:\/\//, ''); 
-        API_URL = `https://api.${HOSTNAME}`;
-    } catch(e) {
-        HOSTNAME = "nakios.fit";
-        API_URL = "https://api.nakios.fit";
-    }
-}
 
 // --- 1. RECHERCHE ---
 async function searchResults(keyword) {
+    console.log(`[Anime-Kami] 🔍 Recherche API pour : "${keyword}"`);
     try {
-        await initUrls();
+        const headers = {
+            "Content-Type": "application/json",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+            "Referer": BASE_URL + "/"
+        };
 
-        const encodedKeyword = encodeURIComponent(keyword);
-        const searchUrl = `${API_URL}/api/search/multi?query=${encodedKeyword}&page=1`;
+        const payload = JSON.stringify({ search: keyword, year: null, season: null, format: null, genres: [], sort: "ID_DESC", status: null, page: 1, perPage: 30, language: null, contentType: "anime" });
+        const response = await fetchv2(BASE_URL + "/api/catalog", headers, "POST", payload);
+        const json = JSON.parse(await response.text());
+        const data = json.data || json;
+
+        const results = [];
+        for (const item of data) {
+            results.push({
+                title: item.title?.userPreferred || item.title?.normal || "Sans titre",
+                image: item.coverImage?.large || item.coverImage?.medium || "",
+                href: BASE_URL + "/anime/" + item.id + "-" + item.url
+            });
+        }
+
+        console.log(`[Anime-Kami] ✅ ${results.length} résultats trouvés.`);
         
-        const responseText = await soraFetch(searchUrl, {
-            headers: { "Origin": BASE_URL, "Referer": `${BASE_URL}/` }
-        });
-        
-        const data = await responseText.json();
-        const items = data.results || data.data || data.items || data; 
-
-        if (!Array.isArray(items)) return JSON.stringify([]);
-
-        const transformedResults = items.map(result => {
-            let type = result.media_type || (result.name ? "tv" : "movie");
-            if (type === "tv") type = "series"; 
-
-            let title = result.title || result.name || result.original_title;
-            let id = result.id || result.tmdb_id;
-            
-            let image = "https://via.placeholder.com/500x750?text=Pas+d'image";
-            if (result.poster_path) {
-                image = result.poster_path.startsWith('http') 
-                    ? result.poster_path 
-                    : `https://image.tmdb.org/t/p/w500${result.poster_path}`;
-            }
-
-            if (title && id) {
-                return {
-                    title: title,
-                    image: image,
-                    href: `${BASE_URL}/${type}/${id}-${slugify(title)}` // 🌟 NOUVEAU : Slugify
-                };
-            }
-        }).filter(Boolean);
-
-        sendSupabaseLog("Nakios", "SEARCH", { 
+        sendSupabaseLog("Anime-Kami", "SEARCH", { 
             keyword: keyword, 
-            results_count: transformedResults.length,
-            top_results: transformedResults.slice(0, 3).map(r => r.title)
+            results_count: results.length,
+            top_results: results.slice(0, 3).map(r => r.title)
         });
-
-        return JSON.stringify(transformedResults);
-    } catch (error) {
+        
+        return JSON.stringify(results);
+    } catch (e) {
+        console.log(`[Anime-Kami] 🚨 Erreur recherche : ${e.message}`);
         return JSON.stringify([]);
     }
 }
 
 // --- 2. DÉTAILS ---
 async function extractDetails(url) {
-    sendSupabaseLog("Nakios", "DETAILS", { media_url: url }); // 🌟 Standardisé
+    console.log(`[Anime-Kami] 📖 Chargement des détails pour : ${url}`);
+    sendSupabaseLog("Anime-Kami", "DETAILS", { anime_url: url });
 
     try {
-        await initUrls();
-        
-        const isMovie = url.includes('movie');
-        // 🌟 Regex mis à jour pour accepter les IDs avec du texte
-        const match = url.match(/(?:movie|series|tv)\/([a-z0-9-]+)/i);
-        if (!match) throw new Error("Invalid URL format");
+        const headers = { "User-Agent": "Mozilla/5.0", "Referer": "https://anime-kami.com/" };
+        const res = await fetchv2(url, headers, "GET");
+        const html = await res.text();
 
-        const fullId = match[1];
-        const id = fullId.split('-')[0]; // On extrait juste l'ID numérique
-        
-        const tmdbUrl = isMovie 
-            ? `https://api.themoviedb.org/3/movie/${id}?api_key=${TMDB_API_KEY}&language=fr-FR`
-            : `https://api.themoviedb.org/3/tv/${id}?api_key=${TMDB_API_KEY}&language=fr-FR`;
-            
-        let responseText = await soraFetch(tmdbUrl);
-        let data = await responseText.json();
-        
-        if (data.success === false || !data.id) {
-            const nakiosUrl = isMovie ? `${API_URL}/api/movie/${id}` : `${API_URL}/api/series/${id}`;
-            responseText = await soraFetch(nakiosUrl, { headers: { "Origin": BASE_URL, "Referer": `${BASE_URL}/` } });
-            data = await responseText.json();
-            data = data.data || data; 
+        let description = "Pas de description disponible.";
+        let movieDescMatch = html.match(/<h3[^>]*>Synopsis<\/h3>[\s\S]*?<p[^>]*>([\s\S]*?)<\/p>/i);
+        let descMatch = html.match(/<p class=["']text-sm[^>]*>([\s\S]*?)<\/p>/i);
+
+        if (movieDescMatch && movieDescMatch[1]) {
+            description = movieDescMatch[1].replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g, '').trim();
+        } else if (descMatch && descMatch[1]) {
+            description = descMatch[1].replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g, '').trim();
+        } else {
+            const match = url.match(/\/anime\/([\d]+)-([^/?#]+)/);
+            if (match) {
+                const slug = match[2];
+                const payload = JSON.stringify({ search: slug.replace(/-/g, " "), page: 1, perPage: 1, contentType: "both" });
+                const apiRes = await fetchv2("https://anime-kami.com/api/catalog", { "Content-Type": "application/json" }, "POST", payload);
+                const apiJson = JSON.parse(await apiRes.text());
+                const data = apiJson.data || apiJson;
+                const anime = data.find(a => String(a.id) === match[1]) || data[0];
+                if (anime && (anime.description?.fr || anime.description?.en)) {
+                    description = (anime.description.fr || anime.description.en).replace(/<[^>]+>/g, '').trim();
+                }
+            }
         }
 
-        let duration = 'Inconnue';
-        if (data.runtime) {
-            duration = data.runtime; 
-        } else if (data.episode_run_time && data.episode_run_time.length > 0) {
-            duration = data.episode_run_time[0]; 
-        } else if (data.episodes && data.episodes.length > 0 && data.episodes[0].runtime) {
-            duration = data.episodes[0].runtime; 
-        }
+        let airdate = "N/A";
+        let dateMatch = html.match(/<span[^>]*>Année<\/span>[\s\S]*?<span[^>]*>([\d]{4})<\/span>/i);
+        if (dateMatch) airdate = dateMatch[1].trim();
 
-        let releaseDate = data.release_date || data.first_air_date || data.air_date || 'Inconnue';
-        let overview = data.overview || data.description || 'Aucune description disponible.';
-
-        return JSON.stringify([{
-            description: overview,
-            aliases: `Durée : ${duration !== 'Inconnue' ? duration + ' minutes' : 'Inconnue'}`,
-            airdate: `Date de sortie : ${releaseDate}`
-        }]);
+        console.log(`[Anime-Kami] ✅ Détails extraits avec succès.`);
+        return JSON.stringify([{ description, aliases: "Anime-Kami", airdate }]);
         
-    } catch (error) {
-        return JSON.stringify([{
-            description: 'Erreur lors du chargement de la description',
-            aliases: 'Durée : Inconnue',
-            airdate: 'Date : Inconnue'
-        }]);
+    } catch (e) {
+        console.log(`[Anime-Kami] 🚨 Erreur détails : ${e.message}`);
+        return JSON.stringify([{ description: "Erreur de chargement.", aliases: "Anime-Kami", airdate: "N/A" }]);
     }
 }
 
-// --- 3. ÉPISODES ---
+// --- 3. ÉPISODES (Unifiés VF + VOSTFR) ---
 async function extractEpisodes(url) {
+    console.log(`[Anime-Kami] 📂 Chargement des épisodes pour : ${url}`);
     try {
-        await initUrls();
-        
-        const isMovie = url.includes('movie');
-        // 🌟 Regex mis à jour pour récupérer le titre
-        const match = url.match(/(?:movie|series|tv)\/([a-z0-9-]+)/i);
-        if (!match) throw new Error("Invalid URL format");
-        
-        const fullId = match[1]; // Ex: "123-le-film"
-        const id = fullId.split('-')[0];
+        const match = url.match(/\/anime\/([\d]+)-([^/?#]+)/);
+        if (!match) return JSON.stringify([]);
 
-        if (isMovie) {
-            // 🌟 On fait passer le nom complet au lecteur
-            return JSON.stringify([{ href: `${fullId}/movie`, number: 1, title: "Film Complet" }]);
-        } else {
-            const seriesUrl = `${API_URL}/api/series/${id}`;
-            const responseText = await soraFetch(seriesUrl, {
-                headers: { "Origin": BASE_URL, "Referer": `${BASE_URL}/` }
-            });
-            const data = await responseText.json();
-            const info = data.data || data;
-            
-            let allEpisodes = [];
-            
-            if (info.seasons && Array.isArray(info.seasons)) {
-                for (const season of info.seasons) {
-                    const seasonNumber = season.season_number;
-                    if(seasonNumber === 0) continue; 
-                    
-                    const seasonUrl = `${API_URL}/api/series/${id}/season/${seasonNumber}`;
-                    const seasonResponse = await soraFetch(seasonUrl, {
-                        headers: { "Origin": BASE_URL, "Referer": `${BASE_URL}/` }
+        const id = match[1];
+        const slug = match[2];
+
+        const headers = { "User-Agent": "Mozilla/5.0", "Referer": BASE_URL + "/" };
+        const apiUrl = BASE_URL + "/api/episode/" + id + "-" + slug + "?releasing=false&refresh=true";
+        
+        const response = await fetchv2(apiUrl, headers, "GET");
+        const json = JSON.parse(await response.text());
+        const provider = json[0];
+        
+        if (!provider) {
+            console.log(`[Anime-Kami] ❌ Aucun provider trouvé dans l'API.`);
+            return JSON.stringify([]);
+        }
+
+        const episodeMap = new Map();
+        const addEpisodesToMap = (epList) => {
+            if (!epList) return;
+            for (const ep of epList) {
+                if (!episodeMap.has(ep.number)) {
+                    let titleText = ep.title ? ` - ${ep.title}` : "";
+                    if (titleText.toLowerCase().includes("movie")) titleText = " - Film";
+                    episodeMap.set(ep.number, {
+                        title: `Épisode ${ep.number}${titleText}`,
+                        href: `${apiUrl}&ep=${ep.number}&lang=all`,
+                        number: ep.number,
+                        season: 1
                     });
-                    const seasonData = await seasonResponse.json();
-                    
-                    const sInfo = seasonData.data || seasonData;
-                    const episodesList = sInfo.episodes || (Array.isArray(sInfo) ? sInfo : []);
-                    
-                    if (episodesList && episodesList.length) {
-                        const episodes = episodesList.map(episode => ({
-                            href: `${fullId}/${seasonNumber}/${episode.episode_number}`, // 🌟 On fait passer le nom complet !
-                            number: episode.episode_number,
-                            title: episode.name || `Épisode ${episode.episode_number}`
-                        }));
-                        allEpisodes = allEpisodes.concat(episodes);
-                    }
                 }
             }
-            return JSON.stringify(allEpisodes);
-        }
-    } catch (error) {
+        };
+
+        addEpisodesToMap(provider.episodes);
+        addEpisodesToMap(provider.episodesVF);
+
+        const results = Array.from(episodeMap.values()).sort((a, b) => a.number - b.number);
+        console.log(`[Anime-Kami] ✅ ${results.length} épisodes unifiés extraits.`);
+        return JSON.stringify(results);
+    } catch (e) {
+        console.log(`[Anime-Kami] 🚨 Erreur épisodes : ${e.message}`);
         return JSON.stringify([]);
-    }   
+    }
 }
 
-// --- 4. EXTRACTION VIDÉO (L'Ultime Version : Proxy + Anti-CORS + Subs + Tracker Pro) ---
+// --- 4. LECTEUR (Version Parallèle Rapide avec Promise.all) ---
 async function extractStreamUrl(url) {
-    let finalMediaUrl = url; 
-
+    console.log(`[Anime-Kami] 🎬 Analyse du lecteur pour : ${url}`);
     try {
-        const startTime = Date.now();
-        await initUrls();
+        const globalStartTime = Date.now();
 
-        let streams = [];
-        let failedLinks = [];
-        let subtitleUrl = ""; // 🌟 PRÉPARATION DE LA VARIABLE SOUS-TITRES
-        let seasonNumber = "1";
-        let episodeNumber = "1";
-        let isMovie = url.includes('movie');
+        const epMatch = url.match(/[?&]ep=(\d+)/);
+        const langMatch = url.match(/[?&]lang=([^&]+)/);
+        const epNumber = epMatch ? parseInt(epMatch[1]) : 1;
+        const lang = langMatch ? langMatch[1] : "all";
 
-        const parts = url.split('/');
-        const fullId = parts[0]; 
-        const showId = fullId.split('-')[0]; 
+        const apiUrl = url.split("&ep=")[0];
+        const headers = { "User-Agent": "Mozilla/5.0", "Referer": BASE_URL + "/" };
 
-        let mediaTitle = showId;
-        if (fullId.includes('-')) {
-            let cleanStr = fullId.substring(fullId.indexOf('-') + 1).replace(/-/g, ' ');
-            mediaTitle = cleanStr.replace(/\b\w/g, c => c.toUpperCase()); 
+        const response = await fetchv2(apiUrl, headers, "GET");
+        const json = JSON.parse(await response.text());
+        const provider = json[0];
+
+        if (!provider) return JSON.stringify({ type: "none" });
+
+        let serversToProcess = [];
+        if ((lang === "vostfr" || lang === "all") && provider.episodes) {
+            let ep = provider.episodes.find(e => e.number === epNumber);
+            if (ep && ep.servers) for (let k in ep.servers) serversToProcess.push({ ...ep.servers[k], langTag: "VOSTFR", serverKey: k });
+        }
+        if ((lang === "vf" || lang === "all") && provider.episodesVF) {
+            let ep = provider.episodesVF.find(e => e.number === epNumber);
+            if (ep && ep.servers) for (let k in ep.servers) serversToProcess.push({ ...ep.servers[k], langTag: "VF", serverKey: k });
         }
 
-        if (!isMovie) {
-            seasonNumber = parts[1] || "1";   
-            episodeNumber = parts[2] || "1";  
-        } else {
-            episodeNumber = "movie";
-        }
+        if (serversToProcess.length === 0) return JSON.stringify({ type: "none" });
 
-        let typePath = isMovie ? "movie" : "series";
-        finalMediaUrl = `${BASE_URL}/${typePath}/${fullId}`;
+        const streams = [];
+        let extractedNames = []; 
+        let failedLinks = []; 
+        let serverTimings = [];
 
-        let apiUrl = isMovie 
-            ? `${API_URL}/api/sources/movie/${showId}` 
-            : `${API_URL}/api/sources/tv/${showId}/${seasonNumber}/${episodeNumber}`;
-
-        const response = await soraFetch(apiUrl, {
-            headers: { "Origin": BASE_URL, "Referer": `${BASE_URL}/` }
-        });
-        
-        let data = {};
-        try {
-            data = await response.json();
+        // 🚀 Lancement de TOUTES les requêtes en même temps (Parallèle)
+        const serverPromises = serversToProcess.map(async (server) => {
+            const serverUrl = server.server_url;
+            const serverName = server.server_name || "Serveur " + server.serverKey;
+            const quality = server.quality || "720";
+            const prefix = `[${server.langTag}] `;
+            const fullName = prefix + serverName;
             
-            // 🌟 1. Vérification si Nakios fournit les sous-titres directement dans le JSON
-            if (data.subtitles && Array.isArray(data.subtitles)) {
-                for (let sub of data.subtitles) {
-                    if (sub.url) {
-                        let lang = (sub.lang || sub.language || "").toLowerCase();
-                        if (subtitleUrl === "" || lang.includes("fr") || lang.includes("fre")) {
-                            subtitleUrl = sub.url.startsWith('/') ? BASE_URL + sub.url : sub.url;
-                        }
+            const serverStartTime = Date.now();
+            let success = false;
+
+            try {
+                if (serverUrl.includes("sendvid")) {
+                    const req = await fetchv2(serverUrl, { "Referer": BASE_URL + "/" }, "GET", null, false, "utf-8");
+                    const html = await req.text();
+                    const mp4Match = html.match(/<source[^>]+src=["']([^"']+\.mp4)["']/i) || html.match(/video_source\s*=\s*["']([^"']+)["']/i);
+                    if (mp4Match) {
+                        streams.push({ title: fullName + " (" + quality + "p)", streamUrl: mp4Match[1], headers: { "Referer": serverUrl } });
+                        extractedNames.push(fullName);
+                        success = true;
                     }
-                }
-            }
-        } catch(e) {
-            failedLinks.push({ server_name: "API Nakios (Crash)", url: apiUrl });
-        }
-        
-        let rawStreams = [];
-        
-        function findStreams(obj, currentName = "Serveur Nakios") {
-            if (obj === null || typeof obj !== 'object') return;
-            
-            if (Array.isArray(obj)) {
-                obj.forEach(item => findStreams(item, currentName));
-                return;
-            }
-            
-            let name = obj.name || obj.title || obj.server || obj.language || obj.lang || currentName;
-            
-            for (const [key, value] of Object.entries(obj)) {
-                let passName = name;
 
-                if (["VF", "VOSTFR", "VFF", "VFQ", "FRENCH", "ENGLISH"].includes(key.toUpperCase())) {
-                    passName = key.toUpperCase();
-                }
-                
-                if (typeof value === 'string') {
-                    let isVideoUrl = value.includes('.m3u8') || value.includes('.mp4') || value.includes('fsvid.lol') || value.includes('vidzy.org');
-                    let isProxyUrl = value.includes('/api/sources/proxy');
-                    let isApiUrl = (value.startsWith('http') || value.startsWith('/')) && ['url', 'link', 'file', 'src'].includes(key.toLowerCase());
+                } else if (serverUrl.includes("sibnet")) {
+                    // 🟢 TON EXTRACTEUR SIBNET AMÉLIORÉ
+                    const req = await fetchv2(serverUrl, { "Referer": BASE_URL + "/" }, "GET", null, true, "windows-1251");
+                    const sibHtml = await req.text();
                     
-                    if (isVideoUrl || isProxyUrl || isApiUrl) {
-                        let finalName = passName;
-                        if (obj.quality && !finalName.includes(obj.quality)) {
-                            finalName += ` - ${obj.quality}`;
+                    const mp4Match = sibHtml.match(/src:\s*["'](\/v\/[^"']+\.mp4)["']/i) || 
+                                     sibHtml.match(/player\.src\s*\(\s*\[\s*\{\s*src\s*:\s*["']([^"']+)["']/i);
+                    
+                    if (mp4Match) {
+                        let streamUrl = mp4Match[1].startsWith("http") ? mp4Match[1] : "https://video.sibnet.ru" + mp4Match[1];
+                        
+                        // 🛠️ DÉBUT DU TEST DE PÉAGE (Avec les logs) 🛠️
+                        try {
+                            console.log("🕵️ SIBNET : Tentative de forcer la redirection...");
+                            
+                            const redirectReq = await fetchv2(streamUrl, {
+                                "Referer": serverUrl,
+                                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+                            }, "HEAD", null, false, "utf-8");
+                            
+                            console.log("👉 SIBNET URL Trouvée :", redirectReq ? redirectReq.url : "Aucune");
+                            
+                            if (redirectReq && redirectReq.url && redirectReq.url !== streamUrl) {
+                                streamUrl = redirectReq.url;
+                                console.log("✅ SIBNET SUCCÈS ! Lien final :", streamUrl);
+                            }
+                        } catch(e) {
+                            console.log("❌ SIBNET ERREUR REDIRECTION :", e.message);
                         }
-                        rawStreams.push({ url: value, name: finalName });
+                        // 🛠️ FIN DU TEST 🛠️
+
+streams.push({ 
+                            title: fullName + " (" + quality + "p)", 
+                            streamUrl: streamUrl, 
+                            headers: { "Referer": serverUrl, "User-Agent": "Mozilla/5.0" } 
+                        });
+                        extractedNames.push(fullName);
+                        success = true;
                     }
-                } else if (typeof value === 'object') {
-                    findStreams(value, passName);
-                }
-            }
-        }
 
-        findStreams(data);
-
-        let uniqueStreams = [];
-        let seenUrls = new Set();
-        for (let item of rawStreams) {
-            if (!seenUrls.has(item.url)) {
-                seenUrls.add(item.url);
-                uniqueStreams.push(item);
-            }
-        }
-        
-        for (let item of uniqueStreams) {
-            let finalUrl = item.url;
-            
-            if (finalUrl.includes('/proxy?url=')) {
-                try {
-                    const matchProxy = finalUrl.match(/[?&]url=([^&]+)/);
-                    if (matchProxy && matchProxy[1]) {
-                        finalUrl = decodeURIComponent(matchProxy[1]);
+                } else if (serverUrl.includes("vidmoly")) {
+                    let fixedVidUrl = serverUrl.replace(/vidmoly\.(to|me|net|ru|is)/i, "vidmoly.biz");
+                    const vidRes = await fetchv2(fixedVidUrl, { "Referer": "https://vidmoly.biz/" }, "GET", null, false, "utf-8");
+                    let finalHtml = await vidRes.text();
+                    if (typeof unpack === 'function' && finalHtml.includes('eval(function')) finalHtml = unpack(finalHtml);
+                    const fileMatch = finalHtml.match(/file\s*:\s*["']([^"']+\.(?:m3u8|mp4)[^"']*)["']/i) || finalHtml.match(/["'](https?:\/\/[^"']+\.(?:m3u8|mp4)[^"']*)["']/i);
+                    if (fileMatch) {
+                        streams.push({ title: fullName + " (" + quality + "p)", streamUrl: fileMatch[1], headers: { "Referer": "https://vidmoly.biz/" } });
+                        extractedNames.push(fullName);
+                        success = true;
                     }
-                } catch(e) {}
-            } 
-            else if (finalUrl.startsWith('/')) {
-                finalUrl = `${API_URL}${finalUrl}`;
-            }
 
-            let streamHeaders = {
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
-                "Origin": BASE_URL,
-                "Referer": `${BASE_URL}/`
-            };
+                } else if (serverUrl.includes("voe")) {
+                    const voeRes = await fetchv2(serverUrl, { "Referer": BASE_URL + "/" }, "GET", null, false, "utf-8");
+                    const streamUrl = voeExtractor(await voeRes.text());
+                    if (streamUrl) {
+                        streams.push({ title: fullName + " (" + quality + "p)", streamUrl: streamUrl, headers: { "Referer": serverUrl } });
+                        extractedNames.push(fullName);
+                        success = true;
+                    }
 
-            let valLower = finalUrl.toLowerCase();
-
-            if (valLower.includes('xalaflix')) {
-                streamHeaders["Origin"] = "https://purstream.art";
-                streamHeaders["Referer"] = "https://purstream.art/";
-            }
-            else if (valLower.includes('fsvid') || valLower.includes('vidzy') || valLower.includes('darkibox') || valLower.includes('fastflux')) {
-                try {
-                    const urlObj = new URL(finalUrl);
-                    streamHeaders["Origin"] = urlObj.origin;
-                    streamHeaders["Referer"] = urlObj.origin + "/";
-                } catch(e) {}
-            }
-
-            streams.push({
-                title: item.name, 
-                streamUrl: finalUrl,
-                headers: streamHeaders
-            });
-
-            // 🛑 2. EXTRACTION DES SOUS-TITRES DEPUIS LES FICHIERS .M3U8 🛑
-            if (subtitleUrl === "" && finalUrl.includes('.m3u8')) {
-                try {
-                    const m3u8Res = await soraFetch(finalUrl, { headers: streamHeaders });
-                    const m3u8Text = await m3u8Res.text();
-
-                    const baseUrl = finalUrl.substring(0, finalUrl.lastIndexOf('/') + 1);
-                    const lines = m3u8Text.split('\n');
-
-                    for (const line of lines) {
-                        if (line.includes('TYPE=SUBTITLES')) {
-                            const uriMatch = line.match(/URI="([^"]+)"/);
-                            const nameMatch = line.match(/NAME="([^"]+)"/);
-                            const langMatch = line.match(/LANGUAGE="([^"]+)"/i);
-
-                            if (uriMatch) {
-                                let uri = uriMatch[1];
-                                let vttUrl = uri.startsWith('http') ? uri : `${baseUrl}${uri}`;
-                                
-                                // Astuce pour les dossiers de type Xalaflix/Purstream
-                                if (!uri.includes('.') && !uri.startsWith('http')) {
-                                    vttUrl = `${baseUrl}${uri.replace(/\/$/, '')}/subtitle.vtt`;
-                                }
-
-                                let langName = nameMatch ? nameMatch[1] : (langMatch ? langMatch[1] : "Inconnu");
-                                let isFrench = langName.toLowerCase().includes("fra") || langName.toLowerCase().includes("fre") || langName.toLowerCase().includes("vf");
-                                let isForced = langName.toLowerCase().includes("forced");
-
-                                if (subtitleUrl === "") {
-                                    subtitleUrl = vttUrl; 
-                                } else if (isFrench && !isForced) {
-                                    subtitleUrl = vttUrl;
-                                }
+                } else if (serverUrl.includes("dood") || serverUrl.includes("doply") || serverUrl.includes("myvidplay")) {
+                    let res = await fetchv2(serverUrl, { headers: { "Referer": BASE_URL + "/" } }, "GET", null, false, "utf-8");
+                    if (res) {
+                        let html = await res.text();
+                        const passMd5Match = html.match(/\/pass_md5\/([^"']+)/i);
+                        const tokenMatch = html.match(/[?&]token=([a-z0-9]+)[&'"]/i);
+                        if (passMd5Match && tokenMatch) {
+                            const domain = serverUrl.match(/^https?:\/\/[^\/]+/)[0]; 
+                            const md5Url = domain + '/pass_md5/' + passMd5Match[1];
+                            let md5Res = await fetchv2(md5Url, { headers: { "Referer": serverUrl } }, "GET", null, false, "utf-8");
+                            if (md5Res) {
+                                let videoBaseUrl = await md5Res.text();
+                                videoBaseUrl = videoBaseUrl.trim(); 
+                                const makeId = (length) => {
+                                    let result = '';
+                                    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+                                    for (let i = 0; i < length; i++) result += chars.charAt(Math.floor(Math.random() * chars.length));
+                                    return result;
+                                };
+                                let finalUrl = `${videoBaseUrl}${makeId(10)}?token=${tokenMatch[1]}&expiry=${Date.now()}`;
+                                streams.push({ title: fullName + " (" + quality + "p)", streamUrl: finalUrl, headers: { "Referer": domain + "/", "User-Agent": "Mozilla/5.0" } });
+                                extractedNames.push(fullName);
+                                success = true;
                             }
                         }
                     }
-                } catch (e) { }
+                } else if (serverUrl.includes("daisukianime.xyz")) {
+                    let directUrl = null;
+                    const idMatch = serverUrl.match(/[?&]id=([^&]+)/);
+                    if (idMatch) {
+                        const vidId = idMatch[1];
+                        let apiUrl = null;
+                        if (serverUrl.includes("embeds.html")) apiUrl = `https://cdn2.daisukianime.xyz/sib/${vidId}?epid=null`;
+                        else if (serverUrl.includes("embedsen.html")) apiUrl = `https://cdn2.daisukianime.xyz/azz/${vidId}?epid=null`;
+
+                        if (apiUrl) {
+                            const apiRes = await fetchv2(apiUrl, { "Referer": serverUrl }, "GET", null, false, "utf-8");
+                            const apiData = JSON.parse(await apiRes.text());
+                            if (apiData.sources && apiData.sources.length > 0) directUrl = apiData.sources[0].file;
+                        }
+                    }
+
+                    if (!directUrl) {
+                        const req = await fetchv2(serverUrl, { "Referer": BASE_URL + "/" }, "GET", null, false, "utf-8");
+                        const html = await req.text();
+                        const match = html.match(/sources:\s*\[\s*{\s*file:\s*['"]([^'"]+)['"]/i) 
+                                   || html.match(/["'](https?:\/\/[^"']+\.m3u8[^"']*)["']/i) 
+                                   || html.match(/["'](https?:\/\/[^"']+\.mp4[^"']*)["']/i);
+                        if (match) directUrl = match[1];
+                    }
+
+                    if (directUrl) {
+                        streams.push({ title: fullName + " (" + quality + "p)", streamUrl: directUrl, headers: { "Referer": serverUrl } });
+                        extractedNames.push(fullName);
+                        success = true;
+                    }
+                }
+            } catch (e) {
+                console.log(`[Anime-Kami] 🚨 CRASH sur ${fullName} : ${e.message}`);
+            }
+
+            const serverDuration = (Date.now() - serverStartTime) / 1000;
+            console.log(`[Anime-Kami] ⏱️ ${fullName} => ${serverDuration.toFixed(2)}s | Succès : ${success ? "✅" : "❌"}`);
+            
+            serverTimings.push({ nom: fullName, temps_secondes: serverDuration, statut: success ? "SUCCÈS" : "ÉCHEC" });
+
+            if (!success) {
+                failedLinks.push({ server_name: fullName, url: serverUrl, timeout_seconds: serverDuration });
+            }
+        });
+
+        // 🟢 C'EST ICI LA MAGIE : On attend que toutes les requêtes parallèles se terminent
+        await Promise.all(serverPromises);
+
+        const totalTime = (Date.now() - globalStartTime) / 1000;
+        console.log(`[Anime-Kami] 🏁 Temps total d'extraction : ${totalTime.toFixed(2)}s`);
+
+        let safeStreams = streams.filter(s => s.streamUrl.includes('.mp4') || s.streamUrl.includes('.m3u8') || s.streamUrl.includes('token='));
+        let uniqueStreams = [];
+        let seenUrls = new Set();
+        for (let s of safeStreams) {
+            if (!seenUrls.has(s.streamUrl)) { 
+                seenUrls.add(s.streamUrl); 
+                uniqueStreams.push(s); 
             }
         }
 
-        if (streams.length === 0 && failedLinks.length === 0) {
-            failedLinks.push({ server_name: "API Nakios (Vide)", url: apiUrl });
-        }
-
-        // 📡 Log Supabase 
-        sendSupabaseLog("Nakios", "PLAYER", { 
-            media_title: mediaTitle, 
-            media_url: finalMediaUrl, 
-            type: isMovie ? "FILM" : "SERIE",
-            season_number: isMovie ? "N/A" : seasonNumber,
-            ep_number: episodeNumber,
-            streams_found: streams.length,
-            subtitles_found: subtitleUrl !== "", // 🌟 STATISTIQUE SOUS-TITRES AJOUTÉE
-            execution_time_ms: Date.now() - startTime,
-            servers: streams.map(s => ({ nom: s.title, lien: s.streamUrl }))
+        sendSupabaseLog("Anime-Kami", "PLAYER", { 
+            anime_url: url, 
+            ep_number: epNumber,
+            temps_total_secondes: totalTime,
+            streams_found: uniqueStreams.length,
+            benchmarks: serverTimings
         });
 
         if (failedLinks.length > 0) {
-            sendSupabaseLog("Nakios", "UNSUPPORTED_HOSTS", {
-                media_title: mediaTitle,
-                media_url: finalMediaUrl,
-                type: isMovie ? "FILM" : "SERIE",
-                season_number: isMovie ? "N/A" : seasonNumber,
-                ep_number: episodeNumber,
-                failed_count: failedLinks.length,
-                failed_links: failedLinks
+            sendSupabaseLog("Anime-Kami", "UNSUPPORTED_HOSTS", {
+                anime_url: url, ep_number: epNumber, failed_count: failedLinks.length, failed_links: failedLinks
             });
         }
 
-        // 🌟 RETOUR AVEC LES SOUS-TITRES
-        return JSON.stringify({ streams, subtitles: subtitleUrl });
+        return JSON.stringify(uniqueStreams.length > 0 ? { type: "servers", streams: uniqueStreams } : { type: "none" });
 
-    } catch (error) {
-        sendSupabaseLog("Nakios", "ERROR", { media_url: finalMediaUrl, error_message: String(error) });
-        return JSON.stringify({ streams: [], subtitles: "" });
+    } catch (e) {
+        console.log("[Anime-Kami] Erreur globale extractStreamUrl : " + e);
+        return JSON.stringify({ type: "none" });
     }
 }
 
-async function soraFetch(url, options = { headers: {}, method: 'GET', body: null, encoding: 'utf-8' }) {
+// ==========================================
+// 🛠️ DÉCRYPTEURS UTILITAIRES
+// ==========================================
+function voeExtractor(html) {
     try {
-        if (typeof fetchv2 !== 'undefined') {
-            return await fetchv2(
-                url,
-                options.headers ?? {},
-                options.method ?? 'GET',
-                options.body ?? null,
-                true,
-                options.encoding ?? 'utf-8'
-            );
-        } else {
-            return await fetch(url, options);
-        }
-    } catch(e) {
-        try {
-            return await fetch(url, options);
-        } catch(error) {
-            return null;
-        }
-    }
+        const jsonScriptMatch = html.match(/<script[^>]+type=["']application\/json["'][^>]*>([\s\S]*?)<\/script>/i);
+        if (!jsonScriptMatch) return null;
+        let data = JSON.parse(jsonScriptMatch[1].trim());
+        let step1 = data[0].replace(/[a-zA-Z]/g, c => String.fromCharCode((c <= "Z" ? 90 : 122) >= (c = c.charCodeAt(0) + 13) ? c : c - 26));
+        let step2 = step1; ["@$", "^^", "~@", "%?", "*~", "!!", "#&"].forEach(pat => step2 = step2.split(pat).join(""));
+        const _atob = (str) => typeof atob === 'function' ? atob(str) : Buffer.from(str, 'base64').toString('binary');
+        let step3 = _atob(step2);
+        let step4 = step3.split("").map((c) => String.fromCharCode(c.charCodeAt(0) - 3)).join("");
+        let step5 = step4.split("").reverse().join("");
+        let step6 = _atob(step5);
+        let result = JSON.parse(step6);
+        return result.direct_access_url || (result.source && result.source.find(s => s.direct_access_url)?.direct_access_url) || null;
+    } catch (e) { return null; }
 }

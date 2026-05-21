@@ -1,125 +1,101 @@
-function cleanTitle(title) {
-    return title
-        .replace(/&#8217;/g, "'")  
-        .replace(/&#8211;/g, "-")  
-        .replace(/&#[0-9]+;/g, ""); 
-}
-
 async function searchResults(keyword) {
     const results = [];
-    const response = await fetchv2(`https://luciferdonghua.in/?s=${keyword}`);
-    const html = await response.text();
-
-    const regex = /<article class="bs"[^>]*>.*?<a href="([^"]+)"[^>]*>.*?<img src="([^"]+)"[^>]*>.*?<h2[^>]*>(.*?)<\/h2>/gs;
-
-    let match;
-    while ((match = regex.exec(html)) !== null) {
-        results.push({
-            title: cleanTitle(match[3].trim()),
-            image: match[2].trim(),
-            href: match[1].trim()
+    const headers = {
+        'Content-Type': 'application/json',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+    };
+    
+    try {
+        if (keyword.includes('tiktok.com')) {
+            const detailResponse = await fetchv2(`https://tikwm.com/api/?url=${encodeURIComponent(keyword)}`);
+            const detailData = await detailResponse.json();
+            
+            if (detailData.code === 0) {
+                results.push({
+                    title: detailData.data.title.trim(),
+                    image: detailData.data.cover.trim(),
+                    href: detailData.data.play.trim()
+                });
+            }
+            return JSON.stringify(results);
+        }
+        
+        const body = JSON.stringify({
+            keywords: keyword,
+            count: 20,
+            cursor: 0
         });
-    }
+        
+        const response = await fetchv2('https://tikwm.com/api/feed/search', headers, "POST", body);
+        const data = await response.json();
 
-    return JSON.stringify(results);
+        for (const video of data.data.videos) {
+            const videoUrl = `https://www.tiktok.com/@${video.author.unique_id}/video/${video.video_id}`;
+            const detailResponse = await fetchv2(`https://tikwm.com/api/?url=${encodeURIComponent(videoUrl)}`);
+            const detailData = await detailResponse.json();
+
+            if (detailData.code === 0) {
+                results.push({
+                    title: detailData.data.title.trim(),
+                    image: detailData.data.cover.trim(),
+                    href: detailData.data.play.trim()
+                });
+            }
+        }
+
+        return JSON.stringify(results);
+    } catch (err) {
+        console.error(err);
+        return JSON.stringify([{
+            title: "Please wait",
+            image: "Error",
+            href: "Error"
+        }]);
+    }
 }
 
 async function extractDetails(url) {
-    const results = [];
-    const response = await fetchv2(url);
-    const html = await response.text();
-
-    const match = html.match(/<div class="entry-content"[^>]*>([\s\S]*?)<\/div>/);
-
-    let description = "N/A";
-    if (match) {
-        description = match[1]
-            .replace(/<[^>]+>/g, '') 
-            .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(code)) 
-            .replace(/&quot;/g, '"') 
-            .replace(/&apos;/g, "'") 
-            .replace(/&amp;/g, "&") 
-            .trim();
-    }
-
-    results.push({
-        description: description,
-        aliases: 'N/A',
-        airdate: 'N/A'
-    });
-
-    return JSON.stringify(results);
-}
-
-async function extractEpisodes(url) {
-    const results = [];
-    const response = await fetchv2(url);
-    const html = await response.text();
-
-    const regex = /<li data-index="\d+">[\s\S]*?<a href="([^"]+)">/g;
-
-    let match;
-    let count = 1;
-    while ((match = regex.exec(html)) !== null) {
-        results.push({
-            href: match[1].trim(),
-            number: count
-        });
-        count++;
-    }
-
-    results.reverse();
-    return JSON.stringify(results.reverse());
-}
-
-
-async function extractStreamUrl(url) {
     try {
         const response = await fetchv2(url);
         const html = await response.text();
 
-        const iframeMatch = html.match(/<meta itemprop="embedUrl" content="https?:\/\/geo\.dailymotion\.com\/player\/[^?]+\.html\?video=([a-zA-Z0-9]+)"/);
-        if (!iframeMatch) return JSON.stringify({ streams: [], subtitles: "" });
+        return JSON.stringify([{
+            description: "N/A",
+            aliases: "N/A",
+            airdate: "N/A"
+        }]);
+    } catch (err) {
+        return JSON.stringify([{
+            description: "Error",
+            aliases: "Error",
+            airdate: "Error"
+        }]);
+    }
+}
 
-        const videoId = iframeMatch[1];
+async function extractEpisodes(url) {
+    const results = [];
+    try {
 
-        const metaRes = await fetchv2(`https://www.dailymotion.com/player/metadata/video/${videoId}`);
-        const metaJson = await metaRes.json();
-        const hlsLink = metaJson.qualities?.auto?.[0]?.url;
-        if (!hlsLink) return JSON.stringify({ streams: [], subtitles: "" });
+            results.push({
+                href: url,
+                number: 1
+            });
 
-        async function getBestHls(hlsUrl) {
-            try {
-                const res = await fetchv2(hlsUrl);
-                const text = await res.text();
-                const regex = /#EXT-X-STREAM-INF:.*RESOLUTION=(\d+)x(\d+).*?\n(https?:\/\/[^\n]+)/g;
-                const streams = [];
-                let match;
-                while ((match = regex.exec(text)) !== null) {
-                    streams.push({ width: parseInt(match[1]), height: parseInt(match[2]), url: match[3] });
-                }
-                if (streams.length === 0) return hlsUrl;
-                streams.sort((a, b) => b.height - a.height);
-                return streams[0].url;
-            } catch {
-                return hlsUrl;
-            }
-        }
 
-        const bestHls = await getBestHls(hlsLink);
+        return JSON.stringify(results);
+    } catch (err) {
+        return JSON.stringify([{
+            href: "Error",
+            number: "Error"
+        }]);
+    }
+}
 
-        const subtitles = metaJson.subtitles?.data?.['en-auto']?.urls?.[0] || "";
-
-        const result = {
-            streams: ["english", bestHls],
-            subtitles: subtitles
-        };
-
-        console.log("Extracted stream result:" + JSON.stringify(result));
-
-        return bestHls;
-    } catch {
-        console.log("Extracted stream result:" + JSON.stringify(empty));
-        return JSON.stringify("empty");
+async function extractStreamUrl(url) {
+    try {
+        return url;
+    } catch (err) {
+        return "https://error.org/";
     }
 }

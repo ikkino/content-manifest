@@ -1,25 +1,24 @@
 {
-  "sourceName": "AnimeVost",
-  "iconUrl": "https://git.luna-app.eu/emp0ry/sources/raw/branch/main/animevost/logo.png",
+  "sourceName": "OnWave",
+  "iconUrl": "https://onwavedub.org/logo.png",
   "author": {
     "name": "emp0ry",
     "icon": "https://avatars.githubusercontent.com/u/64217088"
   },
-  "version": "1.0.3",
+  "version": "1.0.2",
   "language": "Russian",
-  "streamType": "MP4",
-  "quality": "720p",
-  "baseUrl": "https://api.animevost.org/v1/",
-  "searchBaseUrl": "https://api.animevost.org/v1/search?name=%s",
+  "streamType": "HLS",
+  "quality": "1080p",
+  "baseUrl": "https://onwavedub.org/api/v1",
+  "searchBaseUrl": "https://onwavedub.org/api/v1/catalog?query=%s",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Russian/005/source.js",
   "asyncJS": true,
-  "streamAsyncJS": false,
+  "streamAsyncJS": true,
   "softsub": false,
   "type": "anime",
   "downloadSupport": false,
   "supportsMojuru": true,
   "supportsDartotsu": true,
   "supportsSora": true,
-  "supportsLuna": true,
-  "id": "mod_311459984"
+  "supportsLuna": true
 }
