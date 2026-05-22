@@ -1,53 +1,24 @@
 async function searchResults(keyword) {
     const results = [];
-    const headers = {
-        'Content-Type': 'application/json',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-    };
-    
+    const postData = `{"searchTerm":"${keyword}","page":1,"limit":100}`;
     try {
-        if (keyword.includes('tiktok.com')) {
-            const detailResponse = await fetchv2(`https://tikwm.com/api/?url=${encodeURIComponent(keyword)}`);
-            const detailData = await detailResponse.json();
-            
-            if (detailData.code === 0) {
-                results.push({
-                    title: detailData.data.title.trim(),
-                    image: detailData.data.cover.trim(),
-                    href: detailData.data.play.trim()
-                });
-            }
-            return JSON.stringify(results);
-        }
-        
-        const body = JSON.stringify({
-            keywords: keyword,
-            count: 20,
-            cursor: 0
-        });
-        
-        const response = await fetchv2('https://tikwm.com/api/feed/search', headers, "POST", body);
+        const response = await fetchv2("https://senshi.live/anime/filter", { "Content-Type": "application/json", "Referer": "https://senshi.live/" }, "POST", postData);
         const data = await response.json();
 
-        for (const video of data.data.videos) {
-            const videoUrl = `https://www.tiktok.com/@${video.author.unique_id}/video/${video.video_id}`;
-            const detailResponse = await fetchv2(`https://tikwm.com/api/?url=${encodeURIComponent(videoUrl)}`);
-            const detailData = await detailResponse.json();
-
-            if (detailData.code === 0) {
+        if (data.data && Array.isArray(data.data)) {
+            for (const item of data.data) {
                 results.push({
-                    title: detailData.data.title.trim(),
-                    image: detailData.data.cover.trim(),
-                    href: detailData.data.play.trim()
+                    title: item.title,
+                    image: "https://senshi.live" + item.anime_picture,
+                    href: "https://senshi.live/anime/" + item.id
                 });
             }
         }
 
         return JSON.stringify(results);
     } catch (err) {
-        console.error(err);
         return JSON.stringify([{
-            title: "Please wait",
+            title: "Error",
             image: "Error",
             href: "Error"
         }]);
@@ -57,12 +28,12 @@ async function searchResults(keyword) {
 async function extractDetails(url) {
     try {
         const response = await fetchv2(url);
-        const html = await response.text();
+        const data = await response.json();
 
         return JSON.stringify([{
-            description: "N/A",
-            aliases: "N/A",
-            airdate: "N/A"
+            description: data.ani_description,
+            aliases: data.synonyms,
+            airdate: data.created_at
         }]);
     } catch (err) {
         return JSON.stringify([{
@@ -74,14 +45,20 @@ async function extractDetails(url) {
 }
 
 async function extractEpisodes(url) {
+    const ID = url.split("/").pop();
     const results = [];
     try {
+        const response = await fetchv2("https://senshi.live/episodes/" + ID, {"Referer": "https://senshi.live/"});
+        const data = await response.json();
 
-            results.push({
-                href: url,
-                number: 1
-            });
-
+        if (Array.isArray(data)) {
+            for (const ep of data) {
+                results.push({
+                    href: "https://senshi.live/episode-embeds/" + ep.mal_id + "/" + ep.ep_id,
+                    number: ep.ep_id
+                });
+            }
+        }
 
         return JSON.stringify(results);
     } catch (err) {
@@ -94,8 +71,31 @@ async function extractEpisodes(url) {
 
 async function extractStreamUrl(url) {
     try {
-        return url;
+        const response = await fetchv2(url, {"Referer": "https://senshi.live/"});
+        const data = await response.json();
+
+        const streams = [];
+        const count = {};
+        for (const item of data) {
+            const status = item.status;
+            if (!count[status]) count[status] = 0;
+            count[status]++;
+            const title = count[status] > 1 ? `${status} ${count[status]}` : status;
+            streams.push({
+                title: title,
+                streamUrl: item.url,
+                headers: { "Referer": "https://senshi.live/" }
+            });
+        }
+
+        return JSON.stringify({
+            streams: streams,
+            subtitle: ""
+        });
     } catch (err) {
-        return "https://error.org/";
+        return JSON.stringify({
+            streams: [],
+            subtitle: ""
+        });
     }
 }
