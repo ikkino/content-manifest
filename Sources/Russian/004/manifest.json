@@ -1,24 +1,20 @@
 {
-  "sourceName": "AnimeVost",
-  "iconUrl": "https://git.luna-app.eu/emp0ry/sources/raw/branch/main/animevost/logo.png",
+  "sourceName": "Anime-Portal",
+  "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/animeportal/icon.png",
   "author": {
-    "name": "emp0ry",
-    "icon": "https://avatars.githubusercontent.com/u/64217088"
+    "name": "ibro",
+    "icon": "https://git.luna-app.eu/ibro/services/raw/branch/main/profile.jpg",
+    "url": "https://github.com/xibrox"
   },
-  "version": "1.0.3",
+  "version": "1.0.4",
   "language": "Russian",
-  "streamType": "MP4",
-  "quality": "720p",
-  "baseUrl": "https://api.animevost.org/v1/",
-  "searchBaseUrl": "https://api.animevost.org/v1/search?name=%s",
+  "streamType": "HLS",
+  "quality": "1080p",
+  "baseUrl": "https://anime-portal.su/",
+  "searchBaseUrl": "https://anime-portal.su/?do=search&subaction=search&search_start=0&full_search=0&story=%s",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Russian/004/source.js",
-  "asyncJS": true,
-  "streamAsyncJS": false,
-  "softsub": false,
   "type": "anime",
-  "downloadSupport": false,
-  "supportsMojuru": true,
-  "supportsDartotsu": true,
-  "supportsSora": true,
-  "supportsLuna": true
+  "asyncJS": true,
+  "softsub": true,
+  "id": "mod_539148115"
 }

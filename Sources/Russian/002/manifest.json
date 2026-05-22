@@ -1,16 +1,16 @@
 {
-  "sourceName": "AniDub",
-  "iconUrl": "https://anidub.org/templates/CinemaBlue/images/jutfun.png",
+  "sourceName": "AniLiberty",
+  "iconUrl": "https://aniliberty.top/static/favicon-96x96.png",
   "author": {
     "name": "emp0ry",
     "icon": "https://avatars.githubusercontent.com/u/64217088"
   },
-  "version": "1.0.2",
+  "version": "1.0.6",
   "language": "Russian",
-  "streamType": "MP4",
-  "quality": "4K",
-  "baseUrl": "https://anidub.org/",
-  "searchBaseUrl": "https://anidub.org/index.php?do=search&subaction=search&story=%s",
+  "streamType": "HLS",
+  "quality": "1080p",
+  "baseUrl": "https://aniliberty.top/api/v1/",
+  "searchBaseUrl": "https://aniliberty.top/api/v1/app/search/releases?query=%s",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Russian/002/source.js",
   "asyncJS": true,
   "streamAsyncJS": true,
@@ -20,5 +20,6 @@
   "supportsMojuru": true,
   "supportsDartotsu": true,
   "supportsSora": true,
-  "supportsLuna": true
+  "supportsLuna": true,
+  "id": "mod_1819011793"
 }
