@@ -1,146 +1,128 @@
-// Search, Details and Episodes function are from ibro's module.
-
 async function searchResults(keyword) {
+    const results = [];
     try {
-        const encodedKeyword = encodeURIComponent(keyword);
-        const responseText = await soraFetch(`https://kisskh.co/api/DramaList/Search?q=${encodedKeyword}&type=0`);
-        const data = await responseText.json();
+        const response = await fetchv2("https://api3.devcorp.me/vod/search?page=1&keyword=" + encodeURIComponent(keyword.toLowerCase()));
+        const encrypted = await response.text();
 
-        const transformedResults = data.map(result => {
-            const editedTitle = result.title.replace(/[\s()']/g, '-');
+        const headers = { "Content-Type": "application/json" };
+        const postData = JSON.stringify({ text: encrypted });
 
-            return {
-                title: result.title,
-                image: result.thumbnail,
-                href: `https://kisskh.co/Drama/${editedTitle}?id=${result.id}`
-            };
-        });
-
-        return JSON.stringify(transformedResults);
-    } catch (error) {
-        console.log('Fetch error in searchResults:', error);
-        return JSON.stringify([{ title: 'Error', image: '', href: '' }]);
+        const decryptedResponse = await fetchv2("https://enc-dec.app/api/dec-onetouchtv", headers, "POST", postData);
+        const decryptedData = await decryptedResponse.json();
+        console.log(JSON.stringify(decryptedData));
+        if (decryptedData.status === 200 && Array.isArray(decryptedData.result)) {
+            for (const item of decryptedData.result) {
+                results.push({
+                    title: item.title || "Unknown",
+                    image: item.image || "",
+                    href: item.id
+                });
+            }
+        }
+        console.log(results);
+        return JSON.stringify(results);
+    } catch (err) {
+        console.error(err);
+        return JSON.stringify([{ title: "Error", image: "Error", href: "Error" }]);
     }
 }
 
-async function extractDetails(url) {
+async function extractDetails(ID) {
     try {
-        const match = url.match(/https:\/\/kisskh\.co\/Drama\/([^\/]+)\?id=([^\/]+)/);
-        if (!match) throw new Error("Invalid URL format");
+        const response = await fetchv2("https://api3.devcorp.me/web/vod/" + ID + "/detail");
+        const encrypted = await response.text();
 
-        const showId = match[2];
-        const responseText = await soraFetch(`https://kisskh.co/api/DramaList/Drama/${showId}?isq=false`);
-        const data = await responseText.json();
+        const headers = { "Content-Type": "application/json" };
+        const postData = JSON.stringify({ text: encrypted });
 
-        const transformedResults = [{
-            description: data.description || 'No description available',
-            aliases: ``,
-            airdate: `Released: ${data.releaseDate ? data.releaseDate : 'Unknown'}`
-        }];
+        const decryptedResponse = await fetchv2("https://enc-dec.app/api/dec-onetouchtv", headers, "POST", postData);
+        const decryptedText = await decryptedResponse.text();
+        const decryptedData = JSON.parse(decryptedText);
 
-        return JSON.stringify(transformedResults);
-    } catch (error) {
-        console.log('Details error:', error);
+        const result = decryptedData.result;
+
         return JSON.stringify([{
-            description: 'Error loading description',
-            aliases: 'Duration: Unknown',
-            airdate: 'Aired/Released: Unknown'
+            description: result.description || "N/A",
+            aliases: Array.isArray(result.otherTitles) ? result.otherTitles.join(", ") : "N/A",
+            airdate: result.year || "N/A"
+        }]);
+    } catch (err) {
+        return JSON.stringify([{
+            description: "Error",
+            aliases: "Error",
+            airdate: "Error"
         }]);
     }
 }
 
-async function extractEpisodes(url) {
+async function extractEpisodes(ID) {
+    const results = [];
     try {
-        const match = url.match(/https:\/\/kisskh\.co\/Drama\/([^\/]+)\?id=([^\/]+)/);
-        if (!match) throw new Error("Invalid URL format");
-        const showTitle = match[1];
-        const showId = match[2];
+        const response = await fetchv2("https://api3.devcorp.me/web/vod/" + ID + "/detail");
+        const encrypted = await response.text();
 
-        const showResponseText = await soraFetch(`https://kisskh.co/api/DramaList/Drama/${showId}?isq=false`);
-        const showData = await showResponseText.json();
+        const headers = { "Content-Type": "application/json" };
+        const postData = JSON.stringify({ text: encrypted });
 
-        const episodes = showData.episodes?.map(episode => ({
-            href: `https://kisskh.co/Drama/${showTitle}/Episode-${episode.number}?id=${showId}&ep=${episode.id}`,
-            number: episode.number,
-            title: episode.name || `Episode ${episode.number}` ||  ""
-        }));
+        const decryptedResponse = await fetchv2("https://enc-dec.app/api/dec-onetouchtv", headers, "POST", postData);
+        const decryptedText = await decryptedResponse.text();
+        const decryptedData = JSON.parse(decryptedText);
 
-        const reversedEpisodes = episodes.reverse();
+        const episodes = decryptedData.result.episodes || [];
 
-        console.log(reversedEpisodes);
-    
-        return JSON.stringify(reversedEpisodes);
-    } catch (error) {
-        console.log('Fetch error in extractEpisodes:', error);
-        return JSON.stringify([]);
-    }    
-}
-
-async function extractStreamUrl(url) {
-    try {
-        const episodeID = url.split('&ep=')[1];
-
-        const decryptedStreamResponse = await soraFetch(`https://enc-dec.app/api/enc-kisskh?text=${episodeID}&type=vid`);
-        const decryptedStreamData = await decryptedStreamResponse.json();
-        const streamkKey = decryptedStreamData.result;
-
-        const decryptedSubtitlesResponse = await soraFetch(`https://enc-dec.app/api/enc-kisskh?text=${episodeID}&type=sub`);
-        const decryptedSubtitlesData = await decryptedSubtitlesResponse.json();
-        const subtitlesKey = decryptedSubtitlesData.result;
-
-        const streamResponse = await soraFetch(`https://kisskh.co/api/DramaList/Episode/${episodeID}.png?err=false&ts=null&time=null&kkey=${streamkKey}`);
-        const streamData = await streamResponse.json();
-        const streamUrl = streamData.Video;
-
-        const subtitlesResponse = await soraFetch(`https://kisskh.co/api/Sub/${episodeID}?kkey=${subtitlesKey}`);
-        const subtitlesData = await subtitlesResponse.json();
-        const englishSubtitle = subtitlesData.find(sub => sub.land === "en");
-        const englishSubtitleUrl = englishSubtitle?.src || "none";
-
-		let formattedSubtitleUrl = englishSubtitleUrl;
-		if (/\?v=/.test(englishSubtitleUrl)) {
-			formattedSubtitleUrl = "https://kisskh-five.vercel.app/api/proxy?url=" + encodeURIComponent(englishSubtitleUrl);
-		}
-
-        if (streamUrl) {
-            const results = {
-                streams: [{
-                    title: "Stream",
-                    streamUrl,  
-                    headers: {
-                        "Referer": "https://kisskh.co/",
-                        "Origin": "https://kisskh.co"
-                    },
-                }],
-            subtitles: formattedSubtitleUrl
-            }
-
-            return JSON.stringify(results);
-        } else {
-            return "";
+        for (const ep of episodes) {
+            results.push({
+                href: ep.id,
+                number: parseInt(ep.episode, 10)
+            });
         }
-    } catch (error) {
-        console.log('Fetch error in extractStreamUrl:', error);
-        return null;
+
+        return JSON.stringify(results.reverse());
+    } catch (err) {
+        return JSON.stringify([{ href: "Error", number: "Error" }]);
     }
 }
 
-async function soraFetch(url, options = { headers: {}, method: 'GET', body: null, encoding: 'utf-8' }) {
+async function extractStreamUrl(href) {
     try {
-        return await fetchv2(
-            url,
-            options.headers ?? {},
-            options.method ?? 'GET',
-            options.body ?? null,
-            true,
-            options.encoding ?? 'utf-8'
-        );
-    } catch(e) {
-        try {
-            return await fetch(url, options);
-        } catch(error) {
-            return null;
-        }
+        const parts = href.split("-episode-");
+        const id = parts[0];
+        const episodeNumber = parts[1];
+
+        const response = await fetchv2("https://api3.devcorp.me/web/vod/" + id + "/episode/" + episodeNumber);
+        const encrypted = await response.text();
+
+        const headers = { "Content-Type": "application/json" };
+        const postData = JSON.stringify({ text: encrypted });
+
+        const decryptedResponse = await fetchv2("https://enc-dec.app/api/dec-onetouchtv", headers, "POST", postData);
+        const decryptedText = await decryptedResponse.text();
+        const decryptedData = JSON.parse(decryptedText);
+
+        const sources = decryptedData.result.sources;
+        const tracks = decryptedData.result.track;
+
+        const stream = sources.find(s => s.url.includes(".mp4") || s.url.includes(".m3u8"));
+        const subtitle = tracks.find(t => t.name && t.name.toLowerCase().includes("english"));
+        
+        return JSON.stringify({
+            streams: [{
+                title: "Default",
+                streamUrl: stream ? stream.url : "https://error.org/",
+                headers: stream ? stream.headers : {}
+            }],
+            subtitle: subtitle ? subtitle.file : null
+        });
+    } catch (err) {
+        return JSON.stringify({
+            streams: [{
+                title: "Error",
+                streamUrl: "https://error.org/",
+                headers: {}
+            }],
+            subtitle: null
+        });
     }
 }
+
 

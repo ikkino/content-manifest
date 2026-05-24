@@ -245,8 +245,6 @@ async function searchResults(keyword) {
             const image = item.coverImage?.large || item.coverImage?.medium || "https://via.placeholder.com/200x300.png?text=No+Poster";
             
             results.push({ title: title, image: image, href: `miruro://${id}` });
-
-           
         }
 
         sendSupabaseLog("Miruro", "SEARCH", { 
@@ -266,7 +264,6 @@ async function searchResults(keyword) {
 async function extractDetails(url) {
     console.log(`[Details] 📖 Loading info for : ${url}`);
     
-    // Convertir l'URL interne en URL publique pour Supabase
     const id = url.replace('miruro://', '');
     const finalMediaUrl = `${BASE_URL}/watch?id=${id}`;
     
@@ -335,7 +332,7 @@ async function extractEpisodes(url) {
 async function extractStreamUrl(url) {
     console.log(`[Player] 🎬 Video extraction started for : ${url}`);
     let startTime = Date.now(); 
-    let finalMediaUrl = url; // Fallback par défaut
+    let finalMediaUrl = url; 
     let epNumber = 1;
     
     try {
@@ -343,7 +340,6 @@ async function extractStreamUrl(url) {
         const anilistId = parts[0];
         epNumber = parts.length > 2 ? parts[2] : parts[1];
         
-        // 🌟 CORRECTION WEBHOOK: On génère la VRAIE url du site pour les logs Supabase
         const watchReferer = `${BASE_URL}/watch/${anilistId}/${epNumber}?ep=${epNumber}`;
         finalMediaUrl = watchReferer;
 
@@ -385,7 +381,6 @@ async function extractStreamUrl(url) {
 
         if (dynamicConfigs.length === 0) {
             console.log(`[Player] ⚠️ Mapping failed. Fallback attempt...`);
-            // 🌟 CORRECTION WEBHOOK: On ajoute la propriété "url"
             sendSupabaseLog("Miruro", "UNSUPPORTED_HOSTS", { 
                 media_url: finalMediaUrl, 
                 season_number: "1", 
@@ -398,6 +393,13 @@ async function extractStreamUrl(url) {
         
         let streams = []; 
         let bestSubtitle = "";
+        let bestSubtitleHeaders = {};
+        let allSubtitles = [];
+
+        // 🌟 LA FAMEUSE LISTE BLANCHE DES PROVIDERS ÉTENDUE
+        const providersRequiringAnilistId = [
+            "dune", "zoro", "arc", "kiwi", "telli", "bee", "bun", "nun", "ally", "hop"
+        ];
 
         for (let config of dynamicConfigs) {
             let prov = config.name;
@@ -405,7 +407,6 @@ async function extractStreamUrl(url) {
             let specificEpisodeId = config.id;
             let langLabel = config.lang;
             
-            // On fabrique l'URL virtuelle pour les logs d'échec
             let apiTargetUrl = `API Pipe -> Provider: ${prov.toUpperCase()} (${cat.toUpperCase()})`;
             
             try {
@@ -419,7 +420,8 @@ async function extractStreamUrl(url) {
                     ttl: 86400
                 };
                 
-                if (["dune", "zoro", "arc"].includes(prov)) {
+                // Si le provider est dans notre liste étendue, on ajoute l'ID !
+                if (providersRequiringAnilistId.includes(prov)) {
                     reqQuery.anilistId = parseInt(anilistId);
                 }
 
@@ -427,14 +429,12 @@ async function extractStreamUrl(url) {
 
                 if (!res) {
                     console.log(`[Player] ⚠️ Provider returned null.`);
-                    // 🌟 CORRECTION WEBHOOK: Ajout de "url"
                     failedLinks.push({ server_name: prov.toUpperCase(), url: apiTargetUrl, reason: "Null response" });
                     continue;
                 }
 
                 if (res._blocked_by_cloudflare) {
                     console.log(`[Player] 🛡️ Blocked by Cloudflare (502/444).`);
-                    // 🌟 CORRECTION WEBHOOK: Ajout de "url"
                     failedLinks.push({ server_name: prov.toUpperCase(), url: apiTargetUrl, reason: "Blocked by Cloudflare" });
                     continue;
                 }
@@ -461,43 +461,62 @@ async function extractStreamUrl(url) {
 
                 if (Array.isArray(videoArray) && videoArray.length > 0) {
                     console.log(`[Player] ✅ ${videoArray.length} video qualities found!`);
-                    
+
                     for (let s of videoArray) {
                         if (!s.url) continue;
 
-                        if (s.type === "embed" && videoArray.some(v => v.type === "hls" || v.type === "mp4")) {
-                            console.log(`   -> Ignored (embed) : ${s.url}`);
+                        const urlLower = s.url.toLowerCase();
+                        const isM3U8 = urlLower.includes('.m3u8') || s.type === 'hls';
+
+                        if (!isM3U8) {
+                            console.log(`   -> Ignored (not m3u8, type=${s.type}) : ${s.url}`);
                             continue;
                         }
 
-                        let label = s.quality || (s.type === 'hls' ? 'Auto' : s.type) || 'Auto';
-                        let ref = s.referer || BASE_URL + "/";
+                        const ref = s.referer || BASE_URL + "/";
+                        const label = s.quality || 'HLS';
 
+                        console.log(`   -> Link added (m3u8) : ${s.url}`);
                         streams.push({ 
                             title: `Server ${prov.toUpperCase()} (${label}) [${langLabel}]`, 
                             streamUrl: s.url, 
                             headers: { "Referer": ref } 
                         });
-                        console.log(`   -> Link added : ${s.url}`);
                     }
+
                 } else {
                     console.log(`[Player] ℹ️ No video available for this stream.`);
-                    // 🌟 CORRECTION WEBHOOK: Ajout de "url"
                     failedLinks.push({ server_name: prov.toUpperCase(), url: apiTargetUrl, reason: "Valid JSON but no video array" });
                 }
 
                 if (subArray && Array.isArray(subArray)) {
                     for (let sub of subArray) {
-                        let lang = (sub.language || sub.lang || sub.label || "").toLowerCase();
+                        const subUrl = sub.url || sub.file || "";
+                        if (!subUrl) continue;
+                        const lang = (sub.language || sub.lang || sub.label || "").toLowerCase();
+
+						allSubtitles.push({
+							url: subUrl,
+							label: sub.label || sub.language || sub.lang || "Unknown",
+							kind: sub.kind || "captions",
+							// ← Referer = domaine extrait de l'URL du sous-titre
+							headers: { "Referer": (subUrl.match(/https?:\/\/[^/]+/) || [BASE_URL])[0] + "/" }
+						});
+
                         if (lang.includes("eng") || lang.includes("english")) {
-                            if (bestSubtitle === "" || !lang.includes("forced")) bestSubtitle = sub.url || sub.file;
+                            if (bestSubtitle === "" || !lang.includes("forced")) {
+                                bestSubtitle = subUrl;
+                                bestSubtitleHeaders = { "Referer": BASE_URL + "/" };
+                            }
+                        } else if (bestSubtitle === "") {
+                            bestSubtitle = subUrl;
+                            bestSubtitleHeaders = { "Referer": BASE_URL + "/" };
                         }
                     }
                 }
 
             } catch (e) {
                 console.log(`[Player] ⚠️ Error with ${prov} : ${e.message}`);
-                // 🌟 CORRECTION WEBHOOK: Ajout de "url"
                 failedLinks.push({ server_name: prov.toUpperCase(), url: apiTargetUrl, reason: e.message });
             }
         }
@@ -505,18 +524,16 @@ async function extractStreamUrl(url) {
         console.log(`-----------------------------------------------------`);
         console.log(`[Player] 📊 Summary: ${streams.length} valid video links extracted.`);
 
-        // 🌟 Envoi de la VRAIE URL au tracker
         sendSupabaseLog("Miruro", "PLAYER", { 
             media_url: finalMediaUrl, 
             season_number: "1",
             ep_number: epNumber,
             streams_found: streams.length, 
-            subtitles_found: bestSubtitle !== "", 
+            subtitles_found: bestSubtitle !== "", allSubtitles_count: allSubtitles.length, 
             execution_time_ms: Date.now() - startTime, 
             servers: streams.map(s => ({ nom: s.title, lien: s.streamUrl }))
         });
 
-        // 🌟 Envoi de la VRAIE URL et des failed_links FORMATÉS
         if (failedLinks.length > 0) {
             sendSupabaseLog("Miruro", "UNSUPPORTED_HOSTS", { 
                 media_url: finalMediaUrl, 
@@ -528,7 +545,7 @@ async function extractStreamUrl(url) {
         }
 
         if (streams.length > 0) {
-            return JSON.stringify({ type: "servers", streams: streams, subtitles: bestSubtitle });
+            return JSON.stringify({ type: "servers", streams: streams, subtitles: bestSubtitle, subtitlesHeaders: bestSubtitleHeaders, allSubtitles: allSubtitles });
         } else {
             return JSON.stringify({ type: "none" });
         }

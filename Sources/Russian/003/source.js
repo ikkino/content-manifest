@@ -43,7 +43,6 @@ function scoreTitle(title, keyword) {
   return 3;
 }
 
-// Prefer voiceovers order (edit freely)
 function _dubbingRank(name) {
   const s = String(name || "").toLowerCase();
 
@@ -68,7 +67,6 @@ function _dubbingRank(name) {
   return 999;
 }
 
-// Pack episode payload into href string
 function _pack(obj) {
   return "yummy:" + encodeURIComponent(JSON.stringify(obj || {}));
 }
@@ -90,17 +88,19 @@ async function _apiGet(url) {
   return fetchv2(url, headers);
 }
 
-// ------------------------- searchResults -------------------------
 async function searchResults(keyword) {
   const results = [];
+
   try {
     const url = `${API_BASE}/search?limit=30&offset=0&q=${encodeURIComponent(keyword)}`;
     const res = await _apiGet(url);
     const json = await res.json();
 
     const arr = Array.isArray(json?.response) ? json.response : [];
+
     for (const item of arr) {
       const title = item?.title || "Unknown";
+
       const poster =
         item?.poster?.fullsize ||
         item?.poster?.mega ||
@@ -110,8 +110,10 @@ async function searchResults(keyword) {
         item?.poster?.small ||
         "";
 
-      // Use anime_id as stable href
-      const href = item?.anime_id != null ? String(item.anime_id) : (item?.anime_url || "");
+      const href =
+        item?.anime_id != null
+          ? String(item.anime_id)
+          : item?.anime_url || "";
 
       results.push({
         title,
@@ -122,13 +124,21 @@ async function searchResults(keyword) {
     }
 
     results.sort((a, b) => a._score - b._score);
-    return JSON.stringify(results.map(({ _score, ...rest }) => rest));
+
+    return JSON.stringify(
+      results.map(({ _score, ...rest }) => rest)
+    );
   } catch (err) {
-    return JSON.stringify([{ title: err?.message || "Error", image: "Error", href: "Error" }]);
+    return JSON.stringify([
+      {
+        title: err?.message || "Error",
+        image: "Error",
+        href: "Error"
+      }
+    ]);
   }
 }
 
-// ------------------------- extractDetails -------------------------
 async function extractDetails(animeIdOrUrl) {
   try {
     const url = `${API_BASE}/anime/${encodeURIComponent(String(animeIdOrUrl))}?need_videos=false`;
@@ -137,19 +147,25 @@ async function extractDetails(animeIdOrUrl) {
     const data = json?.response || {};
 
     const other = Array.isArray(data?.other_titles) ? data.other_titles : [];
-    return JSON.stringify([{
-      description: data?.description || "No description available",
-      airdate: data?.year != null ? String(data.year) : "Unknown",
-      aliases: other.length ? other.join(", ") : ""
-    }]);
+
+    return JSON.stringify([
+      {
+        description: data?.description || "No description available",
+        airdate: data?.year != null ? String(data.year) : "Unknown",
+        aliases: other.length ? other.join(", ") : ""
+      }
+    ]);
   } catch (_) {
-    return JSON.stringify([{ description: "Error", airdate: "Error", aliases: "" }]);
+    return JSON.stringify([
+      {
+        description: "Error",
+        airdate: "Error",
+        aliases: ""
+      }
+    ]);
   }
 }
 
-// ------------------------- extractEpisodes -------------------------
-// UNIQUE by episode number.
-// Store ALL voiceover options inside href payload; stream picker shows them.
 async function extractEpisodes(animeIdOrUrl) {
   try {
     const raw = String(animeIdOrUrl || "").trim();
@@ -173,10 +189,10 @@ async function extractEpisodes(animeIdOrUrl) {
 
     const vids = Array.isArray(json?.response) ? json.response : [];
 
-    // Keep only Kodik entries (we parse Kodik)
     const kodikVids = vids.filter(v => {
       const iframe = String(v?.iframe_url || "");
       const player = String(v?.data?.player || "").toLowerCase();
+
       return (
         iframe.includes("kodik.info") ||
         iframe.includes("kodikplayer.com") ||
@@ -184,8 +200,7 @@ async function extractEpisodes(animeIdOrUrl) {
       );
     });
 
-    // Group by episode number
-    const byNum = new Map(); // num -> { num, options: [...], opening?, ending?, duration?, skips? }
+    const byNum = new Map();
 
     for (const v of kodikVids) {
       const num = parseFloat(v?.number) || 0;
@@ -194,46 +209,79 @@ async function extractEpisodes(animeIdOrUrl) {
       const iframeUrl = _absUrl(v?.iframe_url || "");
       if (!iframeUrl) continue;
 
-      const dubbing = String(v?.data?.dubbing || "").trim() || "Unknown voiceover";
-      const player = String(v?.data?.player || "Kodik").trim();
+      const dubbing =
+        String(v?.data?.dubbing || "").trim() || "Unknown voiceover";
+
+      const player =
+        String(v?.data?.player || "Kodik").trim();
 
       const opening =
         v?.skips?.opening &&
         Number.isFinite(v.skips.opening.time) &&
         Number.isFinite(v.skips.opening.length)
-          ? { start: v.skips.opening.time, stop: v.skips.opening.time + v.skips.opening.length }
+          ? {
+              start: v.skips.opening.time,
+              stop: v.skips.opening.time + v.skips.opening.length
+            }
           : undefined;
 
       const ending =
         v?.skips?.ending &&
         Number.isFinite(v.skips.ending.time) &&
         Number.isFinite(v.skips.ending.length)
-          ? { start: v.skips.ending.time, stop: v.skips.ending.time + v.skips.ending.length }
+          ? {
+              start: v.skips.ending.time,
+              stop: v.skips.ending.time + v.skips.ending.length
+            }
           : undefined;
 
       const skips =
-        (v?.skips?.opening && Number.isFinite(v.skips.opening.time) && Number.isFinite(v.skips.opening.length)) ||
-        (v?.skips?.ending && Number.isFinite(v.skips.ending.time) && Number.isFinite(v.skips.ending.length))
+        (
+          v?.skips?.opening &&
+          Number.isFinite(v.skips.opening.time) &&
+          Number.isFinite(v.skips.opening.length)
+        ) ||
+        (
+          v?.skips?.ending &&
+          Number.isFinite(v.skips.ending.time) &&
+          Number.isFinite(v.skips.ending.length)
+        )
           ? {
               opening:
                 v?.skips?.opening &&
                 Number.isFinite(v.skips.opening.time) &&
                 Number.isFinite(v.skips.opening.length)
-                  ? { time: v.skips.opening.time, length: v.skips.opening.length }
+                  ? {
+                      time: v.skips.opening.time,
+                      length: v.skips.opening.length
+                    }
                   : null,
               ending:
                 v?.skips?.ending &&
                 Number.isFinite(v.skips.ending.time) &&
                 Number.isFinite(v.skips.ending.length)
-                  ? { time: v.skips.ending.time, length: v.skips.ending.length }
+                  ? {
+                      time: v.skips.ending.time,
+                      length: v.skips.ending.length
+                    }
                   : null
             }
           : undefined;
 
-      const duration = Number.isFinite(v?.duration) && v.duration > 0 ? v.duration : undefined;
+      const duration =
+        Number.isFinite(v?.duration) && v.duration > 0
+          ? v.duration
+          : undefined;
 
       if (!byNum.has(num)) {
-        byNum.set(num, { num, options: [], opening, ending, duration, skips });
+        byNum.set(num, {
+          num,
+          options: [],
+          opening,
+          ending,
+          duration,
+          skips
+        });
       }
 
       const ep = byNum.get(num);
@@ -255,7 +303,9 @@ async function extractEpisodes(animeIdOrUrl) {
     const out = Array.from(byNum.values())
       .sort((a, b) => a.num - b.num)
       .map(ep => {
-        ep.options.sort((x, y) => _dubbingRank(x.dubbing) - _dubbingRank(y.dubbing));
+        ep.options.sort(
+          (x, y) => _dubbingRank(x.dubbing) - _dubbingRank(y.dubbing)
+        );
 
         const payload = {
           animeId,
@@ -270,6 +320,7 @@ async function extractEpisodes(animeIdOrUrl) {
         };
 
         const primary = ep.options[0];
+
         if (primary?.opening) item.opening = primary.opening;
         if (primary?.ending) item.ending = primary.ending;
 
@@ -286,74 +337,88 @@ async function extractEpisodes(animeIdOrUrl) {
   }
 }
 
-// ------------------------- extractStreamUrl -------------------------
-// Build streams list: one entry per voiceover option (best quality per option)
 async function extractStreamUrl(href) {
   try {
     const payload = _unpack(href);
     const options = Array.isArray(payload?.options) ? payload.options : [];
 
     if (!options.length) {
-      return JSON.stringify({ streams: [], subtitle: "https://none.com" });
+      return JSON.stringify({
+        streams: [],
+        subtitle: "https://none.com"
+      });
     }
 
-    options.sort((a, b) => _dubbingRank(a.dubbing) - _dubbingRank(b.dubbing));
+    options.sort(
+      (a, b) => _dubbingRank(a.dubbing) - _dubbingRank(b.dubbing)
+    );
 
     const streams = [];
 
     for (const opt of options) {
       const iframeUrl = _absUrl(opt?.iframe_url);
+
       if (
         !iframeUrl ||
-        (!iframeUrl.includes("kodik.info") && !iframeUrl.includes("kodikplayer.com"))
+        (
+          !iframeUrl.includes("kodik.info") &&
+          !iframeUrl.includes("kodikplayer.com")
+        )
       ) {
         continue;
       }
 
       const qualitiesJson = await kodikParser(iframeUrl);
       const qualities = _safeJsonParse(qualitiesJson, {});
-      let bestUrl = "";
-      let bestQ = 0;
-      let url1080 = null;
-      let url720 = null;
-      let url480 = null;
+
+      const qualityMap = {
+        "720p": null,
+        "480p": null,
+        "360p": null
+      };
 
       for (const q in qualities) {
         const srcRaw = qualities?.[q]?.src;
-        const src = srcRaw ? (String(srcRaw).startsWith("//") ? "https:" + String(srcRaw) : String(srcRaw)) : "";
+
+        const src = srcRaw
+          ? (
+              String(srcRaw).startsWith("//")
+                ? "https:" + String(srcRaw)
+                : String(srcRaw)
+            )
+          : "";
+
         if (!src) continue;
-        const n = parseInt(String(q).replace(/[^\d]/g, ""), 10) || 0;
 
-        if (n >= 1080 && !url1080) url1080 = src;
-        if (n === 720 && !url720) url720 = src;
-        if (n === 480 && !url480) url480 = src;
+        const n =
+          parseInt(String(q).replace(/[^\d]/g, ""), 10) || 0;
 
-        if (n > bestQ) {
-          bestQ = n;
-          bestUrl = src;
+        if (n === 720 && !qualityMap["720p"]) {
+          qualityMap["720p"] = src;
+        }
+
+        if (n === 480 && !qualityMap["480p"]) {
+          qualityMap["480p"] = src;
+        }
+
+        if (n === 360 && !qualityMap["360p"]) {
+          qualityMap["360p"] = src;
         }
       }
 
-      if (!bestUrl) continue;
+      for (const quality of ["720p", "480p", "360p"]) {
+        const streamUrl = qualityMap[quality];
+        if (!streamUrl) continue;
 
-      const finalUrl = bestUrl;
-
-      // Fallback quality mapping for sources with uncommon labels.
-      if (!url1080 && bestQ >= 1080) url1080 = finalUrl;
-      if (!url720 && bestQ >= 720 && bestQ < 1080) url720 = finalUrl;
-      if (!url480 && bestQ >= 480 && bestQ < 720) url480 = finalUrl;
-
-      streams.push({
-        title: `${opt.dubbing} (Kodik)`,
-        streamUrl: finalUrl,
-        url1080,
-        url720,
-        url480,
-        headers: {
-          "User-Agent": _ua(),
-          "Referer": IMAGE_REFERER
-        }
-      });
+        streams.push({
+          title: `${opt.dubbing} - ${quality}`,
+          streamUrl,
+          headers: {
+            "User-Agent": _ua(),
+            "Referer": IMAGE_REFERER
+          }
+        });
+      }
     }
 
     return JSON.stringify({
@@ -362,11 +427,14 @@ async function extractStreamUrl(href) {
     });
   } catch (err) {
     console.log("extractStreamUrl error:", err?.message || err);
-    return JSON.stringify({ streams: [], subtitle: "https://none.com" });
+
+    return JSON.stringify({
+      streams: [],
+      subtitle: "https://none.com"
+    });
   }
 }
 
-// ------------------------- kodikParser -------------------------
 async function kodikParser(url) {
   try {
     const headers = {
@@ -382,10 +450,19 @@ async function kodikParser(url) {
     const videoInfoHashMatch = htmlText.match(/vInfo\.hash\s*=\s*'([^']+)'/);
     const videoInfoIdMatch = htmlText.match(/vInfo\.id\s*=\s*'([^']+)'/);
 
-    const urlParams = urlParamsMatch ? _safeJsonParse(urlParamsMatch[1], {}) : {};
-    const videoInfo_type = videoInfoTypeMatch ? videoInfoTypeMatch[1] : "";
-    const videoInfo_hash = videoInfoHashMatch ? videoInfoHashMatch[1] : "";
-    const videoInfo_id = videoInfoIdMatch ? videoInfoIdMatch[1] : "";
+    const urlParams =
+      urlParamsMatch
+        ? _safeJsonParse(urlParamsMatch[1], {})
+        : {};
+
+    const videoInfo_type =
+      videoInfoTypeMatch ? videoInfoTypeMatch[1] : "";
+
+    const videoInfo_hash =
+      videoInfoHashMatch ? videoInfoHashMatch[1] : "";
+
+    const videoInfo_id =
+      videoInfoIdMatch ? videoInfoIdMatch[1] : "";
 
     const finalData =
       `d=${urlParams.d || ""}` +
@@ -395,7 +472,10 @@ async function kodikParser(url) {
       `&ref=${urlParams.ref || ""}` +
       `&ref_sign=${urlParams.ref_sign || ""}` +
       `&bad_user=false&cdn_is_working=true` +
-      `&type=${videoInfo_type}&hash=${videoInfo_hash}&id=${videoInfo_id}&info=%7B%7D`;
+      `&type=${videoInfo_type}` +
+      `&hash=${videoInfo_hash}` +
+      `&id=${videoInfo_id}` +
+      `&info=%7B%7D`;
 
     const headers2 = {
       "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
@@ -410,13 +490,16 @@ async function kodikParser(url) {
       "POST",
       finalData
     );
+
     const apiJson = await apiResponse.json();
 
     const qualities = {};
+
     if (apiJson?.links) {
       for (const quality in apiJson.links) {
         const qArr = apiJson.links[quality];
         const first = Array.isArray(qArr) ? qArr[0] : null;
+
         if (!first?.src) continue;
 
         qualities[quality] = {
@@ -429,22 +512,28 @@ async function kodikParser(url) {
     return JSON.stringify(qualities, null, 2);
   } catch (err) {
     console.log("kodikParser error:", err?.message || err);
-    return JSON.stringify({ error: "kodik_parse_failed" });
+    return JSON.stringify({
+      error: "kodik_parse_failed"
+    });
   }
 }
 
-// ------------------------- decode (Kodik) -------------------------
 function decode(input) {
   const map = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-  let out = "", b = 0, c = 0;
+  let out = "";
+  let b = 0;
+  let c = 0;
 
   const r = [];
+
   for (let i = 0; i < input.length; i++) {
     const ch = input[i];
+
     if (/[a-zA-Z]/.test(ch)) {
       const cc = ch.charCodeAt(0);
       const max = ch <= "Z" ? 90 : 122;
       const sh = cc + 18;
+
       r.push(String.fromCharCode(sh <= max ? sh : sh - 26));
     } else {
       r.push(ch);
@@ -452,9 +541,12 @@ function decode(input) {
   }
 
   const rot = r.join("");
+
   for (let j = 0; j < rot.length; j++) {
     const ch = rot[j];
+
     if (ch === "=") break;
+
     const v = map.indexOf(ch);
     if (v === -1) continue;
 
@@ -466,10 +558,10 @@ function decode(input) {
       out += String.fromCharCode((b >> c) & 0xff);
     }
   }
+
   return out;
 }
 
-// ------------------------- export hook -------------------------
 function _defaultExport() {
   return {
     searchResults,
@@ -489,5 +581,7 @@ try {
 
 try {
   globalThis.module = globalThis.module || {};
-  globalThis.module.exports = { default: _defaultExport };
+  globalThis.module.exports = {
+    default: _defaultExport
+  };
 } catch (_) {}
