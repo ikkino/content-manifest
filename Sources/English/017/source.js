@@ -1,18 +1,19 @@
 async function searchResults(keyword) {
     const results = [];
-    const postData = `{"searchTerm":"${keyword}","page":1,"limit":100}`;
     try {
-        const response = await fetchv2("https://senshi.live/anime/filter", { "Content-Type": "application/json", "Referer": "https://senshi.live/" }, "POST", postData);
-        const data = await response.json();
+        const response = await fetchv2("https://www.tokyoinsider.com/anime/search?k=" + encodeURIComponent(keyword));
+        const html = await response.text();
 
-        if (data.data && Array.isArray(data.data)) {
-            for (const item of data.data) {
-                results.push({
-                    title: item.title,
-                    image: "https://senshi.live" + item.anime_picture,
-                    href: "https://senshi.live/anime/" + item.id
-                });
-            }
+        const regex = /<img class="a_img" src="([^"]*)"[^>]*><\/a>[\s\S]*?<a href="([^"]*)" style="font: bold 14px verdana;">([^<]*(?:<span[^>]*>[^<]*<\/span>[^<]*)*)<\/a>/g;
+
+        let match;
+        while ((match = regex.exec(html)) !== null) {
+            const titleText = match[3].replace(/<span class="searchhighlight">(.*?)<\/span>/g, '$1').replace(/&nbsp;/g, ' ');
+            results.push({
+                title: titleText.trim(),
+                image: match[1].trim(),
+                href: match[2].trim()
+            });
         }
 
         return JSON.stringify(results);
@@ -25,15 +26,34 @@ async function searchResults(keyword) {
     }
 }
 
-async function extractDetails(url) {
+async function extractDetails(slug) {
     try {
-        const response = await fetchv2(url);
-        const data = await response.json();
+        const response = await fetchv2("https://www.tokyoinsider.com" + slug);
+        const html = await response.text();
+
+        let titles = "N/A";
+        let airdate = "N/A";
+        let description = "N/A";
+
+        const titlesMatch = html.match(/<td width="80" valign="top"><b>Title\(s\):<\/b><\/td>\s*<td>([\s\S]*?)<\/td>\s*<\/tr>/);
+        if (titlesMatch) {
+            titles = titlesMatch[1].replace(/<br>/g, ', ').replace(/\s+/g, ' ').trim();
+        }
+
+        const airdateMatch = html.match(/<td valign="top"><b>Vintage:<\/b><\/td>\s*<td>([\s\S]*?)<\/td>\s*<\/tr>/);
+        if (airdateMatch) {
+            airdate = airdateMatch[1].replace(/\s+/g, ' ').trim();
+        }
+
+        const summaryMatch = html.match(/<td valign="top" style="border-bottom: 0;"><b>Summary:<\/b><\/td>\s*<td style="border-bottom: 0;">([\s\S]*?)<\/td>\s*<\/tr>/);
+        if (summaryMatch) {
+            description = summaryMatch[1].replace(/\s+/g, ' ').trim();
+        }
 
         return JSON.stringify([{
-            description: data.ani_description,
-            aliases: data.synonyms,
-            airdate: data.created_at
+            aliases: titles,
+            airdate: airdate,
+            description: description
         }]);
     } catch (err) {
         return JSON.stringify([{
@@ -45,57 +65,70 @@ async function extractDetails(url) {
 }
 
 async function extractEpisodes(url) {
-    const ID = url.split("/").pop();
     const results = [];
     try {
-        const response = await fetchv2("https://senshi.live/episodes/" + ID, {"Referer": "https://senshi.live/"});
-        const data = await response.json();
+        const response = await fetchv2("https://www.tokyoinsider.com" + url);
+        const html = await response.text();
 
-        if (Array.isArray(data)) {
-            for (const ep of data) {
-                results.push({
-                    href: "https://senshi.live/episode-embeds/" + ep.mal_id + "/" + ep.ep_id,
-                    number: ep.ep_id
-                });
-            }
+        const regex = /<div class="episode[^"]*">\s*<div><a class="download-link" href="([^"]*)">[^<]*<em>(\w+)<\/em>\s*<strong>(\d+)<\/strong>(?:<i[^>]*>\s*:\s*([^<]*)<\/i>)?/g;
+
+        let match;
+        while ((match = regex.exec(html)) !== null) {
+            const number = parseInt(match[3], 10);
+
+            results.push({
+                href: match[1].trim(),
+                number: number,
+            });
         }
 
-        return JSON.stringify(results);
+        return JSON.stringify(results.reverse());
     } catch (err) {
         return JSON.stringify([{
             href: "Error",
-            number: "Error"
+            type: "Error",
+            number: "Error",
+            title: "Error"
         }]);
     }
 }
 
-async function extractStreamUrl(url) {
+async function extractStreamUrl(slug) {
     try {
-        const response = await fetchv2(url, {"Referer": "https://senshi.live/"});
-        const data = await response.json();
+        const response = await fetchv2("https://www.tokyoinsider.com" + slug);
+        const html = await response.text();
 
         const streams = [];
-        const count = {};
-        for (const item of data) {
-            const status = item.status;
-            if (!count[status]) count[status] = 0;
-            count[status]++;
-            const title = count[status] > 1 ? `${status} ${count[status]}` : status;
+        
+        const containerMatch = html.match(/<div\s+id="inner_page">([\s\S]*?)<div\s+class="fsplit">/);
+        if (!containerMatch) {
+            return JSON.stringify({
+                streams: [],
+                subtitle: "Error"
+            });
+        }
+        
+        const container = containerMatch[1];
+        
+        const downloadRegex = /<a\s+href="(https:\/\/media\.tokyoinsider\.com:8080\/[^"]+)"\s*>([^<]+)<\/a>/g;
+        
+        let match;
+        while ((match = downloadRegex.exec(container)) !== null) {
             streams.push({
-                title: title,
-                streamUrl: item.url,
-                headers: { "Referer": "https://senshi.live/" }
+                title: match[2].trim(),
+                streamUrl: match[1].trim(),
+                headers: {}
             });
         }
 
         return JSON.stringify({
             streams: streams,
-            subtitle: ""
+            subtitle: "None"
         });
     } catch (err) {
         return JSON.stringify({
             streams: [],
-            subtitle: ""
+            subtitle: "Error"
         });
     }
 }
