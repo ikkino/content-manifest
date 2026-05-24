@@ -1,6 +1,6 @@
 {
-  "sourceName": "AniLiberty",
-  "iconUrl": "https://aniliberty.top/static/favicon-96x96.png",
+  "sourceName": "YummyAnime",
+  "iconUrl": "https://site.yummyani.me/img/icon/yummy-192.png",
   "author": {
     "name": "emp0ry",
     "icon": "https://avatars.githubusercontent.com/u/64217088"
@@ -9,11 +9,11 @@
   "language": "Russian",
   "streamType": "HLS",
   "quality": "1080p",
-  "baseUrl": "https://aniliberty.top/api/v1/",
-  "searchBaseUrl": "https://aniliberty.top/api/v1/app/search/releases?query=%s",
+  "baseUrl": "https://api.yani.tv",
+  "searchBaseUrl": "https://api.yani.tv/search?limit=30&q=%s",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Russian/003/source.js",
   "asyncJS": true,
-  "streamAsyncJS": false,
+  "streamAsyncJS": true,
   "softsub": false,
   "type": "anime",
   "downloadSupport": false,
@@ -21,5 +21,5 @@
   "supportsDartotsu": true,
   "supportsSora": true,
   "supportsLuna": true,
-  "id": "mod_1423779956"
+  "id": "mod_1737733195"
 }

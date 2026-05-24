@@ -1,233 +1,460 @@
+const API_BASE = "https://onwavedub.org/api/v1";
+const SITE_BASE = "https://onwavedub.org";
+const DEFAULT_SUBTITLE = "https://none.com";
+// Set to "voiceover-only" or "server-only" depending on preferred app UI grouping.
+const STREAM_PICKER_MODE = "voiceover-only";
+
+function _streamTitle(kind, quality) {
+	const q = Number.isFinite(quality) && quality > 0 ? `${quality}p` : "";
+
+	if (STREAM_PICKER_MODE === "server-only") {
+		if (kind === "onwave") return "OnWave - Main";
+		if (kind === "mirror") return "OnWave - Mirror";
+		if (kind === "kodik") return q ? `OnWave - Kodik ${q}` : "OnWave - Kodik";
+	}
+
+	if (kind === "onwave") return "OnWave";
+	if (kind === "mirror") return "OnWave зеркало";
+	if (kind === "kodik") return q ? `Kodik ${q}` : "Kodik";
+	return "Stream";
+}
+
+function _ua() {
+	return "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
+}
+
+function _safeJsonParse(value, fallback) {
+	try {
+		return JSON.parse(value);
+	} catch (_) {
+		return fallback;
+	}
+}
+
+function _absUrl(url, base) {
+	if (!url) return "";
+	const raw = String(url).trim();
+	if (!raw) return "";
+	if (raw.startsWith("http://") || raw.startsWith("https://")) return raw;
+	if (raw.startsWith("//")) return "https:" + raw;
+
+	const origin = String(base || SITE_BASE).replace(/\/+$/, "");
+	return origin + "/" + raw.replace(/^\/+/, "");
+}
+
+function _scoreTitle(title, keyword) {
+	const t = String(title || "").toLowerCase().trim();
+	const k = String(keyword || "").toLowerCase().trim();
+	if (!t || !k) return 99;
+	if (t === k) return 0;
+	if (t.startsWith(k)) return 1;
+	if (t.includes(k)) return 2;
+	return 3;
+}
+
+function _packEpisode(payload) {
+	return "onwave:" + encodeURIComponent(JSON.stringify(payload || {}));
+}
+
+function _unpackEpisode(href) {
+	const raw = String(href || "");
+	if (!raw.startsWith("onwave:")) return null;
+	return _safeJsonParse(decodeURIComponent(raw.slice("onwave:".length)), null);
+}
+
+function _extractAnimeId(input) {
+	const raw = String(input || "").trim();
+	if (!raw) return "";
+
+	const packed = _unpackEpisode(raw);
+	if (packed && packed.animeId != null) return String(packed.animeId);
+
+	if (/^\d+$/.test(raw)) return raw;
+
+	const m = raw.match(/\/anime\/(\d+)/i);
+	if (m && m[1]) return m[1];
+
+	return raw;
+}
+
+function _playerPriority(player) {
+	return Number.isFinite(player?.priority) ? player.priority : 999;
+}
+
+function _pickPlayer(players, predicate) {
+	const list = (Array.isArray(players) ? players : []).filter(predicate);
+	if (!list.length) return null;
+	list.sort((a, b) => _playerPriority(a) - _playerPriority(b));
+	return list[0];
+}
+
+async function _apiGet(url) {
+	return fetchv2(url, {
+		"User-Agent": _ua(),
+		"Accept": "application/json",
+		"Accept-Language": "ru-RU,ru;q=0.9,en;q=0.8",
+		"Referer": SITE_BASE + "/",
+		"Origin": SITE_BASE
+	});
+}
+
+function _buildOnWaveMp4(playerLink) {
+	const abs = _absUrl(playerLink, "https://anisurf.site");
+	if (!abs) return "";
+
+	if (/\/videos\/[^/]+\/streams\/source\.mp4/i.test(abs)) {
+		return abs.split("?")[0];
+	}
+
+	try {
+		const u = new URL(abs);
+		const id = u.searchParams.get("id");
+		if (!id) return "";
+
+		const origin =
+			u.hostname.toLowerCase().includes("anisurf.ru")
+				? "https://anisurf.ru"
+				: "https://anisurf.site";
+
+		return `${origin}/videos/${id}/streams/source.mp4`;
+	} catch (_) {
+		const m = abs.match(/[?&]id=([a-z0-9-]+)/i);
+		if (!m || !m[1]) return "";
+
+		const isRu = /anisurf\.ru/i.test(abs);
+		const origin = isRu ? "https://anisurf.ru" : "https://anisurf.site";
+		return `${origin}/videos/${m[1]}/streams/source.mp4`;
+	}
+}
+
+function _appendBestKodikStream(streams, qualities) {
+	let bestUrl = "";
+	let bestQuality = 0;
+	let url1080 = null;
+	let url720 = null;
+	let url480 = null;
+
+	for (const quality in qualities || {}) {
+		const srcRaw = qualities?.[quality]?.src;
+		const src = srcRaw ? (String(srcRaw).startsWith("//") ? "https:" + String(srcRaw) : String(srcRaw)) : "";
+		if (!src) continue;
+
+		const numeric = parseInt(String(quality).replace(/[^\d]/g, ""), 10) || 0;
+		if (numeric >= 1080 && !url1080) url1080 = src;
+		if (numeric === 720 && !url720) url720 = src;
+		if (numeric === 480 && !url480) url480 = src;
+
+		if (numeric > bestQuality) {
+			bestQuality = numeric;
+			bestUrl = src;
+		}
+	}
+
+	if (!bestUrl) return;
+
+	const finalUrl = bestUrl;
+	if (!url1080 && bestQuality >= 1080) url1080 = finalUrl;
+	if (!url720 && bestQuality >= 720 && bestQuality < 1080) url720 = finalUrl;
+	if (!url480 && bestQuality >= 480 && bestQuality < 720) url480 = finalUrl;
+
+	streams.push({
+		title: _streamTitle("kodik", bestQuality),
+		streamUrl: finalUrl,
+		url1080,
+		url720,
+		url480,
+		headers: {
+			"User-Agent": _ua(),
+			"Referer": SITE_BASE + "/"
+		}
+	});
+}
+
 async function searchResults(keyword) {
-    try {
-        const responseText = await soraFetch(`https://anime-portal.su/search/one/`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: `do=search&subaction=search&from_page=0&story=${keyword}`,
-        });
-        const html = await responseText.text();
+	try {
+		const query = String(keyword || "").trim();
+		if (!query) return JSON.stringify([]);
 
-        // Parse results from HTML (not JSON)
-        // Each result is an <a href="..."><div class="mov">...</div></a>
-        const regex = /<a\s+href="([^"]+)">\s*<div class="mov">[\s\S]*?<img\s+src="([^"]+)"[^>]*>[\s\S]*?<div class="name">([\s\S]*?)<\/div>/g;
+		const url = `${API_BASE}/catalog?query=${encodeURIComponent(query)}`;
+		const response = await _apiGet(url);
+		const data = await response.json();
 
-        const results = [];
-        let match;
+		const items = Array.isArray(data?.items) ? data.items : [];
+		const out = items.map(item => ({
+			title: String(item?.title || "Unknown"),
+			image: _absUrl(item?.poster || "", SITE_BASE),
+			href: String(item?.id || ""),
+			_score: _scoreTitle(item?.title || "", query)
+		}));
 
-        while ((match = regex.exec(html)) !== null) {
-            results.push({
-                title: match[3].trim(),
-                image: `https://anime-portal.su${match[2].trim()}`,
-                href: match[1].startsWith('http') ? match[1].trim() : `https://anime-portal.su${match[1].trim()}`
-            });
-        }
-
-        console.log(results);
-        return JSON.stringify(results);
-    } catch (error) {
-        console.log('Fetch error in searchResults: ' + error);
-        return JSON.stringify([{ title: 'Error', image: '', href: '' }]);
-    }
+		out.sort((a, b) => a._score - b._score);
+		return JSON.stringify(out.map(({ _score, ...rest }) => rest));
+	} catch (_) {
+		return JSON.stringify([]);
+	}
 }
 
-async function extractDetails(url) {
-    try {
-        const responseText = await soraFetch(url);
-        const html = await responseText.text();
+async function extractDetails(animeIdOrUrl) {
+	try {
+		const animeId = _extractAnimeId(animeIdOrUrl);
+		if (!animeId) return JSON.stringify([]);
 
-        // Description
-        const descMatch = html.match(/<div class="page__text full-text clearfix"[^>]*>([\s\S]*?)<\/div>/);
-        const description = descMatch
-            ? descMatch[1]
-                .replace(/<\/p>\s*<p>/gi, ' ')
-                .replace(/<[^>]+>/g, '')
-                .replace(/\s+/g, ' ')
-                .trim()
-            : 'Описание недоступно';
+		const response = await _apiGet(`${API_BASE}/anime/${encodeURIComponent(animeId)}`);
+		const data = await response.json();
 
-        // Aliases
-        // Duration
-        const durationMatch = html.match(/Тип аниме:<\/div>\s*<div class="mov-desc">([^<]+)<\/div>/);
-        const duration = durationMatch ? `Длительность: ${durationMatch[1]}` : null;
+		const aliases = [];
+		if (data?.originalTitle) aliases.push(`Original: ${data.originalTitle}`);
+		if (data?.alternateTitle) aliases.push(`Alt: ${data.alternateTitle}`);
+		if (Number.isFinite(data?.length)) aliases.push(`Duration: ${data.length}m`);
+		if (Number.isFinite(data?.episodesTotal)) aliases.push(`Episodes: ${data.episodesTotal}`);
+		if (Array.isArray(data?.studios) && data.studios.length) {
+			aliases.push(`Studios: ${data.studios.join(", ")}`);
+		}
 
-        // Studio
-        const studioMatch = html.match(/Студия:<\/div>\s*<div class="mov-desc"><a[^>]*>([^<]+)<\/a>/);
-        const studio = studioMatch ? `Студия: ${studioMatch[1]}` : null;
-
-        // Genres
-        const genresMatch = html.match(/Жанры:<\/div>\s*<div class="mov-desc">([\s\S]*?)<\/div>/);
-        let genres = null;
-        if (genresMatch) {
-            const genreList = Array.from(genresMatch[1].matchAll(/<a[^>]*>([^<]+)<\/a>/g)).map(m => m[1]);
-            genres = `Жанры: ${genreList.join(', ')}`;
-        }
-
-        // Rating (World-Art)
-        const waRatingMatch = html.match(/<div class="pmovie__rating pmovie__rating--kp">\s*<div class="pmovie__rating-content">([\d.]+)<\/div>/);
-        const rating = waRatingMatch ? `Оценка: ${waRatingMatch[1]}` : null;
-
-        const aliasesParts = [duration, genres, studio, rating].filter(Boolean);
-        const aliases = aliasesParts.length ? aliasesParts.join('\n') : 'Информация недоступна';
-
-        // Airdate
-        const airdateMatch = html.match(/Год:<\/div>\s*<div class="mov-desc"[^>]*><a[^>]*>(\d{4})<\/a>/);
-        const airdate = airdateMatch ? `Год выхода: ${airdateMatch[1]}` : 'Год выхода: неизвестен';
-
-        const transformedResults = [{
-            description,
-            aliases,
-            airdate
-        }];
-
-        console.log(transformedResults);
-        return JSON.stringify(transformedResults);
-    } catch (error) {
-        console.log('Details error: ' + error);
-        return JSON.stringify([{
-            description: 'Ошибка загрузки описания',
-            aliases: 'Информация недоступна',
-            airdate: 'Год выхода: неизвестен'
-        }]);
-    }
+		return JSON.stringify([
+			{
+				description: data?.description || "No description available",
+				aliases: aliases.join(" | "),
+				airdate: data?.airedAt ? String(data.airedAt).slice(0, 10) : "Unknown"
+			}
+		]);
+	} catch (_) {
+		return JSON.stringify([]);
+	}
 }
 
-async function extractEpisodes(url) {
-    try {
-        const responseText = await soraFetch(url);
-        const html = await responseText.text();
+async function extractEpisodes(animeIdOrUrl) {
+	try {
+		const animeId = _extractAnimeId(animeIdOrUrl);
+		if (!animeId) return JSON.stringify([]);
 
-        // Find the videodb JSON object in the HTML
-        const videodbMatch = html.match(/var\s+videodb\s*=\s*({[\s\S]+?});/);
-        if (!videodbMatch) throw new Error("videodb not found");
+		const response = await _apiGet(`${API_BASE}/anime/${encodeURIComponent(animeId)}`);
+		const data = await response.json();
+		const episodes = Array.isArray(data?.episodes) ? data.episodes : [];
 
-        const videodb = JSON.parse(videodbMatch[1]);
-        const translators = videodb.translators || {};
+		const out = episodes
+			.map((episode, index) => {
+				const players = Array.isArray(episode?.players) ? episode.players : [];
 
-        const results = [];
+				const onwave = _pickPlayer(players, player => {
+					const name = String(player?.name || "").toLowerCase();
+					return name === "onwave" || (name.includes("onwave") && !name.includes("зеркало"));
+				});
 
-        for (const translatorBlock of Object.values(translators)) {
-            const seasons = translatorBlock.seasons || {};
-            for (const [seasonNum, episodesArr] of Object.entries(seasons)) {
-                for (const ep of episodesArr) {
-                    // Avoid duplicates
-                    if (!results.some(e => e.href === `${url}|${seasonNum}|${ep.num}`)) {
-                        results.push({
-                            href: `${url}|${seasonNum}|${ep.num}`,
-                            number: Number(ep.num)
-                        });
-                    }
-                }
-            }
-        }
+				const mirror = _pickPlayer(players, player => {
+					const name = String(player?.name || "").toLowerCase();
+					return name.includes("зеркало") || name.includes("mirror");
+				});
 
-        // Sort by season and episode number
-        results.sort((a, b) => {
-            const [ , seasonA, epA ] = a.href.split('|').map(Number);
-            const [ , seasonB, epB ] = b.href.split('|').map(Number);
-            return seasonA - seasonB || epA - epB;
-        });
+				const kodik = _pickPlayer(players, player => {
+					const name = String(player?.name || "").toLowerCase();
+					const link = String(player?.link || "").toLowerCase();
+					return name.includes("kodik") || link.includes("kodik");
+				});
 
-        console.log(`Episodes: ${JSON.stringify(results)}`);
-        return JSON.stringify(results);
-    } catch (error) {
-        console.log('Fetch error in extractEpisodes: ' + error);
-        return JSON.stringify([]);
-    }
+				if (!onwave && !mirror && !kodik) return null;
+
+				const number = Number.isFinite(episode?.episode)
+					? episode.episode
+					: (Number.isFinite(episode?.index) ? episode.index : index + 1);
+
+				const payload = {
+					animeId: String(animeId),
+					season: Number.isFinite(episode?.season) ? episode.season : 1,
+					episode: number,
+					label: String(episode?.label || ""),
+					players: {
+						onwave: onwave?.link ? String(onwave.link) : "",
+						onwaveMirror: mirror?.link ? String(mirror.link) : "",
+						kodik: kodik?.link ? String(kodik.link) : ""
+					}
+				};
+
+				return {
+					href: _packEpisode(payload),
+					number,
+					title: episode?.label ? String(episode.label) : `Episode ${number}`
+				};
+			})
+			.filter(Boolean)
+			.sort((a, b) => Number(a.number) - Number(b.number));
+
+		return JSON.stringify(out);
+	} catch (_) {
+		return JSON.stringify([]);
+	}
 }
 
-// searchResults('one punch');
-// extractDetails('https://anime-portal.su/4900-klinok-rassekajushhij-demonov.html');
-// extractEpisodes('https://anime-portal.su/4900-klinok-rassekajushhij-demonov.html');
-// extractStreamUrl('https://anime-portal.su/4900-klinok-rassekajushhij-demonov.html|1|1');
+async function extractStreamUrl(href) {
+	try {
+		const payload = _unpackEpisode(href);
+		if (!payload) {
+			return JSON.stringify({ streams: [], subtitle: DEFAULT_SUBTITLE });
+		}
 
-async function extractStreamUrl(url) {
-    try {
-        const [url2, season, episode] = url.split('|');
+		const streams = [];
 
-        const responseText = await soraFetch(url2);
-        const html = await responseText.text();
+		const onwaveMp4 = _buildOnWaveMp4(payload?.players?.onwave);
+		if (onwaveMp4) {
+			streams.push({
+				title: _streamTitle("onwave"),
+				streamUrl: onwaveMp4,
+				headers: {
+					"User-Agent": _ua(),
+					"Referer": "https://anisurf.site/"
+				}
+			});
+		}
 
-        // Find the videodb JSON object in the HTML
-        const videodbMatch = html.match(/var\s+videodb\s*=\s*({[\s\S]+?});/);
-        if (!videodbMatch) throw new Error("videodb not found");
+		const mirrorMp4 = _buildOnWaveMp4(payload?.players?.onwaveMirror);
+		if (mirrorMp4) {
+			streams.push({
+				title: _streamTitle("mirror"),
+				streamUrl: mirrorMp4,
+				headers: {
+					"User-Agent": _ua(),
+					"Referer": "https://anisurf.ru/"
+				}
+			});
+		}
 
-        const videodb = JSON.parse(videodbMatch[1]);
+		const kodikLink = _absUrl(payload?.players?.kodik || "", SITE_BASE);
+		if (kodikLink && (kodikLink.includes("kodikplayer.com") || kodikLink.includes("kodik.info"))) {
+			try {
+				const qualitiesJson = await kodikParser(kodikLink);
+				const qualities = _safeJsonParse(qualitiesJson, {});
+				_appendBestKodikStream(streams, qualities);
+			} catch (_) {}
+		}
 
-        // Get all translators
-        const translators = videodb.translators || {};
-        const translatorKeys = Object.keys(translators);
-        if (translatorKeys.length === 0) throw new Error("No translators found");
-
-        let streams = [];
-
-        for (const translatorKey of translatorKeys) {
-            const translatorBlock = translators[translatorKey];
-            const seasons = translatorBlock.seasons || {};
-            const episodesArr = seasons[season];
-            if (!episodesArr) continue;
-
-            // Get all episodes for this season and translator
-            for (const episodeObj of episodesArr) {
-                // Only use hls.m3u8
-                if (episodeObj.hls !== "hls.m3u8" && !episodeObj.hls.endsWith(".m3u8")) continue;
-
-                // If a specific episode is requested, skip others
-                if (episode && String(episodeObj.num) !== String(episode)) continue;
-
-                const queryString = episodeObj.quality
-                    .map(q => `quality%5B%5D=${q}`)
-                    .join("&");
-
-                const response = await soraFetch(`https://anime-portal.su/engine/videodb/sources.php`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-                        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:140.0) Gecko/20100101 Firefox/140.0',
-                        'Referer': url2
-                    },
-                    body: `sub=${episodeObj.sub}&allsubs=${encodeURIComponent(episodeObj.allsubs)}&num=${episodeObj.num}&hls=${episodeObj.hls}&hash=${episodeObj.hash}&${queryString}&type=animetvseries`
-                });
-
-                const data = await response.json();
-
-                streams.push({
-                    title: translatorKey,
-                    streamUrl: data.hls,
-                    headers: {}
-                });
-            }
-        }
-
-        const result = {
-            streams,
-            subtitles: ""
-        };
-
-        console.log(result);
-        return JSON.stringify(result);
-    } catch (error) {
-        console.log('Fetch error in extractStreamUrl: ' + error);
-
-        const result = {
-            streams: [],
-            subtitles: ""
-        };
-
-        console.log(result);
-        return JSON.stringify(result);
-    }
+		return JSON.stringify({
+			streams,
+			subtitle: DEFAULT_SUBTITLE
+		});
+	} catch (_) {
+		return JSON.stringify({ streams: [], subtitle: DEFAULT_SUBTITLE });
+	}
 }
 
-async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
-    try {
-        return await fetchv2(url, options.headers ?? {}, options.method ?? 'GET', options.body ?? null);
-    } catch(e) {
-        try {
-            return await fetch(url, options);
-        } catch(error) {
-            return null;
-        }
-    }
+// Kodik parser adapted from yummyanime.js approach.
+async function kodikParser(url) {
+	try {
+		const headers = {
+			"Referer": SITE_BASE + "/",
+			"User-Agent": _ua()
+		};
+
+		const response = await fetchv2(url, headers);
+		const htmlText = await response.text();
+
+		const urlParamsMatch = htmlText.match(/var\s+urlParams\s*=\s*'([^']+)'/);
+		const videoInfoTypeMatch = htmlText.match(/vInfo\.type\s*=\s*'([^']+)'/);
+		const videoInfoHashMatch = htmlText.match(/vInfo\.hash\s*=\s*'([^']+)'/);
+		const videoInfoIdMatch = htmlText.match(/vInfo\.id\s*=\s*'([^']+)'/);
+
+		const urlParams = urlParamsMatch ? _safeJsonParse(urlParamsMatch[1], {}) : {};
+		const videoInfoType = videoInfoTypeMatch ? videoInfoTypeMatch[1] : "";
+		const videoInfoHash = videoInfoHashMatch ? videoInfoHashMatch[1] : "";
+		const videoInfoId = videoInfoIdMatch ? videoInfoIdMatch[1] : "";
+
+		const finalData =
+			`d=${urlParams.d || ""}` +
+			`&d_sign=${urlParams.d_sign || ""}` +
+			`&pd=${urlParams.pd || ""}` +
+			`&pd_sign=${urlParams.pd_sign || ""}` +
+			`&ref=${urlParams.ref || ""}` +
+			`&ref_sign=${urlParams.ref_sign || ""}` +
+			`&bad_user=false&cdn_is_working=true` +
+			`&type=${videoInfoType}&hash=${videoInfoHash}&id=${videoInfoId}&info=%7B%7D`;
+
+		const headers2 = {
+			"Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+			"Referer": SITE_BASE + "/",
+			"User-Agent": _ua(),
+			"X-Requested-With": "XMLHttpRequest"
+		};
+
+		const apiResponse = await fetchv2("https://kodikplayer.com/ftor", headers2, "POST", finalData);
+		const apiJson = await apiResponse.json();
+
+		const qualities = {};
+		if (apiJson?.links) {
+			for (const quality in apiJson.links) {
+				const qualityArray = apiJson.links[quality];
+				const first = Array.isArray(qualityArray) ? qualityArray[0] : null;
+				if (!first?.src) continue;
+
+				qualities[quality] = {
+					src: decode(first.src),
+					type: first.type || "application/x-mpegURL"
+				};
+			}
+		}
+
+		return JSON.stringify(qualities, null, 2);
+	} catch (_) {
+		return JSON.stringify({ error: "kodik_parse_failed" });
+	}
 }
+
+function decode(input) {
+	const map = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+	let out = "";
+	let buffer = 0;
+	let count = 0;
+
+	const rotated = [];
+	const source = String(input || "");
+
+	for (let i = 0; i < source.length; i++) {
+		const ch = source[i];
+		if (/[a-zA-Z]/.test(ch)) {
+			const code = ch.charCodeAt(0);
+			const max = ch <= "Z" ? 90 : 122;
+			const shifted = code + 18;
+			rotated.push(String.fromCharCode(shifted <= max ? shifted : shifted - 26));
+		} else {
+			rotated.push(ch);
+		}
+	}
+
+	const rot = rotated.join("");
+	for (let j = 0; j < rot.length; j++) {
+		const ch = rot[j];
+		if (ch === "=") break;
+		const val = map.indexOf(ch);
+		if (val === -1) continue;
+
+		buffer = (buffer << 6) | val;
+		count += 6;
+
+		if (count >= 8) {
+			count -= 8;
+			out += String.fromCharCode((buffer >> count) & 0xff);
+		}
+	}
+
+	return out;
+}
+
+function _defaultExport() {
+	return {
+		searchResults,
+		extractDetails,
+		extractEpisodes,
+		extractStreamUrl
+	};
+}
+
+try {
+	globalThis.default = _defaultExport;
+} catch (_) {}
+
+try {
+	this.default = _defaultExport;
+} catch (_) {}
+
+try {
+	globalThis.module = globalThis.module || {};
+	globalThis.module.exports = { default: _defaultExport };
+} catch (_) {}

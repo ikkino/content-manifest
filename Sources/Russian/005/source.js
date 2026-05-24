@@ -1,60 +1,17 @@
-const API_BASE = "https://api.animevost.org/v1/";
-const FORM_CT  = "application/x-www-form-urlencoded; charset=UTF-8";
-const SITE_BASE = "https://animevost.org";
+// ShizaProject module for Sora (AsyncJS)
+// Author: emp0ry
+// Version: 1.0.0
+
+const SITE_BASES = [
+  "https://shizaproject.com",
+  "https://shiza-project.com"
+];
+
+const SITE_BASE = SITE_BASES[0];
 const DEFAULT_SUBTITLE = "https://none.com";
 
-function encodeForm(fields) {
-  return Object.keys(fields)
-    .map(k => `${encodeURIComponent(k)}=${encodeURIComponent(fields[k])}`)
-    .join("&");
-}
-
-async function postForm(url, fields) {
-  const bodyStr = encodeForm(fields);
-
-  try {
-    const resA = await fetchv2(url, { "Content-Type": FORM_CT }, "POST", bodyStr);
-    if (resA && typeof resA.text === "function") return resA;
-  } catch (_) {}
-
-  return await fetchv2(url, {
-    method: "POST",
-    headers: { "Content-Type": FORM_CT },
-    body: bodyStr
-  });
-}
-
-async function parseJsonSafe(res) {
-  const txt = await res.text();
-
-  try {
-    return JSON.parse(txt);
-  } catch (_) {
-    return JSON.parse(txt.replace(/^\uFEFF/, "").trim());
-  }
-}
-
-function cleanTitle(raw) {
-  if (!raw || typeof raw !== "string") return "Unknown title";
-
-  let t = raw.split(" /")[0];
-  return t.replace(/\s*\[.*?\]\s*$/g, "").trim() || "Unknown title";
-}
-
-function htmlToText(html) {
-  if (!html || typeof html !== "string") return "";
-
-  return html
-    .replace(/<br\s*\/?>/gi, "\n")
-    .replace(/<\/p>/gi, "\n")
-    .replace(/<[^>]+>/g, "")
-    .replace(/\n{3,}/g, "\n\n")
-    .trim();
-}
-
-function cleanUrl(url) {
-  const s = String(url || "").trim();
-  return s || null;
+function _ua() {
+  return "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
 }
 
 function _safeJsonParse(value, fallback) {
@@ -65,220 +22,514 @@ function _safeJsonParse(value, fallback) {
   }
 }
 
-function makeHrefFromPayload(obj) {
-  return `animevost://payload/${encodeURIComponent(JSON.stringify(obj || {}))}`;
+function _cleanBase(base) {
+  const raw = String(base || SITE_BASE).trim().replace(/\/+$/, "");
+  return raw || SITE_BASE;
 }
 
-function readPayloadFromHref(href) {
-  const m = String(href || "").match(/^animevost:\/\/payload\/(.+)$/);
-  if (!m) return null;
+function _normalizeUrl(url) {
+  const raw = String(url || "").trim();
+  if (!raw) return "";
+  if (raw.startsWith("//")) return "https:" + raw;
+  return raw;
+}
+
+function _packRelease(payload) {
+  return "shizaproject-release:" + encodeURIComponent(JSON.stringify(payload || {}));
+}
+
+function _unpackRelease(href) {
+  const raw = String(href || "");
+  if (!raw.startsWith("shizaproject-release:")) return null;
+  return _safeJsonParse(decodeURIComponent(raw.slice("shizaproject-release:".length)), null);
+}
+
+function _packEpisode(payload) {
+  return "shizaproject:" + encodeURIComponent(JSON.stringify(payload || {}));
+}
+
+function _unpackEpisode(href) {
+  const raw = String(href || "");
+  if (!raw.startsWith("shizaproject:")) return null;
+  return _safeJsonParse(decodeURIComponent(raw.slice("shizaproject:".length)), null);
+}
+
+function _extractSlug(input) {
+  const packed = _unpackRelease(input);
+  if (packed?.slug) return String(packed.slug);
+
+  const raw = String(input || "").trim();
+  if (!raw) return "";
 
   try {
-    return JSON.parse(decodeURIComponent(m[1]));
+    const u = new URL(raw);
+    const parts = u.pathname.split("/").filter(Boolean);
+    return parts[parts.length - 1] || raw;
+  } catch (_) {}
+
+  return raw;
+}
+
+function _extractPreferredBase(input) {
+  const packed = _unpackRelease(input);
+  if (packed?.siteBase) return _cleanBase(packed.siteBase);
+
+  const raw = String(input || "").trim();
+  if (!raw) return SITE_BASE;
+
+  try {
+    const u = new URL(raw);
+    return _cleanBase(u.origin);
+  } catch (_) {}
+
+  return SITE_BASE;
+}
+
+function _orderedBases(preferredBase) {
+  const out = [];
+
+  const add = (base) => {
+    const clean = _cleanBase(base);
+    if (clean && !out.includes(clean)) out.push(clean);
+  };
+
+  if (preferredBase) add(preferredBase);
+  for (const base of SITE_BASES) add(base);
+
+  return out;
+}
+
+function _graphqlHeaders(base) {
+  const site = _cleanBase(base);
+
+  return {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+    "User-Agent": _ua(),
+    "Origin": site,
+    "Referer": site + "/"
+  };
+}
+
+async function _graphqlOnBase(base, operationName, variables, query) {
+  const site = _cleanBase(base);
+  const body = JSON.stringify({ operationName, variables, query });
+
+  const response = await fetchv2(site + "/graphql", _graphqlHeaders(site), "POST", body);
+  const data = await response.json();
+
+  if (data?.errors?.length) throw new Error("GraphQL error");
+
+  return {
+    data: data?.data || {},
+    siteBase: site
+  };
+}
+
+async function _graphql(operationName, variables, query, preferredBase) {
+  let lastError = null;
+
+  for (const base of _orderedBases(preferredBase)) {
+    try {
+      return await _graphqlOnBase(base, operationName, variables, query);
+    } catch (e) {
+      lastError = e;
+    }
+  }
+
+  throw lastError || new Error("All ShizaProject domains failed");
+}
+
+const SEARCH_QUERY = `
+query search($query: String!, $type: SearchType!) {
+  search(query: $query, type: $type, first: 10) {
+    edges {
+      node {
+        id
+        __typename
+        ... on Release {
+          id
+          slug
+          name
+          originalName
+          airedOn
+          releasedOn
+          publishedAt
+          announcement
+          episodesCount
+          episodesAired
+          episodeDuration
+          season
+          seasonYear
+          seasonNumber
+          status
+          activity
+          type
+          rating
+          viewCount
+          score
+          genres {
+            id
+            slug
+            name
+            __typename
+          }
+          __typename
+        }
+      }
+    }
+  }
+}`;
+
+const RELEASE_QUERY = `
+query releaseAllSafe($slug: String!) {
+  release(slug: $slug) {
+    __typename
+    id
+    slug
+    name
+    originalName
+    airedOn
+    releasedOn
+    publishedAt
+    announcement
+    episodesCount
+    episodesAired
+    episodeDuration
+    season
+    seasonYear
+    seasonNumber
+    status
+    activity
+    type
+    rating
+    viewCount
+    score
+    genres {
+      id
+      slug
+      name
+      __typename
+    }
+    episodes {
+      __typename
+      id
+      number
+      name
+      duration
+      videos {
+        id
+        embedUrl
+        __typename
+      }
+    }
+  }
+}`;
+
+async function _getRelease(slug, preferredBase) {
+  const result = await _graphql(
+    "releaseAllSafe",
+    { slug: String(slug || "") },
+    RELEASE_QUERY,
+    preferredBase
+  );
+
+  return {
+    release: result?.data?.release || null,
+    siteBase: result?.siteBase || _cleanBase(preferredBase)
+  };
+}
+
+function _releaseAliases(release) {
+  const parts = [];
+
+  if (release?.originalName) parts.push(`Original: ${release.originalName}`);
+  if (release?.type) parts.push(`Type: ${release.type}`);
+  if (Number.isFinite(release?.episodesCount)) parts.push(`Episodes: ${release.episodesCount}`);
+  if (Number.isFinite(release?.episodeDuration)) parts.push(`Duration: ${release.episodeDuration}m`);
+  if (release?.announcement) parts.push(String(release.announcement));
+
+  if (Array.isArray(release?.genres) && release.genres.length) {
+    parts.push(`Genres: ${release.genres.map(g => g?.name).filter(Boolean).join(", ")}`);
+  }
+
+  return parts.join(" | ");
+}
+
+function _scoreTitle(title, keyword) {
+  const t = String(title || "").toLowerCase().trim();
+  const k = String(keyword || "").toLowerCase().trim();
+
+  if (!t || !k) return 99;
+  if (t === k) return 0;
+  if (t.startsWith(k)) return 1;
+  if (t.includes(k)) return 2;
+
+  return 3;
+}
+
+// ------------------------------------------------------------
+// Search -> JSON string
+// ------------------------------------------------------------
+async function searchResults(keyword) {
+  try {
+    const query = String(keyword || "").trim();
+    if (!query) return JSON.stringify([]);
+
+    const result = await _graphql("search", { query, type: "RELEASE" }, SEARCH_QUERY);
+    const siteBase = result?.siteBase || SITE_BASE;
+    const edges = Array.isArray(result?.data?.search?.edges) ? result.data.search.edges : [];
+
+    const out = edges
+      .map(edge => edge?.node)
+      .filter(node => node?.__typename === "Release" && node?.slug)
+      .map(release => {
+        const title = release?.name || release?.originalName || "Unknown title";
+
+        return {
+          title,
+          href: _packRelease({
+            slug: release.slug,
+            id: release.id,
+            title,
+            originalName: release?.originalName || "",
+            airedOn: release?.airedOn || release?.releasedOn || "",
+            siteBase
+          }),
+          _score: Math.min(
+            _scoreTitle(release?.name || "", query),
+            _scoreTitle(release?.originalName || "", query)
+          )
+        };
+      });
+
+    out.sort((a, b) => a._score - b._score);
+    return JSON.stringify(out.map(({ _score, ...rest }) => rest));
   } catch (_) {
-    return null;
+    return JSON.stringify([]);
   }
 }
 
-function parseIdFromAny(hrefOrId) {
-  const p = readPayloadFromHref(hrefOrId);
-  if (p && p.id) return parseInt(p.id, 10);
+// ------------------------------------------------------------
+// Details -> JSON string
+// ------------------------------------------------------------
+async function extractDetails(href) {
+  try {
+    const slug = _extractSlug(href);
+    const preferredBase = _extractPreferredBase(href);
 
-  const m1 = String(hrefOrId || "").match(/^animevost:\/\/release\/(\d+)$/);
-  if (m1) return parseInt(m1[1], 10);
+    if (!slug) return JSON.stringify([]);
 
-  const m2 = String(hrefOrId || "").match(/[?&]id=(\d+)/);
-  if (m2) return parseInt(m2[1], 10);
+    const result = await _getRelease(slug, preferredBase);
+    const release = result?.release;
 
-  if (/^\d+$/.test(String(hrefOrId || ""))) {
-    return parseInt(hrefOrId, 10);
+    if (!release) return JSON.stringify([]);
+
+    const titleLine = release?.originalName && release?.originalName !== release?.name
+      ? `${release.name} / ${release.originalName}`
+      : (release?.name || release?.originalName || "ShizaProject");
+
+    const statusLine = [release?.status, release?.activity]
+      .filter(Boolean)
+      .join(" / ");
+
+    const description = [titleLine, statusLine]
+      .filter(Boolean)
+      .join("\n");
+
+    return JSON.stringify([{
+      description: description || "No description available.",
+      aliases: _releaseAliases(release) || "ShizaProject",
+      airdate: release?.airedOn || release?.releasedOn || "Unknown"
+    }]);
+  } catch (_) {
+    return JSON.stringify([]);
+  }
+}
+
+// ------------------------------------------------------------
+// Episodes -> JSON string
+// ------------------------------------------------------------
+async function extractEpisodes(href) {
+  try {
+    const slug = _extractSlug(href);
+    const preferredBase = _extractPreferredBase(href);
+
+    if (!slug) return JSON.stringify([]);
+
+    const result = await _getRelease(slug, preferredBase);
+    const release = result?.release;
+    const siteBase = result?.siteBase || preferredBase || SITE_BASE;
+
+    if (!release) return JSON.stringify([]);
+
+    const episodes = Array.isArray(release?.episodes) ? release.episodes : [];
+
+    const out = episodes
+      .map((ep, index) => {
+        const videos = Array.isArray(ep?.videos) ? ep.videos : [];
+
+        const embedUrls = videos
+          .map(v => _normalizeUrl(v?.embedUrl || ""))
+          .filter(Boolean);
+
+        if (!embedUrls.length) return null;
+
+        const number = Number.isFinite(ep?.number) ? ep.number : (index + 1);
+        const title = ep?.name ? String(ep.name) : `Episode ${number}`;
+
+        const entry = {
+          href: _packEpisode({
+            releaseSlug: release.slug,
+            episodeId: ep?.id || "",
+            number,
+            title,
+            embedUrls,
+            fallbackEmbedUrl: embedUrls[0],
+            siteBase
+          }),
+          number,
+          title
+        };
+
+        if (Number.isFinite(ep?.duration)) {
+          entry.duration = ep.duration * 60;
+        }
+
+        return entry;
+      })
+      .filter(Boolean)
+      .sort((a, b) => Number(a.number) - Number(b.number));
+
+    return JSON.stringify(out);
+  } catch (_) {
+    return JSON.stringify([]);
+  }
+}
+
+function _qualityNumber(key) {
+  const n = parseInt(String(key || "").replace(/[^\d]/g, ""), 10);
+  return Number.isFinite(n) ? n : 0;
+}
+
+function _pickQualityUrl(qualities, target) {
+  for (const key in qualities || {}) {
+    const q = _qualityNumber(key);
+    const src = _normalizeUrl(qualities?.[key]?.src || "");
+    if (q === target && src) return src;
   }
 
   return null;
 }
 
-function _packEpisode(payload) {
-  return "animevost:" + encodeURIComponent(JSON.stringify(payload || {}));
-}
+function _streamHeaders(siteBase) {
+  const site = _cleanBase(siteBase || SITE_BASE);
 
-function _unpackEpisode(href) {
-  const raw = String(href || "");
-  if (!raw.startsWith("animevost:")) return null;
-
-  return _safeJsonParse(decodeURIComponent(raw.slice("animevost:".length)), null);
-}
-
-function _streamHeaders() {
   return {
-    "User-Agent": "Mozilla/5.0",
-    "Referer": SITE_BASE + "/"
+    "User-Agent": _ua(),
+    "Referer": site + "/",
+    "Origin": site
   };
 }
 
-async function searchResults(keyword) {
-  try {
-    let res  = await postForm(API_BASE + "search", { name: String(keyword) });
-    let json = await parseJsonSafe(res);
+function _buildStreamsFromQualities(qualities, siteBase) {
+  const url1080 = _pickQualityUrl(qualities, 1080);
+  const url720 = _pickQualityUrl(qualities, 720);
+  const url480 = _pickQualityUrl(qualities, 480);
+  const url360 = _pickQualityUrl(qualities, 360);
 
-    if (json?.error || !Array.isArray(json?.data) || json.data.length === 0) {
-      res  = await postForm(API_BASE + "search", { name: `"${String(keyword)}"` });
-      json = await parseJsonSafe(res);
-    }
+  const known = {
+    1080: url1080,
+    720: url720,
+    480: url480,
+    360: url360
+  };
 
-    if (json?.error) {
-      return JSON.stringify([]);
-    }
+  const headers = _streamHeaders(siteBase);
+  const streams = [];
 
-    const list = Array.isArray(json?.data) ? json.data : [];
-    if (!list.length) {
-      return JSON.stringify([]);
-    }
+  for (const quality of [1080, 720, 480, 360]) {
+    const streamUrl = known[quality];
+    if (!streamUrl) continue;
 
-    const tiles = list.map(item => {
-      const payload = {
-        id: item.id,
-        title: cleanTitle(item.title),
-        description: htmlToText(item.description || ""),
-        year: item.year || "",
-        type: item.type || "",
-        image: item.urlImagePreview || ""
-      };
-
-      return {
-        title: payload.title,
-        image: payload.image,
-        href: makeHrefFromPayload(payload)
-      };
+    streams.push({
+      title: `${quality}p`,
+      streamUrl,
+      url1080,
+      url720,
+      url480,
+      url360,
+      headers
     });
-
-    return JSON.stringify(tiles);
-  } catch (_) {
-    return JSON.stringify([]);
   }
-}
 
-async function extractDetails(href) {
-  try {
-    const p = readPayloadFromHref(href);
+  if (!streams.length) {
+    let bestQuality = 0;
+    let bestUrl = "";
 
-    const out = [{
-      description: p?.description || "No description available.",
-      aliases: `Type: ${p?.type || "Unknown"}`,
-      airdate: p?.year ? String(p.year) : "Unknown"
-    }];
+    for (const key in qualities || {}) {
+      const q = _qualityNumber(key);
+      const src = _normalizeUrl(qualities?.[key]?.src || "");
+      if (!src) continue;
 
-    return JSON.stringify(out);
-  } catch (_) {
-    return JSON.stringify([]);
-  }
-}
-
-async function extractEpisodes(href) {
-  try {
-    const p  = readPayloadFromHref(href);
-    const id = p?.id ?? parseIdFromAny(href);
-
-    if (!id) {
-      return JSON.stringify([]);
+      if (q > bestQuality) {
+        bestQuality = q;
+        bestUrl = src;
+      }
     }
 
-    const res = await postForm(API_BASE + "playlist", { id: String(id) });
-    const arr = await parseJsonSafe(res);
-
-    if (!Array.isArray(arr)) {
-      return JSON.stringify([]);
+    if (bestUrl) {
+      streams.push({
+        title: bestQuality ? `${bestQuality}p` : "Kodik",
+        streamUrl: bestUrl,
+        url1080: bestQuality >= 1080 ? bestUrl : null,
+        url720: bestQuality >= 720 && bestQuality < 1080 ? bestUrl : null,
+        url480: bestQuality >= 480 && bestQuality < 720 ? bestUrl : null,
+        url360: bestQuality >= 360 && bestQuality < 480 ? bestUrl : null,
+        headers
+      });
     }
-
-    const out = arr.map((ep, idx) => {
-      const name = ep?.name || "";
-      const m = name.match(/(\d+)/);
-      const num = m ? parseInt(m[1], 10) : (idx + 1);
-
-      const url1080 = null;
-      const url720 = cleanUrl(ep?.hd);
-      const url480 = cleanUrl(ep?.std);
-
-      const fallback = url720 || url480;
-      if (!fallback) return null;
-
-      return {
-        href: _packEpisode({
-          url1080,
-          url720,
-          url480,
-          fallback
-        }),
-        number: num,
-        title: name || `Episode ${num}`,
-        image: ep?.preview || ""
-      };
-    }).filter(Boolean);
-
-    return JSON.stringify(out);
-  } catch (_) {
-    return JSON.stringify([]);
   }
+
+  return streams;
 }
 
+function _isKodikUrl(url) {
+  const raw = String(url || "").toLowerCase();
+  return raw.includes("kodikplayer.com") || raw.includes("kodik.info");
+}
+
+// ------------------------------------------------------------
+// Stream -> quality picker JSON
+// ------------------------------------------------------------
 async function extractStreamUrl(href) {
   try {
     const payload = _unpackEpisode(href);
 
-    // Backward compatibility for old AnimeVost episode href format.
     if (!payload) {
-      return href;
+      return JSON.stringify({
+        streams: [],
+        subtitle: DEFAULT_SUBTITLE
+      });
     }
 
-    const url1080 = cleanUrl(payload.url1080);
-    const url720 = cleanUrl(payload.url720);
-    const url480 = cleanUrl(payload.url480);
-    const fallback = cleanUrl(payload.fallback);
+    const siteBase = _cleanBase(payload?.siteBase || SITE_BASE);
 
-    const headers = _streamHeaders();
+    const embedUrls = Array.isArray(payload?.embedUrls)
+      ? payload.embedUrls.map(_normalizeUrl).filter(Boolean)
+      : [_normalizeUrl(payload?.fallbackEmbedUrl)].filter(Boolean);
+
     const streams = [];
 
-    if (url1080) {
-      streams.push({
-        title: "1080p",
-        streamUrl: url1080,
-        url1080,
-        url720,
-        url480,
-        headers
-      });
-    }
+    for (const embedUrl of embedUrls) {
+      if (!_isKodikUrl(embedUrl)) continue;
 
-    if (url720) {
-      streams.push({
-        title: "720p",
-        streamUrl: url720,
-        url1080,
-        url720,
-        url480,
-        headers
-      });
-    }
-
-    if (url480) {
-      streams.push({
-        title: "480p",
-        streamUrl: url480,
-        url1080,
-        url720,
-        url480,
-        headers
-      });
-    }
-
-    if (!streams.length && fallback) {
-      streams.push({
-        title: "720p",
-        streamUrl: fallback,
-        url1080: null,
-        url720: fallback,
-        url480: null,
-        headers
-      });
+      try {
+        const qualitiesJson = await kodikParser(embedUrl, siteBase);
+        const qualities = _safeJsonParse(qualitiesJson, {});
+        const parsedStreams = _buildStreamsFromQualities(qualities, siteBase);
+        streams.push(...parsedStreams);
+      } catch (_) {}
     }
 
     return JSON.stringify({
@@ -292,3 +543,145 @@ async function extractStreamUrl(href) {
     });
   }
 }
+
+// Kodik parser adapted from yummyanime/onwave-style logic.
+async function kodikParser(url, siteBase) {
+  try {
+    const site = _cleanBase(siteBase || SITE_BASE);
+    const embedUrl = _normalizeUrl(url);
+
+    const headers = {
+      "Referer": site + "/",
+      "User-Agent": _ua()
+    };
+
+    const response = await fetchv2(embedUrl, headers);
+    const htmlText = await response.text();
+
+    const urlParamsMatch = htmlText.match(/var\s+urlParams\s*=\s*'([^']+)'/);
+    const videoInfoTypeMatch = htmlText.match(/vInfo\.type\s*=\s*'([^']+)'/);
+    const videoInfoHashMatch = htmlText.match(/vInfo\.hash\s*=\s*'([^']+)'/);
+    const videoInfoIdMatch = htmlText.match(/vInfo\.id\s*=\s*'([^']+)'/);
+
+    const urlParams = urlParamsMatch ? _safeJsonParse(urlParamsMatch[1], {}) : {};
+    const videoInfoType = videoInfoTypeMatch ? videoInfoTypeMatch[1] : "";
+    const videoInfoHash = videoInfoHashMatch ? videoInfoHashMatch[1] : "";
+    const videoInfoId = videoInfoIdMatch ? videoInfoIdMatch[1] : "";
+
+    const finalData =
+      `d=${urlParams.d || ""}` +
+      `&d_sign=${urlParams.d_sign || ""}` +
+      `&pd=${urlParams.pd || ""}` +
+      `&pd_sign=${urlParams.pd_sign || ""}` +
+      `&ref=${urlParams.ref || ""}` +
+      `&ref_sign=${urlParams.ref_sign || ""}` +
+      `&bad_user=false&cdn_is_working=true` +
+      `&type=${encodeURIComponent(videoInfoType)}` +
+      `&hash=${encodeURIComponent(videoInfoHash)}` +
+      `&id=${encodeURIComponent(videoInfoId)}` +
+      `&info=%7B%7D`;
+
+    const headers2 = {
+      "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+      "Referer": site + "/",
+      "User-Agent": _ua(),
+      "X-Requested-With": "XMLHttpRequest"
+    };
+
+    const apiResponse = await fetchv2(
+      "https://kodikplayer.com/ftor",
+      headers2,
+      "POST",
+      finalData
+    );
+
+    const apiJson = await apiResponse.json();
+
+    const qualities = {};
+
+    if (apiJson?.links) {
+      for (const quality in apiJson.links) {
+        const qualityArray = apiJson.links[quality];
+        const first = Array.isArray(qualityArray) ? qualityArray[0] : null;
+
+        if (!first?.src) continue;
+
+        qualities[quality] = {
+          src: decode(first.src),
+          type: first.type || "application/x-mpegURL"
+        };
+      }
+    }
+
+    return JSON.stringify(qualities, null, 2);
+  } catch (_) {
+    return JSON.stringify({});
+  }
+}
+
+function decode(input) {
+  const map = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+  let out = "";
+  let buffer = 0;
+  let count = 0;
+
+  const rotated = [];
+  const source = String(input || "");
+
+  for (let i = 0; i < source.length; i++) {
+    const ch = source[i];
+
+    if (/[a-zA-Z]/.test(ch)) {
+      const code = ch.charCodeAt(0);
+      const max = ch <= "Z" ? 90 : 122;
+      const shifted = code + 18;
+
+      rotated.push(String.fromCharCode(shifted <= max ? shifted : shifted - 26));
+    } else {
+      rotated.push(ch);
+    }
+  }
+
+  const rot = rotated.join("");
+
+  for (let j = 0; j < rot.length; j++) {
+    const ch = rot[j];
+
+    if (ch === "=") break;
+
+    const val = map.indexOf(ch);
+    if (val === -1) continue;
+
+    buffer = (buffer << 6) | val;
+    count += 6;
+
+    if (count >= 8) {
+      count -= 8;
+      out += String.fromCharCode((buffer >> count) & 0xff);
+    }
+  }
+
+  return out;
+}
+
+function _defaultExport() {
+  return {
+    searchResults,
+    extractDetails,
+    extractEpisodes,
+    extractStreamUrl
+  };
+}
+
+try {
+  globalThis.default = _defaultExport;
+} catch (_) {}
+
+try {
+  this.default = _defaultExport;
+} catch (_) {}
+
+try {
+  globalThis.module = globalThis.module || {};
+  globalThis.module.exports = { default: _defaultExport };
+} catch (_) {}

@@ -1,551 +1,333 @@
 // ==========================================
-// ⚙️ SORA MODULE — MIRURO (Node.js/VM Sandbox)
+// ⚙️ SORA MODULE — BINGEBOX v2 (FIXED)
 // ==========================================
 
-const BASE_URL = "https://www.miruro.to";
-const PIPE_URL = "https://www.miruro.to/api/secure/pipe";
-const MIRURO_PIPE_OBF_KEY = "71951034f8fbcf53d89db52ceb3dc22c";
+const TMDB_API_KEY = "f5b2cdde0b678e87f5c68b61b43c688c";
+const BINGEBOX_API = "https://bingebox.to/api/stream";
+const BINGEBOX_REFERER = "https://bingebox.to/";
 
-// 🌟 SECURE GLOBAL DETECTION
-let _global;
-try { _global = globalThis; } catch(e) { 
-    try { _global = window; } catch(e) { 
-        try { _global = global; } catch(e) { _global = this; } 
-    } 
-}
+const SOURCES = [
+    "neon", "yoru", "oneroom", "aldebaran", "sage", "breach",
+    "killjoy", "harbor", "chamber", "omen", "gekko", "raze", "phoenix", "fade"
+];
 
-const OBF_KEY_BYTES = [];
-for (let i = 0; i < MIRURO_PIPE_OBF_KEY.length; i += 2) {
-    OBF_KEY_BYTES.push(parseInt(MIRURO_PIPE_OBF_KEY.substr(i, 2), 16));
-}
+// Priorité des langues pour le sous-titre par défaut
+const SUB_PRIORITY = ["fre", "fra", "french", "eng", "english"];
 
 // ==========================================
-// 🗄️ SUPABASE TRACKER
+// 🛠️ HELPERS
 // ==========================================
-const SUPABASE_URL = "https://qyeisgowjisqbatrmqta.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_F68CBjFVPh71U0SdD9BQJg_UJgL9-Fj";
 
-async function sendSupabaseLog(moduleName, actionType, dataPayload) {
-    try {
-        const payload = { module: moduleName, action: actionType, data: dataPayload };
-        const headers = { 
-            "Content-Type": "application/json", "apikey": SUPABASE_ANON_KEY,
-            "Authorization": `Bearer ${SUPABASE_ANON_KEY}`, "Prefer": "return=minimal" 
-        };
-        
-        if (typeof fetchv2 !== 'undefined') {
-            await fetchv2(`${SUPABASE_URL}/rest/v1/app_logs`, headers, "POST", JSON.stringify(payload));
-        } else {
-            await fetch(`${SUPABASE_URL}/rest/v1/app_logs`, { method: "POST", headers: headers, body: JSON.stringify(payload) });
-        }
-    } catch (e) {
-        console.log(`[Tracker] 🚨 Erreur d'envoi vers Supabase : ${e.message}`);
+function parseQuery(queryString) {
+    const params = {};
+    const pairs = queryString.split('&');
+    for (let pair of pairs) {
+        const idx = pair.indexOf('=');
+        if (idx === -1) continue;
+        const key = decodeURIComponent(pair.slice(0, idx));
+        const val = decodeURIComponent(pair.slice(idx + 1));
+        params[key] = val;
     }
+    return params;
 }
 
-// ==========================================
-// 🛠️ DECRYPTION ENGINE (Pure JS Polyfills)
-// ==========================================
-
-function pureBtoa(input) {
-    let str = String(input); let output = '';
-    let chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
-    for (let block = 0, charCode, i = 0, map = chars;
-        str.charAt(i | 0) || (map = '=', i % 1);
-        output += map.charAt(63 & block >> 8 - i % 1 * 8)) {
-        charCode = str.charCodeAt(i += 3/4);
-        block = block << 8 | charCode;
+// Sélection du meilleur sous-titre selon priorité de langue
+function selectBestSubtitle(allSubtitles) {
+    for (let lang of SUB_PRIORITY) {
+        const found = allSubtitles.find(s =>
+            (s.label || "").toLowerCase().includes(lang) ||
+            (s.language || "").toLowerCase().includes(lang)
+        );
+        if (found) return found.url;
     }
-    return output;
-}
-
-function pureAtob(input) {
-    let str = String(input).replace(/=+$/, ''); 
-    if (str.length % 4 == 1) return null;
-    let output = '';
-    let chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
-    for (let bc = 0, bs = 0, buffer, i = 0;
-        buffer = str.charAt(i++);
-        ~buffer && (bs = bc % 4 ? bs * 64 + buffer : buffer, bc++ % 4) ? output += String.fromCharCode(255 & bs >> (-2 * bc & 6)) : 0
-    ) { buffer = chars.indexOf(buffer); }
-    return output;
-}
-
-function base64UrlEncode(obj) {
-    const jsonStr = JSON.stringify(obj);
-    const utf8Str = unescape(encodeURIComponent(jsonStr));
-    const b64 = pureBtoa(utf8Str);
-    return b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-}
-
-function safeBytesToString(u8arr) {
-    let s = ""; 
-    for(let i = 0; i < u8arr.length; i++) s += String.fromCharCode(u8arr[i]);
-    try { return decodeURIComponent(escape(s)); } catch(e) { return s; }
-}
-
-async function ensurePako() {
-    if (_global.pako) return;
-    try {
-        const res = await soraFetch("https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js");
-        const code = await res.text();
-        const runner = new Function('window', 'global', code);
-        runner(_global, _global);
-    } catch (e) { 
-        console.log("[Miruro] 🚨 Pako Error : " + e.message); 
-    }
+    return allSubtitles.length > 0 ? allSubtitles[0].url : "";
 }
 
 // ==========================================
-// 🛡️ REACTOR CORE (Miruro Pipe)
+// ⚙️ CORE LOGIC
 // ==========================================
 
-async function makeSecureRequest(path, query = {}, refererUrl = null) {
-    await ensurePako();
-
-    const payload = { path: path, method: "GET", query: query, body: null, version: "0.2.0" };
-    const encodedPayload = base64UrlEncode(payload);
-    
-    const url = `${PIPE_URL}?e=${encodedPayload}`;
-    console.log(`[Pipe] 🚀 Sending '${path}' request (GET)...`);
-    console.log(`[Pipe] 🔗 Exact link generated : ${url}`);
-
-    const headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
-        "Accept": "*/*",
-        "Accept-Language": "en-US,en;q=0.9",
-        "Origin": BASE_URL,
-        "Referer": refererUrl || `${BASE_URL}/`, 
-        "Sec-Fetch-Dest": "empty",
-        "Sec-Fetch-Mode": "cors",
-        "Sec-Fetch-Site": "same-origin",
-        "Sec-CH-UA": '"Chromium";v="146", "Not-A.Brand";v="24", "Brave";v="146"',
-        "Sec-CH-UA-Mobile": "?0",
-        "Sec-CH-UA-Platform": '"Windows"',
-        "Sec-GPC": "1",
-        "Priority": "u=1, i"
-    };
-
-    let b64Text = "";
-    let responseStatus = "Unknown";
-    
-    try {
-        let response = await soraFetch(url, { method: 'GET', headers: headers });
-        if (response) {
-            responseStatus = response.status || 'Unknown';
-            b64Text = typeof response.text === 'function' ? await response.text() : response.data;
-            console.log(`[X-Ray] 🌐 HTTP Status : ${responseStatus} | Raw size : ${b64Text ? b64Text.length : 0} bytes`);
-        }
-    } catch(e) {
-        console.error(`[X-Ray] ❌ Network crash : ${e.message}`);
-    }
-
-    if (!b64Text) throw new Error("No valid response obtained from servers.");
-
-    // 🛑 CLOUDFLARE DETECTION
-    if (b64Text.trim().startsWith("<") || b64Text.toLowerCase().includes("cloudflare") || b64Text.toLowerCase().includes("just a moment") || b64Text.toLowerCase().includes("upstream unreachable")) {
-        console.error(`[Pipe] ❌ API Rejected (Cloudflare or Firewall).`);
-        return { _blocked_by_cloudflare: true, _raw_html: b64Text.substring(0, 200) };
-    }
-
-    // 🛑 SHORT JSON ERROR DETECTION
-    if (b64Text.length < 200 && b64Text.includes("error")) {
-        console.error(`[Pipe] ❌ SERVER ANOMALY : => "${b64Text}"`);
-        return null;
-    }
-
-    let b64 = b64Text.replace(/-/g, '+').replace(/_/g, '/');
-    let pad = b64.length % 4;
-    if (pad) b64 += '='.repeat(4 - pad);
-
-    const binaryStr = pureAtob(b64);
-    if (!binaryStr) {
-        console.error("[Pipe Debug] Total failure of Base64 decoding.");
-        return null;
-    }
-
-    const bytes = [];
-    for (let i = 0; i < binaryStr.length; i++) bytes.push(binaryStr.charCodeAt(i));
-
-    let jsonStr = "";
-    let isDecompressed = false;
-
-    // PLAN A: XOR + DECOMPRESSION
-    for (let i = 0; i < bytes.length; i++) bytes[i] ^= OBF_KEY_BYTES[i % OBF_KEY_BYTES.length];
-    try {
-        jsonStr = _global.pako.ungzip(bytes, { to: 'string' });
-        isDecompressed = true;
-    } catch (e1) {
-        try { jsonStr = _global.pako.inflate(bytes, { to: 'string' }); isDecompressed = true; } catch (e2) {}
-    }
-
-    // PLAN B: DECOMPRESSION WITHOUT XOR (PURE GZIP)
-    if (!isDecompressed) {
-        for (let i = 0; i < bytes.length; i++) bytes[i] ^= OBF_KEY_BYTES[i % OBF_KEY_BYTES.length];
-        try {
-            jsonStr = _global.pako.ungzip(bytes, { to: 'string' });
-            isDecompressed = true;
-        } catch (e3) {
-            try { jsonStr = _global.pako.inflate(bytes, { to: 'string' }); isDecompressed = true; } catch (e4) {}
-        }
-    }
-
-    if (!isDecompressed) {
-        jsonStr = safeBytesToString(bytes);
-    }
-
-    const safeStr = String(jsonStr || "");
-
-    try {
-        const parsedObject = JSON.parse(safeStr);
-        if (!path.includes("episodes")) {
-            console.log(`[X-Ray] 🟢 JSON DECRYPTED SUCCESSFULLY :`);
-            console.log(parsedObject); 
-        }
-        return parsedObject;
-    } catch (parseError) {
-        console.error(`[Pipe] ❌ Final text is not valid JSON.`);
-        return null;
-    }
-}
-
-// ==========================================
-// ⚙️ SORA MODULE LOGIC
-// ==========================================
-
+// 1. RECHERCHE (Via TMDB)
 async function searchResults(keyword) {
-    console.log(`[Search] 🔍 Starting for : "${keyword}"`);
+    console.log(`[Bingebox] 🔍 Recherche de : "${keyword}"`);
     try {
-        const data = await makeSecureRequest("search", {
-            q: keyword, 
-            limit: 30, 
-            offset: 0, 
-            sort: "POPULARITY_DESC", 
-            type: "ANIME",
-            isAdult: false 
-        });
+        const url = `https://api.themoviedb.org/3/search/multi?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(keyword)}&page=1&include_adult=false&language=en-US`;
+        const res = await soraFetch(url);
+        if (!res) return JSON.stringify([]);
 
-        if (!data || data._blocked_by_cloudflare) {
-            sendSupabaseLog("Miruro", "ERROR", { keyword: keyword, error_message: "Blocked by Cloudflare during search" });
-            return JSON.stringify([]);
-        }
-
+        const data = JSON.parse(await res.text());
         const results = [];
-        let items = [];
 
-        if (data && data.results) items = data.results;
-        else if (Array.isArray(data)) items = data;
+        for (let item of (data.results || [])) {
+            if (item.media_type !== 'movie' && item.media_type !== 'tv') continue;
 
-        for (let item of items) {
-            if (item.isAdult === true) continue;
-            if (item.genres && Array.isArray(item.genres) && item.genres.includes("Hentai")) continue;
+            const title = item.title || item.name || "Titre inconnu";
+            const year = (item.release_date || item.first_air_date || '').split('-')[0];
+            const image = item.poster_path
+                ? `https://image.tmdb.org/t/p/w500${item.poster_path}`
+                : 'https://via.placeholder.com/500x750?text=No+Image';
 
-            const id = item.id;
-            const title = item.title?.romaji || item.title?.english || item.title?.native || "Unknown Title";
-            const image = item.coverImage?.large || item.coverImage?.medium || "https://via.placeholder.com/200x300.png?text=No+Poster";
-            
-            results.push({ title: title, image: image, href: `miruro://${id}` });
+            const href = `bingebox://${item.media_type}/${item.id}?title=${encodeURIComponent(title)}&year=${year}`;
 
-           
+            results.push({
+                title: year ? `${title} (${year})` : title,
+                image,
+                href
+            });
         }
 
-        sendSupabaseLog("Miruro", "SEARCH", { 
-            keyword: keyword, 
-            results_count: results.length,
-            top_results: results.slice(0, 3).map(r => r.title)
-        });
-        
+        console.log(`[Bingebox] ✅ ${results.length} résultats trouvés.`);
         return JSON.stringify(results);
-
-    } catch (error) { 
-        sendSupabaseLog("Miruro", "ERROR", { keyword: keyword, error_message: String(error) });
-        return JSON.stringify([]); 
+    } catch (e) {
+        console.error(`[Bingebox] ❌ Erreur Recherche: ${e.message}`);
+        return JSON.stringify([]);
     }
 }
 
+// 2. DÉTAILS (Via TMDB)
 async function extractDetails(url) {
-    console.log(`[Details] 📖 Loading info for : ${url}`);
-    
-    // Convertir l'URL interne en URL publique pour Supabase
-    const id = url.replace('miruro://', '');
-    const finalMediaUrl = `${BASE_URL}/watch?id=${id}`;
-    
-    sendSupabaseLog("Miruro", "DETAILS", { media_url: finalMediaUrl });
-
+    console.log(`[Bingebox] 📖 Chargement détails : ${url}`);
     try {
-        const data = await makeSecureRequest(`info/anilist/${id}`);
-        
-        if (!data || data._blocked_by_cloudflare) return JSON.stringify([{ description: 'Network error.', aliases: '', airdate: '' }]);
+        const match = url.match(/bingebox:\/\/([^/]+)\/([^?]+)/);
+        if (!match) throw new Error("URL invalide");
 
-        let description = "No description available.";
-        let year = "Unknown"; let rating = "N/A";
+        const [, type, id] = match;
+        const res = await soraFetch(`https://api.themoviedb.org/3/${type}/${id}?api_key=${TMDB_API_KEY}&language=en-US`);
+        if (!res) throw new Error("Échec réseau TMDB");
 
-        if (data) {
-            if (data.description) description = data.description.replace(/<[^>]+>/g, '').trim();
-            if (data.seasonYear) year = data.seasonYear;
-            if (data.averageScore) rating = `${data.averageScore}/100`;
-        }
+        const data = JSON.parse(await res.text());
 
-        return JSON.stringify([{ description: description, aliases: `Score: ${rating}`, airdate: `Year: ${year}` }]);
-    } catch (error) { 
-        sendSupabaseLog("Miruro", "ERROR", { media_url: finalMediaUrl, error_message: String(error) });
-        return JSON.stringify([{ description: 'Loading error.', aliases: '', airdate: '' }]); 
+        return JSON.stringify([{
+            description: data.overview || "No description available.",
+            aliases: `Rating: ${data.vote_average ? data.vote_average.toFixed(1) + '/10' : 'N/A'}`,
+            airdate: `Released: ${data.release_date || data.first_air_date || 'Unknown'}`
+        }]);
+    } catch (e) {
+        console.error(`[Bingebox] ❌ Erreur Détails: ${e.message}`);
+        return JSON.stringify([{ description: "Erreur lors du chargement des détails." }]);
     }
 }
 
+// 3. ÉPISODES / FILM
 async function extractEpisodes(url) {
-    console.log(`[Episodes] 📂 Searching episodes for : ${url}`);
+    console.log(`[Bingebox] 📂 Chargement épisodes : ${url}`);
     try {
-        const anilistId = url.replace('miruro://', '');
-        const data = await makeSecureRequest("episodes", { anilistId: anilistId });
-        
-        if(!data || data._blocked_by_cloudflare) return JSON.stringify([]);
+        const match = url.match(/bingebox:\/\/([^/]+)\/([^?]+)\?(.+)/);
+        if (!match) throw new Error("URL invalide");
 
-        let allEps = [];
-        function searchEpisodes(obj) {
-            if (Array.isArray(obj)) {
-                if (obj.length > 0 && obj[0].id !== undefined && obj[0].number !== undefined) allEps = allEps.concat(obj);
-                else obj.forEach(searchEpisodes);
-            } else if (typeof obj === 'object' && obj !== null) Object.values(obj).forEach(searchEpisodes);
+        const type = match[1];
+        const id   = match[2];
+        const params = parseQuery(match[3]);
+        const title = params['title'] || "";
+        const year  = params['year']  || "";
+
+        // CAS A : Film
+        if (type === 'movie') {
+            return JSON.stringify([{
+                href: `bingebox-play://movie/${id}?title=${encodeURIComponent(title)}&year=${year}`,
+                title: "Full Movie",
+                number: 1,
+                season: 1
+            }]);
         }
-        searchEpisodes(data);
 
-        const uniqueEps = [];
-        const seenNumbers = new Set();
-        
-        for (let ep of allEps) {
-            if (!seenNumbers.has(ep.number)) {
-                seenNumbers.add(ep.number);
-                uniqueEps.push({
-                    href: `miruro-play://${anilistId}/${ep.number}`,
-                    number: ep.number, season: 1, title: ep.title || `Episode ${ep.number}`
+        // CAS B : Série
+        const res = await soraFetch(`https://api.themoviedb.org/3/tv/${id}?api_key=${TMDB_API_KEY}&language=en-US`);
+        if (!res) throw new Error("Échec réseau TMDB");
+        const data = JSON.parse(await res.text());
+
+        let episodes = [];
+
+        const seasonPromises = (data.seasons || []).map(async (season) => {
+            if (season.season_number === 0) return;
+
+            const sRes = await soraFetch(
+                `https://api.themoviedb.org/3/tv/${id}/season/${season.season_number}?api_key=${TMDB_API_KEY}&language=en-US`
+            );
+            if (!sRes) return;
+
+            const sData = JSON.parse(await sRes.text());
+            for (let ep of (sData.episodes || [])) {
+                episodes.push({
+                    href: `bingebox-play://tv/${id}?title=${encodeURIComponent(title)}&year=${year}&s=${season.season_number}&e=${ep.episode_number}`,
+                    title: ep.name || `Episode ${ep.episode_number}`,
+                    number: ep.episode_number,
+                    season: season.season_number,
+                    image: ep.still_path ? `https://image.tmdb.org/t/p/w500${ep.still_path}` : ''
                 });
             }
-        }
+        });
 
-        uniqueEps.sort((a, b) => a.number - b.number);
-        return JSON.stringify(uniqueEps);
-    } catch (error) { 
-        const anilistId = url.replace('miruro://', '');
-        sendSupabaseLog("Miruro", "ERROR", { media_url: `${BASE_URL}/watch?id=${anilistId}`, error_message: String(error) });
-        return JSON.stringify([]); 
+        await Promise.all(seasonPromises);
+        episodes.sort((a, b) => a.season !== b.season ? a.season - b.season : a.number - b.number);
+
+        console.log(`[Bingebox] ✅ ${episodes.length} épisodes chargés.`);
+        return JSON.stringify(episodes);
+
+    } catch (e) {
+        console.error(`[Bingebox] ❌ Erreur Épisodes: ${e.message}`);
+        return JSON.stringify([]);
     }
 }
 
+// 4. LECTEUR VIDÉO
 async function extractStreamUrl(url) {
-    console.log(`[Player] 🎬 Video extraction started for : ${url}`);
-    let startTime = Date.now(); 
-    let finalMediaUrl = url; // Fallback par défaut
-    let epNumber = 1;
-    
+    console.log(`[Bingebox] 🎬 Extraction vidéo : ${url}`);
     try {
-        const parts = url.replace('miruro-play://', '').split('/');
-        const anilistId = parts[0];
-        epNumber = parts.length > 2 ? parts[2] : parts[1];
-        
-        // 🌟 CORRECTION WEBHOOK: On génère la VRAIE url du site pour les logs Supabase
-        const watchReferer = `${BASE_URL}/watch/${anilistId}/${epNumber}?ep=${epNumber}`;
-        finalMediaUrl = watchReferer;
+        const match = url.match(/bingebox-play:\/\/([^/]+)\/([^?]+)\?(.+)/);
+        if (!match) throw new Error("URL Play invalide");
 
-        console.log(`[Player] 🔄 Dynamic mapping of providers, IDs, and Languages...`);
-        const epsData = await makeSecureRequest("episodes", { anilistId: anilistId });
-        
-        let dynamicConfigs = []; 
-        let failedLinks = []; 
-        
-        if (epsData && epsData.providers) {
-            for (let provKey in epsData.providers) {
-                const provData = epsData.providers[provKey];
-                
-                if (provData && provData.episodes && typeof provData.episodes === 'object') {
-                    for (let catKey in provData.episodes) {
-                        const epList = provData.episodes[catKey];
-                        
-                        if (Array.isArray(epList)) {
-                            const ep = epList.find(e => parseInt(e.number) === parseInt(epNumber));
-                            
-                            if (ep && ep.id) {
-                                const isDub = catKey.toLowerCase().includes('dub');
-                                const langLabel = isDub ? "DUB" : "SUB";
-                                
-                                dynamicConfigs.push({
-                                    name: provKey.toLowerCase(),
-                                    cat: catKey.toLowerCase(),
-                                    id: ep.id,
-                                    lang: langLabel
-                                });
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        
-        console.log(`[Player] 🗺️ Routing generated: ${dynamicConfigs.length} streams detected!`);
+        const type   = match[1];
+        const id     = match[2];
+        const params = parseQuery(match[3]);
+        const title  = params['title'] || "";
+        const year   = params['year']  || "";
+        const s      = params['s'];
+        const e      = params['e'];
 
-        if (dynamicConfigs.length === 0) {
-            console.log(`[Player] ⚠️ Mapping failed. Fallback attempt...`);
-            // 🌟 CORRECTION WEBHOOK: On ajoute la propriété "url"
-            sendSupabaseLog("Miruro", "UNSUPPORTED_HOSTS", { 
-                media_url: finalMediaUrl, 
-                season_number: "1", 
-                ep_number: epNumber, 
-                failed_count: 1, 
-                failed_links: [{ server_name: "Mapping", url: "Recherche API", reason: "Aucun ID détecté" }] 
-            });
-            return JSON.stringify({ type: "none" });
-        }
-        
-        let streams = []; 
-        let bestSubtitle = "";
+        // 🌟 CORRECTION 1 : Bingebox veut "show" au lieu de "tv" dans son API
+        const apiMediaType = type === 'tv' ? 'show' : 'movie';
 
-        for (let config of dynamicConfigs) {
-            let prov = config.name;
-            let cat = config.cat;
-            let specificEpisodeId = config.id;
-            let langLabel = config.lang;
-            
-            // On fabrique l'URL virtuelle pour les logs d'échec
-            let apiTargetUrl = `API Pipe -> Provider: ${prov.toUpperCase()} (${cat.toUpperCase()})`;
-            
+        console.log(`[Bingebox] 📡 Interrogation de ${SOURCES.length} sources en parallèle...`);
+
+        let streams = [];
+        let allSubtitles = [];
+        const seenUrls = new Set();
+        const seenSubUrls = new Set();
+
+        // 🌟 CORRECTION: Mapping standard "async" SANS le timeout qui buggait
+        const promises = SOURCES.map(async (sourceName) => {
+            let apiUrl = `${BINGEBOX_API}?tmdbId=${id}&mediaType=${apiMediaType}&title=${encodeURIComponent(title)}&year=${year}&source=${sourceName}`;
+            if (type === 'tv' && s && e) apiUrl += `&season=${s}&episode=${e}`;
+
             try {
-                console.log(`-----------------------------------------------------`);
-                console.log(`[Player] 📡 Request to: ${prov.toUpperCase()} (${cat.toUpperCase()}) [${langLabel}]`);
-                
-                let reqQuery = { 
-                    episodeId: specificEpisodeId,
-                    provider: prov, 
-                    category: cat,
-                    ttl: 86400
-                };
-                
-                if (["dune", "zoro", "arc"].includes(prov)) {
-                    reqQuery.anilistId = parseInt(anilistId);
-                }
-
-                const res = await makeSecureRequest("sources", reqQuery, watchReferer);
-
-                if (!res) {
-                    console.log(`[Player] ⚠️ Provider returned null.`);
-                    // 🌟 CORRECTION WEBHOOK: Ajout de "url"
-                    failedLinks.push({ server_name: prov.toUpperCase(), url: apiTargetUrl, reason: "Null response" });
-                    continue;
-                }
-
-                if (res._blocked_by_cloudflare) {
-                    console.log(`[Player] 🛡️ Blocked by Cloudflare (502/444).`);
-                    // 🌟 CORRECTION WEBHOOK: Ajout de "url"
-                    failedLinks.push({ server_name: prov.toUpperCase(), url: apiTargetUrl, reason: "Blocked by Cloudflare" });
-                    continue;
-                }
-
-                let videoArray = res.sources || res.streams || [];
-                let subArray = res.subtitles || [];
-
-                if (!Array.isArray(videoArray) || videoArray.length === 0) {
-                    const possibleKeys = [cat, 'sub', 'ssub', 'dub', 'hdub', 'hsub'];
-                    for (let k of possibleKeys) {
-                        if (res[k]) {
-                            if (Array.isArray(res[k].streams) && res[k].streams.length > 0) {
-                                videoArray = res[k].streams;
-                                subArray = res[k].subtitles || subArray;
-                                break;
-                            } else if (Array.isArray(res[k].sources) && res[k].sources.length > 0) {
-                                videoArray = res[k].sources;
-                                subArray = res[k].subtitles || subArray;
-                                break;
-                            }
-                        }
+                const res = await soraFetch(apiUrl, {
+                    headers: {
+                        "Referer": BINGEBOX_REFERER,
+                        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
                     }
+                });
+
+                if (!res) { console.log(`   [${sourceName}] ❌ Pas de réponse`); return; }
+
+                const text = await res.text();
+                if (!text) return;
+
+                let json;
+                try { json = JSON.parse(text); } catch { return; }
+
+                if (!json.success || !json.data) {
+                    console.log(`   [${sourceName}] ⚠️ Pas de données`);
+                    return;
                 }
 
-                if (Array.isArray(videoArray) && videoArray.length > 0) {
-                    console.log(`[Player] ✅ ${videoArray.length} video qualities found!`);
+                // 🌟 NOUVEAU : Extraction de TOUTES les qualités disponibles
+                if (json.data.qualities && Object.keys(json.data.qualities).length > 0) {
+                    // On trie du plus grand au plus petit (1080 -> 720 -> 480...)
+                    const sortedQualities = Object.keys(json.data.qualities).sort((a, b) => parseInt(b) - parseInt(a));
                     
-                    for (let s of videoArray) {
-                        if (!s.url) continue;
-
-                        if (s.type === "embed" && videoArray.some(v => v.type === "hls" || v.type === "mp4")) {
-                            console.log(`   -> Ignored (embed) : ${s.url}`);
-                            continue;
+                    for (const quality of sortedQualities) {
+                        const qUrl = json.data.qualities[quality].url;
+                        if (qUrl && !seenUrls.has(qUrl)) {
+                            seenUrls.add(qUrl);
+                            streams.push({
+                                title: `Bingebox ${sourceName.toUpperCase()} (${quality}p)`,
+                                streamUrl: qUrl,
+                                headers: { "Referer": BINGEBOX_REFERER }
+                            });
+                            console.log(`   [${sourceName}] ✅ Qualité ${quality}p ajoutée`);
                         }
-
-                        let label = s.quality || (s.type === 'hls' ? 'Auto' : s.type) || 'Auto';
-                        let ref = s.referer || BASE_URL + "/";
-
-                        streams.push({ 
-                            title: `Server ${prov.toUpperCase()} (${label}) [${langLabel}]`, 
-                            streamUrl: s.url, 
-                            headers: { "Referer": ref } 
-                        });
-                        console.log(`   -> Link added : ${s.url}`);
                     }
                 } else {
-                    console.log(`[Player] ℹ️ No video available for this stream.`);
-                    // 🌟 CORRECTION WEBHOOK: Ajout de "url"
-                    failedLinks.push({ server_name: prov.toUpperCase(), url: apiTargetUrl, reason: "Valid JSON but no video array" });
+                    // Si ce n'est pas un objet "qualities", c'est un lien unique (ex: m3u8)
+                    let videoUrl = json.data.playlist || json.data.url;
+                    
+                    if (!videoUrl) { console.log(`   [${sourceName}] ⚠️ Pas d'URL vidéo`); return; }
+
+                    // Déduplication des streams
+                    if (seenUrls.has(videoUrl)) {
+                        console.log(`   [${sourceName}] ⏭️ Doublon ignoré`);
+                        return;
+                    }
+                    seenUrls.add(videoUrl);
+
+                    const isHLS = videoUrl.includes('.m3u8') || json.data.type === 'hls';
+                    console.log(`   [${sourceName}] ✅ ${isHLS ? 'HLS' : 'MP4'} trouvé`);
+
+                    streams.push({
+                        title: `Bingebox ${sourceName.toUpperCase()} (${isHLS ? 'Auto' : 'Direct'})`,
+                        streamUrl: videoUrl,
+                        headers: { "Referer": BINGEBOX_REFERER }
+                    });
                 }
 
-                if (subArray && Array.isArray(subArray)) {
-                    for (let sub of subArray) {
-                        let lang = (sub.language || sub.lang || sub.label || "").toLowerCase();
-                        if (lang.includes("eng") || lang.includes("english")) {
-                            if (bestSubtitle === "" || !lang.includes("forced")) bestSubtitle = sub.url || sub.file;
-                        }
+                // Sous-titres
+                if (Array.isArray(json.data.captions)) {
+                    for (let cap of json.data.captions) {
+                        if (!cap.url || seenSubUrls.has(cap.url)) continue;
+                        seenSubUrls.add(cap.url);
+
+                        const subReferer = (cap.url.match(/https?:\/\/[^/]+/) || [BINGEBOX_REFERER])[0] + "/";
+
+                        allSubtitles.push({
+                            url: cap.url,
+                            label: cap.label || cap.language || "SUB",
+                            language: cap.language || "",
+                            kind: cap.type === 'srt' ? 'subtitles' : 'captions',
+                            headers: { "Referer": subReferer }
+                        });
                     }
                 }
-
-            } catch (e) {
-                console.log(`[Player] ⚠️ Error with ${prov} : ${e.message}`);
-                // 🌟 CORRECTION WEBHOOK: Ajout de "url"
-                failedLinks.push({ server_name: prov.toUpperCase(), url: apiTargetUrl, reason: e.message });
+            } catch (err) {
+                // Ignore silently individual source failures
             }
-        }
-
-        console.log(`-----------------------------------------------------`);
-        console.log(`[Player] 📊 Summary: ${streams.length} valid video links extracted.`);
-
-        // 🌟 Envoi de la VRAIE URL au tracker
-        sendSupabaseLog("Miruro", "PLAYER", { 
-            media_url: finalMediaUrl, 
-            season_number: "1",
-            ep_number: epNumber,
-            streams_found: streams.length, 
-            subtitles_found: bestSubtitle !== "", 
-            execution_time_ms: Date.now() - startTime, 
-            servers: streams.map(s => ({ nom: s.title, lien: s.streamUrl }))
         });
 
-        // 🌟 Envoi de la VRAIE URL et des failed_links FORMATÉS
-        if (failedLinks.length > 0) {
-            sendSupabaseLog("Miruro", "UNSUPPORTED_HOSTS", { 
-                media_url: finalMediaUrl, 
-                season_number: "1",
-                ep_number: epNumber, 
-                failed_count: failedLinks.length, 
-                failed_links: failedLinks 
-            });
-        }
+        // 🌟 Attente stricte et native de toutes les réponses
+        await Promise.allSettled(promises);
 
-        if (streams.length > 0) {
-            return JSON.stringify({ type: "servers", streams: streams, subtitles: bestSubtitle });
-        } else {
-            return JSON.stringify({ type: "none" });
-        }
-    } catch (error) {
-        sendSupabaseLog("Miruro", "ERROR", { media_url: finalMediaUrl, season_number: "1", error_message: String(error) });
+        console.log(`[Bingebox] 📊 ${streams.length} streams | ${allSubtitles.length} sous-titres`);
+
+        if (streams.length === 0) return JSON.stringify({ type: "none" });
+
+        // Trier les sous-titres : FRE en premier, puis ENG, puis le reste
+        allSubtitles.sort((a, b) => {
+            const getPrio = (s) => {
+                const lang = (s.label || s.language || "").toLowerCase();
+                for (let i = 0; i < SUB_PRIORITY.length; i++) {
+                    if (lang.includes(SUB_PRIORITY[i])) return i;
+                }
+                return 99;
+            };
+            return getPrio(a) - getPrio(b);
+        });
+
+        return JSON.stringify({
+            type: "servers",
+            streams,
+            subtitles: selectBestSubtitle(allSubtitles),
+            subtitlesHeaders: allSubtitles.length > 0
+                ? allSubtitles.find(s => s.url === selectBestSubtitle(allSubtitles))?.headers || {}
+                : {},
+            allSubtitles
+        });
+
+    } catch (e) {
+        console.error(`[Bingebox] ❌ Erreur Stream: ${e.message}`);
         return JSON.stringify({ type: "none" });
     }
 }
 
+// ==========================================
+// 🛠️ OUTIL RÉSEAU
+// ==========================================
 async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
     try {
         if (typeof fetchv2 !== 'undefined') {
             return await fetchv2(url, options.headers ?? {}, options.method ?? 'GET', options.body ?? null);
-        } else {
-            return await fetch(url, options);
         }
+        return await fetch(url, options);
     } catch(e) {
-        try { return await fetch(url, options); } catch(error) { return null; }
+        try { return await fetch(url, options); } catch { return null; }
     }
 }

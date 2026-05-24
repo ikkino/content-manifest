@@ -1,125 +1,101 @@
-function cleanTitle(title) {
-    return title
-        .replace(/&#8217;/g, "'")  
-        .replace(/&#8211;/g, "-")  
-        .replace(/&#[0-9]+;/g, ""); 
-}
-
 async function searchResults(keyword) {
     const results = [];
-    const response = await fetchv2(`https://luciferdonghua.in/?s=${keyword}`);
-    const html = await response.text();
-
-    const regex = /<article class="bs"[^>]*>.*?<a href="([^"]+)"[^>]*>.*?<img src="([^"]+)"[^>]*>.*?<h2[^>]*>(.*?)<\/h2>/gs;
-
-    let match;
-    while ((match = regex.exec(html)) !== null) {
-        results.push({
-            title: cleanTitle(match[3].trim()),
-            image: match[2].trim(),
-            href: match[1].trim()
-        });
-    }
-
-    return JSON.stringify(results);
-}
-
-async function extractDetails(url) {
-    const results = [];
-    const response = await fetchv2(url);
-    const html = await response.text();
-
-    const match = html.match(/<div class="entry-content"[^>]*>([\s\S]*?)<\/div>/);
-
-    let description = "N/A";
-    if (match) {
-        description = match[1]
-            .replace(/<[^>]+>/g, '') 
-            .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(code)) 
-            .replace(/&quot;/g, '"') 
-            .replace(/&apos;/g, "'") 
-            .replace(/&amp;/g, "&") 
-            .trim();
-    }
-
-    results.push({
-        description: description,
-        aliases: 'N/A',
-        airdate: 'N/A'
-    });
-
-    return JSON.stringify(results);
-}
-
-async function extractEpisodes(url) {
-    const results = [];
-    const response = await fetchv2(url);
-    const html = await response.text();
-
-    const regex = /<li data-index="\d+">[\s\S]*?<a href="([^"]+)">/g;
-
-    let match;
-    let count = 1;
-    while ((match = regex.exec(html)) !== null) {
-        results.push({
-            href: match[1].trim(),
-            number: count
-        });
-        count++;
-    }
-
-    results.reverse();
-    return JSON.stringify(results.reverse());
-}
-
-
-async function extractStreamUrl(url) {
+    const postData = `{"searchTerm":"${keyword}","page":1,"limit":100}`;
     try {
-        const response = await fetchv2(url);
-        const html = await response.text();
+        const response = await fetchv2("https://senshi.live/anime/filter", { "Content-Type": "application/json", "Referer": "https://senshi.live/" }, "POST", postData);
+        const data = await response.json();
 
-        const iframeMatch = html.match(/<meta itemprop="embedUrl" content="https?:\/\/geo\.dailymotion\.com\/player\/[^?]+\.html\?video=([a-zA-Z0-9]+)"/);
-        if (!iframeMatch) return JSON.stringify({ streams: [], subtitles: "" });
-
-        const videoId = iframeMatch[1];
-
-        const metaRes = await fetchv2(`https://www.dailymotion.com/player/metadata/video/${videoId}`);
-        const metaJson = await metaRes.json();
-        const hlsLink = metaJson.qualities?.auto?.[0]?.url;
-        if (!hlsLink) return JSON.stringify({ streams: [], subtitles: "" });
-
-        async function getBestHls(hlsUrl) {
-            try {
-                const res = await fetchv2(hlsUrl);
-                const text = await res.text();
-                const regex = /#EXT-X-STREAM-INF:.*RESOLUTION=(\d+)x(\d+).*?\n(https?:\/\/[^\n]+)/g;
-                const streams = [];
-                let match;
-                while ((match = regex.exec(text)) !== null) {
-                    streams.push({ width: parseInt(match[1]), height: parseInt(match[2]), url: match[3] });
-                }
-                if (streams.length === 0) return hlsUrl;
-                streams.sort((a, b) => b.height - a.height);
-                return streams[0].url;
-            } catch {
-                return hlsUrl;
+        if (data.data && Array.isArray(data.data)) {
+            for (const item of data.data) {
+                results.push({
+                    title: item.title,
+                    image: "https://senshi.live" + item.anime_picture,
+                    href: "https://senshi.live/anime/" + item.id
+                });
             }
         }
 
-        const bestHls = await getBestHls(hlsLink);
+        return JSON.stringify(results);
+    } catch (err) {
+        return JSON.stringify([{
+            title: "Error",
+            image: "Error",
+            href: "Error"
+        }]);
+    }
+}
 
-        const subtitles = metaJson.subtitles?.data?.['en-auto']?.urls?.[0] || "";
+async function extractDetails(url) {
+    try {
+        const response = await fetchv2(url);
+        const data = await response.json();
 
-        const result = {
-            streams: ["english", bestHls],
-            subtitles: subtitles
-        };
+        return JSON.stringify([{
+            description: data.ani_description,
+            aliases: data.synonyms,
+            airdate: data.created_at
+        }]);
+    } catch (err) {
+        return JSON.stringify([{
+            description: "Error",
+            aliases: "Error",
+            airdate: "Error"
+        }]);
+    }
+}
 
-        console.log("Extracted stream result:" + JSON.stringify(result));
+async function extractEpisodes(url) {
+    const ID = url.split("/").pop();
+    const results = [];
+    try {
+        const response = await fetchv2("https://senshi.live/episodes/" + ID, {"Referer": "https://senshi.live/"});
+        const data = await response.json();
 
-        return bestHls;
-    } catch {
-        console.log("Extracted stream result:" + JSON.stringify(empty));
-        return JSON.stringify("empty");
+        if (Array.isArray(data)) {
+            for (const ep of data) {
+                results.push({
+                    href: "https://senshi.live/episode-embeds/" + ep.mal_id + "/" + ep.ep_id,
+                    number: ep.ep_id
+                });
+            }
+        }
+
+        return JSON.stringify(results);
+    } catch (err) {
+        return JSON.stringify([{
+            href: "Error",
+            number: "Error"
+        }]);
+    }
+}
+
+async function extractStreamUrl(url) {
+    try {
+        const response = await fetchv2(url, {"Referer": "https://senshi.live/"});
+        const data = await response.json();
+
+        const streams = [];
+        const count = {};
+        for (const item of data) {
+            const status = item.status;
+            if (!count[status]) count[status] = 0;
+            count[status]++;
+            const title = count[status] > 1 ? `${status} ${count[status]}` : status;
+            streams.push({
+                title: title,
+                streamUrl: item.url,
+                headers: { "Referer": "https://senshi.live/" }
+            });
+        }
+
+        return JSON.stringify({
+            streams: streams,
+            subtitle: ""
+        });
+    } catch (err) {
+        return JSON.stringify({
+            streams: [],
+            subtitle: ""
+        });
     }
 }
