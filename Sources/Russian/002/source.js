@@ -1,7 +1,3 @@
-// AniLiberty module for Sora (AsyncJS)
-// Author: emp0ry
-// Version: 1.0.2
-
 const DEFAULT_IMAGE_HOST = "https://aniliberty.top";
 
 function originFromApi(urlOrBase) {
@@ -20,8 +16,52 @@ function fullImg(path, host) {
   return `${base}${path}`;
 }
 
+
+function normalizeAniLibertyHlsUrl(input) {
+  const raw = String(input || '').trim();
+  if (!raw) return null;
+
+  try {
+    const u = new URL(raw);
+    const adParams = [
+      'isWithVideoAds',
+      'isWithVideoAdsAlways',
+      'withVideoAds',
+      'videoAds',
+      'ads',
+      'ad',
+    ];
+
+    for (const key of adParams) {
+      u.searchParams.delete(key);
+    }
+
+    return u.toString();
+  } catch (_) {
+    const parts = raw.split('?');
+    if (parts.length < 2) return raw;
+    const base = parts.shift();
+    const query = parts.join('?');
+    const kept = query
+      .split('&')
+      .filter(Boolean)
+      .filter((part) => {
+        const key = decodeURIComponent(part.split('=')[0] || '').toLowerCase();
+        return ![
+          'iswithvideoads',
+          'iswithvideoadsalways',
+          'withvideoads',
+          'videoads',
+          'ads',
+          'ad',
+        ].includes(key);
+      });
+    return kept.length ? `${base}?${kept.join('&')}` : base;
+  }
+}
+
 function pickBestHls(ep) {
-  return ep?.hls_1080 || ep?.hls_720 || ep?.hls_480 || null;
+  return normalizeAniLibertyHlsUrl(ep?.hls_1080) || normalizeAniLibertyHlsUrl(ep?.hls_720) || normalizeAniLibertyHlsUrl(ep?.hls_480) || null;
 }
 
 function _packEpisode(payload) {
@@ -42,9 +82,6 @@ function _safeJsonParse(s, fallback) {
   }
 }
 
-// ------------------------------------------------------------
-// Detect working API domain
-// ------------------------------------------------------------
 async function checkApiStatus() {
   const domains = [
     "https://aniliberty.top/api/v1/",
@@ -61,9 +98,6 @@ async function checkApiStatus() {
   return "https://aniliberty.top/api/v1/";
 }
 
-// ------------------------------------------------------------
-// Search -> JSON string
-// ------------------------------------------------------------
 async function searchResults(keyword) {
   try {
     const base = await checkApiStatus();
@@ -97,9 +131,6 @@ async function searchResults(keyword) {
   }
 }
 
-// ------------------------------------------------------------
-// Details -> JSON string (Duration: Xm in aliases)
-// ------------------------------------------------------------
 async function extractDetails(url) {
   try {
     const res = await fetchv2(url);
@@ -121,9 +152,6 @@ async function extractDetails(url) {
   }
 }
 
-// ------------------------------------------------------------
-// Episodes -> JSON string (with opening/ending skips)
-// ------------------------------------------------------------
 async function extractEpisodes(url) {
   try {
     const res = await fetchv2(url);
@@ -131,13 +159,12 @@ async function extractEpisodes(url) {
 
     const origin = originFromApi(url);
 
-    const seriesPoster = fullImg(data?.poster?.src, origin);
     const eps = Array.isArray(data?.episodes) ? data.episodes : [];
 
     const out = eps.map((ep, idx) => {
-      const url1080 = ep?.hls_1080 || null;
-      const url720 = ep?.hls_720 || null;
-      const url480 = ep?.hls_480 || null;
+      const url1080 = normalizeAniLibertyHlsUrl(ep?.hls_1080);
+      const url720 = normalizeAniLibertyHlsUrl(ep?.hls_720);
+      const url480 = normalizeAniLibertyHlsUrl(ep?.hls_480);
       const best = url1080 || url720 || url480;
       if (!best) return null;
 
@@ -146,7 +173,7 @@ async function extractEpisodes(url) {
         : (Number.isFinite(ep?.sort_order) ? ep.sort_order : (idx + 1));
 
       const title = ep?.name ? String(ep.name) : `Episode ${num}`;
-      const image = fullImg(ep?.preview?.src, origin) || seriesPoster;
+      const image = fullImg(ep?.preview?.src, origin);
 
       // Build skip blocks only if numbers present
       const opening = (ep?.opening && Number.isFinite(ep.opening.start) && Number.isFinite(ep.opening.stop))
@@ -183,9 +210,6 @@ async function extractEpisodes(url) {
   }
 }
 
-// ------------------------------------------------------------
-// Stream -> RAW URL string
-// ------------------------------------------------------------
 async function extractStreamUrl(url) {
   try {
     const payload = _unpackEpisode(url);
@@ -193,10 +217,10 @@ async function extractStreamUrl(url) {
       return url; // backward compatibility for old episode href format
     }
 
-    const url1080 = (payload.url1080 || "").toString().trim() || null;
-    const url720 = (payload.url720 || "").toString().trim() || null;
-    const url480 = (payload.url480 || "").toString().trim() || null;
-    const fallback = (payload.fallback || "").toString().trim() || null;
+    const url1080 = normalizeAniLibertyHlsUrl(payload.url1080);
+    const url720 = normalizeAniLibertyHlsUrl(payload.url720);
+    const url480 = normalizeAniLibertyHlsUrl(payload.url480);
+    const fallback = normalizeAniLibertyHlsUrl(payload.fallback);
 
     const streams = [];
 

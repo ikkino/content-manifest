@@ -1,15 +1,15 @@
 {
-  "generatedAt": "2026-05-24T19:02:37.542Z",
+  "generatedAt": "2026-05-25T16:15:39.536Z",
   "currentCatalogModules": 63,
   "upstreamDiscovered": 134,
   "candidates": 196,
   "groups": 129,
-  "exported": 63,
-  "rejectedGroups": 66,
+  "exported": 64,
+  "rejectedGroups": 65,
   "previousRemoved": 1,
   "output": {
-    "sourcesDir": "/tmp/sora-full-2026-05-24-language-fix/Sources",
-    "statusOut": "/tmp/sora-full-2026-05-24-language-fix/module-status.json"
+    "sourcesDir": "/private/tmp/sora-daily-20260525T161532Z/catalog/Sources",
+    "statusOut": "/private/tmp/sora-daily-20260525T161532Z/catalog/module-status.json"
   },
   "modules": [
     {
@@ -22,31 +22,31 @@
       "origin": "current",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Arabic/001/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Arabic/001/source.js",
-      "durationMs": 2217
+      "durationMs": 2210
     },
     {
       "language": "Chinese",
       "rank": 1,
       "folder": "001",
-      "sourceName": "Nivod",
-      "id": "BZDdr",
-      "registry": "cufiy",
-      "origin": "cufiy",
-      "manifestUrl": "https://git.luna-app.eu/50n50/sources/raw/branch/main/nivod/nivod.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Chinese/001/source.js",
-      "durationMs": 1254
-    },
-    {
-      "language": "Chinese",
-      "rank": 2,
-      "folder": "002",
       "sourceName": "XiaoXintv",
       "id": "BZVuG",
       "registry": "cufiy",
       "origin": "cufiy",
       "manifestUrl": "https://git.luna-app.eu/50n50/sources/raw/branch/main/xiaoxintv/xiaoxintv.json",
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Chinese/001/source.js",
+      "durationMs": 553
+    },
+    {
+      "language": "Chinese",
+      "rank": 2,
+      "folder": "002",
+      "sourceName": "Nivod",
+      "id": "BZDdr",
+      "registry": "cufiy",
+      "origin": "cufiy",
+      "manifestUrl": "https://git.luna-app.eu/50n50/sources/raw/branch/main/nivod/nivod.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Chinese/002/source.js",
-      "durationMs": 2158
+      "durationMs": 1355
     },
     {
       "language": "Chinese",
@@ -58,7 +58,7 @@
       "origin": "current",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Chinese/003/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Chinese/003/source.js",
-      "durationMs": 2601
+      "durationMs": 2886
     },
     {
       "language": "English",
@@ -70,7 +70,7 @@
       "origin": "current",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/001/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/001/source.js",
-      "durationMs": 120
+      "durationMs": 126
     },
     {
       "language": "English",
@@ -80,9 +80,9 @@
       "id": "mod_1474931208",
       "registry": "content-manifest",
       "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/003/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/002/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/002/source.js",
-      "durationMs": 121
+      "durationMs": 134
     },
     {
       "language": "English",
@@ -92,21 +92,21 @@
       "id": "mod_801950102",
       "registry": "content-manifest",
       "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/002/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/003/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/003/source.js",
-      "durationMs": 132
+      "durationMs": 147
     },
     {
       "language": "English",
       "rank": 4,
       "folder": "004",
-      "sourceName": "Black Clover Pace",
-      "id": "mod_933289838",
+      "sourceName": "Narucannon",
+      "id": "KnqO",
       "registry": "content-manifest",
       "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/005/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/006/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/004/source.js",
-      "durationMs": 139
+      "durationMs": 148
     },
     {
       "language": "English",
@@ -116,21 +116,21 @@
       "id": "mod_2081813780",
       "registry": "content-manifest",
       "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/004/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/005/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/005/source.js",
-      "durationMs": 147
+      "durationMs": 152
     },
     {
       "language": "English",
       "rank": 6,
       "folder": "006",
-      "sourceName": "Narucannon",
-      "id": "KnqO",
+      "sourceName": "Black Clover Pace",
+      "id": "mod_933289838",
       "registry": "content-manifest",
       "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/007/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/004/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/006/source.js",
-      "durationMs": 166
+      "durationMs": 153
     },
     {
       "language": "English",
@@ -140,93 +140,93 @@
       "id": "mod_163960337",
       "registry": "content-manifest",
       "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/006/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/007/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/007/source.js",
-      "durationMs": 255
+      "durationMs": 277
     },
     {
       "language": "English",
       "rank": 8,
       "folder": "008",
-      "sourceName": "One Pace",
-      "id": "mod_291415925",
+      "sourceName": "Borucut",
+      "id": "mod_705601707",
       "registry": "content-manifest",
       "origin": "current",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/009/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/008/source.js",
-      "durationMs": 291
+      "durationMs": 333
     },
     {
       "language": "English",
       "rank": 9,
       "folder": "009",
-      "sourceName": "Borucut",
-      "id": "mod_705601707",
+      "sourceName": "One Pace",
+      "id": "mod_291415925",
       "registry": "content-manifest",
       "origin": "current",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/008/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/009/source.js",
-      "durationMs": 324
+      "durationMs": 363
     },
     {
       "language": "English",
       "rank": 10,
       "folder": "010",
-      "sourceName": "Senshi",
-      "id": "jR5U5",
+      "sourceName": "YouTube",
+      "id": "BVwsb",
       "registry": "cufiy",
       "origin": "cufiy",
-      "manifestUrl": "https://git.luna-app.eu/50n50/sources/raw/branch/main/senshi/senshi.json",
+      "manifestUrl": "https://git.luna-app.eu/50n50/sources/raw/branch/main/youtube/youtube.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/010/source.js",
-      "durationMs": 407
+      "durationMs": 483
     },
     {
       "language": "English",
       "rank": 11,
       "folder": "011",
-      "sourceName": "Bingebox",
-      "id": "jWuL6",
+      "sourceName": "Animetsu",
+      "id": "G7jX",
       "registry": "cufiy",
       "origin": "cufiy",
-      "manifestUrl": "https://gitlab.com/mxfia19-group/module-sora/-/raw/main/bingebox/bingebox.json?ref_type=heads",
+      "manifestUrl": "https://git.luna-app.eu/50n50/sources/raw/branch/main/gojowtf/gojowtf.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/011/source.js",
-      "durationMs": 434
+      "durationMs": 584
     },
     {
       "language": "English",
       "rank": 12,
       "folder": "012",
-      "sourceName": "Kisskh",
-      "id": "BSyfU",
-      "registry": "content-manifest",
-      "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/015/manifest.json",
+      "sourceName": "Bingebox",
+      "id": "jWuL6",
+      "registry": "cufiy",
+      "origin": "cufiy",
+      "manifestUrl": "https://gitlab.com/mxfia19-group/module-sora/-/raw/main/bingebox/bingebox.json?ref_type=heads",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/012/source.js",
-      "durationMs": 738
+      "durationMs": 687
     },
     {
       "language": "English",
       "rank": 13,
       "folder": "013",
-      "sourceName": "Anikoto",
-      "id": "jF12G",
-      "registry": "cufiy",
-      "origin": "cufiy",
-      "manifestUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/anikoto/anikoto.json",
+      "sourceName": "Kisskh",
+      "id": "BSyfU",
+      "registry": "content-manifest",
+      "origin": "current",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/012/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/013/source.js",
-      "durationMs": 829
+      "durationMs": 753
     },
     {
       "language": "English",
       "rank": 14,
       "folder": "014",
-      "sourceName": "Anikuro",
-      "id": "mod_574261971",
-      "registry": "content-manifest",
-      "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/013/manifest.json",
+      "sourceName": "Anikoto",
+      "id": "jF12G",
+      "registry": "cufiy",
+      "origin": "cufiy",
+      "manifestUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/anikoto/anikoto.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/014/source.js",
-      "durationMs": 884
+      "durationMs": 805
     },
     {
       "language": "English",
@@ -236,165 +236,165 @@
       "id": "mod_1443824015",
       "registry": "content-manifest",
       "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/014/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/015/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/015/source.js",
-      "durationMs": 914
+      "durationMs": 908
     },
     {
       "language": "English",
       "rank": 16,
       "folder": "016",
-      "sourceName": "Animetsu",
-      "id": "G7jX",
-      "registry": "cufiy",
-      "origin": "cufiy",
-      "manifestUrl": "https://git.luna-app.eu/50n50/sources/raw/branch/main/gojowtf/gojowtf.json",
+      "sourceName": "AnimeGG",
+      "id": "jhWaO",
+      "registry": "content-manifest",
+      "origin": "current",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/019/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/016/source.js",
-      "durationMs": 1132
+      "durationMs": 1612
     },
     {
       "language": "English",
       "rank": 17,
       "folder": "017",
-      "sourceName": "TokyoInsider",
-      "id": "jRTDu",
-      "registry": "cufiy",
-      "origin": "cufiy",
-      "manifestUrl": "https://git.luna-app.eu/50n50/sources/raw/branch/main/tokyoinsider/tokyoinsider.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/017/source.js",
-      "durationMs": 1447
-    },
-    {
-      "language": "English",
-      "rank": 18,
-      "folder": "018",
       "sourceName": "Miruro",
       "id": "jFDMr",
       "registry": "cufiy",
       "origin": "cufiy",
       "manifestUrl": "https://gitlab.com/mxfia19-group/module-sora/-/raw/main/miruro/miruro.json?ref_type=heads",
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/017/source.js",
+      "durationMs": 1639
+    },
+    {
+      "language": "English",
+      "rank": 18,
+      "folder": "018",
+      "sourceName": "AnimeKai (Hardsub)",
+      "id": "mod_1613446369",
+      "registry": "content-manifest",
+      "origin": "current",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/022/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/018/source.js",
-      "durationMs": 1456
+      "durationMs": 1879
     },
     {
       "language": "English",
       "rank": 19,
       "folder": "019",
-      "sourceName": "AnimeGG",
-      "id": "jhWaO",
-      "registry": "cufiy",
-      "origin": "cufiy",
-      "manifestUrl": "https://git.luna-app.eu/50n50/sources/raw/branch/main/animegg/animegg.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/019/source.js",
-      "durationMs": 1638
-    },
-    {
-      "language": "English",
-      "rank": 20,
-      "folder": "020",
-      "sourceName": "YouTube",
-      "id": "BVwsb",
-      "registry": "content-manifest",
-      "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/022/manifest.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/020/source.js",
-      "durationMs": 1801
-    },
-    {
-      "language": "English",
-      "rank": 21,
-      "folder": "021",
       "sourceName": "AniWorld (ENG SUB)",
       "id": "mod_2063923640",
       "registry": "content-manifest",
       "origin": "current",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/021/manifest.json",
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/019/source.js",
+      "durationMs": 1936
+    },
+    {
+      "language": "English",
+      "rank": 20,
+      "folder": "020",
+      "sourceName": "Senshi",
+      "id": "jR5U5",
+      "registry": "content-manifest",
+      "origin": "current",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/010/manifest.json",
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/020/source.js",
+      "durationMs": 2085
+    },
+    {
+      "language": "English",
+      "rank": 21,
+      "folder": "021",
+      "sourceName": "AnimeKai (Dub)",
+      "id": "mod_150947235",
+      "registry": "luna",
+      "origin": "luna",
+      "manifestUrl": "https://git.luna-app.eu/50n50/sources/raw/branch/main/animekai/dub/animekai.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/021/source.js",
-      "durationMs": 1824
+      "durationMs": 2456
     },
     {
       "language": "English",
       "rank": 22,
       "folder": "022",
-      "sourceName": "AnimeKai (Hardsub)",
-      "id": "mod_1613446369",
-      "registry": "content-manifest",
-      "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/020/manifest.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/022/source.js",
-      "durationMs": 1936
-    },
-    {
-      "language": "English",
-      "rank": 23,
-      "folder": "023",
-      "sourceName": "AnimeKai (Dub)",
-      "id": "mod_150947235",
-      "registry": "content-manifest",
-      "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/024/manifest.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/023/source.js",
-      "durationMs": 2014
-    },
-    {
-      "language": "English",
-      "rank": 24,
-      "folder": "024",
       "sourceName": "AnimeKai",
       "id": "mod_136758277",
       "registry": "luna",
       "origin": "luna",
       "manifestUrl": "https://git.luna-app.eu/50n50/sources/raw/branch/main/animekai/animekai.json",
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/022/source.js",
+      "durationMs": 2462
+    },
+    {
+      "language": "English",
+      "rank": 23,
+      "folder": "023",
+      "sourceName": "VidFast",
+      "id": "B0b0R",
+      "registry": "cufiy",
+      "origin": "cufiy",
+      "manifestUrl": "https://git.luna-app.eu/50n50/sources/raw/branch/main/vidfast/vidfast.json",
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/023/source.js",
+      "durationMs": 3024
+    },
+    {
+      "language": "English",
+      "rank": 24,
+      "folder": "024",
+      "sourceName": "LmAnime",
+      "id": "mod_1671512146",
+      "registry": "content-manifest",
+      "origin": "current",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/025/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/024/source.js",
-      "durationMs": 2504
+      "durationMs": 3488
     },
     {
       "language": "English",
       "rank": 25,
       "folder": "025",
-      "sourceName": "LmAnime",
-      "id": "mod_1671512146",
+      "sourceName": "Aniwave",
+      "id": "zc8g",
       "registry": "content-manifest",
       "origin": "current",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/026/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/025/source.js",
-      "durationMs": 3470
+      "durationMs": 3786
     },
     {
       "language": "English",
       "rank": 26,
       "folder": "026",
-      "sourceName": "Aniwave",
-      "id": "zc8g",
-      "registry": "cufiy",
-      "origin": "cufiy",
-      "manifestUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/aniwave/aniwave.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/026/source.js",
-      "durationMs": 3494
-    },
-    {
-      "language": "English",
-      "rank": 27,
-      "folder": "027",
-      "sourceName": "Ashi (あし) - Literally Everything",
-      "id": "mod_2044822395",
-      "registry": "content-manifest",
-      "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/025/manifest.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/027/source.js",
-      "durationMs": 3831
-    },
-    {
-      "language": "English",
-      "rank": 28,
-      "folder": "028",
       "sourceName": "LuciferDonghua",
       "id": "mod_1985465385",
       "registry": "content-manifest",
       "origin": "current",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/028/manifest.json",
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/026/source.js",
+      "durationMs": 5394
+    },
+    {
+      "language": "English",
+      "rank": 27,
+      "folder": "027",
+      "sourceName": "Anikuro",
+      "id": "jLYn4",
+      "registry": "cufiy",
+      "origin": "cufiy",
+      "manifestUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/anikuro/anikuro.json",
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/027/source.js",
+      "durationMs": 5563
+    },
+    {
+      "language": "English",
+      "rank": 28,
+      "folder": "028",
+      "sourceName": "Ashi (あし) - Literally Everything",
+      "id": "mod_2044822395",
+      "registry": "luna",
+      "origin": "luna",
+      "manifestUrl": "https://git.luna-app.eu/50n50/sources/raw/branch/main/ashi/ashi.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/028/source.js",
-      "durationMs": 4208
+      "durationMs": 5853
     },
     {
       "language": "English",
@@ -406,7 +406,7 @@
       "origin": "cufiy",
       "manifestUrl": "https://git.luna-app.eu/50n50/sources/raw/branch/main/tiktok/tiktok.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/029/source.js",
-      "durationMs": 7249
+      "durationMs": 6348
     },
     {
       "language": "French",
@@ -418,7 +418,7 @@
       "origin": "current",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/001/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/001/source.js",
-      "durationMs": 188
+      "durationMs": 292
     },
     {
       "language": "French",
@@ -426,71 +426,71 @@
       "folder": "002",
       "sourceName": "Purstream",
       "id": "jbdrT",
-      "registry": "cufiy",
-      "origin": "cufiy",
-      "manifestUrl": "https://gitlab.com/mxfia19-group/module-sora/-/raw/main/purstream/purstream.json?ref_type=heads",
+      "registry": "content-manifest",
+      "origin": "current",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/002/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/002/source.js",
-      "durationMs": 661
+      "durationMs": 586
     },
     {
       "language": "French",
       "rank": 3,
       "folder": "003",
-      "sourceName": "VoirAnime",
-      "id": "j5jy1",
-      "registry": "cufiy",
-      "origin": "cufiy",
-      "manifestUrl": "https://gitlab.com/mxfia19-group/module-sora/-/raw/main/voir-anime/voir-anime.json?ref_type=heads",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/003/source.js",
-      "durationMs": 2885
-    },
-    {
-      "language": "French",
-      "rank": 4,
-      "folder": "004",
-      "sourceName": "anime ultra",
-      "id": "jbgew",
-      "registry": "cufiy",
-      "origin": "cufiy",
-      "manifestUrl": "https://gitlab.com/mxfia19-group/module-sora/-/raw/main/anime-ultra/anime-ultra.json?ref_type=heads",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/004/source.js",
-      "durationMs": 3823
-    },
-    {
-      "language": "French",
-      "rank": 5,
-      "folder": "005",
-      "sourceName": "Anime Kami",
-      "id": "j8FTo",
-      "registry": "cufiy",
-      "origin": "cufiy",
-      "manifestUrl": "https://gitlab.com/mxfia19-group/module-sora/-/raw/main/anime-kami/Anime-kami.json?ref_type=heads",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/005/source.js",
-      "durationMs": 3844
-    },
-    {
-      "language": "French",
-      "rank": 6,
-      "folder": "006",
-      "sourceName": "Anime-Sama",
-      "id": "jbZ7D",
-      "registry": "content-manifest",
-      "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/003/manifest.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/006/source.js",
-      "durationMs": 19340
-    },
-    {
-      "language": "French",
-      "rank": 7,
-      "folder": "007",
       "sourceName": "dessin-anime",
       "id": "jayjE",
       "registry": "cufiy",
       "origin": "cufiy",
       "manifestUrl": "https://gitlab.com/mxfia19-group/module-sora/-/raw/main/dessin-anime/dessin-anime.json?ref_type=heads",
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/003/source.js",
+      "durationMs": 1208
+    },
+    {
+      "language": "French",
+      "rank": 4,
+      "folder": "004",
+      "sourceName": "VoirAnime",
+      "id": "j5jy1",
+      "registry": "cufiy",
+      "origin": "cufiy",
+      "manifestUrl": "https://gitlab.com/mxfia19-group/module-sora/-/raw/main/voir-anime/voir-anime.json?ref_type=heads",
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/004/source.js",
+      "durationMs": 2917
+    },
+    {
+      "language": "French",
+      "rank": 5,
+      "folder": "005",
+      "sourceName": "anime ultra",
+      "id": "jbgew",
+      "registry": "content-manifest",
+      "origin": "current",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/004/manifest.json",
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/005/source.js",
+      "durationMs": 3717
+    },
+    {
+      "language": "French",
+      "rank": 6,
+      "folder": "006",
+      "sourceName": "Anime Kami",
+      "id": "j8FTo",
+      "registry": "cufiy",
+      "origin": "cufiy",
+      "manifestUrl": "https://gitlab.com/mxfia19-group/module-sora/-/raw/main/anime-kami/Anime-kami.json?ref_type=heads",
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/006/source.js",
+      "durationMs": 7001
+    },
+    {
+      "language": "French",
+      "rank": 7,
+      "folder": "007",
+      "sourceName": "Anime-Sama",
+      "id": "jbZ7D",
+      "registry": "content-manifest",
+      "origin": "current",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/006/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/007/source.js",
-      "durationMs": 152286
+      "durationMs": 9509
     },
     {
       "language": "German",
@@ -500,21 +500,21 @@
       "id": "mod_1227273859",
       "registry": "content-manifest",
       "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/002/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/001/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/001/source.js",
-      "durationMs": 1823
+      "durationMs": 1882
     },
     {
       "language": "German",
       "rank": 2,
       "folder": "002",
       "sourceName": "AniWorld (GER SUB)",
-      "id": "mod_1733347122",
-      "registry": "content-manifest",
-      "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/001/manifest.json",
+      "id": "mod_298130287",
+      "registry": "luna",
+      "origin": "luna",
+      "manifestUrl": "https://git.luna-app.eu/50n50/sources/raw/branch/main/aniworld/AniWorldGerSub.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/002/source.js",
-      "durationMs": 1878
+      "durationMs": 2037
     },
     {
       "language": "Greek",
@@ -526,7 +526,7 @@
       "origin": "current",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Greek/001/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Greek/001/source.js",
-      "durationMs": 5921
+      "durationMs": 6162
     },
     {
       "language": "Indonesian",
@@ -538,7 +538,7 @@
       "origin": "current",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Indonesian/001/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Indonesian/001/source.js",
-      "durationMs": 3313
+      "durationMs": 3641
     },
     {
       "language": "Italian",
@@ -548,9 +548,9 @@
       "id": "la2d",
       "registry": "content-manifest",
       "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Italian%20(SUB)/001/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Italian/001/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Italian/001/source.js",
-      "durationMs": 1478
+      "durationMs": 1503
     },
     {
       "language": "Italian",
@@ -560,9 +560,9 @@
       "id": "6TxU",
       "registry": "content-manifest",
       "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Italian/001/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Italian/002/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Italian/002/source.js",
-      "durationMs": 1498
+      "durationMs": 1534
     },
     {
       "language": "Italian",
@@ -574,7 +574,7 @@
       "origin": "cufiy",
       "manifestUrl": "https://git.luna-app.eu/50n50/sources/raw/branch/main/animeworld/animeworld.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Italian/003/source.js",
-      "durationMs": 1725
+      "durationMs": 1595
     },
     {
       "language": "Multi",
@@ -586,7 +586,7 @@
       "origin": "current",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Multi/001/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Multi/001/source.js",
-      "durationMs": 374
+      "durationMs": 356
     },
     {
       "language": "Portuguese",
@@ -594,11 +594,11 @@
       "folder": "001",
       "sourceName": "AnimesDigital",
       "id": "BQgz4",
-      "registry": "content-manifest",
-      "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Portuguese/003/manifest.json",
+      "registry": "cufiy",
+      "origin": "cufiy",
+      "manifestUrl": "https://git.luna-app.eu/50n50/sources/raw/branch/main/animesdigital/animesdigital.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Portuguese/001/source.js",
-      "durationMs": 590
+      "durationMs": 546
     },
     {
       "language": "Portuguese",
@@ -606,11 +606,11 @@
       "folder": "002",
       "sourceName": "AniBunker",
       "id": "B6vpy",
-      "registry": "content-manifest",
-      "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Portuguese/001/manifest.json",
+      "registry": "cufiy",
+      "origin": "cufiy",
+      "manifestUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/anibunker/anibunker.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Portuguese/002/source.js",
-      "durationMs": 693
+      "durationMs": 1693
     },
     {
       "language": "Portuguese",
@@ -620,45 +620,45 @@
       "id": "mod_1582804401",
       "registry": "content-manifest",
       "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Portuguese/002/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Portuguese/003/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Portuguese/003/source.js",
-      "durationMs": 1018
+      "durationMs": 1714
     },
     {
       "language": "Russian",
       "rank": 1,
       "folder": "001",
       "sourceName": "AnimeVost",
-      "id": "mod_1363635531",
-      "registry": "content-manifest",
-      "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Russian/001/manifest.json",
+      "id": "j9T1e",
+      "registry": "cufiy",
+      "origin": "cufiy",
+      "manifestUrl": "https://git.luna-app.eu/emp0ry/sources/raw/branch/main/animevost/animevost.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Russian/001/source.js",
-      "durationMs": 279
+      "durationMs": 214
     },
     {
       "language": "Russian",
       "rank": 2,
       "folder": "002",
       "sourceName": "AniLiberty",
-      "id": "mod_1423779956",
-      "registry": "content-manifest",
-      "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Russian/002/manifest.json",
+      "id": "j95VP",
+      "registry": "cufiy",
+      "origin": "cufiy",
+      "manifestUrl": "https://git.luna-app.eu/emp0ry/sources/raw/branch/main/aniliberty/aniliberty.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Russian/002/source.js",
-      "durationMs": 315
+      "durationMs": 301
     },
     {
       "language": "Russian",
       "rank": 3,
       "folder": "003",
-      "sourceName": "YummyAnime",
-      "id": "jxx3t",
+      "sourceName": "ShizaProject",
+      "id": "jossk",
       "registry": "cufiy",
       "origin": "cufiy",
-      "manifestUrl": "https://git.luna-app.eu/emp0ry/sources/raw/branch/main/yummyanime/yummyanime.json",
+      "manifestUrl": "https://git.luna-app.eu/emp0ry/sources/raw/branch/main/shizaproject/shizaproject.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Russian/003/source.js",
-      "durationMs": 464
+      "durationMs": 585
     },
     {
       "language": "Russian",
@@ -670,19 +670,19 @@
       "origin": "current",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Russian/004/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Russian/004/source.js",
-      "durationMs": 557
+      "durationMs": 643
     },
     {
       "language": "Russian",
       "rank": 5,
       "folder": "005",
-      "sourceName": "ShizaProject",
-      "id": "jossk",
-      "registry": "cufiy",
-      "origin": "cufiy",
-      "manifestUrl": "https://git.luna-app.eu/emp0ry/sources/raw/branch/main/shizaproject/shizaproject.json",
+      "sourceName": "YummyAnime",
+      "id": "jxx3t",
+      "registry": "content-manifest",
+      "origin": "current",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Russian/003/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Russian/005/source.js",
-      "durationMs": 567
+      "durationMs": 769
     },
     {
       "language": "Russian",
@@ -690,11 +690,11 @@
       "folder": "006",
       "sourceName": "Anime-Portal",
       "id": "fw1x",
-      "registry": "cufiy",
-      "origin": "cufiy",
-      "manifestUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/animeportal/animeportal.json",
+      "registry": "content-manifest",
+      "origin": "current",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Russian/006/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Russian/006/source.js",
-      "durationMs": 1863
+      "durationMs": 1821
     },
     {
       "language": "Russian",
@@ -706,7 +706,7 @@
       "origin": "cufiy",
       "manifestUrl": "https://git.luna-app.eu/emp0ry/sources/raw/branch/main/anidub/anidub.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Russian/007/source.js",
-      "durationMs": 1870
+      "durationMs": 1830
     },
     {
       "language": "Serbian",
@@ -718,7 +718,7 @@
       "origin": "current",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Serbian/001/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Serbian/001/source.js",
-      "durationMs": 613
+      "durationMs": 390
     },
     {
       "language": "Spanish",
@@ -730,270 +730,193 @@
       "origin": "current",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/001/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/001/source.js",
-      "durationMs": 200
+      "durationMs": 241
     },
     {
       "language": "Spanish",
       "rank": 2,
       "folder": "002",
-      "sourceName": "AnimeAV1",
-      "id": "mod_1898613263",
-      "registry": "content-manifest",
-      "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/002/manifest.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/002/source.js",
-      "durationMs": 987
-    },
-    {
-      "language": "Spanish",
-      "rank": 3,
-      "folder": "003",
       "sourceName": "AnimeNix",
       "id": "mod_1181537046",
       "registry": "content-manifest",
       "origin": "current",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/003/manifest.json",
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/002/source.js",
+      "durationMs": 3977
+    },
+    {
+      "language": "Spanish",
+      "rank": 3,
+      "folder": "003",
+      "sourceName": "AnimeAV1",
+      "id": "mod_1898613263",
+      "registry": "content-manifest",
+      "origin": "current",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/002/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/003/source.js",
-      "durationMs": 2873
+      "durationMs": 15059
+    },
+    {
+      "language": "Spanish",
+      "rank": 4,
+      "folder": "004",
+      "sourceName": "AnimeJara",
+      "id": "jkKSV",
+      "registry": "cufiy",
+      "origin": "cufiy",
+      "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/refs/heads/main/henaojara/henaojara.json",
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/004/source.js",
+      "durationMs": 194901
     },
     {
       "language": "Tamil",
       "rank": 1,
       "folder": "001",
       "sourceName": "1TamilCrow",
-      "id": "mod_1424390621",
-      "registry": "content-manifest",
-      "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Tamil/001/manifest.json",
+      "id": "BttON",
+      "registry": "cufiy",
+      "origin": "cufiy",
+      "manifestUrl": "https://git.luna-app.eu/50n50/sources/raw/branch/main/1tamilcrow/1tamilcrow.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Tamil/001/source.js",
-      "durationMs": 17543
+      "durationMs": 7325
     }
   ],
   "rejected": [
     {
-      "key": "animejara:spanish",
-      "sourceName": "AnimeJara",
-      "language": "Spanish",
+      "key": "tokyoinsider:english",
+      "sourceName": "TokyoInsider",
+      "language": "English",
       "candidates": [
         {
-          "id": "mod_618749585",
-          "sourceName": "AnimeJara",
-          "language": "Spanish",
+          "id": "mod_1854125649",
+          "sourceName": "TokyoInsider",
+          "language": "English",
           "registry": "content-manifest",
           "origin": "current",
-          "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/004/manifest.json",
-          "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/004/source.js",
+          "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/017/manifest.json",
+          "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/017/source.js",
           "repair": null,
           "label": "initial",
           "status": "needs_fix",
-          "failureKind": "stream_resolution_failed_in_test_harness",
-          "durationMs": 310754,
+          "failureKind": "module_runtime_failure",
+          "durationMs": 45169,
           "errors": [
-            "stream: extractStreamUrl timed out",
-            "stream: extractStreamUrl timed out",
-            "stream: extractStreamUrl timed out",
-            "stream: extractStreamUrl timed out",
-            "stream: extractStreamUrl timed out"
-          ],
-          "attempts": [],
-          "health": {
-            "base": {
-              "url": "https://animejara.com/",
-              "status": 200,
-              "ok": true,
-              "contentType": "text/html; charset=UTF-8",
-              "bytes": 186026,
-              "hasData": true,
-              "reason": "ok"
-            },
-            "endpoints": [
-              {
-                "url": "https://animejara.com",
-                "status": 200,
-                "ok": true,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 186026,
-                "hasData": true,
-                "reason": "ok"
-              },
-              {
-                "url": "https://animejara.com/episode/${ANIME_SLUG}-${numTemp}x${numEp}/",
-                "status": 404,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 172438,
-                "hasData": false,
-                "reason": "http_404"
-              },
-              {
-                "url": "https://animejara.com/episode/${slug}-${numTemp}x${numEp}/",
-                "status": 404,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 172426,
-                "hasData": false,
-                "reason": "http_404"
-              },
-              {
-                "url": "https://animejara.com/catalogo/",
-                "status": 200,
-                "ok": true,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 300437,
-                "hasData": true,
-                "reason": "ok"
-              }
-            ]
-          }
-        },
-        {
-          "id": "jkKSV",
-          "sourceName": "AnimeJara",
-          "language": "Spanish",
-          "registry": "cufiy",
-          "origin": "cufiy",
-          "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/refs/heads/main/henaojara/henaojara.json",
-          "scriptUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/dev/henaojara/henaojara.js",
-          "repair": null,
-          "label": "initial",
-          "status": "needs_fix",
-          "failureKind": "missing_details_function",
-          "durationMs": 1056,
-          "errors": [
-            "missing details function",
-            "missing details function",
-            "missing details function"
-          ],
-          "attempts": [],
-          "health": {
-            "base": {
-              "url": "https://animejara.com/",
-              "status": 200,
-              "ok": true,
-              "contentType": "text/html; charset=UTF-8",
-              "bytes": 186026,
-              "hasData": true,
-              "reason": "ok"
-            },
-            "endpoints": [
-              {
-                "url": "https://animejara.com",
-                "status": 200,
-                "ok": true,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 186026,
-                "hasData": true,
-                "reason": "ok"
-              },
-              {
-                "url": "https://animejara.com/episode/${ANIME_SLUG}-${numTemp}x${numEp}/",
-                "status": 404,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 172438,
-                "hasData": false,
-                "reason": "http_404"
-              },
-              {
-                "url": "https://animejara.com/episode/${slug}-${numTemp}x${numEp}/",
-                "status": 404,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 172426,
-                "hasData": false,
-                "reason": "http_404"
-              },
-              {
-                "url": "https://animejara.com/catalogo/",
-                "status": 200,
-                "ok": true,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 300437,
-                "hasData": true,
-                "reason": "ok"
-              }
-            ]
-          }
-        },
-        {
-          "id": "jkKSV",
-          "sourceName": "AnimeJara",
-          "language": "Spanish",
-          "registry": "cufiy",
-          "origin": "cufiy",
-          "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/refs/heads/main/henaojara/henaojara.json",
-          "scriptUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/refs/heads/main/henaojara/henaojara.js",
-          "repair": {
-            "name": "derived_manifest_js_url",
-            "notes": [
-              "Derived script URL from manifest URL: https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/refs/heads/main/henaojara/henaojara.js"
-            ]
-          },
-          "label": "repair_derived_manifest_js_url",
-          "status": "needs_fix",
-          "failureKind": "stream_resolution_failed_in_test_harness",
-          "durationMs": 310809,
-          "errors": [
-            "stream: extractStreamUrl timed out",
-            "stream: extractStreamUrl timed out",
-            "stream: extractStreamUrl timed out",
-            "stream: extractStreamUrl timed out",
-            "stream: extractStreamUrl timed out"
+            "search: searchResults timed out"
           ],
           "attempts": [
             {
-              "name": "derived_manifest_js_url",
-              "notes": [
-                "Derived script URL from manifest URL: https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/refs/heads/main/henaojara/henaojara.js"
-              ]
+              "name": "url_health",
+              "status": "skipped_dead_or_empty",
+              "health": {
+                "base": {
+                  "url": "https://www.tokyoinsider.com/",
+                  "status": 522,
+                  "ok": false,
+                  "contentType": "text/html; charset=UTF-8",
+                  "bytes": 7292,
+                  "hasData": false,
+                  "reason": "http_522"
+                },
+                "endpoints": [
+                  {
+                    "url": "https://www.tokyoinsider.com/anime/search?k=",
+                    "status": 522,
+                    "ok": false,
+                    "contentType": "text/html; charset=UTF-8",
+                    "bytes": 7292,
+                    "hasData": false,
+                    "reason": "http_522"
+                  }
+                ]
+              }
             }
           ],
           "health": {
             "base": {
-              "url": "https://animejara.com/",
-              "status": 200,
-              "ok": true,
+              "url": "https://www.tokyoinsider.com/",
+              "status": 522,
+              "ok": false,
               "contentType": "text/html; charset=UTF-8",
-              "bytes": 186026,
-              "hasData": true,
-              "reason": "ok"
+              "bytes": 7292,
+              "hasData": false,
+              "reason": "http_522"
             },
             "endpoints": [
               {
-                "url": "https://animejara.com",
-                "status": 200,
-                "ok": true,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 186026,
-                "hasData": true,
-                "reason": "ok"
-              },
-              {
-                "url": "https://animejara.com/episode/${ANIME_SLUG}-${numTemp}x${numEp}/",
-                "status": 404,
+                "url": "https://www.tokyoinsider.com/anime/search?k=",
+                "status": 522,
                 "ok": false,
                 "contentType": "text/html; charset=UTF-8",
-                "bytes": 172438,
+                "bytes": 7292,
                 "hasData": false,
-                "reason": "http_404"
-              },
+                "reason": "http_522"
+              }
+            ]
+          }
+        },
+        {
+          "id": "jRTDu",
+          "sourceName": "TokyoInsider",
+          "language": "English",
+          "registry": "cufiy",
+          "origin": "cufiy",
+          "manifestUrl": "https://git.luna-app.eu/50n50/sources/raw/branch/main/tokyoinsider/tokyoinsider.json",
+          "scriptUrl": "https://git.luna-app.eu/50n50/sources/raw/branch/main/tokyoinsider/tokyoinsider.js",
+          "repair": null,
+          "label": "initial",
+          "status": "needs_fix",
+          "failureKind": "module_runtime_failure",
+          "durationMs": 45143,
+          "errors": [
+            "search: searchResults timed out"
+          ],
+          "attempts": [
+            {
+              "name": "url_health",
+              "status": "skipped_dead_or_empty",
+              "health": {
+                "base": {
+                  "url": "https://www.tokyoinsider.com/",
+                  "status": 522,
+                  "ok": false,
+                  "contentType": "text/html; charset=UTF-8",
+                  "bytes": 7292,
+                  "hasData": false,
+                  "reason": "http_522"
+                },
+                "endpoints": [
+                  {
+                    "url": "https://www.tokyoinsider.com/anime/search?k=",
+                    "status": 522,
+                    "ok": false,
+                    "contentType": "text/html; charset=UTF-8",
+                    "bytes": 7292,
+                    "hasData": false,
+                    "reason": "http_522"
+                  }
+                ]
+              }
+            }
+          ],
+          "health": {
+            "base": {
+              "url": "https://www.tokyoinsider.com/",
+              "status": 522,
+              "ok": false,
+              "contentType": "text/html; charset=UTF-8",
+              "bytes": 7292,
+              "hasData": false,
+              "reason": "http_522"
+            },
+            "endpoints": [
               {
-                "url": "https://animejara.com/episode/${slug}-${numTemp}x${numEp}/",
-                "status": 404,
+                "url": "https://www.tokyoinsider.com/anime/search?k=",
+                "status": 522,
                 "ok": false,
                 "contentType": "text/html; charset=UTF-8",
-                "bytes": 172426,
+                "bytes": 7292,
                 "hasData": false,
-                "reason": "http_404"
-              },
-              {
-                "url": "https://animejara.com/catalogo/",
-                "status": 200,
-                "ok": true,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 300437,
-                "hasData": true,
-                "reason": "ok"
+                "reason": "http_522"
               }
             ]
           }
@@ -1017,7 +940,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "episodes_failed",
-          "durationMs": 58364,
+          "durationMs": 21184,
           "errors": [
             "episodes: extractEpisodes returned an unusable result",
             "episodes: extractEpisodes returned an unusable result",
@@ -1064,7 +987,7 @@
                 "status": 200,
                 "ok": true,
                 "contentType": "application/json",
-                "bytes": 455,
+                "bytes": 447,
                 "hasData": true,
                 "reason": "ok"
               }
@@ -1090,7 +1013,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "script_unavailable",
-          "durationMs": 153,
+          "durationMs": 163,
           "errors": [
             "script_load: HTTP 404 Not Found"
           ],
@@ -1133,7 +1056,7 @@
           "label": "repair_manifest_scriptUrl",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 111,
+          "durationMs": 108,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -1219,9 +1142,9 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 30172,
+          "durationMs": 35266,
           "errors": [
-            "search: searchResults timed out"
+            "search: searchResults returned an unusable result"
           ],
           "attempts": [
             {
@@ -1347,7 +1270,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "stream_resolution_failed_in_test_harness",
-          "durationMs": 12362,
+          "durationMs": 12091,
           "errors": [
             "stream: extractStreamUrl returned an unusable result",
             "stream: extractStreamUrl returned an unusable result",
@@ -1362,7 +1285,7 @@
               "status": 200,
               "ok": true,
               "contentType": "text/html; charset=UTF-8",
-              "bytes": 440296,
+              "bytes": 432651,
               "hasData": true,
               "reason": "ok"
             },
@@ -1372,7 +1295,7 @@
                 "status": 200,
                 "ok": true,
                 "contentType": "text/html; charset=UTF-8",
-                "bytes": 440296,
+                "bytes": 432651,
                 "hasData": true,
                 "reason": "ok"
               },
@@ -1425,7 +1348,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "stream_resolution_failed_in_test_harness",
-          "durationMs": 16059,
+          "durationMs": 15196,
           "errors": [
             "stream: extractStreamUrl returned an unusable result",
             "stream: extractStreamUrl returned an unusable result",
@@ -1491,7 +1414,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "script_unavailable",
-          "durationMs": 151,
+          "durationMs": 147,
           "errors": [
             "script_load: HTTP 404 Not Found"
           ],
@@ -1534,7 +1457,7 @@
           "label": "repair_manifest_scriptUrl",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 2,
+          "durationMs": 1,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -1620,7 +1543,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "stream_resolution_failed_in_test_harness",
-          "durationMs": 4550,
+          "durationMs": 3938,
           "errors": [
             "stream: extractStreamUrl returned an unusable result",
             "stream: extractStreamUrl returned an unusable result",
@@ -1635,7 +1558,7 @@
               "status": 200,
               "ok": true,
               "contentType": "text/html; charset=utf-8",
-              "bytes": 1795467,
+              "bytes": 1795461,
               "hasData": true,
               "reason": "ok"
             },
@@ -1672,7 +1595,7 @@
                 "status": 200,
                 "ok": true,
                 "contentType": "text/html; charset=utf-8",
-                "bytes": 1795453,
+                "bytes": 1795466,
                 "hasData": true,
                 "reason": "ok"
               }
@@ -1698,7 +1621,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "episodes_failed",
-          "durationMs": 1274,
+          "durationMs": 1401,
           "errors": [
             "episodes: extractEpisodes returned an unusable result",
             "episodes: extractEpisodes returned an unusable result",
@@ -1711,7 +1634,7 @@
               "status": 200,
               "ok": true,
               "contentType": "text/html; charset=utf-8",
-              "bytes": 160263,
+              "bytes": 160272,
               "hasData": true,
               "reason": "ok"
             },
@@ -1742,7 +1665,7 @@
                 "status": 404,
                 "ok": false,
                 "contentType": "text/html; charset=utf-8",
-                "bytes": 14817,
+                "bytes": 14816,
                 "hasData": false,
                 "reason": "http_404"
               }
@@ -1768,7 +1691,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "stream_resolution_failed_in_test_harness",
-          "durationMs": 6410,
+          "durationMs": 4538,
           "errors": [
             "stream: extractStreamUrl returned an unusable result"
           ],
@@ -1779,7 +1702,7 @@
               "status": 200,
               "ok": true,
               "contentType": "text/html; charset=UTF-8",
-              "bytes": 237317,
+              "bytes": 237276,
               "hasData": true,
               "reason": "ok"
             },
@@ -1789,7 +1712,7 @@
                 "status": 404,
                 "ok": false,
                 "contentType": "text/html",
-                "bytes": 1342,
+                "bytes": 1343,
                 "hasData": false,
                 "reason": "http_404"
               }
@@ -1815,7 +1738,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "stream_resolution_failed_in_test_harness",
-          "durationMs": 26509,
+          "durationMs": 13644,
           "errors": [
             "stream: extractStreamUrl returned an unusable result",
             "stream: extractStreamUrl returned an unusable result",
@@ -1893,7 +1816,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "script_unavailable",
-          "durationMs": 146,
+          "durationMs": 144,
           "errors": [
             "script_load: HTTP 404 Not Found"
           ],
@@ -1912,7 +1835,7 @@
               "status": 200,
               "ok": true,
               "contentType": "text/html; charset=UTF-8",
-              "bytes": 155447,
+              "bytes": 153630,
               "hasData": true,
               "reason": "ok"
             },
@@ -1936,7 +1859,7 @@
           "label": "repair_manifest_scriptUrl",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 522,
+          "durationMs": 995,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -1954,7 +1877,7 @@
               "status": 200,
               "ok": true,
               "contentType": "text/html; charset=UTF-8",
-              "bytes": 155447,
+              "bytes": 153630,
               "hasData": true,
               "reason": "ok"
             },
@@ -1978,7 +1901,7 @@
           "label": "repair_derived_manifest_js_url",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 368,
+          "durationMs": 1159,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -1996,7 +1919,7 @@
               "status": 200,
               "ok": true,
               "contentType": "text/html; charset=UTF-8",
-              "bytes": 155447,
+              "bytes": 153630,
               "hasData": true,
               "reason": "ok"
             },
@@ -2022,7 +1945,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 416,
+          "durationMs": 609,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -2033,7 +1956,7 @@
               "status": 200,
               "ok": true,
               "contentType": "text/html; charset=UTF-8",
-              "bytes": 453398,
+              "bytes": 453401,
               "hasData": true,
               "reason": "ok"
             },
@@ -2078,7 +2001,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 199,
+          "durationMs": 211,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -2152,7 +2075,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "stream_resolution_failed_in_test_harness",
-          "durationMs": 3699,
+          "durationMs": 7202,
           "errors": [
             "stream: extractStreamUrl returned an unusable result",
             "stream: extractStreamUrl returned an unusable result",
@@ -2167,7 +2090,7 @@
               "status": 200,
               "ok": true,
               "contentType": "text/html; charset=UTF-8",
-              "bytes": 116551,
+              "bytes": 116439,
               "hasData": true,
               "reason": "ok"
             },
@@ -2177,7 +2100,7 @@
                 "status": 200,
                 "ok": true,
                 "contentType": "text/html; charset=UTF-8",
-                "bytes": 116551,
+                "bytes": 116439,
                 "hasData": true,
                 "reason": "ok"
               },
@@ -2186,7 +2109,7 @@
                 "status": 200,
                 "ok": true,
                 "contentType": "text/html; charset=UTF-8",
-                "bytes": 116551,
+                "bytes": 116439,
                 "hasData": true,
                 "reason": "ok"
               }
@@ -2212,7 +2135,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "script_unavailable",
-          "durationMs": 148,
+          "durationMs": 142,
           "errors": [
             "script_load: HTTP 404 Not Found"
           ],
@@ -2230,8 +2153,8 @@
               "url": "https://vidmoly.to/",
               "status": 200,
               "ok": true,
-              "contentType": "text/html; charset=utf-8",
-              "bytes": 472,
+              "contentType": "text/html;charset=UTF-8",
+              "bytes": 3086,
               "hasData": true,
               "reason": "ok"
             },
@@ -2255,7 +2178,7 @@
           "label": "repair_manifest_scriptUrl",
           "status": "needs_fix",
           "failureKind": "stream_resolution_failed_in_test_harness",
-          "durationMs": 3635,
+          "durationMs": 13048,
           "errors": [
             "stream: extractStreamUrl returned an unusable result",
             "stream: extractStreamUrl returned an unusable result",
@@ -2276,8 +2199,8 @@
               "url": "https://vidmoly.to/",
               "status": 200,
               "ok": true,
-              "contentType": "text/html; charset=utf-8",
-              "bytes": 472,
+              "contentType": "text/html;charset=UTF-8",
+              "bytes": 3086,
               "hasData": true,
               "reason": "ok"
             },
@@ -2301,7 +2224,7 @@
           "label": "repair_derived_manifest_js_url",
           "status": "needs_fix",
           "failureKind": "stream_resolution_failed_in_test_harness",
-          "durationMs": 3400,
+          "durationMs": 2594,
           "errors": [
             "stream: extractStreamUrl returned an unusable result",
             "stream: extractStreamUrl returned an unusable result",
@@ -2322,8 +2245,8 @@
               "url": "https://vidmoly.to/",
               "status": 200,
               "ok": true,
-              "contentType": "text/html; charset=utf-8",
-              "bytes": 472,
+              "contentType": "text/html;charset=UTF-8",
+              "bytes": 3086,
               "hasData": true,
               "reason": "ok"
             },
@@ -2349,7 +2272,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 646,
+          "durationMs": 466,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -2470,7 +2393,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 285,
+          "durationMs": 225,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -2592,7 +2515,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 379,
+          "durationMs": 592,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -2720,7 +2643,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 257,
+          "durationMs": 441,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -2848,7 +2771,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 318,
+          "durationMs": 316,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -2976,7 +2899,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 365,
+          "durationMs": 1343,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -2987,7 +2910,7 @@
               "status": 200,
               "ok": true,
               "contentType": "text/html; charset=utf-8",
-              "bytes": 74593,
+              "bytes": 73920,
               "hasData": true,
               "reason": "ok"
             },
@@ -3023,9 +2946,9 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "stream_resolution_failed_in_test_harness",
-          "durationMs": 42419,
+          "durationMs": 159852,
           "errors": [
-            "stream: extractStreamUrl returned an unusable result",
+            "stream: extractStreamUrl timed out",
             "stream: extractStreamUrl returned an unusable result",
             "stream: extractStreamUrl returned an unusable result",
             "stream: extractStreamUrl returned an unusable result",
@@ -3101,7 +3024,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "stream_resolution_failed_in_test_harness",
-          "durationMs": 42277,
+          "durationMs": 42520,
           "errors": [
             "stream: extractStreamUrl returned an unusable result",
             "stream: extractStreamUrl returned an unusable result",
@@ -3257,7 +3180,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "script_unavailable",
-          "durationMs": 154,
+          "durationMs": 139,
           "errors": [
             "script_load: HTTP 404 Not Found"
           ],
@@ -3275,8 +3198,8 @@
               "url": "https://animexin.dev/",
               "status": 200,
               "ok": true,
-              "contentType": "text/html; charset=UTF-8",
-              "bytes": 141622,
+              "contentType": "text/html",
+              "bytes": 147447,
               "hasData": true,
               "reason": "ok"
             },
@@ -3300,7 +3223,7 @@
           "label": "repair_manifest_scriptUrl",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 874,
+          "durationMs": 706,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -3317,8 +3240,8 @@
               "url": "https://animexin.dev/",
               "status": 200,
               "ok": true,
-              "contentType": "text/html; charset=UTF-8",
-              "bytes": 141622,
+              "contentType": "text/html",
+              "bytes": 147447,
               "hasData": true,
               "reason": "ok"
             },
@@ -3342,7 +3265,7 @@
           "label": "repair_derived_manifest_js_url",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 1226,
+          "durationMs": 677,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -3359,8 +3282,8 @@
               "url": "https://animexin.dev/",
               "status": 200,
               "ok": true,
-              "contentType": "text/html; charset=UTF-8",
-              "bytes": 141622,
+              "contentType": "text/html",
+              "bytes": 147447,
               "hasData": true,
               "reason": "ok"
             },
@@ -3386,7 +3309,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 662,
+          "durationMs": 610,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -3397,7 +3320,7 @@
               "status": 200,
               "ok": true,
               "contentType": "text/html; charset=UTF-8",
-              "bytes": 323534,
+              "bytes": 323185,
               "hasData": true,
               "reason": "ok"
             },
@@ -3407,7 +3330,7 @@
                 "status": 200,
                 "ok": true,
                 "contentType": "text/html; charset=UTF-8",
-                "bytes": 323625,
+                "bytes": 322221,
                 "hasData": true,
                 "reason": "ok"
               },
@@ -3416,7 +3339,7 @@
                 "status": 200,
                 "ok": true,
                 "contentType": "text/html; charset=UTF-8",
-                "bytes": 323534,
+                "bytes": 323185,
                 "hasData": true,
                 "reason": "ok"
               },
@@ -3448,7 +3371,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 30246,
+          "durationMs": 45171,
           "errors": [
             "search: searchResults timed out"
           ],
@@ -3469,9 +3392,12 @@
                 "endpoints": [
                   {
                     "url": "https://aniwatchtv.to/search?keyword=",
+                    "status": 522,
                     "ok": false,
+                    "contentType": "text/html; charset=UTF-8",
+                    "bytes": 7254,
                     "hasData": false,
-                    "reason": "Timeout after 30000ms"
+                    "reason": "http_522"
                   },
                   {
                     "url": "https://aniwatchtv.to/ajax/v2/episode/list/${movieId}",
@@ -3484,15 +3410,21 @@
                   },
                   {
                     "url": "https://aniwatchtv.to/ajax/v2/episode/servers?episodeId=${ID}",
+                    "status": 522,
                     "ok": false,
+                    "contentType": "text/html; charset=UTF-8",
+                    "bytes": 7254,
                     "hasData": false,
-                    "reason": "Timeout after 30000ms"
+                    "reason": "http_522"
                   },
                   {
                     "url": "https://aniwatchtv.to/ajax/v2/episode/sources?id=${serverId}",
+                    "status": 522,
                     "ok": false,
+                    "contentType": "text/html; charset=UTF-8",
+                    "bytes": 7254,
                     "hasData": false,
-                    "reason": "Timeout after 30000ms"
+                    "reason": "http_522"
                   }
                 ]
               }
@@ -3511,9 +3443,12 @@
             "endpoints": [
               {
                 "url": "https://aniwatchtv.to/search?keyword=",
+                "status": 522,
                 "ok": false,
+                "contentType": "text/html; charset=UTF-8",
+                "bytes": 7254,
                 "hasData": false,
-                "reason": "Timeout after 30000ms"
+                "reason": "http_522"
               },
               {
                 "url": "https://aniwatchtv.to/ajax/v2/episode/list/${movieId}",
@@ -3526,15 +3461,21 @@
               },
               {
                 "url": "https://aniwatchtv.to/ajax/v2/episode/servers?episodeId=${ID}",
+                "status": 522,
                 "ok": false,
+                "contentType": "text/html; charset=UTF-8",
+                "bytes": 7254,
                 "hasData": false,
-                "reason": "Timeout after 30000ms"
+                "reason": "http_522"
               },
               {
                 "url": "https://aniwatchtv.to/ajax/v2/episode/sources?id=${serverId}",
+                "status": 522,
                 "ok": false,
+                "contentType": "text/html; charset=UTF-8",
+                "bytes": 7254,
                 "hasData": false,
-                "reason": "Timeout after 30000ms"
+                "reason": "http_522"
               }
             ]
           }
@@ -3558,7 +3499,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "script_unavailable",
-          "durationMs": 69075,
+          "durationMs": 10342,
           "errors": [
             "script_load: fetch failed"
           ],
@@ -3603,7 +3544,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "stream_resolution_failed_in_test_harness",
-          "durationMs": 6203,
+          "durationMs": 7696,
           "errors": [
             "stream: extractStreamUrl returned an unusable result",
             "stream: extractStreamUrl returned an unusable result",
@@ -3618,7 +3559,7 @@
               "status": 200,
               "ok": true,
               "contentType": "text/html; charset=UTF-8",
-              "bytes": 103657,
+              "bytes": 103936,
               "hasData": true,
               "reason": "ok"
             },
@@ -3654,7 +3595,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 303,
+          "durationMs": 285,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -3710,7 +3651,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 654,
+          "durationMs": 731,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -3757,7 +3698,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 17787,
+          "durationMs": 6836,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -3831,7 +3772,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "details_failed",
-          "durationMs": 426,
+          "durationMs": 248,
           "errors": [
             "details: extractDetails returned an unusable result",
             "details: extractDetails returned an unusable result",
@@ -3907,7 +3848,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "script_unavailable",
-          "durationMs": 199,
+          "durationMs": 158,
           "errors": [
             "script_load: HTTP 404 Not Found"
           ],
@@ -3950,7 +3891,7 @@
           "label": "repair_manifest_scriptUrl",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 470,
+          "durationMs": 660,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -3992,7 +3933,7 @@
           "label": "repair_derived_manifest_js_url",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 423,
+          "durationMs": 418,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -4036,7 +3977,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 159,
+          "durationMs": 329,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -4047,7 +3988,7 @@
               "status": 200,
               "ok": true,
               "contentType": "text/html; charset=UTF-8",
-              "bytes": 263061,
+              "bytes": 262686,
               "hasData": true,
               "reason": "ok"
             },
@@ -4073,7 +4014,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "script_unavailable",
-          "durationMs": 120,
+          "durationMs": 124,
           "errors": [
             "script_load: HTTP 404 Not Found"
           ],
@@ -4092,7 +4033,7 @@
               "status": 200,
               "ok": true,
               "contentType": "text/html; charset=UTF-8",
-              "bytes": 117191,
+              "bytes": 121204,
               "hasData": true,
               "reason": "ok"
             },
@@ -4116,7 +4057,7 @@
           "label": "repair_manifest_scriptUrl",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 283,
+          "durationMs": 245,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -4134,7 +4075,7 @@
               "status": 200,
               "ok": true,
               "contentType": "text/html; charset=UTF-8",
-              "bytes": 117191,
+              "bytes": 121204,
               "hasData": true,
               "reason": "ok"
             },
@@ -4158,7 +4099,7 @@
           "label": "repair_derived_manifest_js_url",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 269,
+          "durationMs": 242,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -4176,7 +4117,7 @@
               "status": 200,
               "ok": true,
               "contentType": "text/html; charset=UTF-8",
-              "bytes": 117191,
+              "bytes": 121204,
               "hasData": true,
               "reason": "ok"
             },
@@ -4202,7 +4143,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 1394,
+          "durationMs": 1585,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -4249,7 +4190,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "details_failed",
-          "durationMs": 212,
+          "durationMs": 138,
           "errors": [
             "details: extractDetails returned an unusable result"
           ],
@@ -4260,7 +4201,7 @@
               "status": 200,
               "ok": true,
               "contentType": "text/html; charset=UTF-8",
-              "bytes": 358766,
+              "bytes": 349804,
               "hasData": true,
               "reason": "ok"
             },
@@ -4293,7 +4234,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 450,
+          "durationMs": 491,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -4340,7 +4281,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 497,
+          "durationMs": 501,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -4412,7 +4353,7 @@
           "label": "repair_patch_known_source_issues",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 151,
+          "durationMs": 111,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -4493,7 +4434,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 386,
+          "durationMs": 583,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -4565,7 +4506,7 @@
           "label": "repair_patch_known_source_issues",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 568,
+          "durationMs": 116,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -4646,7 +4587,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 550,
+          "durationMs": 731,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -4718,7 +4659,7 @@
           "label": "repair_patch_known_source_issues",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 150,
+          "durationMs": 118,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -4799,7 +4740,7 @@
           "label": "initial",
           "status": "offline",
           "failureKind": "stream_resolution_failed_in_test_harness",
-          "durationMs": 192137,
+          "durationMs": 72707,
           "errors": [
             "stream: fetch failed",
             "stream: fetch failed",
@@ -4925,7 +4866,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 30259,
+          "durationMs": 45358,
           "errors": [
             "search: searchResults timed out"
           ],
@@ -4955,9 +4896,12 @@
                   },
                   {
                     "url": "https://aniwatchtv.to/ajax/v2/episode/list/${movieId}",
+                    "status": 522,
                     "ok": false,
+                    "contentType": "text/html; charset=UTF-8",
+                    "bytes": 7254,
                     "hasData": false,
-                    "reason": "Timeout after 30000ms"
+                    "reason": "http_522"
                   },
                   {
                     "url": "https://aniwatchtv.to/ajax/v2/episode/servers?episodeId=${ID}",
@@ -4970,9 +4914,12 @@
                   },
                   {
                     "url": "https://aniwatchtv.to/ajax/v2/episode/sources?id=${serverId}",
+                    "status": 522,
                     "ok": false,
+                    "contentType": "text/html; charset=UTF-8",
+                    "bytes": 7254,
                     "hasData": false,
-                    "reason": "Timeout after 30000ms"
+                    "reason": "http_522"
                   }
                 ]
               }
@@ -5000,9 +4947,12 @@
               },
               {
                 "url": "https://aniwatchtv.to/ajax/v2/episode/list/${movieId}",
+                "status": 522,
                 "ok": false,
+                "contentType": "text/html; charset=UTF-8",
+                "bytes": 7254,
                 "hasData": false,
-                "reason": "Timeout after 30000ms"
+                "reason": "http_522"
               },
               {
                 "url": "https://aniwatchtv.to/ajax/v2/episode/servers?episodeId=${ID}",
@@ -5015,9 +4965,12 @@
               },
               {
                 "url": "https://aniwatchtv.to/ajax/v2/episode/sources?id=${serverId}",
+                "status": 522,
                 "ok": false,
+                "contentType": "text/html; charset=UTF-8",
+                "bytes": 7254,
                 "hasData": false,
-                "reason": "Timeout after 30000ms"
+                "reason": "http_522"
               }
             ]
           }
@@ -5041,7 +4994,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "script_unavailable",
-          "durationMs": 148,
+          "durationMs": 217,
           "errors": [
             "script_load: HTTP 404 Not Found"
           ],
@@ -5102,7 +5055,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 329,
+          "durationMs": 466,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -5230,7 +5183,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 709,
+          "durationMs": 19364,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -5267,7 +5220,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "stream_resolution_failed_in_test_harness",
-          "durationMs": 1067,
+          "durationMs": 793,
           "errors": [
             "stream: extractStreamUrl returned an unusable result",
             "stream: extractStreamUrl returned an unusable result",
@@ -5345,9 +5298,9 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "stream_resolution_failed_in_test_harness",
-          "durationMs": 30802,
+          "durationMs": 13206,
           "errors": [
-            "stream: extractStreamUrl timed out"
+            "stream: extractStreamUrl returned an unusable result"
           ],
           "attempts": [],
           "health": {
@@ -5356,7 +5309,7 @@
               "status": 200,
               "ok": true,
               "contentType": "text/html; charset=UTF-8",
-              "bytes": 109675,
+              "bytes": 109614,
               "hasData": true,
               "reason": "ok"
             },
@@ -5417,9 +5370,9 @@
           "label": "repair_derived_manifest_js_url",
           "status": "needs_fix",
           "failureKind": "stream_resolution_failed_in_test_harness",
-          "durationMs": 30584,
+          "durationMs": 13363,
           "errors": [
-            "stream: extractStreamUrl timed out"
+            "stream: extractStreamUrl returned an unusable result"
           ],
           "attempts": [
             {
@@ -5435,7 +5388,7 @@
               "status": 200,
               "ok": true,
               "contentType": "text/html; charset=UTF-8",
-              "bytes": 109675,
+              "bytes": 109614,
               "hasData": true,
               "reason": "ok"
             },
@@ -5498,7 +5451,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 565,
+          "durationMs": 270,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -5572,7 +5525,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "episodes_failed",
-          "durationMs": 2264,
+          "durationMs": 2020,
           "errors": [
             "episodes: extractEpisodes returned an unusable result",
             "episodes: extractEpisodes returned an unusable result",
@@ -5585,7 +5538,7 @@
               "status": 200,
               "ok": true,
               "contentType": "text/html; charset=UTF-8",
-              "bytes": 73228,
+              "bytes": 73438,
               "hasData": true,
               "reason": "ok"
             },
@@ -5630,7 +5583,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "stream_resolution_failed_in_test_harness",
-          "durationMs": 451071,
+          "durationMs": 496219,
           "errors": [
             "stream: extractStreamUrl timed out",
             "stream: extractStreamUrl timed out",
@@ -5756,9 +5709,9 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 30269,
+          "durationMs": 25031,
           "errors": [
-            "search: searchResults timed out"
+            "search: searchResults returned an unusable result"
           ],
           "attempts": [
             {
@@ -5866,7 +5819,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "details_failed",
-          "durationMs": 488,
+          "durationMs": 178,
           "errors": [
             "details: extractDetails returned an unusable result"
           ],
@@ -5913,7 +5866,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "episodes_failed",
-          "durationMs": 264,
+          "durationMs": 182,
           "errors": [
             "episodes: Cannot read properties of undefined (reading 'map')"
           ],
@@ -5969,7 +5922,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "stream_resolution_failed_in_test_harness",
-          "durationMs": 4419,
+          "durationMs": 4629,
           "errors": [
             "stream: extractStreamUrl returned an unusable result",
             "stream: extractStreamUrl returned an unusable result",
@@ -5984,7 +5937,7 @@
               "status": 200,
               "ok": true,
               "contentType": "text/html; charset=UTF-8",
-              "bytes": 372630,
+              "bytes": 372530,
               "hasData": true,
               "reason": "ok"
             },
@@ -6020,7 +5973,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 380,
+          "durationMs": 383,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -6057,7 +6010,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 813,
+          "durationMs": 681,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -6122,7 +6075,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "stream_resolution_failed_in_test_harness",
-          "durationMs": 5936,
+          "durationMs": 5719,
           "errors": [
             "stream: extractStreamUrl returned an unusable result",
             "stream: extractStreamUrl returned an unusable result",
@@ -6162,21 +6115,21 @@
               },
               {
                 "url": "https://vidsrc.cc/v2/embed/movie/${movieId}",
-                "status": 200,
-                "ok": true,
-                "contentType": "text/html; charset=utf-8",
-                "bytes": 17508,
-                "hasData": true,
-                "reason": "ok"
+                "status": 522,
+                "ok": false,
+                "contentType": "text/html; charset=UTF-8",
+                "bytes": 7230,
+                "hasData": false,
+                "reason": "http_522"
               },
               {
                 "url": "https://vidsrc.cc/v2/embed/tv/${showId}/${seasonNumber}/${episode.episode_number}",
-                "status": 200,
-                "ok": true,
-                "contentType": "text/html; charset=utf-8",
-                "bytes": 17561,
-                "hasData": true,
-                "reason": "ok"
+                "status": 522,
+                "ok": false,
+                "contentType": "text/html; charset=UTF-8",
+                "bytes": 7230,
+                "hasData": false,
+                "reason": "http_522"
               }
             ]
           }
@@ -6200,7 +6153,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 1114,
+          "durationMs": 1020,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -6274,7 +6227,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 17193,
+          "durationMs": 5180,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -6342,7 +6295,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "script_unavailable",
-          "durationMs": 277,
+          "durationMs": 252,
           "errors": [
             "script_load: HTTP 403 Forbidden"
           ],
@@ -6361,7 +6314,7 @@
               "status": 200,
               "ok": true,
               "contentType": "text/html; charset=UTF-8",
-              "bytes": 107454,
+              "bytes": 107696,
               "hasData": true,
               "reason": "ok"
             },
@@ -6385,7 +6338,7 @@
           "label": "repair_manifest_scriptUrl",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 121,
+          "durationMs": 142,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -6403,7 +6356,7 @@
               "status": 200,
               "ok": true,
               "contentType": "text/html; charset=UTF-8",
-              "bytes": 107454,
+              "bytes": 107696,
               "hasData": true,
               "reason": "ok"
             },
@@ -6427,7 +6380,7 @@
           "label": "repair_derived_manifest_js_url",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 144,
+          "durationMs": 162,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -6445,7 +6398,7 @@
               "status": 200,
               "ok": true,
               "contentType": "text/html; charset=UTF-8",
-              "bytes": 107454,
+              "bytes": 107696,
               "hasData": true,
               "reason": "ok"
             },
@@ -6471,7 +6424,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "stream_resolution_failed_in_test_harness",
-          "durationMs": 9062,
+          "durationMs": 9859,
           "errors": [
             "stream: extractStreamUrl returned an unusable result",
             "stream: extractStreamUrl returned an unusable result",
@@ -6487,84 +6440,6 @@
               "ok": true,
               "contentType": "text/html; charset=utf-8",
               "bytes": 10897,
-              "hasData": true,
-              "reason": "ok"
-            },
-            "endpoints": [
-              {
-                "url": "https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(",
-                "status": 500,
-                "ok": false,
-                "contentType": "application/json; charset=utf-8",
-                "bytes": 48,
-                "hasData": false,
-                "reason": "http_500"
-              },
-              {
-                "url": "https://api.themoviedb.org/3/trending/all/week?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}",
-                "status": 400,
-                "ok": false,
-                "contentType": "application/json;charset=utf-8",
-                "bytes": 136,
-                "hasData": false,
-                "reason": "http_400"
-              },
-              {
-                "url": "https://api.themoviedb.org/3/movie/top_rated?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}",
-                "status": 400,
-                "ok": false,
-                "contentType": "application/json;charset=utf-8",
-                "bytes": 136,
-                "hasData": false,
-                "reason": "http_400"
-              },
-              {
-                "url": "https://api.themoviedb.org/3/tv/top_rated?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}",
-                "status": 400,
-                "ok": false,
-                "contentType": "application/json;charset=utf-8",
-                "bytes": 136,
-                "hasData": false,
-                "reason": "http_400"
-              }
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "key": "vidfast:english",
-      "sourceName": "VidFast",
-      "language": "English",
-      "candidates": [
-        {
-          "id": "B0b0R",
-          "sourceName": "VidFast",
-          "language": "English",
-          "registry": "cufiy",
-          "origin": "cufiy",
-          "manifestUrl": "https://git.luna-app.eu/50n50/sources/raw/branch/main/vidfast/vidfast.json",
-          "scriptUrl": "https://git.luna-app.eu/50n50/sources/raw/branch/main/vidfast/vidfast.js",
-          "repair": null,
-          "label": "initial",
-          "status": "needs_fix",
-          "failureKind": "stream_resolution_failed_in_test_harness",
-          "durationMs": 335130,
-          "errors": [
-            "stream: extractStreamUrl timed out",
-            "stream: extractStreamUrl timed out",
-            "stream: extractStreamUrl timed out",
-            "stream: extractStreamUrl timed out",
-            "stream: extractStreamUrl timed out"
-          ],
-          "attempts": [],
-          "health": {
-            "base": {
-              "url": "https://vidfast.pro/",
-              "status": 200,
-              "ok": true,
-              "contentType": "text/html; charset=UTF-8",
-              "bytes": 802,
               "hasData": true,
               "reason": "ok"
             },
@@ -6627,7 +6502,7 @@
           "label": "initial",
           "status": "offline",
           "failureKind": "stream_resolution_failed_in_test_harness",
-          "durationMs": 195562,
+          "durationMs": 75859,
           "errors": [
             "stream: fetch failed",
             "stream: fetch failed",
@@ -6753,7 +6628,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "script_unavailable",
-          "durationMs": 108,
+          "durationMs": 103,
           "errors": [
             "script_load: HTTP 404 Not Found"
           ],
@@ -6794,230 +6669,141 @@
   ],
   "removals": [
     {
-      "sourceName": "AnimeJara",
-      "id": "mod_618749585",
-      "language": "Spanish",
+      "sourceName": "TokyoInsider",
+      "id": "mod_1854125649",
+      "language": "English",
       "confirmed": true,
       "reason": [
         {
-          "id": "mod_618749585",
-          "sourceName": "AnimeJara",
-          "language": "Spanish",
+          "id": "mod_1854125649",
+          "sourceName": "TokyoInsider",
+          "language": "English",
           "registry": "content-manifest",
           "origin": "current",
-          "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/004/manifest.json",
-          "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/004/source.js",
+          "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/017/manifest.json",
+          "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/017/source.js",
           "repair": null,
           "label": "initial",
           "status": "needs_fix",
-          "failureKind": "stream_resolution_failed_in_test_harness",
-          "durationMs": 310754,
+          "failureKind": "module_runtime_failure",
+          "durationMs": 45169,
           "errors": [
-            "stream: extractStreamUrl timed out",
-            "stream: extractStreamUrl timed out",
-            "stream: extractStreamUrl timed out",
-            "stream: extractStreamUrl timed out",
-            "stream: extractStreamUrl timed out"
-          ],
-          "attempts": [],
-          "health": {
-            "base": {
-              "url": "https://animejara.com/",
-              "status": 200,
-              "ok": true,
-              "contentType": "text/html; charset=UTF-8",
-              "bytes": 186026,
-              "hasData": true,
-              "reason": "ok"
-            },
-            "endpoints": [
-              {
-                "url": "https://animejara.com",
-                "status": 200,
-                "ok": true,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 186026,
-                "hasData": true,
-                "reason": "ok"
-              },
-              {
-                "url": "https://animejara.com/episode/${ANIME_SLUG}-${numTemp}x${numEp}/",
-                "status": 404,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 172438,
-                "hasData": false,
-                "reason": "http_404"
-              },
-              {
-                "url": "https://animejara.com/episode/${slug}-${numTemp}x${numEp}/",
-                "status": 404,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 172426,
-                "hasData": false,
-                "reason": "http_404"
-              },
-              {
-                "url": "https://animejara.com/catalogo/",
-                "status": 200,
-                "ok": true,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 300437,
-                "hasData": true,
-                "reason": "ok"
-              }
-            ]
-          }
-        },
-        {
-          "id": "jkKSV",
-          "sourceName": "AnimeJara",
-          "language": "Spanish",
-          "registry": "cufiy",
-          "origin": "cufiy",
-          "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/refs/heads/main/henaojara/henaojara.json",
-          "scriptUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/dev/henaojara/henaojara.js",
-          "repair": null,
-          "label": "initial",
-          "status": "needs_fix",
-          "failureKind": "missing_details_function",
-          "durationMs": 1056,
-          "errors": [
-            "missing details function",
-            "missing details function",
-            "missing details function"
-          ],
-          "attempts": [],
-          "health": {
-            "base": {
-              "url": "https://animejara.com/",
-              "status": 200,
-              "ok": true,
-              "contentType": "text/html; charset=UTF-8",
-              "bytes": 186026,
-              "hasData": true,
-              "reason": "ok"
-            },
-            "endpoints": [
-              {
-                "url": "https://animejara.com",
-                "status": 200,
-                "ok": true,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 186026,
-                "hasData": true,
-                "reason": "ok"
-              },
-              {
-                "url": "https://animejara.com/episode/${ANIME_SLUG}-${numTemp}x${numEp}/",
-                "status": 404,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 172438,
-                "hasData": false,
-                "reason": "http_404"
-              },
-              {
-                "url": "https://animejara.com/episode/${slug}-${numTemp}x${numEp}/",
-                "status": 404,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 172426,
-                "hasData": false,
-                "reason": "http_404"
-              },
-              {
-                "url": "https://animejara.com/catalogo/",
-                "status": 200,
-                "ok": true,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 300437,
-                "hasData": true,
-                "reason": "ok"
-              }
-            ]
-          }
-        },
-        {
-          "id": "jkKSV",
-          "sourceName": "AnimeJara",
-          "language": "Spanish",
-          "registry": "cufiy",
-          "origin": "cufiy",
-          "manifestUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/refs/heads/main/henaojara/henaojara.json",
-          "scriptUrl": "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/refs/heads/main/henaojara/henaojara.js",
-          "repair": {
-            "name": "derived_manifest_js_url",
-            "notes": [
-              "Derived script URL from manifest URL: https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/refs/heads/main/henaojara/henaojara.js"
-            ]
-          },
-          "label": "repair_derived_manifest_js_url",
-          "status": "needs_fix",
-          "failureKind": "stream_resolution_failed_in_test_harness",
-          "durationMs": 310809,
-          "errors": [
-            "stream: extractStreamUrl timed out",
-            "stream: extractStreamUrl timed out",
-            "stream: extractStreamUrl timed out",
-            "stream: extractStreamUrl timed out",
-            "stream: extractStreamUrl timed out"
+            "search: searchResults timed out"
           ],
           "attempts": [
             {
-              "name": "derived_manifest_js_url",
-              "notes": [
-                "Derived script URL from manifest URL: https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/refs/heads/main/henaojara/henaojara.js"
-              ]
+              "name": "url_health",
+              "status": "skipped_dead_or_empty",
+              "health": {
+                "base": {
+                  "url": "https://www.tokyoinsider.com/",
+                  "status": 522,
+                  "ok": false,
+                  "contentType": "text/html; charset=UTF-8",
+                  "bytes": 7292,
+                  "hasData": false,
+                  "reason": "http_522"
+                },
+                "endpoints": [
+                  {
+                    "url": "https://www.tokyoinsider.com/anime/search?k=",
+                    "status": 522,
+                    "ok": false,
+                    "contentType": "text/html; charset=UTF-8",
+                    "bytes": 7292,
+                    "hasData": false,
+                    "reason": "http_522"
+                  }
+                ]
+              }
             }
           ],
           "health": {
             "base": {
-              "url": "https://animejara.com/",
-              "status": 200,
-              "ok": true,
+              "url": "https://www.tokyoinsider.com/",
+              "status": 522,
+              "ok": false,
               "contentType": "text/html; charset=UTF-8",
-              "bytes": 186026,
-              "hasData": true,
-              "reason": "ok"
+              "bytes": 7292,
+              "hasData": false,
+              "reason": "http_522"
             },
             "endpoints": [
               {
-                "url": "https://animejara.com",
-                "status": 200,
-                "ok": true,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 186026,
-                "hasData": true,
-                "reason": "ok"
-              },
-              {
-                "url": "https://animejara.com/episode/${ANIME_SLUG}-${numTemp}x${numEp}/",
-                "status": 404,
+                "url": "https://www.tokyoinsider.com/anime/search?k=",
+                "status": 522,
                 "ok": false,
                 "contentType": "text/html; charset=UTF-8",
-                "bytes": 172438,
+                "bytes": 7292,
                 "hasData": false,
-                "reason": "http_404"
-              },
+                "reason": "http_522"
+              }
+            ]
+          }
+        },
+        {
+          "id": "jRTDu",
+          "sourceName": "TokyoInsider",
+          "language": "English",
+          "registry": "cufiy",
+          "origin": "cufiy",
+          "manifestUrl": "https://git.luna-app.eu/50n50/sources/raw/branch/main/tokyoinsider/tokyoinsider.json",
+          "scriptUrl": "https://git.luna-app.eu/50n50/sources/raw/branch/main/tokyoinsider/tokyoinsider.js",
+          "repair": null,
+          "label": "initial",
+          "status": "needs_fix",
+          "failureKind": "module_runtime_failure",
+          "durationMs": 45143,
+          "errors": [
+            "search: searchResults timed out"
+          ],
+          "attempts": [
+            {
+              "name": "url_health",
+              "status": "skipped_dead_or_empty",
+              "health": {
+                "base": {
+                  "url": "https://www.tokyoinsider.com/",
+                  "status": 522,
+                  "ok": false,
+                  "contentType": "text/html; charset=UTF-8",
+                  "bytes": 7292,
+                  "hasData": false,
+                  "reason": "http_522"
+                },
+                "endpoints": [
+                  {
+                    "url": "https://www.tokyoinsider.com/anime/search?k=",
+                    "status": 522,
+                    "ok": false,
+                    "contentType": "text/html; charset=UTF-8",
+                    "bytes": 7292,
+                    "hasData": false,
+                    "reason": "http_522"
+                  }
+                ]
+              }
+            }
+          ],
+          "health": {
+            "base": {
+              "url": "https://www.tokyoinsider.com/",
+              "status": 522,
+              "ok": false,
+              "contentType": "text/html; charset=UTF-8",
+              "bytes": 7292,
+              "hasData": false,
+              "reason": "http_522"
+            },
+            "endpoints": [
               {
-                "url": "https://animejara.com/episode/${slug}-${numTemp}x${numEp}/",
-                "status": 404,
+                "url": "https://www.tokyoinsider.com/anime/search?k=",
+                "status": 522,
                 "ok": false,
                 "contentType": "text/html; charset=UTF-8",
-                "bytes": 172426,
+                "bytes": 7292,
                 "hasData": false,
-                "reason": "http_404"
-              },
-              {
-                "url": "https://animejara.com/catalogo/",
-                "status": 200,
-                "ok": true,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 300437,
-                "hasData": true,
-                "reason": "ok"
+                "reason": "http_522"
               }
             ]
           }

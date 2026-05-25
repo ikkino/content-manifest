@@ -1,21 +1,22 @@
 {
-  "sourceName": "AnimeNix",
-  "iconUrl": "https://i3.wp.com/animenix.com/wp-content/uploads/2024/11/cropped-favicon-1-192x192.png",
+  "sourceName": "AnimeAV1",
+  "iconUrl": "https://animeav1.com/favicon.png",
   "author": {
     "name": "50/50",
     "icon": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ3122kQwublLkZ6rf1fEpUP79BxZOFmH9BSA&s"
   },
-  "version": "1.0.0",
+  "version": "1.0.1",
   "language": "Spanish",
   "streamType": "HLS",
   "quality": "1080p",
-  "baseUrl": "https://www.yourupload.com/",
-  "searchBaseUrl": "https://www.yourupload.com/",
+  "baseUrl": "https://animeav1.com/",
+  "searchBaseUrl": "https://animeav1.com/search?q=%s",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/003/source.js",
   "type": "anime",
   "asyncJS": true,
-  "softsub": false,
-  "downloadSupport": true,
+  "softsub": true,
+  "downloadSupport": false,
+  "note": "Use external player.",
   "supportsMojuru": true,
   "supportsDartotsu": true,
   "supportsSora": true,
@@ -23,5 +24,5 @@
   "supportsAnymex": true,
   "supportsTsumi": true,
   "supportsHiyoku": true,
-  "id": "mod_1181537046"
+  "id": "mod_1898613263"
 }

@@ -1,13 +1,8 @@
-// AnimeVost for Sora (AsyncJS)
-// Author: emp0ry
-// Version: 1.0.2
-
 const API_BASE = "https://api.animevost.org/v1/";
 const FORM_CT  = "application/x-www-form-urlencoded; charset=UTF-8";
 const SITE_BASE = "https://animevost.org";
 const DEFAULT_SUBTITLE = "https://none.com";
 
-// --- utils ---
 function encodeForm(fields) {
   return Object.keys(fields)
     .map(k => `${encodeURIComponent(k)}=${encodeURIComponent(fields[k])}`)
@@ -70,7 +65,6 @@ function _safeJsonParse(value, fallback) {
   }
 }
 
-// Pack payload into href to avoid relying on global state.
 function makeHrefFromPayload(obj) {
   return `animevost://payload/${encodeURIComponent(JSON.stringify(obj || {}))}`;
 }
@@ -103,7 +97,6 @@ function parseIdFromAny(hrefOrId) {
   return null;
 }
 
-// Same packing style as AniLiberty / SameBand.
 function _packEpisode(payload) {
   return "animevost:" + encodeURIComponent(JSON.stringify(payload || {}));
 }
@@ -122,7 +115,6 @@ function _streamHeaders() {
   };
 }
 
-// --- search: POST /search ---
 async function searchResults(keyword) {
   try {
     let res  = await postForm(API_BASE + "search", { name: String(keyword) });
@@ -165,7 +157,6 @@ async function searchResults(keyword) {
   }
 }
 
-// --- details: from payload ---
 async function extractDetails(href) {
   try {
     const p = readPayloadFromHref(href);
@@ -182,7 +173,6 @@ async function extractDetails(href) {
   }
 }
 
-// --- episodes: POST /playlist ---
 async function extractEpisodes(href) {
   try {
     const p  = readPayloadFromHref(href);
@@ -204,10 +194,6 @@ async function extractEpisodes(href) {
       const m = name.match(/(\d+)/);
       const num = m ? parseInt(m[1], 10) : (idx + 1);
 
-      // AnimeVost usually provides only hd/std.
-      // Match Sora picker format used in AniLiberty/SameBand:
-      // hd  -> 720p
-      // std -> 480p
       const url1080 = null;
       const url720 = cleanUrl(ep?.hd);
       const url480 = cleanUrl(ep?.std);
@@ -234,7 +220,6 @@ async function extractEpisodes(href) {
   }
 }
 
-// --- stream: returns quality picker JSON ---
 async function extractStreamUrl(href) {
   try {
     const payload = _unpackEpisode(href);
