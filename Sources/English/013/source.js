@@ -1,331 +1,199 @@
-function cleanTitle(title) {
-    return title
-        .replace(/&#8217;/g, "'")  
-        .replace(/&#8211;/g, "-")  
-        .replace(/&#[0-9]+;/g, ""); 
-}
-
 async function searchResults(keyword) {
-  const results = [];
-  try {
-    const response = await fetchv2("https://animenana.com/search/?key=" + keyword);
-    const html = await response.text();
-    
-    const cardMatches = html.match(/<div class="card component-latest">[\s\S]*?<\/div>\s*<\/div>\s*<\/a>/g);
-    
-    if (cardMatches) {
-      for (const cardHtml of cardMatches) {
-        const hrefMatch = cardHtml.match(/<a href="([^"]+)"/);
-        
-        const imgMatch = cardHtml.match(/<img[^>]+(?:data-src|src)="([^"]+)"/);
-        
-        const titleMatch = cardHtml.match(/<h5 class="animename"[^>]*>(.*?)<\/h5>/);
-        
-        if (hrefMatch && imgMatch && titleMatch) {
-          results.push({
-            href: "https://animenana.com" + hrefMatch[1].trim(),
-            image: "https://animenana.com" + imgMatch[1].trim(),
-            title: cleanTitle(titleMatch[1].trim())
-          });
-        }
-      }
-    }
-    
-    if (results.length === 0) {
-      const colMatches = html.match(/<div class="col-md-4">[\s\S]*?<\/div>\s*<\/div>\s*<\/div>\s*<\/a>\s*<\/div>/g);
-      
-      if (colMatches) {
-        for (const colHtml of colMatches) {
-          const hrefMatch = colHtml.match(/<a href="([^"]+)"/);
-          const imgMatch = colHtml.match(/<img[^>]+(?:data-src|src)="([^"]+)"/);
-          const titleMatch = colHtml.match(/<h5 class="animename"[^>]*>(.*?)<\/h5>/);
-          
-          if (hrefMatch && imgMatch && titleMatch) {
+    const results = [];
+    const headers = {
+        'Referer': 'https://animetsu.live/',
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+    };
+
+    const encodedKeyword = encodeURIComponent(keyword);
+    const response = await fetchv2(`https://animetsu.live/v2/api/anime/search/?query=${encodedKeyword}`, headers);
+    const json = await response.json();
+
+    json.results.forEach(anime => {
+        const title = anime.title.english || anime.title.romaji || anime.title.native || "Unknown Title";
+        const image = anime.cover_image.large;
+        const href = `${anime.id}`;
+
+        if (title && href && image) {
             results.push({
-              href: "https://animenana.com" + hrefMatch[1].trim(),
-              image: "https://animenana.com" + imgMatch[1].trim(), 
-              title: cleanTitle(titleMatch[1].trim())
+                title: title,
+                image: image,
+                href: href
             });
-          }
+        } else {
+            console.error("Missing or invalid data in search result item:", {
+                title,
+                href,
+                image
+            });
         }
-      }
-    }
-    
-    if (results.length === 0) {
-      const regex = /<a href="([^"]+)"[\s\S]*?<img[^>]+(?:data-src|src)="([^"]+)"[\s\S]*?<h5 class="animename"[^>]*>(.*?)<\/h5>/g;
-      let match;
-      while ((match = regex.exec(html)) !== null) {
+    });
+
+    return JSON.stringify(results);
+}
+
+async function extractDetails(id) {
+    const results = [];
+    const headers = {
+        'Referer': 'https://animetsu.live/',
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+    };
+
+    const response = await fetchv2(`https://animetsu.live/v2/api/anime/info/${id}`, headers);
+    const json = await response.json();
+
+    const description = cleanHtmlSymbols(json.description) || "No description available"; 
+
+    results.push({
+        description: description.replace(/<br>/g, ''),
+        aliases: json.synonyms ? json.synonyms.join(', ') : 'N/A',
+        airdate: json.start_date || 'N/A'
+    });
+
+    return JSON.stringify(results);
+}
+
+async function extractEpisodes(id) {
+    const results = [];
+    const headers = {
+        'Referer': 'https://animetsu.live/',
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+    };
+
+    const response = await fetchv2(`https://animetsu.live/v2/api/anime/eps/${id}`, headers);
+    const json = await response.json();
+
+    for (const ep of json) {
         results.push({
-          href: "https://animenana.com" + match[1].trim(),
-          image: "https://animenana.com" + match[2].trim(),
-          title: cleanTitle(match[3].trim())
+            number: ep.ep_num,
+            href: `&id=${id}&num=${ep.ep_num}`
         });
-      }
     }
-    
+
     return JSON.stringify(results);
-  } catch (err) {
-    return JSON.stringify([{
-      title: "Error",
-      image: "Error", 
-      href: "Error"
-    }]);
-  }
 }
 
-async function extractDetails(url) {
+async function extractStreamUrl(slug) {
+    const headers = {
+        'Referer': 'https://animetsu.live/',
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+    };
+
+    const id = (slug.match(/[?&]id=([^&]+)/) || [])[1];
+    const num = (slug.match(/[?&]num=([^&]+)/) || [])[1];
+
+    const streams = [];
+
     try {
-        const response = await fetchv2(url);
-        const html = await response.text();
+        const serverListRes = await fetchv2(`https://animetsu.live/v2/api/anime/servers/${id}/${num}`, headers);
+        const serverList = await serverListRes.json();
 
-        const regex = /<p><b>Description:\s*<\/b><\/p>([\s\S]*?)<br\s*\/?>/i;
-        const match = regex.exec(html);
+        const promises = [];
+        for (const server of serverList) {
+            for (const subType of ['sub', 'dub']) {
+                promises.push((async () => {
+                    try {
+                        const url = `https://animetsu.live/v2/api/anime/oppai/${id}/${num}?server=${server.id}&source_type=${subType}`;
+                        const res = await fetchv2(url, headers);
+                        const data = await res.json();
 
-        let description = match ? match[1].trim() : "N/A";
+                        if (data?.sources?.length) {
+                            for (const source of data.sources) {
+                                let streamUrl = `https://mega-cloud.top/proxy${source.url}`;
+                                let quality = source.quality;
 
-        description = description.replace(/<[^>]+>/g, "").trim();
+                                if (server.id === 'kite') {
+                                    try {
+                                        const m3u8Res = await fetchv2(streamUrl, headers);
+                                        const m3u8Content = await m3u8Res.text();
+                                        const lines = m3u8Content.split('\n').filter(line => line.trim() !== '');
+                                        const targetLine = lines.find(line => !line.startsWith('#'));
+                                        if (targetLine) {
+                                            streamUrl = `https://mega-cloud.top/proxy/oppai/kite/${targetLine.trim()}`;
+                                        }
+                                        if (quality.toLowerCase() === 'master') {
+                                            quality = '1080p';
+                                        }
+                                    } catch (e) {
+                                        console.error("Error rewriting kite URL:", e);
+                                    }
+                                }
 
-        return JSON.stringify([{
-            description: description,
-            aliases: "N/A",
-            airdate: "N/A"
-        }]);
-    } catch (err) {
-        return JSON.stringify([{
-            description: "Error",
-            aliases: "Error",
-            airdate: "Error"
-        }]);
-    }
-}
-
-async function extractEpisodes(url) {
-  const results = [];
-  try {
-    const response = await fetchv2(url);
-    const html = await response.text();
-    
-    // More flexible regex to handle the actual HTML structure
-    const epRegex = /<a href="([^"]+)"[^>]*title="[^"]*Episode\s*(\d+)">/g;
-    let match;
-    while ((match = epRegex.exec(html)) !== null) {
-      results.push({
-        href: "https://animenana.com" + match[1].trim(),
-        number: parseInt(match[2], 10)
-      });
-    }
-    
-    const specialRegex = /<span class="badge[^"]*"[^>]*>([^<]+)<\/span>[\s\S]*?<a href="([^"]+)"[^>]*>[\s\S]*?<h5 class="animename">([^<]+)<\/h5>/g;
-    while ((match = specialRegex.exec(html)) !== null) {
-      results.push({
-        href: "https://animenana.com" + match[2].trim(),
-        number: 1
-      });
-    }
-    
-    if (results.length >= 2 && results[0].number > results[1].number) {
-      results.reverse();
-      results.forEach((item, index) => {
-        item.number = index + 1;
-      });
-    }
-    
-    if (results.length === 0) {
-      results.push({
-        href: url,
-        number: 1
-      });
-    }
-    
-    return JSON.stringify(results);
-  } catch (err) {
-    return JSON.stringify([{
-      href: "Error",
-      number: "Error",
-      type: "Error"
-    }]);
-  }
-}
-
-async function extractStreamUrl(url) {
-  try {
-    const response = await fetchv2(url);
-    const html = await response.text();
-    const fmRegex = /function\s+fm\(\)\s*\{[^}]*document\.getElementById\("videowrapper"\)\.innerHTML\s*=\s*['"]<iframe\s+src=['"]([^'"]+)['"]/;
-    const match = fmRegex.exec(html);
-
-    
-    let streamUrl = "https://files.catbox.moe/avolvc.mp4";
-    
-    if (match && match[1]) {
-      const iframeSrc = match[1];
-      
-      if (iframeSrc.startsWith("https://")) {
-        streamUrl = iframeSrc;
-      } else {
-        streamUrl = "https://animenana.com" + iframeSrc;
-      }
-    }
-    
-    const finalUrl = streamUrl;
-
-    console.log(finalUrl);
-
-    const diejfioe = await fetchv2(finalUrl);
-    const jdi83rjf = await diejfioe.text();
-
-    const kvrokofrmfrklefmklrd = jdi83rjf.match(/<iframe[^>]+src="([^"]+)"/);
-    if (kvrokofrmfrklefmklrd) {
-        const iframeUrl = kvrokofrmfrklefmklrd[1];
-        console.log("Iframe URL:"+ iframeUrl);
-
-        const headers = {
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3",
-                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-                "Referer": "https://animenana.com" + url,
-        };
-
-        const i9jfrhtiee = await fetchv2(iframeUrl, headers);
-        const kopefjir4o0 = await i9jfrhtiee.text();
-
-        const obfuscatedScript = kopefjir4o0.match(/<script[^>]*>\s*(eval\(function\(p,a,c,k,e,d.*?\)[\s\S]*?)<\/script>/);
-        const unpackedScript = unpack(obfuscatedScript[1]);
-        //console.log(unpackedScript);
-
-        const hlsMatch = unpackedScript.match(/file:"(https?:\/\/.*?\.m3u8.*?)"/);
-        const hlsUrl = hlsMatch ? hlsMatch[1] : null;
-        console.log("HLS URL:"+hlsUrl);
-        return hlsUrl;
-    } else {
-        console.log("No iframe found");
-    }
-
-
-    return finalUrl;
-  } catch (err) {
-    console.log(err);
-    return streamUrl || url;
-  }
-}
-
-
-
-/***********************************************************
- * UNPACKER MODULE
- * Credit to GitHub user "mnsrulz" for Unpacker Node library
- * https://github.com/mnsrulz/unpacker
- ***********************************************************/
-class Unbaser {
-    constructor(base) {
-        /* Functor for a given base. Will efficiently convert
-          strings to natural numbers. */
-        this.ALPHABET = {
-            62: "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
-            95: "' !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~'",
-        };
-        this.dictionary = {};
-        this.base = base;
-        // fill elements 37...61, if necessary
-        if (36 < base && base < 62) {
-            this.ALPHABET[base] = this.ALPHABET[base] ||
-                this.ALPHABET[62].substr(0, base);
-        }
-        // If base can be handled by int() builtin, let it do it for us
-        if (2 <= base && base <= 36) {
-            this.unbase = (value) => parseInt(value, base);
-        }
-        else {
-            // Build conversion dictionary cache
-            try {
-                [...this.ALPHABET[base]].forEach((cipher, index) => {
-                    this.dictionary[cipher] = index;
-                });
-            }
-            catch (er) {
-                throw Error("Unsupported base encoding.");
-            }
-            this.unbase = this._dictunbaser;
-        }
-    }
-    _dictunbaser(value) {
-        /* Decodes a value to an integer. */
-        let ret = 0;
-        [...value].reverse().forEach((cipher, index) => {
-            ret = ret + ((Math.pow(this.base, index)) * this.dictionary[cipher]);
-        });
-        return ret;
-    }
-}
-
-function detect(source) {
-    /* Detects whether `source` is P.A.C.K.E.R. coded. */
-    return source.replace(" ", "").startsWith("eval(function(p,a,c,k,e,");
-}
-
-function unpack(source) {
-    /* Unpacks P.A.C.K.E.R. packed js code. */
-    let { payload, symtab, radix, count } = _filterargs(source);
-    if (count != symtab.length) {
-        throw Error("Malformed p.a.c.k.e.r. symtab.");
-    }
-    let unbase;
-    try {
-        unbase = new Unbaser(radix);
-    }
-    catch (e) {
-        throw Error("Unknown p.a.c.k.e.r. encoding.");
-    }
-    function lookup(match) {
-        /* Look up symbols in the synthetic symtab. */
-        const word = match;
-        let word2;
-        if (radix == 1) {
-            //throw Error("symtab unknown");
-            word2 = symtab[parseInt(word)];
-        }
-        else {
-            word2 = symtab[unbase.unbase(word)];
-        }
-        return word2 || word;
-    }
-    source = payload.replace(/\b\w+\b/g, lookup);
-    return _replacestrings(source);
-    function _filterargs(source) {
-        /* Juice from a source file the four args needed by decoder. */
-        const juicers = [
-            /}\('(.*)', *(\d+|\[\]), *(\d+), *'(.*)'\.split\('\|'\), *(\d+), *(.*)\)\)/,
-            /}\('(.*)', *(\d+|\[\]), *(\d+), *'(.*)'\.split\('\|'\)/,
-        ];
-        for (const juicer of juicers) {
-            //const args = re.search(juicer, source, re.DOTALL);
-            const args = juicer.exec(source);
-            if (args) {
-                let a = args;
-                if (a[2] == "[]") {
-                    //don't know what it is
-                    // a = list(a);
-                    // a[1] = 62;
-                    // a = tuple(a);
-                }
-                try {
-                    return {
-                        payload: a[1],
-                        symtab: a[4].split("|"),
-                        radix: parseInt(a[2]),
-                        count: parseInt(a[3]),
-                    };
-                }
-                catch (ValueError) {
-                    throw Error("Corrupted p.a.c.k.e.r. data.");
-                }
+                                streams.push({
+                                    title: `${server.id} - ${quality} - ${subType.toUpperCase()}`,
+                                    streamUrl: streamUrl,
+                                    headers: headers
+                                });
+                            }
+                        }
+                    } catch (e) {
+                        console.error(`Error fetching streams for server ${server.id} (${subType}):`, e);
+                    }
+                })());
             }
         }
-        throw Error("Could not make sense of p.a.c.k.e.r data (unexpected code structure)");
+
+        await Promise.all(promises);
+    } catch (e) {
+        console.error("Error fetching server list:", e);
     }
-    function _replacestrings(source) {
-        /* Strip string lookup table (list) and replace values in source. */
-        /* Need to work on this. */
-        return source;
-    }
+
+    const serverOrder = { 'pahe': 1, 'meg': 2, 'kite': 3 };
+    const qualityOrder = (q) => {
+        if (q.includes('1080')) return 1;
+        if (q.includes('720')) return 2;
+        if (q.includes('480')) return 3;
+        if (q.includes('360')) return 4;
+        if (q.includes('master')) return 5;
+        return 6;
+    };
+
+    streams.sort((a, b) => {
+        const partsA = a.title.split(' - ');
+        const partsB = b.title.split(' - ');
+        
+        const sA = partsA[0].toLowerCase();
+        const sB = partsB[0].toLowerCase();
+        const qA = partsA[1].toLowerCase();
+        const qB = partsB[1].toLowerCase();
+
+        const qOrderA = qualityOrder(qA);
+        const qOrderB = qualityOrder(qB);
+
+        if (qOrderA !== qOrderB) return qOrderA - qOrderB;
+        
+        const sOrderA = serverOrder[sA] || 99;
+        const sOrderB = serverOrder[sB] || 99;
+        return sOrderA - sOrderB;
+    });
+
+    const finalStreams = streams.map((s, index) => ({
+        ...s,
+        title: `[Server ${index + 1}] ${s.title}`
+    }));
+
+    const final = {
+        streams: finalStreams,
+        subtitle: ""
+    };
+
+    return JSON.stringify(final);
 }
 
+
+
+
+function cleanHtmlSymbols(string) {
+    if (!string) return "";
+
+    return string
+        .replace(/&#8217;/g, "'")
+        .replace(/&#8211;/g, "-")
+        .replace(/&#[0-9]+;/g, "")
+        .replace(/\r?\n|\r/g, " ")  
+        .replace(/\s+/g, " ")       
+        .replace(/<i[^>]*>(.*?)<\/i>/g, "$1")
+        .replace(/<b[^>]*>(.*?)<\/b>/g, "$1") 
+        .replace(/<[^>]+>/g, "")
+        .trim();                 
+}

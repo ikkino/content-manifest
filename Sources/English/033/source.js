@@ -1,377 +1,246 @@
-
-class MProvider {
-  constructor() {
-    this.source = typeof mangayomiSources !== "undefined" && Array.isArray(mangayomiSources) ? mangayomiSources[0] : {};
-    globalThis.__mangayomiBaseUrl = this.source.baseUrl || this.source.apiUrl || "";
-  }
-}
-
-class SharedPreferences {
-  get(key) {
-    const defaults = {
-      pref_content_priority: "series",
-      pref_latest_time_window: "day",
-      pref_video_resolution: "1080",
-      autoembed_stream_source_4: "4",
-      autoembed_pref_navtive_subtitle: false,
-      autoembed_split_stream_quality: false,
-      autoembed_pref_subtitle_source_2: "1"
-    };
-    return defaults[key] ?? "";
-  }
-
-  getString(key) {
-    return String(this.get(key) ?? "");
-  }
-
-  getInt(key) {
-    return Number.parseInt(this.get(key), 10) || 0;
-  }
-
-  getBool(key) {
-    return Boolean(this.get(key));
-  }
-}
-
-class Client {
-  async get(url, headers = {}) {
-    const response = await fetchv2(this.normalizeUrl(url), { headers });
-    return {
-      body: await response.text(),
-      statusCode: response.status,
-      headers: Object.fromEntries(response.headers?.entries?.() ?? [])
-    };
-  }
-
-  async post(url, headers = {}, body = null) {
-    const response = await fetchv2(this.normalizeUrl(url), {
-      method: "POST",
-      headers,
-      body
-    });
-    return {
-      body: await response.text(),
-      statusCode: response.status,
-      headers: Object.fromEntries(response.headers?.entries?.() ?? [])
-    };
-  }
-
-  normalizeUrl(url) {
-    const value = String(url ?? "");
-    if (/^https?:\/\//i.test(value)) return value;
-    const base = globalThis.__mangayomiBaseUrl || "";
-    if (!base) return value;
-    return new URL(value, base.endsWith("/") ? base : base + "/").toString();
-  }
-}
-
-
-const mangayomiSources = [
-  {
-    "name": "JustAnime",
-    "id": 892345671,
-    "lang": "en",
-    "baseUrl": "https://justanime.to",
-    "apiUrl": "https://core.justanime.to/api",
-    "iconUrl": "https://www.google.com/s2/favicons?sz=256&domain=https://justanime.to",
-    "typeSource": "single",
-    "itemType": 1,
-    "version": "0.1.4",
-    "pkgPath": "anime/src/en/justanime.js",
-    "isManga": false,
-    "isNsfw": false,
-    "hasCloudflare": false,
-    "isFullData": false,
-    "appMinVerReq": "0.5.0",
-    "sourceCodeUrl": "https://raw.githubusercontent.com/Mallyd11/mangayomi-anime-extensions/refs/heads/main/javascript/anime/src/en/justanime.js",
-    "dateFormat": "",
-    "dateFormatLocale": "",
-    "additionalParams": "",
-    "sourceCodeLanguage": 1,
-    "notes": "",
-  },
-];
-
-class DefaultExtension extends MProvider {
-  get headers() {
-    return {
-      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
-      "Origin": "https://justanime.to",
-      "Referer": "https://justanime.to/",
-      "Accept": "application/json",
-    };
-  }
-
-  async apiGet(path) {
-    var res = await new Client().get(this.source.apiUrl + path, this.headers);
-    return JSON.parse(res.body);
-  }
-
-  animeTitle(item) {
-    if (!item.title) return item.name || "";
-    if (typeof item.title === "string") return item.title;
-    return item.title.english || item.title.romaji || "";
-  }
-
-  parseAnimeList(items) {
-    var list = [];
-    for (var i = 0; i < items.length; i++) {
-      var item = items[i];
-      list.push({
-        name: this.animeTitle(item),
-        link: String(item.id),
-        imageUrl: item.cover || (item.coverImage && item.coverImage.extraLarge) || "",
-      });
-    }
-    return list;
-  }
-
-  statusCode(status) {
-    return ({
-      "RELEASING": 0,
-      "FINISHED": 1,
-      "NOT_YET_RELEASED": 4,
-      "CANCELLED": 5,
-      "HIATUS": 6,
-    }[status]) || 5;
-  }
-
-  stripHtml(str) {
-    return (str || "").replace(/<[^>]*>/g, " ").replace(/\s{2,}/g, " ").trim();
-  }
-
-  titleToSlug(title) {
-    return (title || "")
-      .toLowerCase()
-      .replace(/[^a-z0-9\s]/g, "")
-      .trim()
-      .replace(/\s+/g, "-");
-  }
-
-  // Accepts bare ID, /anime/{id}/slug, or legacy /{slug}-{id}
-  extractId(url) {
-    var base = this.source.baseUrl;
-    if (url.startsWith(base)) {
-      var path = url.slice(base.length).replace(/^\//, "");
-      if (path.startsWith("anime/")) {
-        return path.split("/")[1];
-      }
-      return path.split("-").pop();
-    }
-    return url;
-  }
-
-  // ── Listings ──────────────────────────────────────────────────────────────
-
-  async getPopular(page) {
-    var data = await this.apiGet("/home");
-    var items = data.popular || [];
-    return { list: this.parseAnimeList(items), hasNextPage: false };
-  }
-
-  async getLatestUpdates(page) {
-    var data = await this.apiGet("/home");
-    var items = data.latestEpisode || data.airing || [];
-    return { list: this.parseAnimeList(items), hasNextPage: false };
-  }
-
-  async search(query, page, filters) {
-    // Strip punctuation that can break the API keyword parser (?, !, etc.)
-    var cleanQuery = query.replace(/[?!]/g, "").trim();
-    var encoded = encodeURIComponent(cleanQuery);
-    var items = [];
-    var hasNextPage = false;
-
-    // Prefer /search/suggest on page 1 — it does exact title matching and is
-    // more reliable than /search which can return the popular list on failure.
-    if (page === 1) {
-      try {
-        var sugg = await this.apiGet("/search/suggest?keyword=" + encoded);
-        var suggItems = sugg.results || sugg.data || sugg.anime || [];
-        if (suggItems.length > 0) {
-          return { list: this.parseAnimeList(suggItems), hasNextPage: false };
-        }
-      } catch (e) {}
-    }
-
-    // Fall back to the main search endpoint (supports pagination).
-    try {
-      var data = await this.apiGet("/search?keyword=" + encoded + "&page=" + page);
-      items = data.results || data.anime || [];
-      hasNextPage = !!(data.pageInfo && data.pageInfo.hasNextPage);
-    } catch (e) {}
-    return { list: this.parseAnimeList(items), hasNextPage: hasNextPage };
-  }
-
-  // ── Detail ────────────────────────────────────────────────────────────────
-
-  async getDetail(url) {
-    var id = this.extractId(url);
-
-    var infoData = await this.apiGet("/anime/" + id);
-    var anime = infoData.data || {};
-
-    var title = this.animeTitle(anime) || id;
-    var imageUrl = (anime.coverImage && anime.coverImage.extraLarge) || anime.cover || "";
-    var description = this.stripHtml(anime.description || "");
-    var genres = anime.genres || [];
-    var total = anime.episodes || 0;
-
-    var chapters = [];
-    for (var i = 1; i <= total; i++) {
-      chapters.push({ name: "Episode " + i, url: id + "||" + i });
-    }
-
-    return {
-      name: title,
-      imageUrl: imageUrl,
-      description: description,
-      genre: genres,
-      status: this.statusCode(anime.status || ""),
-      link: this.source.baseUrl + "/anime/" + id + "/" + this.titleToSlug(title),
-      chapters: chapters.reverse(),
-    };
-  }
-
-  // ── Video sources ─────────────────────────────────────────────────────────
-
-  async getVideoList(url) {
-    // url format: "{animeId}||{epNum}"
-    var parts = url.split("||");
-    var animeId = parts[0];
-    var epNum = parts[1];
-
-    var subVideos = [];
-    var dubVideos = [];
-    var ua = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36";
-
-    try {
-      var data = await this.apiGet("/watch/" + animeId + "/episode/" + epNum + "/animepahe");
-
-      // API returns {"error":"..."} with HTTP 200 for bad episodes
-      if (data.error || (!data.sub && !data.dub)) {
-        throw new Error(data.error || "No sources");
-      }
-
-      var types = ["sub", "dub"];
-      for (var ti = 0; ti < types.length; ti++) {
-        var type = types[ti];
-        var typeData = data[type];
-        if (!typeData || !typeData.sources) continue;
-        var sources = typeData.sources;
-        for (var si = 0; si < sources.length; si++) {
-          var s = sources[si];
-          var streamUrl = s.url || s.file;
-          if (!streamUrl) continue;
-          var entry = {
-            url: streamUrl,
-            originalUrl: streamUrl,
-            quality: type.toUpperCase() + " [" + (s.quality || "auto") + "p]",
-            headers: { "Referer": "https://kwik.cx/", "User-Agent": ua },
-            subtitles: [],
-          };
-          if (type === "dub") {
-            dubVideos.push(entry);
-          } else {
-            subVideos.push(entry);
-          }
-        }
-      }
-    } catch (e) {}
-
-    // Sort each group highest quality first (1080p before 720p before 360p)
-    function sortByQuality(arr) {
-      return arr.sort(function(a, b) {
-        var qa = parseInt((a.quality.match(/\[(\d+)p\]/) || [0, 0])[1], 10) || 0;
-        var qb = parseInt((b.quality.match(/\[(\d+)p\]/) || [0, 0])[1], 10) || 0;
-        return qb - qa;
-      });
-    }
-    subVideos = sortByQuality(subVideos);
-    dubVideos = sortByQuality(dubVideos);
-
-    var pref = "sub";
-    try { pref = new SharedPreferences().get("justanime_pref_audio") || "sub"; } catch (e) {}
-    if (pref === "dub") {
-      return dubVideos.concat(subVideos);
-    }
-    return subVideos.concat(dubVideos);
-  }
-
-  // ── Preferences ───────────────────────────────────────────────────────────
-
-  getFilterList() {
-    return [];
-  }
-
-  getSourcePreferences() {
-    return [
-      {
-        key: "justanime_pref_audio",
-        listPreference: {
-          title: "Preferred language",
-          summary: "Primary language to use. If unavailable, the other will be used as fallback.",
-          valueIndex: 0,
-          entries: ["Sub first, Dub fallback", "Dub first, Sub fallback"],
-          entryValues: ["sub", "dub"],
-        },
-      },
-    ];
-  }
-}
-
-
-const __mangayomiExtension = new DefaultExtension();
-
-function __list(value) {
-  if (!value) return [];
-  if (Array.isArray(value)) return value;
-  if (Array.isArray(value.list)) return value.list;
-  return [];
-}
-
-function __text(value) {
-  return String(value ?? "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
-}
-
 async function searchResults(keyword) {
-  const result = await __mangayomiExtension.search(keyword, 1, []);
-  return JSON.stringify(__list(result).map((item) => ({
-    title: __text(item.name || item.title),
-    image: item.imageUrl || item.image || "",
-    href: item.link || item.url || ""
-  })).filter((item) => item.title && item.href));
+    try {
+        const encodedKeyword = encodeURIComponent(keyword);
+        const responseText = await soraFetch(`https://aniwaves.ru/filter?keyword=${encodedKeyword}`);
+        const html = await responseText.text();
+
+        const regex = /<div\s+class="item\s*">[\s\S]*?<a\s+href="([^"]+)">[\s\S]*?<img\s+src="([^"]+)"[^>]*>[\s\S]*?<a\s+class="name\s+d-title"[^>]*>([^<]+)<\/a>/g;
+
+        const results = [];
+        let match;
+
+        while ((match = regex.exec(html)) !== null) {
+            if (match[3].trim() === "Omiai Aite Wa Oshiego Tsuyokina Mondaiji") {
+                continue;
+            }
+
+            results.push({
+                title: match[3].trim(),
+                image: match[2].trim(),
+                href: `https://aniwaves.ru${match[1].trim()}`
+            });
+        }
+
+        return JSON.stringify(results);
+    } catch (error) {
+        console.log('Fetch error in searchResults:', error);
+        return JSON.stringify([{ title: 'Error', image: '', href: '' }]);
+    }
 }
 
 async function extractDetails(url) {
-  const detail = await __mangayomiExtension.getDetail(url);
-  return JSON.stringify([{
-    description: __text(detail.description || "Not available"),
-    aliases: Array.isArray(detail.genre) ? detail.genre.join(", ") : __text(detail.genre || detail.name || "Not available"),
-    airdate: detail.status != null ? "Status: " + detail.status : "Not available"
-  }]);
+    try {
+        const responseText = await soraFetch(url);
+        const html = await responseText.text();
+
+        // Description: match synopsis div, then find any div with class containing "content"
+        const descriptionMatch = html.match(/<div class="synopsis mb-3">[\s\S]*?<div[^>]*class="[^"]*content[^"]*"[^>]*>(.*?)<\/div>/);
+        let description = descriptionMatch ? descriptionMatch[1].trim() : 'No description available';
+
+        // Remove possible "Aired, ..." prefix (only on episode pages)
+        description = description.replace(/^Aired,\s+[^,]+,\s*/, '');
+
+        const aliasesMatch = html.match(/<div class="names font-italic mb-2">(.*?)<\/div>/);
+        const aliases = aliasesMatch ? aliasesMatch[1].trim() : 'No aliases available';
+
+        const airdateMatch = html.match(/Date aired:\s*<span><span[^>]*>(.*?)<\/span>/);
+        const airdate = airdateMatch ? `Aired: ${airdateMatch[1].trim()}` : 'Aired: Unknown';
+
+        const transformedResults = [{
+            description,
+            aliases,
+            airdate
+        }];
+
+        return JSON.stringify(transformedResults);
+    } catch (error) {
+        console.log('Details error:', error);
+        return JSON.stringify([{
+            description: 'Error loading description',
+            aliases: 'Duration: Unknown',
+            airdate: 'Aired/Released: Unknown'
+        }]);
+    }
 }
 
 async function extractEpisodes(url) {
-  const detail = await __mangayomiExtension.getDetail(url);
-  const chapters = Array.isArray(detail.chapters) ? detail.chapters : [];
-  return JSON.stringify(chapters.map((chapter, index) => {
-    const label = String(chapter.name || chapter.title || "");
-    const parsed = label.match(/(?:episode|ep|capitulo|chapter)\s*([\d.]+)/i)?.[1] || label.match(/\b([\d.]+)\b/)?.[1];
-    return {
-      href: chapter.url || chapter.link || "",
-      number: Number.parseFloat(parsed) || index + 1
-    };
-  }).filter((item) => item.href));
+    try {
+        // Extract series slug from URLs like https://aniwaves.ru/watch/kimetsu-no-yaiba-77717
+        const slugMatch = url.match(/https:\/\/aniwaves\.ru\/watch\/([^\/]+)/);
+        if (!slugMatch) throw new Error("Invalid URL format");
+        const animeSlug = slugMatch[1];
+
+        // First hyphen-separated word for fallback (e.g., "kimetsu")
+        const firstWordMatch = animeSlug.match(/^([^-]+)/);
+        const firstSlugWord = firstWordMatch ? firstWordMatch[1] : animeSlug;
+
+        const responseText = await soraFetch(url);
+        const html = await responseText.text();
+
+        // Capture episode count: "Episodes: <span>26 / 26</span>" -> take first number
+        const episodesMatch = html.match(/Episodes:\s*<span>(\d+)/);
+        const episodesCount = episodesMatch ? parseInt(episodesMatch[1], 10) : 0;
+
+        const transformedResults = [];
+
+        if (episodesCount > 0) {
+            for (let i = 1; i <= episodesCount; i++) {
+                transformedResults.push({
+                    href: `${url}/episode/${i}`,
+                    number: i
+                });
+            }
+        } else {
+            // Fallback search using the API
+            const apiUrl = `https://aniwaves.ru/filter?keyword=${encodeURIComponent(firstSlugWord)}`;
+            const searchResponse = await soraFetch(apiUrl);
+            const searchHtml = await searchResponse.text();
+
+            // Match a search result card: <a href="/watch/..." ...><span>Ep: 26</span>
+            const regex = new RegExp(
+                `<a\\s+[^>]*href="\\/watch\\/${animeSlug}"[^>]*>[\\s\\S]*?<span>Ep:\\s*(\\d+)<\\/span>`,
+                'i'
+            );
+            const epMatch = searchHtml.match(regex);
+            const fallbackCount = epMatch ? parseInt(epMatch[1], 10) : 0;
+
+            for (let i = 1; i <= fallbackCount; i++) {
+                transformedResults.push({
+                    href: `${url}/episode/${i}`,
+                    number: i
+                });
+            }
+        }
+
+        return JSON.stringify(transformedResults);
+    } catch (error) {
+        console.log('Fetch error in extractEpisodes:', error);
+        return JSON.stringify([]);
+    }
 }
 
 async function extractStreamUrl(url) {
-  const videos = await __mangayomiExtension.getVideoList(url);
-  const streams = __list(videos).map((video) => ({
-    title: video.quality || video.name || video.label || "Stream",
-    streamUrl: video.url || video.originalUrl || video.file || "",
-    url: video.url || video.originalUrl || video.file || "",
-    headers: video.headers || {}
-  })).filter((item) => /^https?:\/\//i.test(item.streamUrl));
-  return JSON.stringify({ streams, subtitles: "" });
+    try {
+        console.log("Input URL: " + url);
+        const match = url.match(/https:\/\/aniwaves\.ru\/watch\/([^\/]+)\/episode\/(\d+)/);
+        if (!match) throw new Error("Invalid URL format – expected /watch/SLUG/episode/NUM");
+
+        const animeSlug = match[1];
+        const episodeNumber = match[2];
+        console.log("Anime slug: " + animeSlug + ", Episode: " + episodeNumber);
+
+        const idMatch = animeSlug.match(/(\d+)$/);
+        if (!idMatch) throw new Error("Could not extract show ID from slug");
+        const showId = idMatch[1];
+        console.log("Show ID: " + showId);
+
+        const headers = { 'Referer': url };
+
+        // Step 1: Get server list (JSON -> extract result HTML)
+        const listUrl = "https://aniwaves.ru/ajax/server/list?servers=" + showId + "&eps=" + episodeNumber;
+        console.log("Fetching server list: " + listUrl);
+        const listResp = await soraFetch(listUrl, { headers });
+        if (!listResp) throw new Error("No response for server list");
+        const rawText = await listResp.text();
+        const listJson = JSON.parse(rawText);
+        const html = listJson.result;                     // the actual HTML
+        console.log("Server list HTML (first 500 chars): " + html.substring(0, 500));
+
+        // Extract first sub link-id (overall first)
+        const subIdMatch = html.match(/data-link-id="([^"]+)"/);
+        console.log("Sub ID match: " + (subIdMatch ? subIdMatch[1] : "null"));
+        // Extract first dub link-id inside the dub block
+        const dubIdMatch = html.match(/<div class="type" data-type="dub">[\s\S]*?data-link-id="([^"]+)"/);
+        console.log("Dub ID match: " + (dubIdMatch ? dubIdMatch[1] : "null"));
+
+        const subUrls = [];
+        const dubUrls = [];
+
+        async function resolveM3u8(linkId, type) {
+            console.log("\n--- Resolving " + type + " stream for link ID: " + linkId + " ---");
+            try {
+                // Step 2: get embed URL
+                const srcUrl = "https://aniwaves.ru/ajax/sources?id=" + encodeURIComponent(linkId) + "&asi=0&autoPlay=0";
+                console.log("Fetching source: " + srcUrl);
+                const srcResp = await soraFetch(srcUrl, { headers });
+                if (!srcResp) { console.log("No response for source API"); return null; }
+                const srcText = await srcResp.text();
+                console.log("Source API response (first 500 chars): " + srcText.substring(0, 500));
+                const srcData = JSON.parse(srcText);
+                const embedUrl = srcData?.result?.url;
+                if (!embedUrl) { console.log("No embed URL in source response"); return null; }
+                console.log("Embed URL: " + embedUrl);
+
+                // Step 3: fetch embed page, extract data-id for getSources
+                console.log("Fetching embed page...");
+                const embedResp = await soraFetch(embedUrl, { headers });
+                if (!embedResp) { console.log("No response for embed page"); return null; }
+                const embedHtml = await embedResp.text();
+                console.log("Embed HTML (first 500 chars): " + embedHtml.substring(0, 500));
+                
+                // NEW: extract data-id from the player div
+                const dataIdMatch = embedHtml.match(/data-id="([^"]+)"/);
+                if (!dataIdMatch) { console.log("No data-id found in embed page"); return null; }
+                const sourceId = dataIdMatch[1];
+                console.log("getSources ID (data-id): " + sourceId);
+
+                // Step 4: call getSources
+                const getSrcUrl = "https://play.echovideo.ru/embed-1/getSources?id=" + sourceId;
+                console.log("Fetching getSources: " + getSrcUrl);
+                const getSrcResp = await soraFetch(getSrcUrl, { headers });
+                if (!getSrcResp) { console.log("No response for getSources"); return null; }
+                const getSrcText = await getSrcResp.text();
+                console.log("getSources response: " + getSrcText);
+                const srcData2 = JSON.parse(getSrcText);
+                const sources = srcData2?.sources;
+                if (!sources) { console.log("No 'sources' field in getSources response"); return null; }
+                console.log("Found M3U8: " + sources);
+                return sources;
+            } catch (e) {
+                console.log("Error resolving " + type + ": " + e);
+                return null;
+            }
+        }
+
+        if (subIdMatch) {
+            const m3u8 = await resolveM3u8(subIdMatch[1], "SUB");
+            if (m3u8) subUrls.push(m3u8);
+        }
+
+        if (dubIdMatch) {
+            const m3u8 = await resolveM3u8(dubIdMatch[1], "DUB");
+            if (m3u8) dubUrls.push(m3u8);
+        }
+
+        console.log("\nFinal SUB URLs: " + JSON.stringify(subUrls));
+        console.log("Final DUB URLs: " + JSON.stringify(dubUrls));
+
+        const streams = [];
+        if (subUrls[0]) streams.push({ title: "SUB", streamUrl: subUrls[0], headers: { 'Referer': url } });
+        if (dubUrls[0]) streams.push({ title: "DUB", streamUrl: dubUrls[0], headers: { 'Referer': url } });
+
+        const result = { streams, subtitles: "" };
+        console.log("Result: " + JSON.stringify(result));
+        return JSON.stringify(result);
+
+    } catch (error) {
+        console.log("Fetch error in extractStreamUrl: " + error);
+        const result = { streams: "", subtitles: "" };
+        console.log("Error result: " + JSON.stringify(result));
+        return JSON.stringify(result);
+    }
+}
+
+// extractStreamUrl(`https://aniwaves.ru/anime-watch/one-piece/ep-1`);
+
+async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
+    try {
+        return await fetchv2(url, options.headers ?? {}, options.method ?? 'GET', options.body ?? null);
+    } catch(e) {
+        try {
+            return await fetch(url, options);
+        } catch(error) {
+            return null;
+        }
+    }
 }

@@ -1,134 +1,111 @@
 async function searchResults(keyword) {
     const results = [];
-    try {
-        const response = await fetchv2(`https://e.kortw.cc/vodsearch/-------------.html?keyword=${keyword}`);
-        const html = await response.text();
-        
-        const regex = /<li class="qy-mod-li[^>]*>[\s\S]*?<a href="([^"]+)"[\s\S]*?background-image:\s*url\(([^)]+)\)[\s\S]*?<span class="text-score">[^<]*<\/span>[\s\S]*?<span>([^<]+)<\/span>[\s\S]*?<\/li>/g;
+    const response = await fetchv2(`https://animekhor.org/?s=${keyword}`);
+    const html = await response.text();
 
-        let match;
-        while ((match = regex.exec(html)) !== null) {
-            results.push({
-                title: match[3].trim(),
-                image: "https://www.nivod.cc" + match[2].trim(),
-                href: "https://www.nivod.cc" + match[1].trim()
-            });
-        }
+    const regex = /<article class="bs"[^>]*>.*?<a href="([^"]+)"[^>]*>.*?<img src="([^"]+)"[^>]*>.*?<h2[^>]*>(.*?)<\/h2>/gs;
 
-        return JSON.stringify(results);
-    } catch (err) {
-        return JSON.stringify([{
-            title: "Error",
-            image: "Error",
-            href: "Error"
-        }]);
+    let match;
+    while ((match = regex.exec(html)) !== null) {
+        results.push({
+            title: match[3].trim(),
+            image: match[2].trim(),
+            href: match[1].trim()
+        });
     }
+
+    return JSON.stringify(results);
 }
 
 async function extractDetails(url) {
-    try {
-        const response = await fetchv2(url);
-        const html = await response.text();
+    const results = [];
+    const response = await fetchv2(url);
+    const html = await response.text();
 
-        const match = html.match(/id="show-desc">([\s\S]*?)<\/div>/);
-        const description = match ? match[1].trim() : "N/A";
+    const match = html.match(/<div class="entry-content"[^>]*>([\s\S]*?)<\/div>/);
 
-        return JSON.stringify([{
-            description: description,
-            aliases: "N/A",
-            airdate: "N/A"
-        }]);
-    } catch (err) {
-        return JSON.stringify([{
-            description: "Error",
-            aliases: "Error",
-            airdate: "Error"
-        }]);
+    let description = "N/A";
+    if (match) {
+        description = match[1]
+            .replace(/<[^>]+>/g, '') 
+            .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(code)) 
+            .replace(/&quot;/g, '"') 
+            .replace(/&apos;/g, "'") 
+            .replace(/&amp;/g, "&") 
+            .trim();
     }
+
+    results.push({
+        description: description,
+        aliases: 'N/A',
+        airdate: 'N/A'
+    });
+
+    return JSON.stringify(results);
 }
 
 async function extractEpisodes(url) {
     const results = [];
+    const response = await fetchv2(url);
+    const html = await response.text();
+    
+    const regex = /<div class="inepcx">\s*<a href="([^"#]+)">\s*<span>New Episode<\/span>/;
+    const match = regex.exec(html);
+    
+    if (match) {
+        results.push({
+            href: match[1].trim(),
+            number: 1
+        });
+    }
+    
+    return JSON.stringify(results);
+}
+async function extractStreamUrl(url) {
     try {
         const response = await fetchv2(url);
         const html = await response.text();
-
-        const regex = /<a\s+href="([^"]+)">\s*<div\s+class="item"\s*>第(\d+)集<\/div>\s*<\/a>/g;
-
-        let match;
-        while ((match = regex.exec(html)) !== null) {
-            results.push({
-                href: match[1].trim().startsWith('/') ? 'https://www.nivod.cc' + match[1].trim() : match[1].trim(),
-                number: parseInt(match[2], 10)
-            });
-        }
-
-        return JSON.stringify(results.reverse());
-    } catch (err) {
-        return JSON.stringify([{
-            href: "Error",
-            number: "Error"
-        }]);
-    }
-}
-
-async function extractStreamUrl(url) {
-    try {
-        const match = url.match(/\/vodplay\/(\d+)\/(ep\d+)/);
-        if (!match) {
-            return JSON.stringify({
-                streams: [],
-                subtitle: ""
-            });
-        }
         
-        const videoId = match[1];
-        const episodeId = match[2];
-        const apiUrl = `https://www.nivod.cc/xhr_playinfo/${videoId}-${episodeId}`;
+        const iframeMatch = html.match(/dailymotion\.com\/embed\/video\/([a-zA-Z0-9]+)/);
         
-        const response = await fetchv2(apiUrl);
-        const data = await response.json();
-        console.log(JSON.stringify(data));
-        const streams = [];
+        if (!iframeMatch) return "no iframe";
         
-        if (data.pdatas && Array.isArray(data.pdatas)) {
-            data.pdatas.forEach((item, index) => {
-                const streamUrl = item.playurl;
+        const videoId = iframeMatch[1];
+        const metaRes = await fetchv2(`https://www.dailymotion.com/player/metadata/video/${videoId}`);
+        const metaJson = await metaRes.json();
+        const hlsLink = metaJson.qualities?.auto?.[0]?.url;
+        
+        if (!hlsLink) return "no hls";
+        
+        async function getBestHls(hlsUrl) {
+            try {
+                const res = await fetchv2(hlsUrl);
+                const text = await res.text();
+                const regex = /#EXT-X-STREAM-INF:.*RESOLUTION=(\d+)x(\d+).*?\n(https?:\/\/[^\n]+)/g;
+                const streams = [];
+                let match;
                 
-                let hostname = '';
-                const match = streamUrl.match(/^https?:\/\/([^\/]+)/);
-                if (match) {
-                    hostname = match[1];
+                while ((match = regex.exec(text)) !== null) {
+                    streams.push({ 
+                        width: parseInt(match[1]), 
+                        height: parseInt(match[2]), 
+                        url: match[3] 
+                    });
                 }
                 
-                streams.push({
-                    title: `Server ${index + 1}`,
-                    streamUrl: streamUrl,
-                    headers: {
-                        "Host": hostname,
-                        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:145.0) Gecko/20100101 Firefox/145.0",
-                        "Accept": "*/*",
-                        "Accept-Language": "en-US,en;q=0.5",
-                        "Accept-Encoding": "gzip, deflate, br, zstd",
-                        "Referer": "https://www.nivod.cc/",
-                        "Origin": "https://www.nivod.cc",
-                        "Connection": "keep-alive",
-                        "Sec-Fetch-Dest": "empty",
-                        "Sec-Fetch-Mode": "cors",
-                        "Sec-Fetch-Site": "cross-site"
-                    }
-                });
-            });
+                if (streams.length === 0) return hlsUrl;
+                streams.sort((a, b) => b.height - a.height);
+                return streams[0].url;
+            } catch {
+                return hlsUrl;
+            }
         }
         
-        return JSON.stringify({
-            streams: streams,
-            subtitle: ""
-        });
-    } catch (err) {
-        return JSON.stringify({
-            streams: [],
-            subtitle: ""
-        });
+        const bestHls = await getBestHls(hlsLink);
+        return bestHls;
+    } catch {
+        const empty = "{ streams: [";
+        console.log("Extracted stream result:" + JSON.stringify(empty));
+        return JSON.stringify(empty);
     }
 }
