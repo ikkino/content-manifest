@@ -13,7 +13,7 @@ async function searchResults(query) {
   try {
     const encodedQuery = encodeQuery(query);
     const searchUrl = searchBaseUrl + encodedQuery;
-    const response = await fetchv2("https://deno-proxies-sznvnpnxwhbv.deno.dev/?url=" + encodeURIComponent(searchUrl));
+    const response = await fetchv2(searchUrl);
     const htmlText = await response.text();
     
     const results = [];
@@ -30,7 +30,9 @@ async function searchResults(query) {
         null;
       
       const imageMatch = imageMatches[index].match(extractImageRegex);
-      const imageSrc = imageMatch ? imageMatch[1] : null;
+      const imageSrc = imageMatch
+        ? (imageMatch[1].startsWith("http") ? imageMatch[1] : baseUrl + imageMatch[1])
+        : null;
       
       const titleMatch = titleMatches[index].match(extractTitleRegex);
       const cleanTitle = titleMatch ? 
@@ -40,7 +42,7 @@ async function searchResults(query) {
       if (fullHref && imageSrc && cleanTitle) {
         results.push({
           href: fullHref,
-          image: "https://deno-proxies-sznvnpnxwhbv.deno.dev/?url=" + encodeURIComponent(imageSrc),
+          image: imageSrc,
           title: cleanTitle
         });
       }
@@ -58,9 +60,8 @@ async function searchResults(query) {
 
 async function extractDetails(url) {
   try {
-    const response = await fetchv2("https://deno-proxies-sznvnpnxwhbv.deno.dev/?url=" + encodeURIComponent(url));
+    const response = await fetchv2(url);
     const htmlText = await response.text();
-    console.log(htmlText);
     
     const descriptionMatch = (/<div class="desc text-expand">([\s\S]*?)<\/div>/.exec(htmlText) || [])[1];
     const aliasesMatch = (/<small class="al-title text-expand">([\s\S]*?)<\/small>/.exec(htmlText) || [])[1];
@@ -83,7 +84,7 @@ async function extractDetails(url) {
 async function extractEpisodes(url) {  
   try {
       const actualUrl = url.replace("Animekai:", "").trim();
-      const htmlText = await (await fetchv2("https://deno-proxies-sznvnpnxwhbv.deno.dev/?url=" + encodeURIComponent(actualUrl))).text();
+  const htmlText = await (await fetchv2(actualUrl)).text();
       const animeIdMatch = (htmlText.match(/<div class="rate-box"[^>]*data-id="([^"]+)"/) || [])[1];
       if (!animeIdMatch) return JSON.stringify([{ error: "AniID not found" }]);
 
@@ -92,7 +93,7 @@ async function extractEpisodes(url) {
       const token = tokenData.result;
 
       const episodeListUrl = `https://anikai.to/ajax/episodes/list?ani_id=${animeIdMatch}&_=${token}`;
-      const episodeListData = await (await fetchv2("https://deno-proxies-sznvnpnxwhbv.deno.dev/?url=" + encodeURIComponent(episodeListUrl))).json();
+      const episodeListData = await (await fetchv2(episodeListUrl)).json();
       const cleanedHtml = cleanJsonHtml(episodeListData.result);
 
       const episodeRegex = /<a[^>]+num="([^"]+)"[^>]+token="([^"]+)"[^>]*>/g;
@@ -157,10 +158,12 @@ async function extractStreamUrl(url) {
         const ids = [];
         let match;
         while ((match = spanRegex.exec(content)) !== null) ids.push(match[1]);
+        console.log(`[extractStreamUrl] ${type} ids:`, ids);
         return ids.length > 1 ? ids[1] : ids[0] ?? null;
       };
 
-      const types = ["dub"];
+      const dubType = url.includes("dub") ? "dub" : "sub";
+      const types = dubType === "sub" ? ["sub", "softsub"] : ["dub"];
 
       const servers = types
         .map(type => ({ type, lid: extractServerIds(type) }))
@@ -175,8 +178,7 @@ async function extractStreamUrl(url) {
           const decLidData = await decLidRes.json();
           const decodedLid = decLidData.result;
 
-          const viewUrl = `https://anikai.to/ajax/links/view?id=${lid}&_=${decodedLid}`;
-          const viewRes = await fetchv2(viewUrl);
+          const viewRes = await fetchv2(`https://anikai.to/ajax/links/view?id=${lid}&_=${decodedLid}`);
           const viewJson = await viewRes.json();
           const encodedResult = viewJson.result;
 
@@ -197,6 +199,7 @@ async function extractStreamUrl(url) {
             const iframeSrcMatch = iframePageText.match(/<iframe[^>]+src="([^"]+)"/i);
             if (iframeSrcMatch && iframeSrcMatch[1]) {
               iframeUrl = iframeSrcMatch[1];
+              console.log(`[extractStreamUrl] fallback iframeUrl for ${type}:`, iframeUrl);
             }
           }
 
@@ -222,23 +225,29 @@ async function extractStreamUrl(url) {
           const file = sources[0]?.file ?? null;
 
           if (file) {
-            const titleMap = { dub: "Dubbed English" };
+            const titleMap = { sub: "Hardsub English", softsub: "Original audio", dub: "Dubbed English" };
             let pushedQualities = 0;
             const baseTitle = titleMap[type] || type;
 
             try {
-              const m3u8Response = await fetchv2("https://1anime.app/api/m3u8-proxy?url=" + encodeURIComponent(file));
+              const proxyReqUrl = "https://1anime.app/api/m3u8-proxy?url=" + encodeURIComponent(file);
+              const m3u8Response = await fetchv2(proxyReqUrl);
               const m3u8Text = await m3u8Response.text();
               const lines = m3u8Text.split('\n');
               for (let i = 0; i < lines.length; i++) {
                 const line = lines[i].trim();
                 if (line.startsWith('#EXT-X-STREAM-INF:')) {
                   const resolutionMatch = line.match(/RESOLUTION=(\d+x\d+)/);
+                  const nameMatch = line.match(/NAME="([^"]+)"/i) || line.match(/BANDWIDTH=(\d+)/i);
+                  
                   let quality = 'Unknown';
                   if (resolutionMatch) {
                     const [width, height] = resolutionMatch[1].split('x');
                     quality = `${height}p`;
+                  } else if (nameMatch && nameMatch[1]) {
+                    quality = nameMatch[1];
                   }
+                  
                   if (i + 1 < lines.length) {
                     let streamPath = lines[i + 1].trim();
                     let absolutePath;
@@ -278,11 +287,15 @@ async function extractStreamUrl(url) {
       }));
 
       return JSON.stringify({ streams, subtitles });
+
     } catch (error) {
       console.error("Animekai fetch error:" + error);
       return "https://error.org";
     }
 }
+
+
+
 
 function cleanHtmlSymbols(string) {
   if (!string) {
