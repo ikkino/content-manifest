@@ -1,251 +1,166 @@
-// thank you ibro for the search i love you!!
-
 async function searchResults(keyword) {
+    const results = [];
+    const headers = {
+        "Content-Type": "multipart/form-data; boundary=----geckoformboundary38c356867533a17de80e8c65d9125df5"
+    };
+    const postData = `------geckoformboundary38c356867533a17de80e8c65d9125df5
+Content-Disposition: form-data; name="s_keyword"
+
+${keyword}
+------geckoformboundary38c356867533a17de80e8c65d9125df5
+Content-Disposition: form-data; name="orderby"
+
+popular
+------geckoformboundary38c356867533a17de80e8c65d9125df5
+Content-Disposition: form-data; name="order"
+
+DESC
+------geckoformboundary38c356867533a17de80e8c65d9125df5
+Content-Disposition: form-data; name="action"
+
+advanced_search
+------geckoformboundary38c356867533a17de80e8c65d9125df5
+Content-Disposition: form-data; name="page"
+
+1
+------geckoformboundary38c356867533a17de80e8c65d9125df5--`;
+
     try {
-        let transformedResults = [];
+        const response = await fetchv2("https://anihq.org/wp-admin/admin-ajax.php", headers, "POST", postData);
+        const data = await response.json();
+        const html = data.data.html;
+        const articlePattern = /<article[^>]*class="anime-card[^"]*"[^>]*>([\s\S]*?)<\/article>/g;
+        let articleMatch;
+        
+        while ((articleMatch = articlePattern.exec(html)) !== null) {
+            const articleHtml = articleMatch[1];
+            
+            const imgMatch = articleHtml.match(/<img[^>]+src=['"]([^'"]+)['"][^>]+alt=['"]([^'"]+)['"]/);
+            
 
-        const keywordGroups = {
-            trending: ["!trending", "!hot", "!tr", "!!"],
-            topRatedMovie: ["!top-rated-movie", "!topmovie", "!tm", "??"],
-            topRatedTV: ["!top-rated-tv", "!toptv", "!tt", "::"],
-            popularMovie: ["!popular-movie", "!popmovie", "!pm", ";;"],
-            popularTV: ["!popular-tv", "!poptv", "!pt", "++"],
-        };
-
-        const skipTitleFilter = Object.values(keywordGroups).flat();
-
-        const shouldFilter = !matchesKeyword(keyword, skipTitleFilter);
-
-        // --- TMDB Section ---
-        const encodedKeyword = encodeURIComponent(keyword);
-        let baseUrlTemplate = null;
-
-        if (matchesKeyword(keyword, keywordGroups.trending)) {
-            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/trending/all/week?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
-        } else if (matchesKeyword(keyword, keywordGroups.topRatedMovie)) {
-            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/top_rated?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
-        } else if (matchesKeyword(keyword, keywordGroups.topRatedTV)) {
-            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/top_rated?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
-        } else if (matchesKeyword(keyword, keywordGroups.popularMovie)) {
-            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/popular?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
-        } else if (matchesKeyword(keyword, keywordGroups.popularTV)) {
-            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/popular?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
-        } else {
-            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/search/multi?api_key=9801b6b0548ad57581d111ea690c85c8&query=${encodedKeyword}&include_adult=false&page=${page}`)}&simple=true`;
+            const linkMatch = articleHtml.match(/<h3[^>]*>[\s\S]*?<a[^>]+href=['"]([^'"]+)['"][^>]*title=['"]([^'"]+)['"]/);
+            
+            if (imgMatch && linkMatch) {
+                results.push({
+                    title: linkMatch[2].trim(),
+                    image: imgMatch[1].trim(),
+                    href: linkMatch[1].trim()
+                });
+            }
         }
-
-        let dataResults = [];
-
-        if (baseUrlTemplate) {
-            const pagePromises = Array.from({ length: 5 }, (_, i) =>
-                soraFetch(baseUrlTemplate(i + 1)).then(r => r.json())
-            );
-            const pages = await Promise.all(pagePromises);
-            dataResults = pages.flatMap(p => p.results || []);
-        }
-
-        if (dataResults.length > 0) {
-            transformedResults = transformedResults.concat(
-                dataResults
-                    .map(result => {
-                        if (result.media_type === "movie" || result.title) {
-                            return {
-                                title: result.title || result.name || result.original_title || result.original_name || "Untitled",
-                                image: result.poster_path ? `https://image.tmdb.org/t/p/w500${result.poster_path}` : "",
-                                href: `movie/${result.id}`,
-                            };
-                        } else if (result.media_type === "tv" || result.name) {
-                            return {
-                                title: result.name || result.title || result.original_name || result.original_title || "Untitled",
-                                image: result.poster_path ? `https://image.tmdb.org/t/p/w500${result.poster_path}` : "",
-                                href: `tv/${result.id}/1/1`,
-                            };
-                        }
-                    })
-                    .filter(Boolean)
-                    .filter(result => result.title !== "Overflow")
-                    .filter(result => result.title !== "My Marriage Partner Is My Student, a Cocky Troublemaker")
-                    .filter(r => !shouldFilter || r.title.toLowerCase().includes(keyword.toLowerCase()))
-            );
-        }
-
-        console.log("Transformed Results: " + JSON.stringify(transformedResults));
-        return JSON.stringify(transformedResults);
-    } catch (error) {
-        console.log("Fetch error in searchResults: " + error);
-        return JSON.stringify([{ title: "Error", image: "", href: "" }]);
+        
+        return JSON.stringify(results);
+    } catch (err) {
+        console.log(err);
+        return JSON.stringify([{
+            title: "Error",
+            image: "Error",
+            href: "Error"
+        }]);
     }
 }
 
-function matchesKeyword(keyword, commands) {
-    const lower = keyword.toLowerCase();
-    return commands.some(cmd => lower.startsWith(cmd.toLowerCase()));
-}
 
 async function extractDetails(url) {
     try {
-        if(url.includes('movie')) {
-            const match = url.match(/movie\/([^\/]+)/);
-            if (!match) throw new Error("Invalid URL format");
-
-            const movieId = match[1];
-            const responseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/${movieId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
-            const data = await responseText.json();
-
-            const transformedResults = [{
-                description: data.overview || 'No description available',
-                aliases: `Duration: ${data.runtime ? data.runtime + " minutes" : 'Unknown'}`,
-                airdate: `Released: ${data.release_date ? data.release_date : 'Unknown'}`
-            }];
-
-            return JSON.stringify(transformedResults);
-        } else if(url.includes('tv')) {
-            const match = url.match(/tv\/([^\/]+)/);
-            if (!match) throw new Error("Invalid URL format");
-
-            const showId = match[1];
-            const responseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
-            const data = await responseText.json();
-
-            const transformedResults = [{
-                description: data.overview || 'No description available',
-                aliases: `Duration: ${data.episode_run_time && data.episode_run_time.length ? data.episode_run_time.join(', ') + " minutes" : 'Unknown'}`,
-                airdate: `Aired: ${data.first_air_date ? data.first_air_date : 'Unknown'}`
-            }];
-
-            console.log(JSON.stringify(transformedResults));
-            return JSON.stringify(transformedResults);
-        } else {
-            throw new Error("Invalid URL format");
+        const response = await fetchv2(url);
+        const html = await response.text();
+        
+        const descMatch = html.match(/<div\s+data-synopsis[^>]*>([\s\S]*?)<\/div>/);
+        let description = "N/A";
+        
+        if (descMatch) {
+            description = descMatch[1]
+                .trim()
+                .replace(/<[^>]+>/g, '') 
+                .replace(/\s+/g, ' ')  
+                .trim();
         }
-    } catch (error) {
-        console.log('Details error: ' + error);
+        
         return JSON.stringify([{
-            description: 'Error loading description',
-            aliases: 'Duration: Unknown',
-            airdate: 'Aired/Released: Unknown'
+            description: description,
+            aliases: "N/A",
+            airdate: "N/A"
+        }]);
+    } catch (err) {
+        return JSON.stringify([{
+            description: "Error",
+            aliases: "Error",
+            airdate: "Error"
         }]);
     }
 }
 
 async function extractEpisodes(url) {
+    const results = [];
     try {
-        if(url.includes('movie')) {
-            const match = url.match(/movie\/([^\/]+)/);
-            
-            if (!match) throw new Error("Invalid URL format");
-            
-            const movieId = match[1];
-            
-            const movie = [
-                { href: `/movie/${movieId}`, number: 1, title: "Full Movie" }
-            ];
-
-            console.log(movie);
-            return JSON.stringify(movie);
-        } else if(url.includes('tv')) {
-            const match = url.match(/tv\/([^\/]+)\/([^\/]+)\/([^\/]+)/);
-            
-            if (!match) throw new Error("Invalid URL format");
-            
-            const showId = match[1];
-            
-            const showResponseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
-            const showData = await showResponseText.json();
-            
-            let allEpisodes = [];
-            for (const season of showData.seasons) {
-                const seasonNumber = season.season_number;
-
-                if(seasonNumber === 0) continue;
-                
-                const seasonResponseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}/season/${seasonNumber}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
-                const seasonData = await seasonResponseText.json();
-                
-                if (seasonData.episodes && seasonData.episodes.length) {
-                    const episodes = seasonData.episodes.map(episode => ({
-                        href: `/tv/${showId}/${seasonNumber}/${episode.episode_number}`,
-                        number: episode.episode_number,
-                        title: episode.name || ""
-                    }));
-                    allEpisodes = allEpisodes.concat(episodes);
-                }
-            }
-            
-            console.log(allEpisodes);
-            return JSON.stringify(allEpisodes);
-        } else {
-            throw new Error("Invalid URL format");
+        const response = await fetchv2(url);
+        const html = await response.text();
+        
+        const watchUrlMatch = html.match(/<a href="([^"]+\/watch\/[^"]+)"/);
+        
+        if (!watchUrlMatch) {
+            return JSON.stringify([{
+                href: url,
+                number: 1
+            }]);
         }
-    } catch (error) {
-        console.log('Fetch error in extractEpisodes: ' + error);
-        return JSON.stringify([]);
-    }    
+
+        const watchUrl = watchUrlMatch[1];
+
+        const watchResponse = await fetchv2(watchUrl);
+        const watchHtml = await watchResponse.text();
+
+        const episodeRegex = /<a href="([^"]+)"[^>]*class="[^"]*episode-list-item[^"]*"[^>]*data-episode-search-query="(\d+)"[\s\S]*?<span class="episode-list-item-number">\s*(\d+)\s*<\/span>/g;
+
+        let match;
+        while ((match = episodeRegex.exec(watchHtml)) !== null) {
+            results.push({
+                href: match[1].trim(),
+                number: parseInt(match[2], 10)
+            });
+        }
+
+        if (results.length === 0) {
+            return JSON.stringify([{
+                href: watchUrl,
+                number: 1
+            }]);
+        }
+
+        return JSON.stringify(results);
+    } catch (err) {
+        return JSON.stringify([{
+            href: "Error: " + err.message,
+            number: "Error"
+        }]);
+    }
 }
 
-async function extractStreamUrl(ID) {
-  if (ID.includes('movie')) {
-    const parts = ID.split('/'); 
-    const tmdbID = parts[2];
-
-    const response = await fetchv2("https://enc-dec.app/api/enc-vidlink?text=" + tmdbID);
-    const data = await response.json();
-
-    console.log(data.result);
-    const responseTwo = await fetchv2(`https://vidlink.pro/api/b/movie/${data.result}?multiLang=0`);
-    const dataTwo = await responseTwo.json();
-    console.log('Data Two: ' + JSON.stringify(dataTwo));
-    const streamUrl = dataTwo.stream.playlist;
-
-    const englishSubtitle = dataTwo.stream.captions.find(
-      sub => sub.language.toLowerCase().includes("english")
-    )?.url || null;
-
-    return JSON.stringify({
-      streams: ["Primary", streamUrl],
-      subtitles: englishSubtitle
-    });
-} else if (ID.includes('tv')) {
-    const parts = ID.split('/'); 
-    const tmdbID = parts[2];
-    const seasonNumber = parts[3];
-    const episodeNumber = parts[4];
-    console.log(`TMDB ID: ${tmdbID}, Season: ${seasonNumber}, Episode: ${episodeNumber}`);
-    const response = await fetchv2("https://enc-dec.app/api/enc-vidlink?text=" + tmdbID);
-    const data = await response.json();
-
-    console.log(data.result);
-    const responseTwo = await fetchv2(`https://vidlink.pro/api/b/tv/${data.result}/${seasonNumber}/${episodeNumber}?multiLang=0`);
-    const dataTwo = await responseTwo.json();
-    console.log('Data Two: ' + JSON.stringify(dataTwo));
-    const streamUrl = dataTwo.stream.playlist;
-
-    const englishSubtitle = dataTwo.stream.captions.find(
-      sub => sub.language.toLowerCase().includes("english")
-    )?.url || null;
-
-    return JSON.stringify({
-      streams: ["Primary", streamUrl],
-      subtitles: englishSubtitle
-    });
-  }
-}
-
-async function soraFetch(url, options = { headers: {}, method: 'GET', body: null, encoding: 'utf-8' }) {
+async function extractStreamUrl(url) {
     try {
-        return await fetchv2(
-            url,
-            options.headers ?? {},
-            options.method ?? 'GET',
-            options.body ?? null,
-            true,
-            options.encoding ?? 'utf-8'
-        );
-    } catch(e) {
-        try {
-            return await fetch(url, options);
-        } catch(error) {
-            return null;
+        const response = await fetchv2(url);
+        const html = await response.text();
+
+        const iframeMatch = html.match(/<iframe[^>]+src=['"]([^'"]+)['"]/i);
+        if (iframeMatch && /^https?:\/\//i.test(iframeMatch[1])) {
+            return iframeMatch[1].replace(/&amp;/g, "&");
         }
+
+        const embedMatch = html.match(/data-embed-id=['"][^:'"]+:([^'"]+)['"]/i);
+        if (embedMatch) {
+            const decoded = atob(embedMatch[1]);
+            if (/^https?:\/\//i.test(decoded)) return decoded;
+        }
+
+        const legacyMatch = html.match(/<iframe[^>]+src=['"]https:\/\/([^'"]+\.playerp2p\.com)\/#([^'"]+)['"]/);
+        if (legacyMatch) {
+            return "https://" + legacyMatch[1] + "/#" + legacyMatch[2];
+        }
+
+        return "https://error.org/";
+    } catch (err) {
+        console.log("Error: " + err.message);
+        return "https://error.org/";
     }
 }

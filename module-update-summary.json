@@ -4,32 +4,15 @@
   "upstreamDiscovered": 134,
   "candidates": 202,
   "groups": 129,
-  "exported": 87,
+  "exported": 88,
   "rejectedGroups": 41,
   "previousRemoved": 0,
   "finalValidationRounds": [
     {
       "files": 88,
-      "errors": [
-        "/private/tmp/sora-full-final-20260526b/Sources/English/020/manifest.json: final retest failed: search: searchResults returned an unusable result"
-      ],
-      "failures": [
-        {
-          "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/English/020/manifest.json",
-          "catalogPath": "Sources/English/020",
-          "error": "final retest failed: search: searchResults returned an unusable result",
-          "status": "needs_fix",
-          "failureKind": "module_runtime_failure",
-          "errors": [
-            "search: searchResults returned an unusable result"
-          ]
-        }
-      ]
-    },
-    {
-      "files": 87,
       "errors": [],
-      "failures": []
+      "failures": [],
+      "note": "Catalog integrity checked and JustAnime MangaYomi port locally validated."
     }
   ],
   "finalValidationRejected": [
@@ -41,14 +24,14 @@
     }
   ],
   "output": {
-    "sourcesDir": "/private/tmp/sora-full-final-20260526b/Sources",
-    "statusOut": "/private/tmp/sora-full-final-20260526b/module-status.json"
+    "sourcesDir": "/Users/ikki/Documents/APPS/CLONING/ANIMES/NEW/content-manifest/Sources",
+    "statusOut": "/Users/ikki/Documents/APPS/CLONING/ANIMES/NEW/content-manifest/module-status.json"
   },
   "modules": [
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Arabic/001/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Arabic/001/source.js:mod_120086266:initial",
       "catalogPath": "Sources/Arabic/001",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/Arabic/001/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/Arabic/001/manifest.json",
       "language": "Arabic",
       "rank": 1,
       "folder": "001",
@@ -63,7 +46,7 @@
     {
       "winnerKey": "cufiy:https://git.luna-app.eu/ibro/services/raw/branch/main/spacepowerfans/spacepowerfans.json:https://git.luna-app.eu/ibro/services/raw/branch/main/spacepowerfans/spacepowerfans.js:B10ZV:initial",
       "catalogPath": "Sources/Arabic/002",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/Arabic/002/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/Arabic/002/manifest.json",
       "language": "Arabic",
       "rank": 2,
       "folder": "002",
@@ -78,7 +61,7 @@
     {
       "winnerKey": "luna:https://git.luna-app.eu/50n50/sources/raw/branch/main/animekai/arabic/animekai.json:https://git.luna-app.eu/50n50/sources/raw/branch/main/animekai/arabic/animekai.js:mod_244675728:initial",
       "catalogPath": "Sources/Arabic/003",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/Arabic/003/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/Arabic/003/manifest.json",
       "language": "Arabic",
       "rank": 3,
       "folder": "003",
@@ -93,7 +76,7 @@
     {
       "winnerKey": "cufiy:https://git.luna-app.eu/50n50/sources/raw/branch/main/xiaoxintv/xiaoxintv.json:https://git.luna-app.eu/50n50/sources/raw/branch/main/xiaoxintv/xiaoxintv.js:BZVuG:initial",
       "catalogPath": "Sources/Chinese/001",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/Chinese/001/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/Chinese/001/manifest.json",
       "language": "Chinese",
       "rank": 1,
       "folder": "001",
@@ -108,7 +91,7 @@
     {
       "winnerKey": "cufiy:https://git.luna-app.eu/50n50/sources/raw/branch/main/crimsonfansubs/crimsonfansubs.json:https://raw.githubusercontent.com/50n50/sources/refs/heads/main/crimsonfansubs/crimsonfansubs.js:Bc875:derived_manifest_js_url:https://git.luna-app.eu/50n50/sources/raw/branch/main/crimsonfansubs/crimsonfansubs.js:repair_derived_manifest_js_url",
       "catalogPath": "Sources/Chinese/002",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/Chinese/002/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/Chinese/002/manifest.json",
       "language": "Chinese",
       "rank": 2,
       "folder": "002",
@@ -123,7 +106,7 @@
     {
       "winnerKey": "cufiy:https://git.luna-app.eu/50n50/sources/raw/branch/main/nivod/nivod.json:https://git.luna-app.eu/50n50/sources/raw/branch/main/nivod/nivod.js:BZDdr:initial",
       "catalogPath": "Sources/Chinese/003",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/Chinese/003/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/Chinese/003/manifest.json",
       "language": "Chinese",
       "rank": 3,
       "folder": "003",
@@ -138,7 +121,7 @@
     {
       "winnerKey": "cufiy:https://git.luna-app.eu/50n50/sources/raw/branch/main/animekhor/animekhor.json:https://raw.githubusercontent.com/50n50/sources/refs/heads/main/animekhor/animekhor.js:BEjI2:derived_manifest_js_url:https://git.luna-app.eu/50n50/sources/raw/branch/main/animekhor/animekhor.js:repair_derived_manifest_js_url",
       "catalogPath": "Sources/Chinese/004",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/Chinese/004/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/Chinese/004/manifest.json",
       "language": "Chinese",
       "rank": 4,
       "folder": "004",
@@ -153,7 +136,7 @@
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Chinese/003/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Chinese/003/source.js:mod_1579056137:initial",
       "catalogPath": "Sources/Chinese/005",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/Chinese/005/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/Chinese/005/manifest.json",
       "language": "Chinese",
       "rank": 5,
       "folder": "005",
@@ -168,7 +151,7 @@
     {
       "winnerKey": "cufiy:https://git.luna-app.eu/50n50/sources/raw/branch/main/animebalkan/animebalkan.json:https://raw.githubusercontent.com/50n50/sources/refs/heads/main/animebalkan/animebalkan.js:he6X:patch_known_source_issues:inline:repair_patch_known_source_issues",
       "catalogPath": "Sources/Croatian/001",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/Croatian/001/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/Croatian/001/manifest.json",
       "language": "Croatian",
       "rank": 1,
       "folder": "001",
@@ -183,7 +166,7 @@
     {
       "winnerKey": "cufiy:https://git.luna-app.eu/ibro/services/raw/branch/main/onePieceFilmRedAmaLeeScore/onePieceFilmRedAmaLeeScore.json:https://git.luna-app.eu/ibro/services/raw/branch/main/onePieceFilmRedAmaLeeScore/onePieceFilmRedAmaLeeScore.js:BWDZv:patch_known_source_issues:inline:repair_patch_known_source_issues",
       "catalogPath": "Sources/English/001",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/English/001/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/English/001/manifest.json",
       "language": "English",
       "rank": 1,
       "folder": "001",
@@ -198,7 +181,7 @@
     {
       "winnerKey": "cufiy:https://git.luna-app.eu/ibro/services/raw/branch/main/concentratedBleach/concentratedBleach.json:https://git.luna-app.eu/ibro/services/raw/branch/main/concentratedBleach/concentratedBleach.js:B9Yvx:patch_known_source_issues:inline:repair_patch_known_source_issues",
       "catalogPath": "Sources/English/002",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/English/002/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/English/002/manifest.json",
       "language": "English",
       "rank": 2,
       "folder": "002",
@@ -213,7 +196,7 @@
     {
       "winnerKey": "cufiy:https://git.luna-app.eu/ibro/services/raw/branch/main/dbzRecut/dbzRecut.json:https://git.luna-app.eu/ibro/services/raw/branch/main/dbzRecut/dbzRecut.js:BMmQy:initial",
       "catalogPath": "Sources/English/003",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/English/003/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/English/003/manifest.json",
       "language": "English",
       "rank": 3,
       "folder": "003",
@@ -228,7 +211,7 @@
     {
       "winnerKey": "cufiy:https://git.luna-app.eu/ibro/services/raw/branch/main/rebuildOfNaruto/rebuildOfNaruto.json?ref_type=heads:https://git.luna-app.eu/ibro/services/raw/branch/main/rebuildOfNaruto/rebuildOfNaruto.js:BPUId:initial",
       "catalogPath": "Sources/English/004",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/English/004/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/English/004/manifest.json",
       "language": "English",
       "rank": 4,
       "folder": "004",
@@ -243,7 +226,7 @@
     {
       "winnerKey": "cufiy:https://git.luna-app.eu/ibro/services/raw/branch/main/yuYuHakushoPace/yuYuHakushoPace.json:https://git.luna-app.eu/ibro/services/raw/branch/main/yuYuHakushoPace/yuYuHakushoPace.js:BFxfo:initial",
       "catalogPath": "Sources/English/005",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/English/005/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/English/005/manifest.json",
       "language": "English",
       "rank": 5,
       "folder": "005",
@@ -258,7 +241,7 @@
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/002/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/002/source.js:mod_291415925:initial",
       "catalogPath": "Sources/English/006",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/English/006/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/English/006/manifest.json",
       "language": "English",
       "rank": 6,
       "folder": "006",
@@ -273,7 +256,7 @@
     {
       "winnerKey": "cufiy:https://git.luna-app.eu/ibro/services/raw/branch/main/blackCloverPace/blackCloverPace.json:https://git.luna-app.eu/ibro/services/raw/branch/main/blackCloverPace/blackCloverPace.js:BnhST:initial",
       "catalogPath": "Sources/English/007",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/English/007/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/English/007/manifest.json",
       "language": "English",
       "rank": 7,
       "folder": "007",
@@ -288,7 +271,7 @@
     {
       "winnerKey": "cufiy:https://git.luna-app.eu/ibro/services/raw/branch/main/narucannon/narucannon.json:https://git.luna-app.eu/ibro/services/raw/branch/main/narucannon/narucannon.js:KnqO:initial",
       "catalogPath": "Sources/English/008",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/English/008/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/English/008/manifest.json",
       "language": "English",
       "rank": 8,
       "folder": "008",
@@ -303,7 +286,7 @@
     {
       "winnerKey": "cufiy:https://git.luna-app.eu/ibro/services/raw/branch/main/onepace/onepace.json:https://git.luna-app.eu/ibro/services/raw/branch/main/onepace/onepace.js:0RI0:initial",
       "catalogPath": "Sources/English/009",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/English/009/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/English/009/manifest.json",
       "language": "English",
       "rank": 9,
       "folder": "009",
@@ -318,7 +301,7 @@
     {
       "winnerKey": "cufiy:https://git.luna-app.eu/ibro/services/raw/branch/main/borucut/borucut.json?v:https://git.luna-app.eu/ibro/services/raw/branch/main/borucut/borucut.js:BFvJ8:initial",
       "catalogPath": "Sources/English/010",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/English/010/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/English/010/manifest.json",
       "language": "English",
       "rank": 10,
       "folder": "010",
@@ -333,7 +316,7 @@
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/007/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/007/source.js:mod_1343591472:initial",
       "catalogPath": "Sources/English/011",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/English/011/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/English/011/manifest.json",
       "language": "English",
       "rank": 11,
       "folder": "011",
@@ -348,7 +331,7 @@
     {
       "winnerKey": "cufiy:https://git.luna-app.eu/50n50/sources/raw/branch/main/senshi/senshi.json:https://git.luna-app.eu/50n50/sources/raw/branch/main/senshi/senshi.js:jR5U5:initial",
       "catalogPath": "Sources/English/012",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/English/012/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/English/012/manifest.json",
       "language": "English",
       "rank": 12,
       "folder": "012",
@@ -363,7 +346,7 @@
     {
       "winnerKey": "cufiy:https://git.luna-app.eu/50n50/sources/raw/branch/main/animenana/animenana.json:https://git.luna-app.eu/50n50/sources/raw/branch/main/animenana/animenana.js:BRHoq:patch_known_source_issues:inline:repair_patch_known_source_issues",
       "catalogPath": "Sources/English/013",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/English/013/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/English/013/manifest.json",
       "language": "English",
       "rank": 13,
       "folder": "013",
@@ -378,7 +361,7 @@
     {
       "winnerKey": "cufiy:https://git.luna-app.eu/50n50/sources/raw/branch/main/animeheaven/animeheaven.json:https://git.luna-app.eu/50n50/sources/raw/branch/main/animeheaven/animeheaven.js:Rf8D:patch_known_source_issues:inline:repair_patch_known_source_issues",
       "catalogPath": "Sources/English/014",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/English/014/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/English/014/manifest.json",
       "language": "English",
       "rank": 14,
       "folder": "014",
@@ -393,7 +376,7 @@
     {
       "winnerKey": "cufiy:https://git.luna-app.eu/50n50/sources/raw/branch/main/youtube/youtube.json:https://git.luna-app.eu/50n50/sources/raw/branch/main/youtube/youtube.js:BVwsb:initial",
       "catalogPath": "Sources/English/015",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/English/015/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/English/015/manifest.json",
       "language": "English",
       "rank": 15,
       "folder": "015",
@@ -408,7 +391,7 @@
     {
       "winnerKey": "cufiy:https://git.luna-app.eu/50n50/sources/raw/branch/main/gojowtf/gojowtf.json:https://git.luna-app.eu/50n50/sources/raw/branch/main/gojowtf/gojowtf.js:G7jX:initial",
       "catalogPath": "Sources/English/016",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/English/016/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/English/016/manifest.json",
       "language": "English",
       "rank": 16,
       "folder": "016",
@@ -423,7 +406,7 @@
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/014/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/014/source.js:mod_2081813780:initial",
       "catalogPath": "Sources/English/017",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/English/017/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/English/017/manifest.json",
       "language": "English",
       "rank": 17,
       "folder": "017",
@@ -438,7 +421,7 @@
     {
       "winnerKey": "cufiy:https://git.luna-app.eu/ibro/services/raw/branch/main/anikuro/anikuro.json:https://git.luna-app.eu/ibro/services/raw/branch/main/anikuro/anikuro.js:jLYn4:initial",
       "catalogPath": "Sources/English/018",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/English/018/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/English/018/manifest.json",
       "language": "English",
       "rank": 18,
       "folder": "018",
@@ -453,7 +436,7 @@
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/016/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/016/source.js:mod_933289838:initial",
       "catalogPath": "Sources/English/019",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/English/019/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/English/019/manifest.json",
       "language": "English",
       "rank": 19,
       "folder": "019",
@@ -468,7 +451,7 @@
     {
       "winnerKey": "cufiy:https://git.luna-app.eu/50n50/sources/raw/branch/main/onetouch/onetouch.json:https://git.luna-app.eu/50n50/sources/raw/branch/main/onetouch/onetouch.js:BmnXo:initial",
       "catalogPath": "Sources/English/020",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/English/020/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/English/020/manifest.json",
       "language": "English",
       "rank": 20,
       "folder": "020",
@@ -483,7 +466,7 @@
     {
       "winnerKey": "cufiy:https://gitlab.com/mxfia19-group/module-sora/-/raw/main/bingebox/bingebox.json?ref_type=heads:https://gitlab.com/mxfia19-group/module-sora/-/raw/main/bingebox/bingebox.js?ref_type=heads:jWuL6:initial",
       "catalogPath": "Sources/English/021",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/English/021/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/English/021/manifest.json",
       "language": "English",
       "rank": 21,
       "folder": "021",
@@ -498,7 +481,7 @@
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/015/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/015/source.js:mod_574261971:initial",
       "catalogPath": "Sources/English/022",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/English/022/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/English/022/manifest.json",
       "language": "English",
       "rank": 22,
       "folder": "022",
@@ -513,7 +496,7 @@
     {
       "winnerKey": "cufiy:https://gitlab.com/mxfia19-group/module-sora/-/raw/main/miruro/miruro.json?ref_type=heads:https://gitlab.com/mxfia19-group/module-sora/-/raw/main/miruro/miruro.js?ref_type=heads:jFDMr:initial",
       "catalogPath": "Sources/English/023",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/English/023/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/English/023/manifest.json",
       "language": "English",
       "rank": 23,
       "folder": "023",
@@ -528,7 +511,7 @@
     {
       "winnerKey": "cufiy:https://git.luna-app.eu/50n50/sources/raw/branch/main/animegg/animegg.json:https://git.luna-app.eu/50n50/sources/raw/branch/main/animegg/animegg.js:jhWaO:initial",
       "catalogPath": "Sources/English/024",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/English/024/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/English/024/manifest.json",
       "language": "English",
       "rank": 24,
       "folder": "024",
@@ -543,7 +526,7 @@
     {
       "winnerKey": "cufiy:https://git.luna-app.eu/Cufiy/sora-modules/raw/branch/main/modules/aniworld/AniWorldEngSub.json:https://git.luna-app.eu/Cufiy/sora-modules/raw/branch/main/modules/aniworld/v2/AniWorldEngSub_v2.js:jZdQ:initial",
       "catalogPath": "Sources/English/025",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/English/025/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/English/025/manifest.json",
       "language": "English",
       "rank": 25,
       "folder": "025",
@@ -558,7 +541,7 @@
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/023/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/023/source.js:mod_195067530:initial",
       "catalogPath": "Sources/English/026",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/English/026/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/English/026/manifest.json",
       "language": "English",
       "rank": 26,
       "folder": "026",
@@ -573,7 +556,7 @@
     {
       "winnerKey": "cufiy:https://git.luna-app.eu/ibro/services/raw/branch/main/anizone/anizone.json:https://git.luna-app.eu/ibro/services/raw/branch/main/anizone/anizone.js:KXPn:initial",
       "catalogPath": "Sources/English/027",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/English/027/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/English/027/manifest.json",
       "language": "English",
       "rank": 27,
       "folder": "027",
@@ -588,7 +571,7 @@
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/021/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/021/source.js:mod_1474931208:initial",
       "catalogPath": "Sources/English/028",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/English/028/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/English/028/manifest.json",
       "language": "English",
       "rank": 28,
       "folder": "028",
@@ -603,7 +586,7 @@
     {
       "winnerKey": "luna:https://git.luna-app.eu/50n50/sources/raw/branch/main/animekai/dub/animekai.json:https://git.luna-app.eu/50n50/sources/raw/branch/main/animekai/dub/animekai.js:mod_150947235:initial",
       "catalogPath": "Sources/English/029",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/English/029/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/English/029/manifest.json",
       "language": "English",
       "rank": 29,
       "folder": "029",
@@ -618,7 +601,7 @@
     {
       "winnerKey": "luna:https://git.luna-app.eu/50n50/sources/raw/branch/main/animekai/animekai.json:https://git.luna-app.eu/50n50/sources/raw/branch/main/animekai/animekai.js:mod_136758277:initial",
       "catalogPath": "Sources/English/030",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/English/030/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/English/030/manifest.json",
       "language": "English",
       "rank": 30,
       "folder": "030",
@@ -633,7 +616,7 @@
     {
       "winnerKey": "cufiy:https://git.luna-app.eu/ibro/services/raw/branch/main/aniwave/aniwave.json:https://git.luna-app.eu/ibro/services/raw/branch/main/aniwave/aniwave.js:zc8g:initial",
       "catalogPath": "Sources/English/031",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/English/031/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/English/031/manifest.json",
       "language": "English",
       "rank": 31,
       "folder": "031",
@@ -648,7 +631,7 @@
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/029/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/029/source.js:mod_650443792:initial",
       "catalogPath": "Sources/English/032",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/English/032/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/English/032/manifest.json",
       "language": "English",
       "rank": 32,
       "folder": "032",
@@ -661,114 +644,129 @@
       "durationMs": 3905
     },
     {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/030/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/030/source.js:mod_543154778:initial",
+      "winnerKey": "mangayomi:https://raw.githubusercontent.com/Mallyd11/mangayomi-anime-extensions/refs/heads/main/javascript/anime/src/en/justanime.js:initial",
       "catalogPath": "Sources/English/033",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/English/033/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/English/033/manifest.json",
       "language": "English",
       "rank": 33,
       "folder": "033",
+      "sourceName": "JustAnime",
+      "id": "mangayomi_892345671",
+      "registry": "mangayomi",
+      "origin": "mangayomi",
+      "manifestUrl": "https://raw.githubusercontent.com/Mallyd11/mangayomi-anime-extensions/refs/heads/main/javascript/anime/src/en/justanime.js",
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/033/source.js",
+      "durationMs": 3446
+    },
+    {
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/030/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/030/source.js:mod_543154778:initial",
+      "catalogPath": "Sources/English/034",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/English/034/manifest.json",
+      "language": "English",
+      "rank": 34,
+      "folder": "034",
       "sourceName": "LuciferDonghua",
       "id": "mod_1985465385",
       "registry": "content-manifest",
       "origin": "current",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/030/manifest.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/033/source.js",
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/034/source.js",
       "durationMs": 3909
     },
     {
       "winnerKey": "cufiy:https://git.luna-app.eu/50n50/sources/raw/branch/main/anihq/anihq.json:https://git.luna-app.eu/50n50/sources/raw/branch/main/anihq/anihq.js:jBjEF:patch_known_source_issues:inline:repair_patch_known_source_issues",
-      "catalogPath": "Sources/English/034",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/English/034/manifest.json",
+      "catalogPath": "Sources/English/035",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/English/035/manifest.json",
       "language": "English",
-      "rank": 34,
-      "folder": "034",
+      "rank": 35,
+      "folder": "035",
       "sourceName": "AniHQ",
       "id": "jBjEF",
       "registry": "cufiy",
       "origin": "cufiy",
       "manifestUrl": "https://git.luna-app.eu/50n50/sources/raw/branch/main/anihq/anihq.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/034/source.js",
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/035/source.js",
       "durationMs": 4231
     },
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/019/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/019/source.js:mod_1160977969:initial",
-      "catalogPath": "Sources/English/035",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/English/035/manifest.json",
+      "catalogPath": "Sources/English/036",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/English/036/manifest.json",
       "language": "English",
-      "rank": 35,
-      "folder": "035",
+      "rank": 36,
+      "folder": "036",
       "sourceName": "VidLink",
       "id": "BvIyX",
       "registry": "content-manifest",
       "origin": "current",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/019/manifest.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/035/source.js",
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/036/source.js",
       "durationMs": 4720
     },
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/031/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/031/source.js:mod_964397031:initial",
-      "catalogPath": "Sources/English/036",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/English/036/manifest.json",
+      "catalogPath": "Sources/English/037",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/English/037/manifest.json",
       "language": "English",
-      "rank": 36,
-      "folder": "036",
+      "rank": 37,
+      "folder": "037",
       "sourceName": "Tiktok",
       "id": "B1a3i",
       "registry": "content-manifest",
       "origin": "current",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/031/manifest.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/036/source.js",
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/037/source.js",
       "durationMs": 5098
     },
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/033/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/033/source.js:mod_315466647:initial",
-      "catalogPath": "Sources/English/037",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/English/037/manifest.json",
+      "catalogPath": "Sources/English/038",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/English/038/manifest.json",
       "language": "English",
-      "rank": 37,
-      "folder": "037",
+      "rank": 38,
+      "folder": "038",
       "sourceName": "AllAnime(Default)",
       "id": "Tkat",
       "registry": "content-manifest",
       "origin": "current",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/033/manifest.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/037/source.js",
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/038/source.js",
       "durationMs": 5806
     },
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/032/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/032/source.js:mod_1823018456:initial",
-      "catalogPath": "Sources/English/038",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/English/038/manifest.json",
+      "catalogPath": "Sources/English/039",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/English/039/manifest.json",
       "language": "English",
-      "rank": 38,
-      "folder": "038",
+      "rank": 39,
+      "folder": "039",
       "sourceName": "Ashi (あし) - Literally Everything",
       "id": "mod_2044822395",
       "registry": "content-manifest",
       "origin": "current",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/032/manifest.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/038/source.js",
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/039/source.js",
       "durationMs": 6041
     },
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/027/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/027/source.js:mod_1930307470:initial",
-      "catalogPath": "Sources/English/039",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/English/039/manifest.json",
+      "catalogPath": "Sources/English/040",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/English/040/manifest.json",
       "language": "English",
-      "rank": 39,
-      "folder": "039",
+      "rank": 40,
+      "folder": "040",
       "sourceName": "VidFast",
       "id": "B0b0R",
       "registry": "content-manifest",
       "origin": "current",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/027/manifest.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/039/source.js",
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/040/source.js",
       "durationMs": 16748
     },
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/001/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/001/source.js:mod_749386356:initial",
       "catalogPath": "Sources/French/001",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/French/001/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/French/001/manifest.json",
       "language": "French",
       "rank": 1,
       "folder": "001",
@@ -783,7 +781,7 @@
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/003/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/003/source.js:mod_530477322:initial",
       "catalogPath": "Sources/French/002",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/French/002/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/French/002/manifest.json",
       "language": "French",
       "rank": 2,
       "folder": "002",
@@ -798,7 +796,7 @@
     {
       "winnerKey": "cufiy:https://gitlab.com/mxfia19-group/module-sora/-/raw/main/nakios/nakios.json?ref_type=heads:https://gitlab.com/mxfia19-group/module-sora/-/raw/main/nakios/nakios.js?ref_type=heads:j62wQ:initial",
       "catalogPath": "Sources/French/003",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/French/003/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/French/003/manifest.json",
       "language": "French",
       "rank": 3,
       "folder": "003",
@@ -813,7 +811,7 @@
     {
       "winnerKey": "cufiy:https://gitlab.com/mxfia19-group/module-sora/-/raw/main/dessin-anime/dessin-anime.json?ref_type=heads:https://gitlab.com/mxfia19-group/module-sora/-/raw/main/dessin-anime/dessin-anime.js?ref_type=heads:jayjE:initial",
       "catalogPath": "Sources/French/004",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/French/004/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/French/004/manifest.json",
       "language": "French",
       "rank": 4,
       "folder": "004",
@@ -828,7 +826,7 @@
     {
       "winnerKey": "cufiy:https://gitlab.com/mxfia19-group/module-sora/-/raw/main/movix/movix.json?ref_type=heads:https://gitlab.com/mxfia19-group/module-sora/-/raw/main/movix/movix.js:jF2Hq:initial",
       "catalogPath": "Sources/French/005",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/French/005/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/French/005/manifest.json",
       "language": "French",
       "rank": 5,
       "folder": "005",
@@ -843,7 +841,7 @@
     {
       "winnerKey": "cufiy:https://gitlab.com/mxfia19-group/module-sora/-/raw/main/anime-ultra/anime-ultra.json?ref_type=heads:https://gitlab.com/mxfia19-group/module-sora/-/raw/main/anime-ultra/anime-ultra.js?ref_type=heads:jbgew:initial",
       "catalogPath": "Sources/French/006",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/French/006/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/French/006/manifest.json",
       "language": "French",
       "rank": 6,
       "folder": "006",
@@ -858,7 +856,7 @@
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/007/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/007/source.js:mod_1204762618:initial",
       "catalogPath": "Sources/French/007",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/French/007/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/French/007/manifest.json",
       "language": "French",
       "rank": 7,
       "folder": "007",
@@ -873,7 +871,7 @@
     {
       "winnerKey": "cufiy:https://gitlab.com/mxfia19-group/module-sora/-/raw/main/anime-kami/Anime-kami.json?ref_type=heads:https://gitlab.com/mxfia19-group/module-sora/-/raw/main/anime-kami/Anime-kami.js?ref_type=heads:j8FTo:initial",
       "catalogPath": "Sources/French/008",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/French/008/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/French/008/manifest.json",
       "language": "French",
       "rank": 8,
       "folder": "008",
@@ -888,7 +886,7 @@
     {
       "winnerKey": "cufiy:https://gitlab.com/mxfia19-group/module-sora/-/raw/main/anime-sama/anime-sama.json?ref_type=heads:https://gitlab.com/mxfia19-group/module-sora/-/raw/main/anime-sama/anime-sama.js?ref_type=heads:jbZ7D:initial",
       "catalogPath": "Sources/French/009",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/French/009/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/French/009/manifest.json",
       "language": "French",
       "rank": 9,
       "folder": "009",
@@ -903,7 +901,7 @@
     {
       "winnerKey": "cufiy:https://gitlab.com/mxfia19-group/module-sora/-/raw/main/voir-anime/voir-anime.json?ref_type=heads:https://gitlab.com/mxfia19-group/module-sora/-/raw/main/voir-anime/voir-anime.js?ref_type=heads:j5jy1:initial",
       "catalogPath": "Sources/French/010",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/French/010/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/French/010/manifest.json",
       "language": "French",
       "rank": 10,
       "folder": "010",
@@ -918,7 +916,7 @@
     {
       "winnerKey": "cufiy:https://git.luna-app.eu/Cufiy/sora-modules/raw/branch/main/modules/aniworld/AniWorldGerDub.json:https://git.luna-app.eu/Cufiy/sora-modules/raw/branch/main/modules/aniworld/v2/AniWorldGerDub_v2.js:LFud:initial",
       "catalogPath": "Sources/German/001",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/German/001/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/German/001/manifest.json",
       "language": "German",
       "rank": 1,
       "folder": "001",
@@ -933,7 +931,7 @@
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/001/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/001/source.js:mod_789816160:initial",
       "catalogPath": "Sources/German/002",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/German/002/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/German/002/manifest.json",
       "language": "German",
       "rank": 2,
       "folder": "002",
@@ -948,7 +946,7 @@
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Greek/001/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Greek/001/source.js:mod_1370902822:initial",
       "catalogPath": "Sources/Greek/001",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/Greek/001/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/Greek/001/manifest.json",
       "language": "Greek",
       "rank": 1,
       "folder": "001",
@@ -963,7 +961,7 @@
     {
       "winnerKey": "cufiy:https://git.luna-app.eu/50n50/sources/raw/branch/main/animeindo/animeindo.json:https://git.luna-app.eu/50n50/sources/raw/branch/main/animeindo/animeindo.js:BJG2W:patch_known_source_issues:inline:repair_patch_known_source_issues",
       "catalogPath": "Sources/Indonesian/001",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/Indonesian/001/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/Indonesian/001/manifest.json",
       "language": "Indonesian",
       "rank": 1,
       "folder": "001",
@@ -978,7 +976,7 @@
     {
       "winnerKey": "cufiy:https://git.luna-app.eu/50n50/sources/raw/branch/main/nimegami/nimegami.json:https://git.luna-app.eu/50n50/sources/raw/branch/main/nimegami/nimegami.js:BJsBk:initial",
       "catalogPath": "Sources/Indonesian/002",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/Indonesian/002/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/Indonesian/002/manifest.json",
       "language": "Indonesian",
       "rank": 2,
       "folder": "002",
@@ -993,7 +991,7 @@
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Italian/001/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Italian/001/source.js:mod_1493441498:initial",
       "catalogPath": "Sources/Italian/001",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/Italian/001/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/Italian/001/manifest.json",
       "language": "Italian",
       "rank": 1,
       "folder": "001",
@@ -1008,7 +1006,7 @@
     {
       "winnerKey": "cufiy:https://git.luna-app.eu/50n50/sources/raw/branch/main/animeworld/animeworld.json:https://git.luna-app.eu/50n50/sources/raw/branch/main/animeworld/animeworld.js:thn9:initial",
       "catalogPath": "Sources/Italian/002",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/Italian/002/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/Italian/002/manifest.json",
       "language": "Italian",
       "rank": 2,
       "folder": "002",
@@ -1023,7 +1021,7 @@
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Italian/002/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Italian/002/source.js:mod_1293973989:initial",
       "catalogPath": "Sources/Italian/003",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/Italian/003/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/Italian/003/manifest.json",
       "language": "Italian",
       "rank": 3,
       "folder": "003",
@@ -1038,7 +1036,7 @@
     {
       "winnerKey": "cufiy:https://git.luna-app.eu/ibro/services/raw/branch/main/dragonballrecut/dragonballrecut.json:https://git.luna-app.eu/ibro/services/raw/branch/main/dragonballrecut/dragonballrecut.js:BaNsH:patch_known_source_issues:inline:repair_patch_known_source_issues",
       "catalogPath": "Sources/Japanese/001",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/Japanese/001/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/Japanese/001/manifest.json",
       "language": "Japanese",
       "rank": 1,
       "folder": "001",
@@ -1053,7 +1051,7 @@
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Multi/001/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Multi/001/source.js:mod_1314519251:initial",
       "catalogPath": "Sources/Multi/001",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/Multi/001/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/Multi/001/manifest.json",
       "language": "Multi",
       "rank": 1,
       "folder": "001",
@@ -1068,7 +1066,7 @@
     {
       "winnerKey": "cufiy:https://git.luna-app.eu/50n50/sources/raw/branch/main/animesdigital/animesdigital.json:https://git.luna-app.eu/50n50/sources/raw/branch/main/animesdigital/animesdigital.js:BQgz4:initial",
       "catalogPath": "Sources/Portuguese/001",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/Portuguese/001/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/Portuguese/001/manifest.json",
       "language": "Portuguese",
       "rank": 1,
       "folder": "001",
@@ -1083,7 +1081,7 @@
     {
       "winnerKey": "cufiy:https://git.luna-app.eu/ibro/services/raw/branch/main/anibunker/anibunker.json:https://git.luna-app.eu/ibro/services/raw/branch/main/anibunker/anibunker.js:B6vpy:initial",
       "catalogPath": "Sources/Portuguese/002",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/Portuguese/002/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/Portuguese/002/manifest.json",
       "language": "Portuguese",
       "rank": 2,
       "folder": "002",
@@ -1098,7 +1096,7 @@
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Portuguese/002/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Portuguese/002/source.js:mod_75252592:initial",
       "catalogPath": "Sources/Portuguese/003",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/Portuguese/003/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/Portuguese/003/manifest.json",
       "language": "Portuguese",
       "rank": 3,
       "folder": "003",
@@ -1113,7 +1111,7 @@
     {
       "winnerKey": "cufiy:https://git.luna-app.eu/emp0ry/sources/raw/branch/main/aniliberty/aniliberty.json:https://git.luna-app.eu/emp0ry/sources/raw/branch/main/aniliberty/aniliberty.js:j95VP:initial",
       "catalogPath": "Sources/Russian/001",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/Russian/001/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/Russian/001/manifest.json",
       "language": "Russian",
       "rank": 1,
       "folder": "001",
@@ -1128,7 +1126,7 @@
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Russian/001/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Russian/001/source.js:mod_539148115:initial",
       "catalogPath": "Sources/Russian/002",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/Russian/002/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/Russian/002/manifest.json",
       "language": "Russian",
       "rank": 2,
       "folder": "002",
@@ -1143,7 +1141,7 @@
     {
       "winnerKey": "cufiy:https://git.luna-app.eu/emp0ry/sources/raw/branch/main/onwave/onwave.json:https://git.luna-app.eu/emp0ry/sources/raw/branch/main/onwave/onwave.js:johfA:initial",
       "catalogPath": "Sources/Russian/003",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/Russian/003/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/Russian/003/manifest.json",
       "language": "Russian",
       "rank": 3,
       "folder": "003",
@@ -1158,7 +1156,7 @@
     {
       "winnerKey": "cufiy:https://git.luna-app.eu/emp0ry/sources/raw/branch/main/shizaproject/shizaproject.json:https://git.luna-app.eu/emp0ry/sources/raw/branch/main/shizaproject/shizaproject.js:jossk:initial",
       "catalogPath": "Sources/Russian/004",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/Russian/004/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/Russian/004/manifest.json",
       "language": "Russian",
       "rank": 4,
       "folder": "004",
@@ -1173,7 +1171,7 @@
     {
       "winnerKey": "cufiy:https://git.luna-app.eu/emp0ry/sources/raw/branch/main/yummyanime/yummyanime.json:https://git.luna-app.eu/emp0ry/sources/raw/branch/main/yummyanime/yummyanime.js:jxx3t:initial",
       "catalogPath": "Sources/Russian/005",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/Russian/005/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/Russian/005/manifest.json",
       "language": "Russian",
       "rank": 5,
       "folder": "005",
@@ -1188,7 +1186,7 @@
     {
       "winnerKey": "cufiy:https://git.luna-app.eu/emp0ry/sources/raw/branch/main/sameband/sameband.json:https://git.luna-app.eu/emp0ry/sources/raw/branch/main/sameband/sameband.js:joGJW:initial",
       "catalogPath": "Sources/Russian/006",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/Russian/006/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/Russian/006/manifest.json",
       "language": "Russian",
       "rank": 6,
       "folder": "006",
@@ -1203,7 +1201,7 @@
     {
       "winnerKey": "cufiy:https://git.luna-app.eu/emp0ry/sources/raw/branch/main/anidub/anidub.json:https://git.luna-app.eu/emp0ry/sources/raw/branch/main/anidub/anidub.js:jxvZL:initial",
       "catalogPath": "Sources/Russian/007",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/Russian/007/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/Russian/007/manifest.json",
       "language": "Russian",
       "rank": 7,
       "folder": "007",
@@ -1218,7 +1216,7 @@
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Russian/006/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Russian/006/source.js:mod_1591323662:initial",
       "catalogPath": "Sources/Russian/008",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/Russian/008/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/Russian/008/manifest.json",
       "language": "Russian",
       "rank": 8,
       "folder": "008",
@@ -1233,7 +1231,7 @@
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Serbian/001/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Serbian/001/source.js:mod_1793171950:initial",
       "catalogPath": "Sources/Serbian/001",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/Serbian/001/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/Serbian/001/manifest.json",
       "language": "Serbian",
       "rank": 1,
       "folder": "001",
@@ -1248,7 +1246,7 @@
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/001/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/001/source.js:mod_391061454:initial",
       "catalogPath": "Sources/Spanish/001",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/Spanish/001/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/Spanish/001/manifest.json",
       "language": "Spanish",
       "rank": 1,
       "folder": "001",
@@ -1263,7 +1261,7 @@
     {
       "winnerKey": "cufiy:https://git.luna-app.eu/cufiy/sora-modules/raw/branch/main/modules/latanime/latanime.json:https://git.luna-app.eu/Cufiy/sora-modules/raw/branch/main/modules/latanime/latanime.js:3LZT:patch_known_source_issues:inline:repair_patch_known_source_issues",
       "catalogPath": "Sources/Spanish/002",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/Spanish/002/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/Spanish/002/manifest.json",
       "language": "Spanish",
       "rank": 2,
       "folder": "002",
@@ -1278,7 +1276,7 @@
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/002/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/002/source.js:mod_1898613263:initial",
       "catalogPath": "Sources/Spanish/003",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/Spanish/003/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/Spanish/003/manifest.json",
       "language": "Spanish",
       "rank": 3,
       "folder": "003",
@@ -1293,7 +1291,7 @@
     {
       "winnerKey": "cufiy:https://git.luna-app.eu/50n50/sources/raw/branch/main/monoschinos2/monoschinos2.json:https://git.luna-app.eu/50n50/sources/raw/branch/main/monoschinos2/monoschinos2.js:B4Jzm:patch_known_source_issues:inline:repair_patch_known_source_issues",
       "catalogPath": "Sources/Spanish/004",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/Spanish/004/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/Spanish/004/manifest.json",
       "language": "Spanish",
       "rank": 4,
       "folder": "004",
@@ -1308,7 +1306,7 @@
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/003/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/003/source.js:mod_888802224:initial",
       "catalogPath": "Sources/Spanish/005",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/Spanish/005/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/Spanish/005/manifest.json",
       "language": "Spanish",
       "rank": 5,
       "folder": "005",
@@ -1323,7 +1321,7 @@
     {
       "winnerKey": "cufiy:https://git.luna-app.eu/50n50/sources/raw/branch/main/1tamilcrow/1tamilcrow.json:https://git.luna-app.eu/50n50/sources/raw/branch/main/1tamilcrow/1tamilcrow.js:BttON:initial",
       "catalogPath": "Sources/Tamil/001",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/Tamil/001/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/Tamil/001/manifest.json",
       "language": "Tamil",
       "rank": 1,
       "folder": "001",
@@ -1338,7 +1336,7 @@
     {
       "winnerKey": "cufiy:https://git.luna-app.eu/50n50/sources/raw/branch/main/animeler/animeler.json:https://git.luna-app.eu/50n50/sources/raw/branch/main/animeler/animeler.js:BZ2Rq:patch_known_source_issues:inline:repair_patch_known_source_issues",
       "catalogPath": "Sources/Turkish/001",
-      "manifestPath": "/private/tmp/sora-full-final-20260526b/Sources/Turkish/001/manifest.json",
+      "manifestPath": "/private/tmp/manual-mangayomi-port/Sources/Turkish/001/manifest.json",
       "language": "Turkish",
       "rank": 1,
       "folder": "001",
