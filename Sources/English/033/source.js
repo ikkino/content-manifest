@@ -1,100 +1,125 @@
-const ALLANIME_API_BASE = "https://allanime-api.mdtahseen7378.workers.dev";
-
-async function fetchAllAnimeJson(path, options = {}) {
-  const response = await fetchv2(ALLANIME_API_BASE + path, {
-    "Accept": "application/json",
-    ...(options.headers || {})
-  }, options.method, options.body);
-  if (!response.ok) throw new Error("AllAnime API HTTP " + response.status);
-  return response.json();
+function cleanTitle(title) {
+    return title
+        .replace(/&#8217;/g, "'")  
+        .replace(/&#8211;/g, "-")  
+        .replace(/&#[0-9]+;/g, ""); 
 }
 
 async function searchResults(keyword) {
-  const query = encodeURIComponent(String(keyword || "").trim());
-  if (!query) return JSON.stringify([]);
+    const results = [];
+    const response = await fetchv2(`https://luciferdonghua.in/?s=${keyword}`);
+    const html = await response.text();
 
-  const results = await fetchAllAnimeJson("/search?query=" + query);
-  const shows = Array.isArray(results) ? results : [];
-  const ids = shows.slice(0, 20).map((show) => show.id).filter(Boolean);
-  let thumbnails = {};
+    const regex = /<article class="bs"[^>]*>.*?<a href="([^"]+)"[^>]*>.*?<img src="([^"]+)"[^>]*>.*?<h2[^>]*>(.*?)<\/h2>/gs;
 
-  if (ids.length) {
-    try {
-      thumbnails = await fetchAllAnimeJson("/thumbnails", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ids })
-      });
-    } catch {
-      thumbnails = {};
+    let match;
+    while ((match = regex.exec(html)) !== null) {
+        results.push({
+            title: cleanTitle(match[3].trim()),
+            image: match[2].trim(),
+            href: match[1].trim()
+        });
     }
-  }
 
-  return JSON.stringify(shows.map((show) => ({
-    title: show.title || show.id || "Untitled",
-    image: thumbnails[show.id] || "",
-    href: show.id
-  })));
+    return JSON.stringify(results);
 }
 
-async function extractDetails(id) {
-  const details = await fetchAllAnimeJson("/anime/" + encodeURIComponent(id));
-  return JSON.stringify([{
-    description: details.synopsis || "No description available",
-    aliases: "Status: " + (details.status || "Unknown"),
-    airdate: "Episodes: sub " + (details.episodes_sub || 0) + " / dub " + (details.episodes_dub || 0)
-  }]);
+async function extractDetails(url) {
+    const results = [];
+    const response = await fetchv2(url);
+    const html = await response.text();
+
+    const match = html.match(/<div class="entry-content"[^>]*>([\s\S]*?)<\/div>/);
+
+    let description = "N/A";
+    if (match) {
+        description = match[1]
+            .replace(/<[^>]+>/g, '') 
+            .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(code)) 
+            .replace(/&quot;/g, '"') 
+            .replace(/&apos;/g, "'") 
+            .replace(/&amp;/g, "&") 
+            .trim();
+    }
+
+    results.push({
+        description: description,
+        aliases: 'N/A',
+        airdate: 'N/A'
+    });
+
+    return JSON.stringify(results);
 }
 
-async function extractEpisodes(id) {
-  let data = await fetchAllAnimeJson("/episodes/" + encodeURIComponent(id) + "?mode=sub");
-  let mode = data.mode || "sub";
-  let episodes = Array.isArray(data.episodes) ? data.episodes : [];
+async function extractEpisodes(url) {
+    const results = [];
+    const response = await fetchv2(url);
+    const html = await response.text();
 
-  if (!episodes.length) {
-    data = await fetchAllAnimeJson("/episodes/" + encodeURIComponent(id) + "?mode=dub");
-    mode = data.mode || "dub";
-    episodes = Array.isArray(data.episodes) ? data.episodes : [];
-  }
+    const regex = /<li data-index="\d+">[\s\S]*?<a href="([^"]+)">/g;
 
-  return JSON.stringify(episodes.map((episode, index) => ({
-    href: JSON.stringify({
-      show_id: id,
-      ep_no: String(episode),
-      mode
-    }),
-    number: Number.parseFloat(episode) || index + 1
-  })));
+    let match;
+    let count = 1;
+    while ((match = regex.exec(html)) !== null) {
+        results.push({
+            href: match[1].trim(),
+            number: count
+        });
+        count++;
+    }
+
+    results.reverse();
+    return JSON.stringify(results.reverse());
 }
+
 
 async function extractStreamUrl(url) {
-  const payload = JSON.parse(url);
-  const modes = [payload.mode || "sub", payload.mode === "sub" ? "dub" : "sub"];
-
-  for (const mode of modes) {
     try {
-      const params = new URLSearchParams({
-        show_id: payload.show_id,
-        ep_no: payload.ep_no,
-        quality: "best",
-        mode
-      });
-      const data = await fetchAllAnimeJson("/episode_url?" + params.toString());
-      if (data.episode_url) {
-        return JSON.stringify({
-          streams: [
-            {
-              title: "AllAnime " + mode.toUpperCase(),
-              url: data.episode_url,
-              headers: data.headers || undefined
-            }
-          ]
-        });
-      }
-    } catch {
-      // Try the alternate translation mode before failing the stream step.
-    }
-  }
+        const response = await fetchv2(url);
+        const html = await response.text();
 
-  return JSON.stringify({ streams: [] });
+        const iframeMatch = html.match(/<meta itemprop="embedUrl" content="https?:\/\/geo\.dailymotion\.com\/player\/[^?]+\.html\?video=([a-zA-Z0-9]+)"/);
+        if (!iframeMatch) return JSON.stringify({ streams: [], subtitles: "" });
+
+        const videoId = iframeMatch[1];
+
+        const metaRes = await fetchv2(`https://www.dailymotion.com/player/metadata/video/${videoId}`);
+        const metaJson = await metaRes.json();
+        const hlsLink = metaJson.qualities?.auto?.[0]?.url;
+        if (!hlsLink) return JSON.stringify({ streams: [], subtitles: "" });
+
+        async function getBestHls(hlsUrl) {
+            try {
+                const res = await fetchv2(hlsUrl);
+                const text = await res.text();
+                const regex = /#EXT-X-STREAM-INF:.*RESOLUTION=(\d+)x(\d+).*?\n(https?:\/\/[^\n]+)/g;
+                const streams = [];
+                let match;
+                while ((match = regex.exec(text)) !== null) {
+                    streams.push({ width: parseInt(match[1]), height: parseInt(match[2]), url: match[3] });
+                }
+                if (streams.length === 0) return hlsUrl;
+                streams.sort((a, b) => b.height - a.height);
+                return streams[0].url;
+            } catch {
+                return hlsUrl;
+            }
+        }
+
+        const bestHls = await getBestHls(hlsLink);
+
+        const subtitles = metaJson.subtitles?.data?.['en-auto']?.urls?.[0] || "";
+
+        const result = {
+            streams: ["english", bestHls],
+            subtitles: subtitles
+        };
+
+        console.log("Extracted stream result:" + JSON.stringify(result));
+
+        return bestHls;
+    } catch {
+        console.log("Extracted stream result:" + JSON.stringify(empty));
+        return JSON.stringify("empty");
+    }
 }

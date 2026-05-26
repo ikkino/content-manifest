@@ -1,20 +1,25 @@
 {
-  "sourceName": "Anime-Portal",
-  "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/animeportal/icon.png",
+  "sourceName": "SameBand",
+  "iconUrl": "https://sameband.studio/templates/sameband/dleimages/favicon/touch-icon-ipad.png",
   "author": {
-    "name": "ibro",
-    "icon": "https://git.luna-app.eu/ibro/services/raw/branch/main/profile.jpg",
-    "url": "https://github.com/xibrox"
+    "name": "emp0ry",
+    "icon": "https://avatars.githubusercontent.com/u/64217088"
   },
-  "version": "1.0.4",
+  "version": "1.0.1",
   "language": "Russian",
   "streamType": "HLS",
   "quality": "1080p",
-  "baseUrl": "https://anime-portal.su/",
-  "searchBaseUrl": "https://anime-portal.su/?do=search&subaction=search&search_start=0&full_search=0&story=%s",
+  "baseUrl": "https://sameband.studio/",
+  "searchBaseUrl": "https://sameband.studio/",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Russian/006/source.js",
-  "type": "anime",
   "asyncJS": true,
-  "softsub": true,
-  "id": "fw1x"
+  "streamAsyncJS": true,
+  "softsub": false,
+  "type": "anime",
+  "downloadSupport": false,
+  "supportsMojuru": true,
+  "supportsDartotsu": true,
+  "supportsSora": true,
+  "supportsLuna": true,
+  "id": "joGJW"
 }
