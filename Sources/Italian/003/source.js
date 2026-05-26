@@ -1,179 +1,122 @@
 async function searchResults(keyword) {
-  const results = [];
-  const baseUrl = "https://animeworld.ac";
+  const response = await fetchv2(
+    `https://www.animeunity.so/archivio?title=${keyword}`
+  );
+  const html = await response.text();
 
-  try {
-    const response = await soraFetch(
-      `${baseUrl}/search?keyword=${encodeURIComponent(keyword)}`
-    );
-    const html = await response.text();
+  const regex = /<archivio[^>]*records="([^"]*)"/;
+  const match = regex.exec(html);
 
-    const filmListRegex =
-      /<div class="film-list">([\s\S]*?)<div class="clearfix"><\/div>\s*<\/div>/;
-    const filmListMatch = html.match(filmListRegex);
-
-    if (!filmListMatch) {
-      return JSON.stringify(results);
-    }
-
-    const filmListContent = filmListMatch[1];
-    const itemRegex = /<div class="item">[\s\S]*?<\/div>[\s]*<\/div>/g;
-    const items = filmListContent.match(itemRegex) || [];
-
-    items.forEach((itemHtml) => {
-      const imgMatch = itemHtml.match(/src="([^"]+)"/);
-      let imageUrl = imgMatch ? imgMatch[1] : "";
-
-      const titleMatch = itemHtml.match(/class="name">([^<]+)</);
-      const title = titleMatch ? titleMatch[1] : "";
-
-      const hrefMatch = itemHtml.match(/href="([^"]+)"/);
-      let href = hrefMatch ? hrefMatch[1] : "";
-
-      if (imageUrl && title && href) {
-        if (!imageUrl.startsWith("https")) {
-          if (imageUrl.startsWith("/")) {
-            imageUrl = baseUrl + imageUrl;
-          } else {
-            imageUrl = baseUrl + "/" + href;
-          }
-        }
-        if (!href.startsWith("https")) {
-          if (href.startsWith("/")) {
-            href = baseUrl + href;
-          } else {
-            href = baseUrl + "/" + href;
-          }
-        }
-        results.push({
-          title: title.trim(),
-          image: imageUrl,
-          href: href,
-        });
-      }
-    });
-
-    console.log(JSON.stringify(results));
-    return JSON.stringify(results);
-  } catch (error) {
-    console.log("Search error:", error);
-    return JSON.stringify([]);
+  if (!match || !match[1]) {
+    return { results: [] };
   }
+
+  const items = JSON.parse(match[1].replaceAll(`&quot;`, `"`));
+
+  const results =
+    items.map((item) => ({
+      title: item.title ?? item.title_eng,
+      image: item.imageurl,
+      href: `https://www.animeunity.so/info_api/${item.id}`,
+    })) || [];
+
+  return JSON.stringify(results);
 }
 
 async function extractDetails(url) {
-  try {
-    const response = await soraFetch(url);
-    const html = await response.text();
+  const response = await fetchv2(url);
+  const json = JSON.parse(await response.text());
 
-    const details = [];
-
-    const descriptionMatch = html.match(/<div class="desc">([\s\S]*?)<\/div>/);
-    let description = descriptionMatch ? descriptionMatch[1] : "";
-
-    const aliasesMatch = html.match(/<h2 class="title" data-jtitle="([^"]+)">/);
-    let aliases = aliasesMatch ? aliasesMatch[1] : "";
-
-    const airdateMatch = html.match(
-      /<dt>Data di Uscita:<\/dt>\s*<dd>([^<]+)<\/dd>/
-    );
-    let airdate = airdateMatch ? airdateMatch[1] : "";
-
-    if (description && aliases && airdate) {
-      details.push({
-        description: description,
-        aliases: aliases,
-        airdate: airdate,
-      });
-    }
-
-    console.log(JSON.stringify(details));
-    return JSON.stringify(details);
-  } catch (error) {
-    console.log("Details error:", error);
-    return JSON.stringify([]);
-  }
+  return JSON.stringify([
+    {
+      description: json.plot,
+      aliases: "N/A",
+      airdate: json.date,
+    },
+  ]);
 }
 
 async function extractEpisodes(url) {
   try {
-    const response = await soraFetch(url);
-    const html = await response.text();
-
     const episodes = [];
-    const baseUrl = "https://animeworld.ac";
 
-    const serverActiveRegex =
-      /<div class="server active"[^>]*>([\s\S]*?)<\/ul>\s*<\/div>/;
-    const serverActiveMatch = html.match(serverActiveRegex);
+    const apiResponse = await fetchv2(url);
+    const apiJson = JSON.parse(await apiResponse.text());
+    const slug = apiJson.slug;
+    const idAnime = apiJson.id;
 
-    if (!serverActiveMatch) {
-      return JSON.stringify(episodes);
+    if (!slug) {
+      console.log("No slug found in API response");
+      return episodes;
     }
 
-    const serverActiveContent = serverActiveMatch[1];
-    const episodeRegex =
-      /<li class="episode">\s*<a[^>]*?href="([^"]+)"[^>]*?>([^<]+)<\/a>/g;
-    let match;
+    const pageResponse = await fetchv2(
+      `https://www.animeunity.so/anime/${idAnime}-${slug}`
+    );
+    const html = await pageResponse.text();
 
-    while ((match = episodeRegex.exec(serverActiveContent)) !== null) {
-      let href = match[1];
-      const number = parseInt(match[2], 10);
+    const videoPlayerRegex =
+      /<video-player[^>]*anime="([^"]*)"[^>]*episodes="([^"]*)"/;
+    const videoPlayerMatch = html.match(videoPlayerRegex);
+    if (!videoPlayerMatch) {
+      console.log("No video-player tag found");
+      return episodes;
+    }
 
-      if (!href.startsWith("https")) {
-        if (href.startsWith("/")) {
-          href = baseUrl + href;
-        } else {
-          href = baseUrl + "/" + href;
-        }
-      }
+    const decodeHtml = (str) =>
+      str.replace(/&quot;/g, '"').replace(/\\\//g, "/");
 
+    const animeJsonStr = decodeHtml(videoPlayerMatch[1]);
+    const episodesJsonStr = decodeHtml(videoPlayerMatch[2]);
+
+    const animeData = JSON.parse(animeJsonStr);
+    const episodesData = JSON.parse(episodesJsonStr);
+
+    episodesData.forEach((episode) => {
       episodes.push({
-        href: href,
-        number: number,
+        href: `https://animeunity.so/anime/${idAnime}-${slug}/${episode.id}`,
+        number: parseInt(episode.number),
       });
-    }
+    });
 
-    console.log(JSON.stringify(episodes));
     return JSON.stringify(episodes);
   } catch (error) {
-    console.log("Episodes error:", error);
-    return JSON.stringify([]);
+    console.log("Error extracting episodes:", error);
+    return [];
   }
 }
 
 async function extractStreamUrl(url) {
   try {
-    const response = await soraFetch(url);
-    const html = await response.text();
+    const response1 = await fetchv2(url);
+    const html = await response1.text();
 
-    const idRegex = /<a[^>]+href="([^"]+)"[^>]*id="alternativeDownloadLink"/;
-    const match = html.match(idRegex);
-    return match ? match[1] : null;
-  } catch (error) {
-    console.log("Stream URL error:", error);
-    return "https://files.catbox.moe/avolvc.mp4";
-  }
-}
-
-async function soraFetch(
-  url,
-  options = { headers: {}, method: "GET", body: null, encoding: "utf-8" }
-) {
-  try {
-    return await fetchv2(
-      url,
-      options.headers ?? {},
-      options.method ?? "GET",
-      options.body ?? null,
-      true,
-      options.encoding ?? "utf-8"
+    const vixcloudMatch = html.match(
+      /embed_url="(https:\/\/vixcloud\.co\/embed\/\d+\?[^"]+)"/
     );
-  } catch (e) {
-    try {
-      return await fetch(url, options);
-    } catch (error) {
+    if (!vixcloudMatch) {
+      console.log("No vixcloud.co URL found in the HTML.");
       return null;
     }
+
+    let vixcloudUrl = vixcloudMatch[1];
+    vixcloudUrl = vixcloudUrl.replace(/&amp;/g, "&");
+
+    const response = await fetch(vixcloudUrl);
+    const downloadUrlMatch = response.match(
+      /window\.downloadUrl\s*=\s*['"]([^'"]+)['"]/
+    );
+
+    if (!downloadUrlMatch) {
+      console.log("No downloadUrl found in the response.");
+      return null;
+    }
+
+    const downloadURL = downloadUrlMatch[1];
+    console.log(downloadURL);
+    return downloadURL;
+  } catch (error) {
+    console.log("Fetch error:", error);
+    return null;
   }
 }
