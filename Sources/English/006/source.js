@@ -2,15 +2,15 @@ async function searchResults(keyword) {
     const results = [];
 
     results.push({
-        title: "Black Clover Pace [SUB]",
-        image: "https://git.luna-app.eu/ibro/services/raw/branch/main/blackCloverPace/icon.png",
-        href: "https://pixeldrain.net/l/nhfMpi4V"
+        title: "Use External Player",
+        image: "https://git.luna-app.eu/ibro/services/raw/branch/main/yuYuHakushoPace/UseExternalPlayer.png",
+        href: ""
     });
 
     results.push({
-        title: "Black Clover Pace [DUB]",
-        image: "https://git.luna-app.eu/ibro/services/raw/branch/main/blackCloverPace/icon.png",
-        href: "https://pixeldrain.net/l/iryu2NWQ"
+        title: "Yu Yu Hakusho Pace",
+        image: "https://git.luna-app.eu/ibro/services/raw/branch/main/yuYuHakushoPace/icon.png",
+        href: "https://pixeldrain.net/l/Ldcn42AG"
     });
     
     console.log(`Results: ${JSON.stringify(results)}`);
@@ -20,7 +20,7 @@ async function searchResults(keyword) {
 async function extractDetails(url) {
     const match = url.match(/https:\/\/pixeldrain\.net\/l\/([^\/]+)/);
     if (!match) throw new Error("Invalid URL format");
-            
+
     const arcId = match[1];
 
     const response = await soraFetch(`https://pixeldrain.net/api/list/${arcId}`);
@@ -39,7 +39,7 @@ async function extractDetails(url) {
 async function extractEpisodes(url) {
     const match = url.match(/https:\/\/pixeldrain\.net\/l\/([^\/]+)/);
     if (!match) throw new Error("Invalid URL format");
-            
+
     const arcId = match[1];
 
     const response = await soraFetch(`https://pixeldrain.net/api/list/${arcId}`);
@@ -62,7 +62,7 @@ async function extractEpisodes(url) {
 // extractStreamUrl(`EDg7Q9Uu`);
 
 async function extractStreamUrl(url) {
-    return `https://pixeldrain.net/api/file/${url}?download`;
+    return `https://pixeldrain.net/api/file/${url}`;
 }
 
 async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {

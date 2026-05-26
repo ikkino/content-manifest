@@ -1,13 +1,6 @@
-function cleanTitle(title) {
-    return title
-        .replace(/&#8217;/g, "'")  
-        .replace(/&#8211;/g, "-")  
-        .replace(/&#[0-9]+;/g, ""); 
-}
-
 async function searchResults(keyword) {
     const results = [];
-    const response = await fetchv2(`https://luciferdonghua.in/?s=${keyword}`);
+    const response = await fetchv2(`https://lmanime.com/?s=${keyword}`);
     const html = await response.text();
 
     const regex = /<article class="bs"[^>]*>.*?<a href="([^"]+)"[^>]*>.*?<img src="([^"]+)"[^>]*>.*?<h2[^>]*>(.*?)<\/h2>/gs;
@@ -15,7 +8,7 @@ async function searchResults(keyword) {
     let match;
     while ((match = regex.exec(html)) !== null) {
         results.push({
-            title: cleanTitle(match[3].trim()),
+            title: match[3].trim(),
             image: match[2].trim(),
             href: match[1].trim()
         });
@@ -56,29 +49,25 @@ async function extractEpisodes(url) {
     const response = await fetchv2(url);
     const html = await response.text();
 
-    const regex = /<li data-index="\d+">[\s\S]*?<a href="([^"]+)">/g;
+    const regex = /<a href="([^"]+)">\s*<div class="epl-num">([\d.]+)<\/div>/g;
 
     let match;
-    let count = 1;
     while ((match = regex.exec(html)) !== null) {
         results.push({
             href: match[1].trim(),
-            number: count
+            number: parseInt(match[2], 10)
         });
-        count++;
     }
-
     results.reverse();
-    return JSON.stringify(results.reverse());
+    return JSON.stringify(results);
 }
-
 
 async function extractStreamUrl(url) {
     try {
         const response = await fetchv2(url);
         const html = await response.text();
 
-        const iframeMatch = html.match(/<meta itemprop="embedUrl" content="https?:\/\/geo\.dailymotion\.com\/player\/[^?]+\.html\?video=([a-zA-Z0-9]+)"/);
+        const iframeMatch = html.match(/dailymotion\.com\/embed\/video\/([a-zA-Z0-9]+)/);
         if (!iframeMatch) return JSON.stringify({ streams: [], subtitles: "" });
 
         const videoId = iframeMatch[1];
@@ -117,9 +106,10 @@ async function extractStreamUrl(url) {
 
         console.log("Extracted stream result:" + JSON.stringify(result));
 
-        return bestHls;
+        return JSON.stringify(result);
     } catch {
+        const empty = { streams: [], subtitles: "" };
         console.log("Extracted stream result:" + JSON.stringify(empty));
-        return JSON.stringify("empty");
+        return JSON.stringify(empty);
     }
 }
