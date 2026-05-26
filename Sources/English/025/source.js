@@ -1,135 +1,568 @@
-const BASE_URL = "https://anicrush.wiki";
+// ==========================================
+// ⚙️ SORA MODULE — MIRURO (Node.js/VM Sandbox)
+// ==========================================
 
-function absoluteUrl(value) {
-  if (!value) return "";
-  if (/^https?:\/\//i.test(value)) return value;
-  return BASE_URL + (value.startsWith("/") ? value : "/" + value);
+const BASE_URL = "https://www.miruro.to";
+const PIPE_URL = "https://www.miruro.to/api/secure/pipe";
+const MIRURO_PIPE_OBF_KEY = "71951034f8fbcf53d89db52ceb3dc22c";
+
+// 🌟 SECURE GLOBAL DETECTION
+let _global;
+try { _global = globalThis; } catch(e) { 
+    try { _global = window; } catch(e) { 
+        try { _global = global; } catch(e) { _global = this; } 
+    } 
 }
 
-function cleanText(value) {
-  return String(value || "")
-    .replace(/&hellip;|&#8230;/g, "...")
-    .replace(/&amp;/g, "&")
-    .replace(/&#8217;/g, "'")
-    .replace(/&#038;/g, "&")
-    .replace(/<[^>]*>/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
+const OBF_KEY_BYTES = [];
+for (let i = 0; i < MIRURO_PIPE_OBF_KEY.length; i += 2) {
+    OBF_KEY_BYTES.push(parseInt(MIRURO_PIPE_OBF_KEY.substr(i, 2), 16));
 }
 
-function parseJsonLdBlocks(html) {
-  const blocks = [];
-  const regex = /<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi;
-  let match;
-  while ((match = regex.exec(html)) !== null) {
+// ==========================================
+// 🗄️ SUPABASE TRACKER
+// ==========================================
+const SUPABASE_URL = "https://qyeisgowjisqbatrmqta.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_F68CBjFVPh71U0SdD9BQJg_UJgL9-Fj";
+
+async function sendSupabaseLog(moduleName, actionType, dataPayload) {
     try {
-      blocks.push(JSON.parse(match[1].trim()));
-    } catch {
-      // Ignore malformed metadata and keep parsing the page.
+        const payload = { module: moduleName, action: actionType, data: dataPayload };
+        const headers = { 
+            "Content-Type": "application/json", "apikey": SUPABASE_ANON_KEY,
+            "Authorization": `Bearer ${SUPABASE_ANON_KEY}`, "Prefer": "return=minimal" 
+        };
+        
+        if (typeof fetchv2 !== 'undefined') {
+            await fetchv2(`${SUPABASE_URL}/rest/v1/app_logs`, headers, "POST", JSON.stringify(payload));
+        } else {
+            await fetch(`${SUPABASE_URL}/rest/v1/app_logs`, { method: "POST", headers: headers, body: JSON.stringify(payload) });
+        }
+    } catch (e) {
+        console.log(`[Tracker] 🚨 Erreur d'envoi vers Supabase : ${e.message}`);
     }
-  }
-  return blocks;
 }
 
-function findSchema(blocks, type) {
-  for (const block of blocks) {
-    const graph = Array.isArray(block["@graph"]) ? block["@graph"] : [block];
-    const found = graph.find((item) => item && item["@type"] === type);
-    if (found) return found;
-  }
-  return null;
+// ==========================================
+// 🛠️ DECRYPTION ENGINE (Pure JS Polyfills)
+// ==========================================
+
+function pureBtoa(input) {
+    let str = String(input); let output = '';
+    let chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+    for (let block = 0, charCode, i = 0, map = chars;
+        str.charAt(i | 0) || (map = '=', i % 1);
+        output += map.charAt(63 & block >> 8 - i % 1 * 8)) {
+        charCode = str.charCodeAt(i += 3/4);
+        block = block << 8 | charCode;
+    }
+    return output;
 }
 
-async function fetchText(url, options = {}) {
-  const response = await fetchv2(url, {
-    "Accept": "text/html,application/json,*/*",
-    "Referer": BASE_URL + "/",
-    "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1",
-    ...(options.headers || {})
-  }, options.method, options.body);
-  if (!response.ok) throw new Error("HTTP " + response.status);
-  return response.text();
+function pureAtob(input) {
+    let str = String(input).replace(/=+$/, ''); 
+    if (str.length % 4 == 1) return null;
+    let output = '';
+    let chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+    for (let bc = 0, bs = 0, buffer, i = 0;
+        buffer = str.charAt(i++);
+        ~buffer && (bs = bc % 4 ? bs * 64 + buffer : buffer, bc++ % 4) ? output += String.fromCharCode(255 & bs >> (-2 * bc & 6)) : 0
+    ) { buffer = chars.indexOf(buffer); }
+    return output;
 }
+
+function base64UrlEncode(obj) {
+    const jsonStr = JSON.stringify(obj);
+    const utf8Str = unescape(encodeURIComponent(jsonStr));
+    const b64 = pureBtoa(utf8Str);
+    return b64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+function safeBytesToString(u8arr) {
+    let s = ""; 
+    for(let i = 0; i < u8arr.length; i++) s += String.fromCharCode(u8arr[i]);
+    try { return decodeURIComponent(escape(s)); } catch(e) { return s; }
+}
+
+async function ensurePako() {
+    if (_global.pako) return;
+    try {
+        const res = await soraFetch("https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js");
+        const code = await res.text();
+        const runner = new Function('window', 'global', code);
+        runner(_global, _global);
+    } catch (e) { 
+        console.log("[Miruro] 🚨 Pako Error : " + e.message); 
+    }
+}
+
+// ==========================================
+// 🛡️ REACTOR CORE (Miruro Pipe)
+// ==========================================
+
+async function makeSecureRequest(path, query = {}, refererUrl = null) {
+    await ensurePako();
+
+    const payload = { path: path, method: "GET", query: query, body: null, version: "0.2.0" };
+    const encodedPayload = base64UrlEncode(payload);
+    
+    const url = `${PIPE_URL}?e=${encodedPayload}`;
+    console.log(`[Pipe] 🚀 Sending '${path}' request (GET)...`);
+    console.log(`[Pipe] 🔗 Exact link generated : ${url}`);
+
+    const headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
+        "Accept": "*/*",
+        "Accept-Language": "en-US,en;q=0.9",
+        "Origin": BASE_URL,
+        "Referer": refererUrl || `${BASE_URL}/`, 
+        "Sec-Fetch-Dest": "empty",
+        "Sec-Fetch-Mode": "cors",
+        "Sec-Fetch-Site": "same-origin",
+        "Sec-CH-UA": '"Chromium";v="146", "Not-A.Brand";v="24", "Brave";v="146"',
+        "Sec-CH-UA-Mobile": "?0",
+        "Sec-CH-UA-Platform": '"Windows"',
+        "Sec-GPC": "1",
+        "Priority": "u=1, i"
+    };
+
+    let b64Text = "";
+    let responseStatus = "Unknown";
+    
+    try {
+        let response = await soraFetch(url, { method: 'GET', headers: headers });
+        if (response) {
+            responseStatus = response.status || 'Unknown';
+            b64Text = typeof response.text === 'function' ? await response.text() : response.data;
+            console.log(`[X-Ray] 🌐 HTTP Status : ${responseStatus} | Raw size : ${b64Text ? b64Text.length : 0} bytes`);
+        }
+    } catch(e) {
+        console.error(`[X-Ray] ❌ Network crash : ${e.message}`);
+    }
+
+    if (!b64Text) throw new Error("No valid response obtained from servers.");
+
+    // 🛑 CLOUDFLARE DETECTION
+    if (b64Text.trim().startsWith("<") || b64Text.toLowerCase().includes("cloudflare") || b64Text.toLowerCase().includes("just a moment") || b64Text.toLowerCase().includes("upstream unreachable")) {
+        console.error(`[Pipe] ❌ API Rejected (Cloudflare or Firewall).`);
+        return { _blocked_by_cloudflare: true, _raw_html: b64Text.substring(0, 200) };
+    }
+
+    // 🛑 SHORT JSON ERROR DETECTION
+    if (b64Text.length < 200 && b64Text.includes("error")) {
+        console.error(`[Pipe] ❌ SERVER ANOMALY : => "${b64Text}"`);
+        return null;
+    }
+
+    let b64 = b64Text.replace(/-/g, '+').replace(/_/g, '/');
+    let pad = b64.length % 4;
+    if (pad) b64 += '='.repeat(4 - pad);
+
+    const binaryStr = pureAtob(b64);
+    if (!binaryStr) {
+        console.error("[Pipe Debug] Total failure of Base64 decoding.");
+        return null;
+    }
+
+    const bytes = [];
+    for (let i = 0; i < binaryStr.length; i++) bytes.push(binaryStr.charCodeAt(i));
+
+    let jsonStr = "";
+    let isDecompressed = false;
+
+    // PLAN A: XOR + DECOMPRESSION
+    for (let i = 0; i < bytes.length; i++) bytes[i] ^= OBF_KEY_BYTES[i % OBF_KEY_BYTES.length];
+    try {
+        jsonStr = _global.pako.ungzip(bytes, { to: 'string' });
+        isDecompressed = true;
+    } catch (e1) {
+        try { jsonStr = _global.pako.inflate(bytes, { to: 'string' }); isDecompressed = true; } catch (e2) {}
+    }
+
+    // PLAN B: DECOMPRESSION WITHOUT XOR (PURE GZIP)
+    if (!isDecompressed) {
+        for (let i = 0; i < bytes.length; i++) bytes[i] ^= OBF_KEY_BYTES[i % OBF_KEY_BYTES.length];
+        try {
+            jsonStr = _global.pako.ungzip(bytes, { to: 'string' });
+            isDecompressed = true;
+        } catch (e3) {
+            try { jsonStr = _global.pako.inflate(bytes, { to: 'string' }); isDecompressed = true; } catch (e4) {}
+        }
+    }
+
+    if (!isDecompressed) {
+        jsonStr = safeBytesToString(bytes);
+    }
+
+    const safeStr = String(jsonStr || "");
+
+    try {
+        const parsedObject = JSON.parse(safeStr);
+        if (!path.includes("episodes")) {
+            console.log(`[X-Ray] 🟢 JSON DECRYPTED SUCCESSFULLY :`);
+            console.log(parsedObject); 
+        }
+        return parsedObject;
+    } catch (parseError) {
+        console.error(`[Pipe] ❌ Final text is not valid JSON.`);
+        return null;
+    }
+}
+
+// ==========================================
+// ⚙️ SORA MODULE LOGIC
+// ==========================================
 
 async function searchResults(keyword) {
-  const query = encodeURIComponent(String(keyword || "").trim());
-  if (!query) return JSON.stringify([]);
+    console.log(`[Search] 🔍 Starting for : "${keyword}"`);
+    try {
+        const data = await makeSecureRequest("search", {
+            q: keyword, 
+            limit: 30, 
+            offset: 0, 
+            sort: "POPULARITY_DESC", 
+            type: "ANIME",
+            isAdult: false 
+        });
 
-  const json = await fetchText(BASE_URL + "/wp-json/wp/v2/search?search=" + query);
-  const data = JSON.parse(json);
-  const results = [];
+        if (!data || data._blocked_by_cloudflare) {
+            sendSupabaseLog("Miruro", "ERROR", { keyword: keyword, error_message: "Blocked by Cloudflare during search" });
+            return JSON.stringify([]);
+        }
 
-  for (const item of Array.isArray(data) ? data : []) {
-    if (!item.url || !item.title) continue;
-    results.push({
-      title: cleanText(item.title),
-      image: "",
-      href: item.url
-    });
-  }
+        const results = [];
+        let items = [];
 
-  return JSON.stringify(results);
+        if (data && data.results) items = data.results;
+        else if (Array.isArray(data)) items = data;
+
+        for (let item of items) {
+            if (item.isAdult === true) continue;
+            if (item.genres && Array.isArray(item.genres) && item.genres.includes("Hentai")) continue;
+
+            const id = item.id;
+            const title = item.title?.romaji || item.title?.english || item.title?.native || "Unknown Title";
+            const image = item.coverImage?.large || item.coverImage?.medium || "https://via.placeholder.com/200x300.png?text=No+Poster";
+            
+            results.push({ title: title, image: image, href: `miruro://${id}` });
+        }
+
+        sendSupabaseLog("Miruro", "SEARCH", { 
+            keyword: keyword, 
+            results_count: results.length,
+            top_results: results.slice(0, 3).map(r => r.title)
+        });
+        
+        return JSON.stringify(results);
+
+    } catch (error) { 
+        sendSupabaseLog("Miruro", "ERROR", { keyword: keyword, error_message: String(error) });
+        return JSON.stringify([]); 
+    }
 }
 
 async function extractDetails(url) {
-  const html = await fetchText(url);
-  const blocks = parseJsonLdBlocks(html);
-  const series = findSchema(blocks, "TVSeries") || {};
-  const description = cleanText(series.description)
-    || cleanText(html.match(/<meta name="description" content="([^"]+)"/)?.[1])
-    || "N/A";
-  const aliases = cleanText(series.alternateName) || "N/A";
-  const airdate = cleanText(series.datePublished) || "N/A";
+    console.log(`[Details] 📖 Loading info for : ${url}`);
+    
+    const id = url.replace('miruro://', '');
+    const finalMediaUrl = `${BASE_URL}/watch?id=${id}`;
+    
+    sendSupabaseLog("Miruro", "DETAILS", { media_url: finalMediaUrl });
 
-  return JSON.stringify([{ description, aliases, airdate }]);
+    try {
+        const data = await makeSecureRequest(`info/anilist/${id}`);
+        
+        if (!data || data._blocked_by_cloudflare) return JSON.stringify([{ description: 'Network error.', aliases: '', airdate: '' }]);
+
+        let description = "No description available.";
+        let year = "Unknown"; let rating = "N/A";
+
+        if (data) {
+            if (data.description) description = data.description.replace(/<[^>]+>/g, '').trim();
+            if (data.seasonYear) year = data.seasonYear;
+            if (data.averageScore) rating = `${data.averageScore}/100`;
+        }
+
+        return JSON.stringify([{ description: description, aliases: `Score: ${rating}`, airdate: `Year: ${year}` }]);
+    } catch (error) { 
+        sendSupabaseLog("Miruro", "ERROR", { media_url: finalMediaUrl, error_message: String(error) });
+        return JSON.stringify([{ description: 'Loading error.', aliases: '', airdate: '' }]); 
+    }
 }
 
 async function extractEpisodes(url) {
-  const html = await fetchText(url);
-  const episodes = [];
-  const seen = new Set();
-  const regex = /<a\b[^>]*href="([^"]+)"[^>]*class="[^"]*\bep-item\b[^"]*"[^>]*data-number="([^"]+)"[^>]*data-id="([^"]+)"/gi;
-  let match;
+    console.log(`[Episodes] 📂 Searching episodes for : ${url}`);
+    try {
+        const anilistId = url.replace('miruro://', '');
+        const data = await makeSecureRequest("episodes", { anilistId: anilistId });
+        
+        if(!data || data._blocked_by_cloudflare) return JSON.stringify([]);
 
-  while ((match = regex.exec(html)) !== null) {
-    const href = absoluteUrl(match[1]);
-    const number = Number.parseFloat(match[2]);
-    if (!href || seen.has(href)) continue;
-    seen.add(href);
-    episodes.push({
-      href,
-      number: Number.isFinite(number) ? number : episodes.length + 1
-    });
-  }
+        let allEps = [];
+        function searchEpisodes(obj) {
+            if (Array.isArray(obj)) {
+                if (obj.length > 0 && obj[0].id !== undefined && obj[0].number !== undefined) allEps = allEps.concat(obj);
+                else obj.forEach(searchEpisodes);
+            } else if (typeof obj === 'object' && obj !== null) Object.values(obj).forEach(searchEpisodes);
+        }
+        searchEpisodes(data);
 
-  episodes.sort((a, b) => a.number - b.number);
-  return JSON.stringify(episodes);
+        const uniqueEps = [];
+        const seenNumbers = new Set();
+        
+        for (let ep of allEps) {
+            if (!seenNumbers.has(ep.number)) {
+                seenNumbers.add(ep.number);
+                uniqueEps.push({
+                    href: `miruro-play://${anilistId}/${ep.number}`,
+                    number: ep.number, season: 1, title: ep.title || `Episode ${ep.number}`
+                });
+            }
+        }
+
+        uniqueEps.sort((a, b) => a.number - b.number);
+        return JSON.stringify(uniqueEps);
+    } catch (error) { 
+        const anilistId = url.replace('miruro://', '');
+        sendSupabaseLog("Miruro", "ERROR", { media_url: `${BASE_URL}/watch?id=${anilistId}`, error_message: String(error) });
+        return JSON.stringify([]); 
+    }
 }
 
 async function extractStreamUrl(url) {
-  const html = await fetchText(url);
-  const blocks = parseJsonLdBlocks(html);
-  const episode = findSchema(blocks, "TVEpisode") || {};
-  const embed = episode.video?.embedUrl
-    || html.match(/<iframe[^>]+src="([^"]+)"/i)?.[1]
-    || html.match(/data-hash="([^"]+)"/i)?.[1];
-
-  let streamUrl = embed || "";
-  if (streamUrl && !/^https?:\/\//i.test(streamUrl)) {
+    console.log(`[Player] 🎬 Video extraction started for : ${url}`);
+    let startTime = Date.now(); 
+    let finalMediaUrl = url; 
+    let epNumber = 1;
+    
     try {
-      const decoded = atob(streamUrl);
-      streamUrl = decoded.match(/<iframe[^>]+src="([^"]+)"/i)?.[1] || "";
-    } catch {
-      streamUrl = "";
-    }
-  }
+        const parts = url.replace('miruro-play://', '').split('/');
+        const anilistId = parts[0];
+        epNumber = parts.length > 2 ? parts[2] : parts[1];
+        
+        const watchReferer = `${BASE_URL}/watch/${anilistId}/${epNumber}?ep=${epNumber}`;
+        finalMediaUrl = watchReferer;
 
-  if (!streamUrl) return JSON.stringify({ streams: [] });
-  return JSON.stringify({
-    streams: [{
-      title: "AniCrush",
-      streamUrl,
-      url: streamUrl
-    }]
-  });
+        console.log(`[Player] 🔄 Dynamic mapping of providers, IDs, and Languages...`);
+        const epsData = await makeSecureRequest("episodes", { anilistId: anilistId });
+        
+        let dynamicConfigs = []; 
+        let failedLinks = []; 
+        
+        if (epsData && epsData.providers) {
+            for (let provKey in epsData.providers) {
+                const provData = epsData.providers[provKey];
+                
+                if (provData && provData.episodes && typeof provData.episodes === 'object') {
+                    for (let catKey in provData.episodes) {
+                        const epList = provData.episodes[catKey];
+                        
+                        if (Array.isArray(epList)) {
+                            const ep = epList.find(e => parseInt(e.number) === parseInt(epNumber));
+                            
+                            if (ep && ep.id) {
+                                const isDub = catKey.toLowerCase().includes('dub');
+                                const langLabel = isDub ? "DUB" : "SUB";
+                                
+                                dynamicConfigs.push({
+                                    name: provKey.toLowerCase(),
+                                    cat: catKey.toLowerCase(),
+                                    id: ep.id,
+                                    lang: langLabel
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        console.log(`[Player] 🗺️ Routing generated: ${dynamicConfigs.length} streams detected!`);
+
+        if (dynamicConfigs.length === 0) {
+            console.log(`[Player] ⚠️ Mapping failed. Fallback attempt...`);
+            sendSupabaseLog("Miruro", "UNSUPPORTED_HOSTS", { 
+                media_url: finalMediaUrl, 
+                season_number: "1", 
+                ep_number: epNumber, 
+                failed_count: 1, 
+                failed_links: [{ server_name: "Mapping", url: "Recherche API", reason: "Aucun ID détecté" }] 
+            });
+            return JSON.stringify({ type: "none" });
+        }
+        
+        let streams = []; 
+        let bestSubtitle = "";
+        let bestSubtitleHeaders = {};
+        let allSubtitles = [];
+
+        // 🌟 LA FAMEUSE LISTE BLANCHE DES PROVIDERS ÉTENDUE
+        const providersRequiringAnilistId = [
+            "dune", "zoro", "arc", "kiwi", "telli", "bee", "bun", "nun", "ally", "hop"
+        ];
+
+        for (let config of dynamicConfigs) {
+            let prov = config.name;
+            let cat = config.cat;
+            let specificEpisodeId = config.id;
+            let langLabel = config.lang;
+            
+            let apiTargetUrl = `API Pipe -> Provider: ${prov.toUpperCase()} (${cat.toUpperCase()})`;
+            
+            try {
+                console.log(`-----------------------------------------------------`);
+                console.log(`[Player] 📡 Request to: ${prov.toUpperCase()} (${cat.toUpperCase()}) [${langLabel}]`);
+                
+                let reqQuery = { 
+                    episodeId: specificEpisodeId,
+                    provider: prov, 
+                    category: cat,
+                    ttl: 86400
+                };
+                
+                // Si le provider est dans notre liste étendue, on ajoute l'ID !
+                if (providersRequiringAnilistId.includes(prov)) {
+                    reqQuery.anilistId = parseInt(anilistId);
+                }
+
+                const res = await makeSecureRequest("sources", reqQuery, watchReferer);
+
+                if (!res) {
+                    console.log(`[Player] ⚠️ Provider returned null.`);
+                    failedLinks.push({ server_name: prov.toUpperCase(), url: apiTargetUrl, reason: "Null response" });
+                    continue;
+                }
+
+                if (res._blocked_by_cloudflare) {
+                    console.log(`[Player] 🛡️ Blocked by Cloudflare (502/444).`);
+                    failedLinks.push({ server_name: prov.toUpperCase(), url: apiTargetUrl, reason: "Blocked by Cloudflare" });
+                    continue;
+                }
+
+                let videoArray = res.sources || res.streams || [];
+                let subArray = res.subtitles || [];
+
+                if (!Array.isArray(videoArray) || videoArray.length === 0) {
+                    const possibleKeys = [cat, 'sub', 'ssub', 'dub', 'hdub', 'hsub'];
+                    for (let k of possibleKeys) {
+                        if (res[k]) {
+                            if (Array.isArray(res[k].streams) && res[k].streams.length > 0) {
+                                videoArray = res[k].streams;
+                                subArray = res[k].subtitles || subArray;
+                                break;
+                            } else if (Array.isArray(res[k].sources) && res[k].sources.length > 0) {
+                                videoArray = res[k].sources;
+                                subArray = res[k].subtitles || subArray;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (Array.isArray(videoArray) && videoArray.length > 0) {
+                    console.log(`[Player] ✅ ${videoArray.length} video qualities found!`);
+
+                    for (let s of videoArray) {
+                        if (!s.url) continue;
+
+                        const urlLower = s.url.toLowerCase();
+                        const isM3U8 = urlLower.includes('.m3u8') || s.type === 'hls';
+
+                        if (!isM3U8) {
+                            console.log(`   -> Ignored (not m3u8, type=${s.type}) : ${s.url}`);
+                            continue;
+                        }
+
+                        const ref = s.referer || BASE_URL + "/";
+                        const label = s.quality || 'HLS';
+
+                        console.log(`   -> Link added (m3u8) : ${s.url}`);
+                        streams.push({ 
+                            title: `Server ${prov.toUpperCase()} (${label}) [${langLabel}]`, 
+                            streamUrl: s.url, 
+                            headers: { "Referer": ref } 
+                        });
+                    }
+
+                } else {
+                    console.log(`[Player] ℹ️ No video available for this stream.`);
+                    failedLinks.push({ server_name: prov.toUpperCase(), url: apiTargetUrl, reason: "Valid JSON but no video array" });
+                }
+
+                if (subArray && Array.isArray(subArray)) {
+                    for (let sub of subArray) {
+                        const subUrl = sub.url || sub.file || "";
+                        if (!subUrl) continue;
+                        const lang = (sub.language || sub.lang || sub.label || "").toLowerCase();
+
+						allSubtitles.push({
+							url: subUrl,
+							label: sub.label || sub.language || sub.lang || "Unknown",
+							kind: sub.kind || "captions",
+							// ← Referer = domaine extrait de l'URL du sous-titre
+							headers: { "Referer": (subUrl.match(/https?:\/\/[^/]+/) || [BASE_URL])[0] + "/" }
+						});
+
+                        if (lang.includes("eng") || lang.includes("english")) {
+                            if (bestSubtitle === "" || !lang.includes("forced")) {
+                                bestSubtitle = subUrl;
+                                bestSubtitleHeaders = { "Referer": BASE_URL + "/" };
+                            }
+                        } else if (bestSubtitle === "") {
+                            bestSubtitle = subUrl;
+                            bestSubtitleHeaders = { "Referer": BASE_URL + "/" };
+                        }
+                    }
+                }
+
+            } catch (e) {
+                console.log(`[Player] ⚠️ Error with ${prov} : ${e.message}`);
+                failedLinks.push({ server_name: prov.toUpperCase(), url: apiTargetUrl, reason: e.message });
+            }
+        }
+
+        console.log(`-----------------------------------------------------`);
+        console.log(`[Player] 📊 Summary: ${streams.length} valid video links extracted.`);
+
+        sendSupabaseLog("Miruro", "PLAYER", { 
+            media_url: finalMediaUrl, 
+            season_number: "1",
+            ep_number: epNumber,
+            streams_found: streams.length, 
+            subtitles_found: bestSubtitle !== "", allSubtitles_count: allSubtitles.length, 
+            execution_time_ms: Date.now() - startTime, 
+            servers: streams.map(s => ({ nom: s.title, lien: s.streamUrl }))
+        });
+
+        if (failedLinks.length > 0) {
+            sendSupabaseLog("Miruro", "UNSUPPORTED_HOSTS", { 
+                media_url: finalMediaUrl, 
+                season_number: "1",
+                ep_number: epNumber, 
+                failed_count: failedLinks.length, 
+                failed_links: failedLinks 
+            });
+        }
+
+        if (streams.length > 0) {
+            return JSON.stringify({ type: "servers", streams: streams, subtitles: bestSubtitle, subtitlesHeaders: bestSubtitleHeaders, allSubtitles: allSubtitles });
+        } else {
+            return JSON.stringify({ type: "none" });
+        }
+    } catch (error) {
+        sendSupabaseLog("Miruro", "ERROR", { media_url: finalMediaUrl, season_number: "1", error_message: String(error) });
+        return JSON.stringify({ type: "none" });
+    }
+}
+
+async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
+    try {
+        if (typeof fetchv2 !== 'undefined') {
+            return await fetchv2(url, options.headers ?? {}, options.method ?? 'GET', options.body ?? null);
+        } else {
+            return await fetch(url, options);
+        }
+    } catch(e) {
+        try { return await fetch(url, options); } catch(error) { return null; }
+    }
 }

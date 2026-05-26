@@ -1,66 +1,84 @@
 async function searchResults(keyword) {
     const results = [];
     const headers = {
-        'Content-Type': 'application/json',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        "Content-Type": "multipart/form-data; boundary=----geckoformboundary38c356867533a17de80e8c65d9125df5"
     };
-    
+    const postData = `------geckoformboundary38c356867533a17de80e8c65d9125df5
+Content-Disposition: form-data; name="s_keyword"
+
+${keyword}
+------geckoformboundary38c356867533a17de80e8c65d9125df5
+Content-Disposition: form-data; name="orderby"
+
+popular
+------geckoformboundary38c356867533a17de80e8c65d9125df5
+Content-Disposition: form-data; name="order"
+
+DESC
+------geckoformboundary38c356867533a17de80e8c65d9125df5
+Content-Disposition: form-data; name="action"
+
+advanced_search
+------geckoformboundary38c356867533a17de80e8c65d9125df5
+Content-Disposition: form-data; name="page"
+
+1
+------geckoformboundary38c356867533a17de80e8c65d9125df5--`;
+
     try {
-        if (keyword.includes('tiktok.com')) {
-            const detailResponse = await fetchv2(`https://tikwm.com/api/?url=${encodeURIComponent(keyword)}`);
-            const detailData = await detailResponse.json();
-            
-            if (detailData.code === 0) {
-                results.push({
-                    title: detailData.data.title.trim(),
-                    image: detailData.data.cover.trim(),
-                    href: detailData.data.play.trim()
-                });
-            }
-            return JSON.stringify(results);
-        }
-        
-        const body = JSON.stringify({
-            keywords: keyword,
-            count: 20,
-            cursor: 0
-        });
-        
-        const response = await fetchv2('https://tikwm.com/api/feed/search', headers, "POST", body);
+        const response = await fetchv2("https://anihq.org/wp-admin/admin-ajax.php", headers, "POST", postData);
         const data = await response.json();
+        const html = data.data.html;
+        const articlePattern = /<article[^>]*class="anime-card[^"]*"[^>]*>([\s\S]*?)<\/article>/g;
+        let articleMatch;
+        
+        while ((articleMatch = articlePattern.exec(html)) !== null) {
+            const articleHtml = articleMatch[1];
+            
+            const imgMatch = articleHtml.match(/<img[^>]+src=['"]([^'"]+)['"][^>]+alt=['"]([^'"]+)['"]/);
+            
 
-        for (const video of data.data.videos) {
-            const videoUrl = `https://www.tiktok.com/@${video.author.unique_id}/video/${video.video_id}`;
-            const detailResponse = await fetchv2(`https://tikwm.com/api/?url=${encodeURIComponent(videoUrl)}`);
-            const detailData = await detailResponse.json();
-
-            if (detailData.code === 0) {
+            const linkMatch = articleHtml.match(/<h3[^>]*>[\s\S]*?<a[^>]+href=['"]([^'"]+)['"][^>]*title=['"]([^'"]+)['"]/);
+            
+            if (imgMatch && linkMatch) {
                 results.push({
-                    title: detailData.data.title.trim(),
-                    image: detailData.data.cover.trim(),
-                    href: detailData.data.play.trim()
+                    title: linkMatch[2].trim(),
+                    image: imgMatch[1].trim(),
+                    href: linkMatch[1].trim()
                 });
             }
         }
-
+        
         return JSON.stringify(results);
     } catch (err) {
-        console.error(err);
+        console.log(err);
         return JSON.stringify([{
-            title: "Please wait",
+            title: "Error",
             image: "Error",
             href: "Error"
         }]);
     }
 }
 
+
 async function extractDetails(url) {
     try {
         const response = await fetchv2(url);
         const html = await response.text();
-
+        
+        const descMatch = html.match(/<div\s+data-synopsis[^>]*>([\s\S]*?)<\/div>/);
+        let description = "N/A";
+        
+        if (descMatch) {
+            description = descMatch[1]
+                .trim()
+                .replace(/<[^>]+>/g, '') 
+                .replace(/\s+/g, ' ')  
+                .trim();
+        }
+        
         return JSON.stringify([{
-            description: "N/A",
+            description: description,
             aliases: "N/A",
             airdate: "N/A"
         }]);
@@ -76,17 +94,44 @@ async function extractDetails(url) {
 async function extractEpisodes(url) {
     const results = [];
     try {
-
-            results.push({
+        const response = await fetchv2(url);
+        const html = await response.text();
+        
+        const watchUrlMatch = html.match(/<a href="([^"]+\/watch\/[^"]+)"/);
+        
+        if (!watchUrlMatch) {
+            return JSON.stringify([{
                 href: url,
                 number: 1
-            });
+            }]);
+        }
 
+        const watchUrl = watchUrlMatch[1];
+
+        const watchResponse = await fetchv2(watchUrl);
+        const watchHtml = await watchResponse.text();
+
+        const episodeRegex = /<a href="([^"]+)"[^>]*class="[^"]*episode-list-item[^"]*"[^>]*data-episode-search-query="(\d+)"[\s\S]*?<span class="episode-list-item-number">\s*(\d+)\s*<\/span>/g;
+
+        let match;
+        while ((match = episodeRegex.exec(watchHtml)) !== null) {
+            results.push({
+                href: match[1].trim(),
+                number: parseInt(match[2], 10)
+            });
+        }
+
+        if (results.length === 0) {
+            return JSON.stringify([{
+                href: watchUrl,
+                number: 1
+            }]);
+        }
 
         return JSON.stringify(results);
     } catch (err) {
         return JSON.stringify([{
-            href: "Error",
+            href: "Error: " + err.message,
             number: "Error"
         }]);
     }
@@ -94,8 +139,28 @@ async function extractEpisodes(url) {
 
 async function extractStreamUrl(url) {
     try {
-        return url;
+        const response = await fetchv2(url);
+        const html = await response.text();
+
+        const iframeMatch = html.match(/<iframe[^>]+src=['"]([^'"]+)['"]/i);
+        if (iframeMatch && /^https?:\/\//i.test(iframeMatch[1])) {
+            return iframeMatch[1].replace(/&amp;/g, "&");
+        }
+
+        const embedMatch = html.match(/data-embed-id=['"][^:'"]+:([^'"]+)['"]/i);
+        if (embedMatch) {
+            const decoded = atob(embedMatch[1]);
+            if (/^https?:\/\//i.test(decoded)) return decoded;
+        }
+
+        const legacyMatch = html.match(/<iframe[^>]+src=['"]https:\/\/([^'"]+\.playerp2p\.com)\/#([^'"]+)['"]/);
+        if (legacyMatch) {
+            return "https://" + legacyMatch[1] + "/#" + legacyMatch[2];
+        }
+
+        return "https://error.org/";
     } catch (err) {
+        console.log("Error: " + err.message);
         return "https://error.org/";
     }
 }

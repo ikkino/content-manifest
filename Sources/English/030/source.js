@@ -114,30 +114,23 @@ async function extractEpisodes(url) {
 }
 
 async function extractStreamUrl(url) {
-    const headers = {
-      "Referer": "https://anikai.to/",
-      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0",
-      "Accept": "text/html, */*; q=0.01",
-      "Accept-Language": "en-US,en;q=0.5",
-      "Sec-Fetch-Dest": "empty",
-      "Sec-Fetch-Mode": "cors",
-      "Sec-Fetch-Site": "same-origin",
-      "Pragma": "no-cache",
-      "Cache-Control": "no-cache"
-    };
+  const headers = {
+    "Referer": "https://anikai.to/",
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36"
+  };
 
-    try {
-      const tokenMatch = url.match(/token=([^&]+)/);
-      if (!tokenMatch?.[1]) throw new Error("No token found in URL");
-      const rawToken = tokenMatch[1];
+  try {
+    const tokenMatch = url.match(/token=([^&]+)/);
+    if (!tokenMatch?.[1]) throw new Error("No token found in URL");
+    const rawToken = tokenMatch[1];
 
-      const encTokenRes = await fetchv2(`https://enc-dec.app/api/enc-kai?text=${encodeURIComponent(rawToken)}`);
-      const encTokenData = await encTokenRes.json();
-      const encryptedToken = encTokenData.result;
+    const encTokenRes = await fetchv2(`https://enc-dec.app/api/enc-kai?text=${encodeURIComponent(rawToken)}`);
+    const encTokenData = await encTokenRes.json();
+    const encryptedToken = encTokenData.result;
 
-      const actualUrl = url.replace('&_=ENCRYPT_ME', `&_=${encryptedToken}`);
+    const actualUrl = url.replace('&_=ENCRYPT_ME', `&_=${encryptedToken}`);
 
-      const response = await fetchv2(actualUrl);
+    const response = await fetchv2(actualUrl);
       const text = await response.text();
 
       let ajaxResultHtml = "";
@@ -160,7 +153,7 @@ async function extractStreamUrl(url) {
         return ids.length > 1 ? ids[1] : ids[0] ?? null;
       };
 
-      const types = ["dub"];
+      const types = ["sub"];
 
       const servers = types
         .map(type => ({ type, lid: extractServerIds(type) }))
@@ -222,7 +215,7 @@ async function extractStreamUrl(url) {
           const file = sources[0]?.file ?? null;
 
           if (file) {
-            const titleMap = { dub: "Dubbed English" };
+            const titleMap = { sub: "Hardsub English" };
             let pushedQualities = 0;
             const baseTitle = titleMap[type] || type;
 
