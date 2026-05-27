@@ -1,6 +1,6 @@
 async function searchResults(keyword) {
     const results = [];
-    const response = await fetchv2(`https://anoboye.com/?s=${keyword}`);
+    const response = await fetchv2(`https://animekhor.org/?s=${keyword}`);
     const html = await response.text();
 
     const regex = /<article class="bs"[^>]*>.*?<a href="([^"]+)"[^>]*>.*?<img src="([^"]+)"[^>]*>.*?<h2[^>]*>(.*?)<\/h2>/gs;
@@ -48,39 +48,64 @@ async function extractEpisodes(url) {
     const results = [];
     const response = await fetchv2(url);
     const html = await response.text();
-
-    const regex = /<a href="([^"]+)">\s*<div class="epl-num">([\d.]+)<\/div>/g;
-
-    let match;
-    while ((match = regex.exec(html)) !== null) {
+    
+    const regex = /<div class="inepcx">\s*<a href="([^"#]+)">\s*<span>New Episode<\/span>/;
+    const match = regex.exec(html);
+    
+    if (match) {
         results.push({
             href: match[1].trim(),
-            number: parseInt(match[2], 10)
+            number: 1
         });
     }
-    results.reverse();
+    
     return JSON.stringify(results);
 }
-
 async function extractStreamUrl(url) {
     try {
         const response = await fetchv2(url);
         const html = await response.text();
-
-        const iframeMatch = html.match(/<iframe[^>]+src=["']([^"']+)["']/i);
-        if (!iframeMatch) throw new Error("iframe not found");
-
-        const iframeUrl = iframeMatch[1];
-
-        const iframeResponse = await fetchv2(iframeUrl);
-        const iframeHtml = await iframeResponse.text();
-
-        const videoMatch = iframeHtml.match(/videoUrl:\s*["']([^"']+)["']/i);
-        if (!videoMatch) throw new Error("videoUrl not found");
-
-        return videoMatch[1].replace(/\\/g, ""); 
-    } catch (err) {
-        return "https://files.catbox.moe/avolvc.mp4";
+        
+        const iframeMatch = html.match(/dailymotion\.com\/embed\/video\/([a-zA-Z0-9]+)/);
+        
+        if (!iframeMatch) return "no iframe";
+        
+        const videoId = iframeMatch[1];
+        const metaRes = await fetchv2(`https://www.dailymotion.com/player/metadata/video/${videoId}`);
+        const metaJson = await metaRes.json();
+        const hlsLink = metaJson.qualities?.auto?.[0]?.url;
+        
+        if (!hlsLink) return "no hls";
+        
+        async function getBestHls(hlsUrl) {
+            try {
+                const res = await fetchv2(hlsUrl);
+                const text = await res.text();
+                const regex = /#EXT-X-STREAM-INF:.*RESOLUTION=(\d+)x(\d+).*?\n(https?:\/\/[^\n]+)/g;
+                const streams = [];
+                let match;
+                
+                while ((match = regex.exec(text)) !== null) {
+                    streams.push({ 
+                        width: parseInt(match[1]), 
+                        height: parseInt(match[2]), 
+                        url: match[3] 
+                    });
+                }
+                
+                if (streams.length === 0) return hlsUrl;
+                streams.sort((a, b) => b.height - a.height);
+                return streams[0].url;
+            } catch {
+                return hlsUrl;
+            }
+        }
+        
+        const bestHls = await getBestHls(hlsLink);
+        return bestHls;
+    } catch {
+        const empty = "{ streams: [";
+        console.log("Extracted stream result:" + JSON.stringify(empty));
+        return JSON.stringify(empty);
     }
 }
-

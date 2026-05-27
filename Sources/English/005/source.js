@@ -3,14 +3,20 @@ async function searchResults(keyword) {
 
     results.push({
         title: "Use External Player",
-        image: "https://git.luna-app.eu/ibro/services/raw/branch/main/yuYuHakushoPace/UseExternalPlayer.png",
+        image: "https://git.luna-app.eu/ibro/services/raw/branch/main/narucannon/UseExternalPlayer.png",
         href: ""
     });
 
     results.push({
-        title: "Yu Yu Hakusho Pace",
-        image: "https://git.luna-app.eu/ibro/services/raw/branch/main/yuYuHakushoPace/icon.png",
-        href: "https://pixeldrain.net/l/Ldcn42AG"
+        title: "Narucannon Subbed",
+        image: "https://git.luna-app.eu/ibro/services/raw/branch/main/narucannon/icon.png",
+        href: "https://pixeldrain.net/l/dX3cF5Q3"
+    });
+
+    results.push({
+        title: "Narucannon Dubbed",
+        image: "https://git.luna-app.eu/ibro/services/raw/branch/main/narucannon/icon.png",
+        href: "https://pixeldrain.net/l/tqeCisSm"
     });
     
     console.log(`Results: ${JSON.stringify(results)}`);
@@ -20,7 +26,7 @@ async function searchResults(keyword) {
 async function extractDetails(url) {
     const match = url.match(/https:\/\/pixeldrain\.net\/l\/([^\/]+)/);
     if (!match) throw new Error("Invalid URL format");
-
+            
     const arcId = match[1];
 
     const response = await soraFetch(`https://pixeldrain.net/api/list/${arcId}`);
@@ -39,7 +45,7 @@ async function extractDetails(url) {
 async function extractEpisodes(url) {
     const match = url.match(/https:\/\/pixeldrain\.net\/l\/([^\/]+)/);
     if (!match) throw new Error("Invalid URL format");
-
+            
     const arcId = match[1];
 
     const response = await soraFetch(`https://pixeldrain.net/api/list/${arcId}`);
@@ -62,7 +68,7 @@ async function extractEpisodes(url) {
 // extractStreamUrl(`EDg7Q9Uu`);
 
 async function extractStreamUrl(url) {
-    return `https://pixeldrain.net/api/file/${url}`;
+    return `https://pixeldrain.net/api/file/${url}?download`;
 }
 
 async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {

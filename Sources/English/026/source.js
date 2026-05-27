@@ -1,166 +1,135 @@
-async function searchResults(keyword) {
+const BASE_URL = "https://anicrush.wiki";
+
+function absoluteUrl(value) {
+  if (!value) return "";
+  if (/^https?:\/\//i.test(value)) return value;
+  return BASE_URL + (value.startsWith("/") ? value : "/" + value);
+}
+
+function cleanText(value) {
+  return String(value || "")
+    .replace(/&hellip;|&#8230;/g, "...")
+    .replace(/&amp;/g, "&")
+    .replace(/&#8217;/g, "'")
+    .replace(/&#038;/g, "&")
+    .replace(/<[^>]*>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function parseJsonLdBlocks(html) {
+  const blocks = [];
+  const regex = /<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi;
+  let match;
+  while ((match = regex.exec(html)) !== null) {
     try {
-        const encodedKeyword = encodeURIComponent(keyword);
-        const responseText = await soraFetch(`https://anizone.to/anime?search=${encodedKeyword}`);
-        const html = await responseText.text();
-
-        const regex = /<img\s+src="([^"]+)"[^>]*alt="([^"]+)"[\s\S]+?<a[^>]+href="([^"]+)"\s+title="([^"]+)"/g;
-
-        const results = [];
-        let match;
-
-        results.push({
-            title: "Use External Player",
-            image: "https://git.luna-app.eu/ibro/services/raw/branch/main/anizone/UseExternalPlayer.png",
-            href: ""
-        });
-
-        while ((match = regex.exec(html)) !== null) {
-            results.push({
-                title: match[4].trim(),
-                image: match[1].trim(),
-                href: match[3].trim()
-            });
-        }
-
-        console.log(results);
-        return JSON.stringify(results);
-    } catch (error) {
-        console.log('Fetch error in searchResults: ' + error);
-        return JSON.stringify([{ title: 'Error', image: '', href: '' }]);
+      blocks.push(JSON.parse(match[1].trim()));
+    } catch {
+      // Ignore malformed metadata and keep parsing the page.
     }
+  }
+  return blocks;
+}
+
+function findSchema(blocks, type) {
+  for (const block of blocks) {
+    const graph = Array.isArray(block["@graph"]) ? block["@graph"] : [block];
+    const found = graph.find((item) => item && item["@type"] === type);
+    if (found) return found;
+  }
+  return null;
+}
+
+async function fetchText(url, options = {}) {
+  const response = await fetchv2(url, {
+    "Accept": "text/html,application/json,*/*",
+    "Referer": BASE_URL + "/",
+    "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1",
+    ...(options.headers || {})
+  }, options.method, options.body);
+  if (!response.ok) throw new Error("HTTP " + response.status);
+  return response.text();
+}
+
+async function searchResults(keyword) {
+  const query = encodeURIComponent(String(keyword || "").trim());
+  if (!query) return JSON.stringify([]);
+
+  const json = await fetchText(BASE_URL + "/wp-json/wp/v2/search?search=" + query);
+  const data = JSON.parse(json);
+  const results = [];
+
+  for (const item of Array.isArray(data) ? data : []) {
+    if (!item.url || !item.title) continue;
+    results.push({
+      title: cleanText(item.title),
+      image: "",
+      href: item.url
+    });
+  }
+
+  return JSON.stringify(results);
 }
 
 async function extractDetails(url) {
-    try {
-        const response = await soraFetch(url);
-        const htmlText = await response.text();
+  const html = await fetchText(url);
+  const blocks = parseJsonLdBlocks(html);
+  const series = findSchema(blocks, "TVSeries") || {};
+  const description = cleanText(series.description)
+    || cleanText(html.match(/<meta name="description" content="([^"]+)"/)?.[1])
+    || "N/A";
+  const aliases = cleanText(series.alternateName) || "N/A";
+  const airdate = cleanText(series.datePublished) || "N/A";
 
-        const descriptionMatch = htmlText.match(/<h3 class="sr-only">Synopsis<\/h3>\s*<div>([\s\S]*?)<\/div>/);
-        const description = descriptionMatch ? descriptionMatch[1].replace(/\s+/g, ' ').trim() : 'No description available';
-
-        const yearMatch = htmlText.match(/>\s*(\d{4})\s*</);
-        const airdate = yearMatch ? `Released: ${yearMatch[1]}` : 'Released: Unknown';
-
-        const typeMatch = htmlText.match(/>\s*(TV Series|Movie|ONA|OVA|Special|Music)\s*</i);
-        const mediaType = typeMatch ? typeMatch[1].trim() : 'Unknown';
-
-        const statusMatch = htmlText.match(/>\s*(Completed|Ongoing|Upcoming)\s*</i);
-        const status = statusMatch ? statusMatch[1].trim() : 'Unknown';
-
-        const episodeMatch = htmlText.match(/>\s*(\d+)\s*Episodes?\s*</i);
-        const episodeCount = episodeMatch ? episodeMatch[1].trim() : 'Unknown';
-
-        const genreRegex = /<a[^>]+title="([^"]+)"[^>]*class="[^"]*bg-gray-600[^"]*">[^<]+<\/a>/g;
-        let genreList = [];
-        let match;
-        while ((match = genreRegex.exec(htmlText)) !== null) {
-            genreList.push(match[1].trim());
-        }
-
-        const aliases = `
-Type: ${mediaType}
-Status: ${status}
-Episodes: ${episodeCount}
-Genres: ${genreList.join(', ') || 'Unknown'}
-        `.trim();
-
-        const transformedResults = [{
-            description,
-            aliases,
-            airdate
-        }];
-
-        console.log(transformedResults);
-        return JSON.stringify(transformedResults);
-    } catch (error) {
-        console.log('Details error: ' + error);
-        return JSON.stringify([{
-            description: 'Error loading description',
-            aliases: 'Unknown',
-            airdate: 'Unknown'
-        }]);
-    }
+  return JSON.stringify([{ description, aliases, airdate }]);
 }
 
 async function extractEpisodes(url) {
-    try {
-        const response = await soraFetch(url);
-        const html = await response.text();
+  const html = await fetchText(url);
+  const episodes = [];
+  const seen = new Set();
+  const regex = /<a\b[^>]*href="([^"]+)"[^>]*class="[^"]*\bep-item\b[^"]*"[^>]*data-number="([^"]+)"[^>]*data-id="([^"]+)"/gi;
+  let match;
 
-        const episodeMatch = html.match(/>\s*(\d+)\s*Episodes?\s*</i);
-        const episodeCount = episodeMatch ? episodeMatch[1].trim() : 'Unknown';
+  while ((match = regex.exec(html)) !== null) {
+    const href = absoluteUrl(match[1]);
+    const number = Number.parseFloat(match[2]);
+    if (!href || seen.has(href)) continue;
+    seen.add(href);
+    episodes.push({
+      href,
+      number: Number.isFinite(number) ? number : episodes.length + 1
+    });
+  }
 
-        let episodes = [];
-
-        for (let i = 1; i <= episodeCount; i++) {
-            const episodeUrl = `${url}/${i}`;
-            const episodeTitle = `Episode ${i}`;
-
-            episodes.push({
-                title: episodeTitle,
-                href: episodeUrl,
-                number: i
-            });
-        }
-
-        console.log(episodes);
-        return JSON.stringify(episodes);
-    } catch (error) {
-        console.log('Fetch error in extractEpisodes: ' + error);
-        return JSON.stringify([]);
-    }
+  episodes.sort((a, b) => a.number - b.number);
+  return JSON.stringify(episodes);
 }
 
 async function extractStreamUrl(url) {
+  const html = await fetchText(url);
+  const blocks = parseJsonLdBlocks(html);
+  const episode = findSchema(blocks, "TVEpisode") || {};
+  const embed = episode.video?.embedUrl
+    || html.match(/<iframe[^>]+src="([^"]+)"/i)?.[1]
+    || html.match(/data-hash="([^"]+)"/i)?.[1];
+
+  let streamUrl = embed || "";
+  if (streamUrl && !/^https?:\/\//i.test(streamUrl)) {
     try {
-        const response = await soraFetch(url);
-        const htmlText = await response.text();
-
-        const streamMatch = htmlText.match(/<media-player[^>]*\s+src="([^"]+\.m3u8)"/);
-        const resultStreams = streamMatch ? streamMatch[1] : null;
-
-        const subtitleMatch = htmlText.match(/<track[^>]+src=([^\s>"]+\.srt)[^>]*label="([^"]*?)"[^>]*>/gi);
-        let subtitleUrl = null;
-
-        if (subtitleMatch) {
-            for (const track of subtitleMatch) {
-                const match = track.match(/src=([^\s>"]+\.srt)[^>]*label="([^"]*?)"/i);
-                if (match && !/song/i.test(match[2])) {
-                    subtitleUrl = match[1];
-                    break;
-                }
-            }
-        }
-
-        const result = {
-            stream: resultStreams,
-            subtitles: subtitleUrl
-        };
-
-        console.log(result);
-        return JSON.stringify(result);
-    } catch (error) {
-        console.log('Fetch error in extractStreamUrl: ' + error);
-
-        const result = {
-            streams: [],
-            subtitles: ""
-        };
-
-        console.log(result);
-        return JSON.stringify(result);
+      const decoded = atob(streamUrl);
+      streamUrl = decoded.match(/<iframe[^>]+src="([^"]+)"/i)?.[1] || "";
+    } catch {
+      streamUrl = "";
     }
-}
+  }
 
-async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
-    try {
-        return await fetchv2(url, options.headers ?? {}, options.method ?? 'GET', options.body ?? null);
-    } catch(e) {
-        try {
-            return await fetch(url, options);
-        } catch(error) {
-            return null;
-        }
-    }
+  if (!streamUrl) return JSON.stringify({ streams: [] });
+  return JSON.stringify({
+    streams: [{
+      title: "AniCrush",
+      streamUrl,
+      url: streamUrl
+    }]
+  });
 }

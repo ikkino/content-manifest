@@ -1,175 +1,122 @@
-async function searchResults(keyword) {
-    const results = [];
-    try {
-        const response = await fetchv2("https://nimegami.id/?s=" + encodeURIComponent(keyword) + "&post_type=post");
-        const html = await response.text();
+const ANIMEINDO_BASE = "https://animeindo.skin";
 
-        const regex = /<article>[\s\S]*?<a href="([^"]+)"[^>]*>\s*<img[^>]+src="([^"]+)"[\s\S]*?<h2[^>]*>\s*<a[^>]+>([^<]+)<\/a>/g;
-
-        let match;
-        while ((match = regex.exec(html)) !== null) {
-            results.push({
-                title: match[3].trim(),
-                image: match[2].trim(),
-                href: match[1].trim()
-            });
-        }
-
-        return JSON.stringify(results);
-    } catch (err) {
-        return JSON.stringify([{
-            title: "Error",
-            image: "Error",
-            href: "Error"
-        }]);
-    }
+function htmlDecode(value) {
+  return String(value ?? "")
+    .replace(/&quot;/g, '"')
+    .replace(/&#039;/g, "'")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">");
 }
 
+function absoluteUrl(url) {
+  if (!url) return "";
+  if (/^https?:\/\//i.test(url)) return url;
+  return ANIMEINDO_BASE + (url.startsWith("/") ? url : "/" + url);
+}
+
+function parseVideoLinks(html) {
+  const snapshotMatch = html.match(/wire:snapshot="([^"]+)"/);
+  if (!snapshotMatch) return [];
+  try {
+    const decoded = htmlDecode(snapshotMatch[1]).replace(/\\\//g, "/");
+    const data = JSON.parse(decoded);
+    const videos = data?.data?.videos?.[0] ?? [];
+    const links = [];
+    for (const entry of videos) {
+      const item = Array.isArray(entry) ? entry[0] : entry;
+      if (!item?.link) continue;
+      links.push({
+        title: item.label || "Embed",
+        streamUrl: absoluteUrl(item.link),
+        url: absoluteUrl(item.link),
+        headers: {
+          "User-Agent": "Mozilla/5.0",
+          "Referer": ANIMEINDO_BASE + "/"
+        }
+      });
+    }
+    return links;
+  } catch (error) {
+    console.log("AnimeIndo video parse failed: " + error.message);
+    return [];
+  }
+}
+
+async function searchResults(keyword) {
+  try {
+    const response = await fetchv2(ANIMEINDO_BASE + "/search/" + encodeURIComponent(keyword), {
+      "User-Agent": "Mozilla/5.0",
+      "Referer": ANIMEINDO_BASE + "/"
+    });
+    const html = await response.text();
+    const results = [];
+    const cardRegex = /<div class="relative group overflow-hidden">([\s\S]*?)(?=<div class="relative group overflow-hidden"|<div>\s*<!--\[if BLOCK\]|<\/div>\s*<\/div>\s*<div>)/g;
+    let match;
+    while ((match = cardRegex.exec(html)) !== null) {
+      const card = match[1];
+      const href = card.match(/<a href="([^"]+)"/)?.[1];
+      const image = card.match(/<img[^>]+(?:data-src|src)="([^"]+)"/)?.[1];
+      const title = card.match(/<h3[^>]*>([\s\S]*?)<\/h3>/i)?.[1]?.replace(/<[^>]+>/g, "").trim();
+      if (href && image && title) {
+        results.push({
+          href: absoluteUrl(href),
+          image: absoluteUrl(image),
+          title: htmlDecode(title)
+        });
+      }
+    }
+    return JSON.stringify(results);
+  } catch (error) {
+    console.log("AnimeIndo search failed: " + error.message);
+    return JSON.stringify([]);
+  }
+}
 
 async function extractDetails(url) {
-    try {
-        const response = await fetchv2(url);
-        const html = await response.text();
-
-        let description = "N/A";
-        let aliases = "N/A";
-        let airdate = "N/A";
-
-        // Extract synopsis/description
-        const synopsisMatch = html.match(/<div class="content" itemprop="text"[^>]*>[\s\S]*?<\/div>/);
-        if (synopsisMatch) {
-            // Remove HTML tags and clean up the text
-            description = synopsisMatch[0]
-                .replace(/<[^>]+>/g, ' ')
-                .replace(/&nbsp;/g, ' ')
-                .replace(/\s+/g, ' ')
-                .trim();
-        }
-
-        return JSON.stringify([{
-            description: description,
-            aliases: aliases,
-            airdate: airdate
-        }]);
-    } catch (err) {
-        return JSON.stringify([{
-            description: "Error",
-            aliases: "Error",
-            airdate: "Error"
-        }]);
-    }
+  try {
+    const response = await fetchv2(url, { "User-Agent": "Mozilla/5.0", "Referer": ANIMEINDO_BASE + "/" });
+    const html = await response.text();
+    const description = html.match(/<p class="text-gray-400 mt-3">([\s\S]*?)<\/p>/)?.[1]?.replace(/<[^>]+>/g, "").trim() || "No description available";
+    const alias = html.match(/<h2[^>]*>([\s\S]*?)<\/h2>/i)?.[1]?.replace(/<[^>]+>/g, "").trim() || "N/A";
+    const airdate = html.match(/<span>\s*(\d{4})\s*<\/span>/)?.[1] || "N/A";
+    return JSON.stringify([{ description: htmlDecode(description), aliases: htmlDecode(alias), airdate }]);
+  } catch (error) {
+    console.log("AnimeIndo details failed: " + error.message);
+    return JSON.stringify([{ description: "Error", aliases: "Error", airdate: "Error" }]);
+  }
 }
 
 async function extractEpisodes(url) {
-    const results = [];
-    try {
-        const response = await fetchv2(url);
-        const html = await response.text();
-
-        // First try to extract individual episodes (excluding batch)
-        const htmlWithoutBatch = html.replace(/<div class="batch-dlcuy">[\s\S]*?<\/div>/g, '');
-        const episodeRegex = /<h4>([^<]*Episode\s+(\d+)[^<]*)<\/h4>\s*<ul>([\s\S]*?)<\/ul>/gi;
-        
-        let episodeMatch;
-        while ((episodeMatch = episodeRegex.exec(htmlWithoutBatch)) !== null) {
-            const episodeTitle = episodeMatch[1];
-            const episodeNumber = parseInt(episodeMatch[2], 10);
-            const linksHtml = episodeMatch[3];
-
-            const qualityRegex = /<strong>(\d+p)<\/strong>[\s\S]*?<a[^>]*href="([^"]+)"[^>]*>/g;
-            let qualityMatch;
-            let highestQualityLink = null;
-            let highestQuality = 0;
-
-            while ((qualityMatch = qualityRegex.exec(linksHtml)) !== null) {
-                const quality = parseInt(qualityMatch[1], 10);
-                const link = qualityMatch[2].trim();
-
-                if (quality > highestQuality) {
-                    highestQuality = quality;
-                    highestQualityLink = link;
-                }
-            }
-
-            if (highestQualityLink) {
-                results.push({
-                    number: episodeNumber,
-                    href: highestQualityLink,
-                });
-            }
-        }
-
-        if (results.length === 0) {
-            const movieRegex = /<strong>(\d+p)<\/strong>[\s\S]*?<a[^>]*href="([^"]+)"[^>]*>/g;
-            let movieMatch;
-            let highestQuality = 0;
-            let movieLink = null;
-
-            while ((movieMatch = movieRegex.exec(html)) !== null) {
-                const quality = parseInt(movieMatch[1], 10);
-                const link = movieMatch[2].trim();
-
-                if (quality > highestQuality) {
-                    highestQuality = quality;
-                    movieLink = link;
-                }
-            }
-
-            if (movieLink) {
-                results.push({
-                    number: 1,
-                    href: movieLink,
-                });
-            }
-        }
-
-        return JSON.stringify(results);
-    } catch (err) {
-        return JSON.stringify([{
-            number: "Error",
-            title: "Error",
-            href: "Error",
-            quality: "Error"
-        }]);
+  try {
+    const response = await fetchv2(url, { "User-Agent": "Mozilla/5.0", "Referer": ANIMEINDO_BASE + "/" });
+    const html = await response.text();
+    const episodes = [];
+    const episodeRegex = /<a href="([^"]+)"[\s\S]*?<span>\s*Episode\s+(\d+)\s*<\/span>/gi;
+    let match;
+    while ((match = episodeRegex.exec(html)) !== null) {
+      episodes.push({ href: absoluteUrl(match[1]), number: Number(match[2]) });
     }
+    if (episodes.length === 0 && parseVideoLinks(html).length > 0) {
+      episodes.push({ href: url, number: 1 });
+    }
+    return JSON.stringify(episodes);
+  } catch (error) {
+    console.log("AnimeIndo episodes failed: " + error.message);
+    return JSON.stringify([]);
+  }
 }
 
 async function extractStreamUrl(url) {
-    try {
-        const response = await fetchv2(url);
-        const html = await response.text();
-
-        const streams = [];
-        
-        const downloadDivMatch = html.match(/<div id="download_div"[\s\S]*?<\/div>/);
-        if (downloadDivMatch) {
-            const downloadDiv = downloadDivMatch[0];
-            
-            const linkRegex = /<a[^>]*href="([^"]+)"[^>]*id="ini_download_[^"]*"[^>]*>/g;
-            let linkMatch;
-            let serverCount = 1;
-            
-            while ((linkMatch = linkRegex.exec(downloadDiv)) !== null) {
-                const streamUrl = linkMatch[1].trim();
-                
-                streams.push({
-                    title: `Server ${serverCount}`,
-                    streamUrl: streamUrl,
-                    headers: {}
-                });
-                
-                serverCount++;
-            }
-        }
-
-        return JSON.stringify({
-            streams: streams,
-            subtitle: "https://placeholder.com/subtitles.vtt"
-        });
-    } catch (err) {
-        return JSON.stringify({
-            streams: [],
-            subtitle: "https://placeholder.com/subtitles.vtt"
-        });
-    }
+  try {
+    const response = await fetchv2(url, { "User-Agent": "Mozilla/5.0", "Referer": ANIMEINDO_BASE + "/" });
+    const html = await response.text();
+    const streams = parseVideoLinks(html);
+    if (streams.length > 0) return JSON.stringify({ streams, subtitles: "" });
+    const iframe = html.match(/<iframe[^>]+src="([^"]+)"/i)?.[1];
+    return iframe ? absoluteUrl(iframe) : "https://error.org/";
+  } catch (error) {
+    console.log("AnimeIndo stream failed: " + error.message);
+    return "https://error.org/";
+  }
 }

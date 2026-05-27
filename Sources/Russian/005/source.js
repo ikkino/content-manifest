@@ -1,467 +1,698 @@
-const BASE_URL = "https://sameband.studio";
-const SEARCH_URL = BASE_URL + "/";
+const SITE_BASES = [
+  "https://shizaproject.com",
+  "https://shiza-project.com"
+];
+
+const SITE_BASE = SITE_BASES[0];
+const DEFAULT_SUBTITLE = "https://none.com";
 
 function _ua() {
-	return "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
+  return "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
 }
 
 function _safeJsonParse(value, fallback) {
-	try {
-		return JSON.parse(value);
-	} catch (_) {
-		return fallback;
-	}
+  try {
+    return JSON.parse(value);
+  } catch (_) {
+    return fallback;
+  }
 }
 
-function _htmlDecode(value) {
-	const s = String(value || "");
-	if (!s) return "";
-
-	const named = {
-		"&amp;": "&",
-		"&lt;": "<",
-		"&gt;": ">",
-		"&quot;": '"',
-		"&#39;": "'",
-		"&apos;": "'",
-		"&nbsp;": " ",
-		"&laquo;": "<<",
-		"&raquo;": ">>"
-	};
-
-	const withNamed = s.replace(/&(amp|lt|gt|quot|#39|apos|nbsp|laquo|raquo);/g, m => named[m] || m);
-	const withDec = withNamed.replace(/&#(\d+);/g, (_, d) => {
-		const code = parseInt(d, 10);
-		return Number.isFinite(code) ? String.fromCharCode(code) : "";
-	});
-
-	return withDec.replace(/&#x([0-9a-f]+);/gi, (_, h) => {
-		const code = parseInt(h, 16);
-		return Number.isFinite(code) ? String.fromCharCode(code) : "";
-	});
+function _cleanBase(base) {
+  const raw = String(base || SITE_BASE).trim().replace(/\/+$/, "");
+  return raw || SITE_BASE;
 }
 
-function _stripTags(value) {
-	return _htmlDecode(String(value || "")
-		.replace(/<br\s*\/?>/gi, "\n")
-		.replace(/<\/p>/gi, "\n")
-		.replace(/<[^>]+>/g, " ")
-		.replace(/\s+/g, " ")
-		.trim());
+function _normalizeUrl(url) {
+  const raw = String(url || "").trim();
+  if (!raw) return "";
+  if (raw.startsWith("//")) return "https:" + raw;
+  return raw;
 }
 
-function _absUrl(url, base) {
-	const raw = String(url || "").trim();
-	if (!raw) return "";
-	if (raw.startsWith("http://") || raw.startsWith("https://")) return raw;
-	if (raw.startsWith("//")) return "https:" + raw;
-
-	const root = String(base || BASE_URL).replace(/\/+$/, "");
-	return root + "/" + raw.replace(/^\/+/, "");
+function _packRelease(payload) {
+  return "shizaproject-release:" + encodeURIComponent(JSON.stringify(payload || {}));
 }
 
-function _attr(tag, name) {
-	const block = String(tag || "");
-	if (!block) return "";
-
-	const quoted = new RegExp(name + "\\s*=\\s*(['\"])(.*?)\\1", "i").exec(block);
-	if (quoted && quoted[2]) return quoted[2];
-
-	const plain = new RegExp(name + "\\s*=\\s*([^\\s>]+)", "i").exec(block);
-	return plain && plain[1] ? plain[1] : "";
-}
-
-function _extractMeta(html, attrName, attrValue) {
-	const src = String(html || "");
-	const re = new RegExp(
-		"<meta[^>]*" + attrName + "=['\"]" + attrValue + "['\"][^>]*content=['\"]([^'\"]+)['\"][^>]*>",
-		"i"
-	);
-	const m = src.match(re);
-	return m && m[1] ? _htmlDecode(m[1]).trim() : "";
+function _unpackRelease(href) {
+  const raw = String(href || "");
+  if (!raw.startsWith("shizaproject-release:")) return null;
+  return _safeJsonParse(decodeURIComponent(raw.slice("shizaproject-release:".length)), null);
 }
 
 function _packEpisode(payload) {
-	return "sameband:" + encodeURIComponent(JSON.stringify(payload || {}));
+  return "shizaproject:" + encodeURIComponent(JSON.stringify(payload || {}));
 }
 
 function _unpackEpisode(href) {
-	const raw = String(href || "");
-	if (!raw.startsWith("sameband:")) return null;
-	return _safeJsonParse(decodeURIComponent(raw.slice("sameband:".length)), null);
+  const raw = String(href || "");
+  if (!raw.startsWith("shizaproject:")) return null;
+  return _safeJsonParse(decodeURIComponent(raw.slice("shizaproject:".length)), null);
 }
 
-function _searchHeaders() {
-	return {
-		"User-Agent": _ua(),
-		"Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-		"Accept-Language": "ru-RU,ru;q=0.9,en;q=0.8",
-		"Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-		"Origin": BASE_URL,
-		"Referer": SEARCH_URL
-	};
+function _extractSlug(input) {
+  const packed = _unpackRelease(input);
+  if (packed?.slug) return String(packed.slug);
+
+  const raw = String(input || "").trim();
+  if (!raw) return "";
+
+  try {
+    const u = new URL(raw);
+    const parts = u.pathname.split("/").filter(Boolean);
+    return parts[parts.length - 1] || raw;
+  } catch (_) {}
+
+  return raw;
 }
 
-function _htmlHeaders(referer) {
-	return {
-		"User-Agent": _ua(),
-		"Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-		"Accept-Language": "ru-RU,ru;q=0.9,en;q=0.8",
-		"Referer": referer || SEARCH_URL,
-		"Origin": BASE_URL
-	};
+function _extractPreferredBase(input) {
+  const packed = _unpackRelease(input);
+  if (packed?.siteBase) return _cleanBase(packed.siteBase);
+
+  const raw = String(input || "").trim();
+  if (!raw) return SITE_BASE;
+
+  try {
+    const u = new URL(raw);
+    return _cleanBase(u.origin);
+  } catch (_) {}
+
+  return SITE_BASE;
 }
 
-async function _postSearch(query) {
-	const body =
-		"story=" + encodeURIComponent(String(query || "")) +
-		"&do=search&subaction=search";
+function _orderedBases(preferredBase) {
+  const out = [];
 
-	try {
-		const r = await fetchv2(SEARCH_URL, _searchHeaders(), "POST", body);
-		const txt = await r.text();
-		if (txt && txt.includes("class=\"poster\"")) return txt;
-	} catch (_) {}
+  const add = (base) => {
+    const clean = _cleanBase(base);
+    if (clean && !out.includes(clean)) out.push(clean);
+  };
 
-	const fallback = await fetchv2(BASE_URL + "/index.php?do=search", _searchHeaders(), "POST", body);
-	return fallback.text();
+  if (preferredBase) add(preferredBase);
+  for (const base of SITE_BASES) add(base);
+
+  return out;
 }
 
-function _parseSearchResults(html) {
-	const src = String(html || "");
-	const out = [];
-	const seen = new Set();
+function _graphqlHeaders(base) {
+  const site = _cleanBase(base);
 
-	const articleRegex = /<article[^>]*class=["'][^"']*shortstory[^"']*["'][^>]*>[\s\S]*?<\/article>/gi;
-	const blocks = src.match(articleRegex) || [];
-
-	for (const block of blocks) {
-		const posterTag = (block.match(/<div[^>]*class=["'][^"']*poster[^"']*["'][^>]*>/i) || [""])[0];
-		const imageLinkTag = (block.match(/<a[^>]*class=["'][^"']*image[^"']*["'][^>]*>/i) || [""])[0];
-		const infoTitleMatch = block.match(/<div[^>]*class=["'][^"']*info-title[^"']*["'][^>]*>([\s\S]*?)<\/div>/i);
-		const imgTag = (block.match(/<img[^>]*>/i) || [""])[0];
-
-		const href = _absUrl(_attr(imageLinkTag, "href"), BASE_URL);
-		const titleRaw = _attr(posterTag, "title") || (infoTitleMatch ? infoTitleMatch[1] : "");
-		const title = _stripTags(titleRaw);
-		const image = _absUrl(_attr(imgTag, "src") || _attr(imgTag, "data-src"), BASE_URL);
-
-		if (!href || !title || seen.has(href)) continue;
-		seen.add(href);
-
-		out.push({
-			title,
-			image,
-			href
-		});
-	}
-
-	return out;
+  return {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+    "User-Agent": _ua(),
+    "Origin": site,
+    "Referer": site + "/"
+  };
 }
 
-function _extractAnimeUrl(input) {
-	const raw = String(input || "").trim();
-	if (!raw) return "";
+async function _graphqlOnBase(base, operationName, variables, query) {
+  const site = _cleanBase(base);
+  const body = JSON.stringify({ operationName, variables, query });
 
-	const packed = _unpackEpisode(raw);
-	if (packed && packed.animeUrl) return _absUrl(packed.animeUrl, BASE_URL);
+  const response = await fetchv2(site + "/graphql", _graphqlHeaders(site), "POST", body);
+  const data = await response.json();
 
-	return _absUrl(raw, BASE_URL);
+  if (data?.errors?.length) {
+    throw new Error("GraphQL error");
+  }
+
+  return {
+    data: data?.data || {},
+    siteBase: site
+  };
 }
 
-function _bestYearCandidate(html) {
-	const src = String(html || "");
-	const years = [];
-	const regex = /\b(19\d{2}|20\d{2})\b/g;
-	let m;
+async function _graphql(operationName, variables, query, preferredBase) {
+  let lastError = null;
 
-	while ((m = regex.exec(src)) !== null) {
-		const year = parseInt(m[1], 10);
-		if (year >= 1950 && year <= (new Date().getFullYear() + 1)) {
-			years.push(year);
-		}
-	}
+  for (const base of _orderedBases(preferredBase)) {
+    try {
+      return await _graphqlOnBase(base, operationName, variables, query);
+    } catch (e) {
+      lastError = e;
+    }
+  }
 
-	if (!years.length) return "Unknown";
-	return String(Math.min.apply(null, years));
+  throw lastError || new Error("All ShizaProject domains failed");
 }
 
-function _extractIframeSrc(html) {
-	const src = String(html || "");
+const SEARCH_QUERY = `
+query search($query: String!, $type: SearchType!) {
+  search(query: $query, type: $type, first: 10) {
+    edges {
+      node {
+        id
+        __typename
+        ... on Release {
+          id
+          slug
+          name
+          originalName
+          airedOn
+          releasedOn
+          publishedAt
+          announcement
+          episodesCount
+          episodesAired
+          episodeDuration
+          season
+          seasonYear
+          seasonNumber
+          status
+          activity
+          type
+          rating
+          viewCount
+          score
+          posters {
+            original {
+              url
+            }
+            preview: resize(width: 360, height: 500) {
+              url
+            }
+          }
+          genres {
+            id
+            slug
+            name
+            __typename
+          }
+          __typename
+        }
+      }
+    }
+  }
+}`;
 
-	const inPlayer = src.match(
-		/<div[^>]*class=["'][^"']*player-content[^"']*["'][^>]*>[\s\S]*?<iframe[^>]*src=["']([^"']+)["']/i
-	);
-	if (inPlayer && inPlayer[1]) return inPlayer[1];
+const RELEASE_QUERY = `
+query releaseAllSafe($slug: String!) {
+  release(slug: $slug) {
+    __typename
+    id
+    slug
+    name
+    originalName
+    airedOn
+    releasedOn
+    publishedAt
+    announcement
+    episodesCount
+    episodesAired
+    episodeDuration
+    season
+    seasonYear
+    seasonNumber
+    status
+    activity
+    type
+    rating
+    viewCount
+    score
+    genres {
+      id
+      slug
+      name
+      __typename
+    }
+    episodes {
+      __typename
+      id
+      number
+      name
+      duration
+      videos {
+        id
+        embedUrl
+        __typename
+      }
+    }
+  }
+}`;
 
-	const anyIframe = src.match(/<iframe[^>]*src=["']([^"']+)["']/i);
-	return anyIframe && anyIframe[1] ? anyIframe[1] : "";
+async function _getRelease(slug, preferredBase) {
+  const result = await _graphql(
+    "releaseAllSafe",
+    { slug: String(slug || "") },
+    RELEASE_QUERY,
+    preferredBase
+  );
+
+  return {
+    release: result?.data?.release || null,
+    siteBase: result?.siteBase || _cleanBase(preferredBase)
+  };
 }
 
-function _buildListCandidates(iframeSrc) {
-	const iframeAbs = _absUrl(iframeSrc, BASE_URL);
-	const candidates = [];
+function _pickPoster(release) {
+  const posters = Array.isArray(release?.posters) ? release.posters : [];
+  if (!posters.length) return "";
 
-	const add = (u) => {
-		const v = String(u || "").trim();
-		if (!v) return;
-		if (!candidates.includes(v)) candidates.push(v);
-	};
+  const first = posters[0];
 
-	const playMatch = iframeAbs.match(/\/v\/play\/([^/?#]+)\.html/i);
-	if (playMatch && playMatch[1]) {
-		const fileName = decodeURIComponent(playMatch[1]);
-		const withUnderscores = `${BASE_URL}/v/list/${fileName}_list.txt`;
-		const withSpaces = `${BASE_URL}/v/list/${fileName.replace(/_/g, " ")}_list.txt`;
-
-		add(withUnderscores);
-		add(encodeURI(withUnderscores));
-		add(withSpaces);
-		add(encodeURI(withSpaces));
-	}
-
-	return candidates;
+  return (
+    _normalizeUrl(first?.original?.url || "") ||
+    _normalizeUrl(first?.preview?.url || "") ||
+    ""
+  );
 }
 
-async function _fetchPlaylistArray(candidates, referer) {
-	for (const candidate of candidates) {
-		try {
-			const r = await fetchv2(candidate, _htmlHeaders(referer || SEARCH_URL));
-			const txt = await r.text();
-			const parsed = _safeJsonParse(txt, null);
-			if (Array.isArray(parsed) && parsed.length) {
-				return parsed;
-			}
-		} catch (_) {}
-	}
+function _releaseAliases(release) {
+  const parts = [];
 
-	return [];
+  if (release?.originalName) parts.push(`Original: ${release.originalName}`);
+  if (release?.type) parts.push(`Type: ${release.type}`);
+  if (Number.isFinite(release?.episodesCount)) parts.push(`Episodes: ${release.episodesCount}`);
+  if (Number.isFinite(release?.episodeDuration)) parts.push(`Duration: ${release.episodeDuration}m`);
+  if (release?.announcement) parts.push(String(release.announcement));
+
+  if (Array.isArray(release?.genres) && release.genres.length) {
+    parts.push(`Genres: ${release.genres.map(g => g?.name).filter(Boolean).join(", ")}`);
+  }
+
+  return parts.join(" | ");
 }
 
-function _extractEpisodeTitle(titleHtml, fallbackNum) {
-	const clean = _stripTags(titleHtml || "").replace(/\b\d{1,2}:\d{2}\b/g, "").trim();
-	return clean || `Episode ${fallbackNum}`;
-}
+function _scoreTitle(title, keyword) {
+  const t = String(title || "").toLowerCase().trim();
+  const k = String(keyword || "").toLowerCase().trim();
 
-function _extractEpisodeNumber(label, fallbackNum) {
-	const m = String(label || "").match(/(\d{1,4})/);
-	if (!m || !m[1]) return fallbackNum;
+  if (!t || !k) return 99;
+  if (t === k) return 0;
+  if (t.startsWith(k)) return 1;
+  if (t.includes(k)) return 2;
 
-	const n = parseInt(m[1], 10);
-	return Number.isFinite(n) ? n : fallbackNum;
-}
-
-function _parseFileVariants(fileField) {
-	const raw = String(fileField || "").trim();
-	if (!raw) return [];
-
-	const out = [];
-	const parts = raw.split(",");
-
-	for (const part of parts) {
-		const item = String(part || "").trim();
-		if (!item) continue;
-
-		const m = item.match(/^\[([^\]]+)\](.+)$/);
-		const qualityLabel = m && m[1] ? String(m[1]).trim() : "";
-		const path = m && m[2] ? String(m[2]).trim() : item;
-
-		const abs = _absUrl(path, BASE_URL);
-		if (!abs) continue;
-
-		const q = parseInt(qualityLabel.replace(/[^\d]/g, ""), 10) || 0;
-		out.push({
-			quality: q,
-			label: qualityLabel,
-			url: encodeURI(abs)
-		});
-	}
-
-	out.sort((a, b) => b.quality - a.quality);
-	return out;
+  return 3;
 }
 
 async function searchResults(keyword) {
-	try {
-		const query = String(keyword || "").trim();
-		if (!query) return JSON.stringify([]);
+  try {
+    const query = String(keyword || "").trim();
+    if (!query) return JSON.stringify([]);
 
-		const html = await _postSearch(query);
-		const results = _parseSearchResults(html);
-		return JSON.stringify(results);
-	} catch (_) {
-		return JSON.stringify([]);
-	}
+    const result = await _graphql("search", { query, type: "RELEASE" }, SEARCH_QUERY);
+    const siteBase = result?.siteBase || SITE_BASE;
+    const edges = Array.isArray(result?.data?.search?.edges) ? result.data.search.edges : [];
+
+    const out = edges
+      .map(edge => edge?.node)
+      .filter(node => node?.__typename === "Release" && node?.slug)
+      .map(release => {
+        const title = release?.name || release?.originalName || "Unknown title";
+        const image = _pickPoster(release);
+
+        const item = {
+          title,
+          href: _packRelease({
+            slug: release.slug,
+            id: release.id,
+            title,
+            originalName: release?.originalName || "",
+            airedOn: release?.airedOn || release?.releasedOn || "",
+            image,
+            siteBase
+          }),
+          _score: Math.min(
+            _scoreTitle(release?.name || "", query),
+            _scoreTitle(release?.originalName || "", query)
+          )
+        };
+
+        if (image) {
+          item.image = image;
+        }
+
+        return item;
+      });
+
+    out.sort((a, b) => a._score - b._score);
+
+    return JSON.stringify(out.map(({ _score, ...rest }) => rest));
+  } catch (_) {
+    return JSON.stringify([]);
+  }
 }
 
-async function extractDetails(url) {
-	try {
-		const animeUrl = _extractAnimeUrl(url);
-		if (!animeUrl) return JSON.stringify([]);
+async function extractDetails(href) {
+  try {
+    const slug = _extractSlug(href);
+    const preferredBase = _extractPreferredBase(href);
 
-		const r = await fetchv2(animeUrl, _htmlHeaders(SEARCH_URL));
-		const html = await r.text();
+    if (!slug) return JSON.stringify([]);
 
-		const descMatch = html.match(
-			/<div[^>]*class=["'][^"']*description[^"']*["'][^>]*>[\s\S]*?<div[^>]*class=["'][^"']*limiter[^"']*["'][^>]*>([\s\S]*?)<\/div>/i
-		);
+    const result = await _getRelease(slug, preferredBase);
+    const release = result?.release;
 
-		const description = _stripTags(
-			(descMatch && descMatch[1]) || _extractMeta(html, "name", "description") || "No description available"
-		) || "No description available";
+    if (!release) return JSON.stringify([]);
 
-		let aliases = _extractMeta(html, "property", "og:title") || "";
-		aliases = aliases.replace(/\s*(?:>|\u00BB)+\s*SameBand\s*$/i, "").trim();
+    const titleLine = release?.originalName && release?.originalName !== release?.name
+      ? `${release.name} / ${release.originalName}`
+      : (release?.name || release?.originalName || "ShizaProject");
 
-		return JSON.stringify([
-			{
-				description,
-				aliases: aliases || "SameBand",
-				airdate: _bestYearCandidate(html)
-			}
-		]);
-	} catch (_) {
-		return JSON.stringify([]);
-	}
+    const statusLine = [release?.status, release?.activity]
+      .filter(Boolean)
+      .join(" / ");
+
+    const description = [titleLine, statusLine]
+      .filter(Boolean)
+      .join("\n");
+
+    return JSON.stringify([{
+      description: description || "No description available.",
+      aliases: _releaseAliases(release) || "ShizaProject",
+      airdate: release?.airedOn || release?.releasedOn || "Unknown"
+    }]);
+  } catch (_) {
+    return JSON.stringify([]);
+  }
 }
 
-async function extractEpisodes(url) {
-	try {
-		const animeUrl = _extractAnimeUrl(url);
-		if (!animeUrl) return JSON.stringify([]);
+async function extractEpisodes(href) {
+  try {
+    const slug = _extractSlug(href);
+    const preferredBase = _extractPreferredBase(href);
 
-		const page = await fetchv2(animeUrl, _htmlHeaders(SEARCH_URL));
-		const html = await page.text();
+    if (!slug) return JSON.stringify([]);
 
-		const iframeSrc = _extractIframeSrc(html);
-		if (!iframeSrc) return JSON.stringify([]);
+    const result = await _getRelease(slug, preferredBase);
+    const release = result?.release;
+    const siteBase = result?.siteBase || preferredBase || SITE_BASE;
 
-		const candidates = _buildListCandidates(iframeSrc);
-		const playlist = await _fetchPlaylistArray(candidates, animeUrl);
-		if (!playlist.length) return JSON.stringify([]);
+    if (!release) return JSON.stringify([]);
 
-		const episodes = playlist.map((item, index) => {
-			const titleHtml = String(item?.title || "");
-			const title = _extractEpisodeTitle(titleHtml, index + 1);
-			const number = _extractEpisodeNumber(title, index + 1);
+    const episodes = Array.isArray(release?.episodes) ? release.episodes : [];
 
-			const imgTag = (titleHtml.match(/<img[^>]*>/i) || [""])[0];
-			const image = _absUrl(_attr(imgTag, "src"), BASE_URL);
+    const out = episodes
+      .map((ep, index) => {
+        const videos = Array.isArray(ep?.videos) ? ep.videos : [];
 
-			const payload = {
-				animeUrl,
-				file: String(item?.file || ""),
-				thumbnails: String(item?.thumbnails || ""),
-				title,
-				image
-			};
+        const embedUrls = videos
+          .map(v => _normalizeUrl(v?.embedUrl || ""))
+          .filter(Boolean);
 
-			const out = {
-				href: _packEpisode(payload),
-				number,
-				title
-			};
+        if (!embedUrls.length) return null;
 
-			if (image) out.image = image;
-			return out;
-		});
+        const number = Number.isFinite(ep?.number) ? ep.number : (index + 1);
+        const title = ep?.name ? String(ep.name) : `Episode ${number}`;
 
-		episodes.sort((a, b) => Number(a.number) - Number(b.number));
-		return JSON.stringify(episodes);
-	} catch (_) {
-		return JSON.stringify([]);
-	}
+        const entry = {
+          href: _packEpisode({
+            releaseSlug: release.slug,
+            episodeId: ep?.id || "",
+            number,
+            title,
+            embedUrls,
+            fallbackEmbedUrl: embedUrls[0],
+            siteBase
+          }),
+          number,
+          title
+        };
+
+        if (Number.isFinite(ep?.duration)) {
+          entry.duration = ep.duration * 60;
+        }
+
+        return entry;
+      })
+      .filter(Boolean)
+      .sort((a, b) => Number(a.number) - Number(b.number));
+
+    return JSON.stringify(out);
+  } catch (_) {
+    return JSON.stringify([]);
+  }
+}
+
+function _qualityNumber(key) {
+  const n = parseInt(String(key || "").replace(/[^\d]/g, ""), 10);
+  return Number.isFinite(n) ? n : 0;
+}
+
+function _pickQualityUrl(qualities, target) {
+  for (const key in qualities || {}) {
+    const q = _qualityNumber(key);
+    const src = _normalizeUrl(qualities?.[key]?.src || "");
+    if (q === target && src) return src;
+  }
+
+  return null;
+}
+
+function _streamHeaders(siteBase) {
+  const site = _cleanBase(siteBase || SITE_BASE);
+
+  return {
+    "User-Agent": _ua(),
+    "Referer": site + "/",
+    "Origin": site
+  };
+}
+
+function _buildStreamsFromQualities(qualities, siteBase) {
+  const url720 = _pickQualityUrl(qualities, 720);
+  const url480 = _pickQualityUrl(qualities, 480);
+  const url360 = _pickQualityUrl(qualities, 360);
+
+  const known = {
+    720: url720,
+    480: url480,
+    360: url360
+  };
+
+  const headers = _streamHeaders(siteBase);
+  const streams = [];
+
+  for (const quality of [720, 480, 360]) {
+    const streamUrl = known[quality];
+    if (!streamUrl) continue;
+
+    streams.push({
+      title: `${quality}p`,
+      streamUrl,
+      url720,
+      url480,
+      url360,
+      headers
+    });
+  }
+
+  if (!streams.length) {
+    let bestQuality = 0;
+    let bestUrl = "";
+
+    for (const key in qualities || {}) {
+      const q = _qualityNumber(key);
+      const src = _normalizeUrl(qualities?.[key]?.src || "");
+      if (!src) continue;
+
+      if (q > bestQuality) {
+        bestQuality = q;
+        bestUrl = src;
+      }
+    }
+
+    if (bestUrl) {
+      streams.push({
+        title: bestQuality ? `${bestQuality}p` : "Kodik",
+        streamUrl: bestUrl,
+        url720: bestQuality >= 720 ? bestUrl : null,
+        url480: bestQuality >= 480 && bestQuality < 720 ? bestUrl : null,
+        url360: bestQuality >= 360 && bestQuality < 480 ? bestUrl : null,
+        headers
+      });
+    }
+  }
+
+  return streams;
+}
+
+function _isKodikUrl(url) {
+  const raw = String(url || "").toLowerCase();
+  return raw.includes("kodikplayer.com") || raw.includes("kodik.info");
 }
 
 async function extractStreamUrl(href) {
-	try {
-		const payload = _unpackEpisode(href);
-		const fileField = payload?.file ? String(payload.file) : "";
-		if (!fileField) {
-			return JSON.stringify({ streams: [], subtitle: "https://none.com" });
-		}
+  try {
+    const payload = _unpackEpisode(href);
 
-		const variants = _parseFileVariants(fileField);
-		if (!variants.length) {
-			return JSON.stringify({ streams: [], subtitle: "https://none.com" });
-		}
+    if (!payload) {
+      return JSON.stringify({
+        streams: [],
+        subtitle: DEFAULT_SUBTITLE
+      });
+    }
 
-		const byQuality = {
-			1080: "",
-			720: "",
-			480: ""
-		};
+    const siteBase = _cleanBase(payload?.siteBase || SITE_BASE);
 
-		for (const v of variants) {
-			if ((v.quality === 1080 || v.quality === 720 || v.quality === 480) && !byQuality[v.quality]) {
-				byQuality[v.quality] = v.url;
-			}
-		}
+    const embedUrls = Array.isArray(payload?.embedUrls)
+      ? payload.embedUrls.map(_normalizeUrl).filter(Boolean)
+      : [_normalizeUrl(payload?.fallbackEmbedUrl)].filter(Boolean);
 
-		const url1080 = byQuality[1080] || null;
-		const url720 = byQuality[720] || null;
-		const url480 = byQuality[480] || null;
+    const streams = [];
 
-		const headers = {
-			"User-Agent": _ua(),
-			"Referer": payload?.animeUrl ? String(payload.animeUrl) : (BASE_URL + "/"),
-			"Origin": BASE_URL
-		};
+    for (const embedUrl of embedUrls) {
+      if (!_isKodikUrl(embedUrl)) continue;
 
-		const streams = [];
+      try {
+        const qualitiesJson = await kodikParser(embedUrl, siteBase);
+        const qualities = _safeJsonParse(qualitiesJson, {});
+        const parsedStreams = _buildStreamsFromQualities(qualities, siteBase);
+        streams.push(...parsedStreams);
+      } catch (_) {}
+    }
 
-		if (url1080) {
-			streams.push({
-				title: "1080p",
-				streamUrl: url1080,
-				url1080,
-				url720,
-				url480,
-				headers
-			});
-		}
-
-		if (url720) {
-			streams.push({
-				title: "720p",
-				streamUrl: url720,
-				url1080,
-				url720,
-				url480,
-				headers
-			});
-		}
-
-		if (url480) {
-			streams.push({
-				title: "480p",
-				streamUrl: url480,
-				url1080,
-				url720,
-				url480,
-				headers
-			});
-		}
-
-		if (!streams.length) {
-			const first = variants[0];
-			if (first?.url) {
-				streams.push({
-					title: "1080p",
-					streamUrl: first.url,
-					url1080: first.url,
-					url720: null,
-					url480: null,
-					headers
-				});
-			}
-		}
-
-		return JSON.stringify({
-			streams,
-			subtitle: "https://none.com"
-		});
-	} catch (_) {
-		return JSON.stringify({ streams: [], subtitle: "https://none.com" });
-	}
+    return JSON.stringify({
+      streams,
+      subtitle: DEFAULT_SUBTITLE
+    });
+  } catch (_) {
+    return JSON.stringify({
+      streams: [],
+      subtitle: DEFAULT_SUBTITLE
+    });
+  }
 }
+
+async function kodikParser(url, siteBase) {
+  try {
+    const site = _cleanBase(siteBase || SITE_BASE);
+    const embedUrl = _normalizeUrl(url);
+
+    const headers = {
+      "Referer": site + "/",
+      "User-Agent": _ua()
+    };
+
+    const response = await fetchv2(embedUrl, headers);
+    const htmlText = await response.text();
+
+    const urlParamsMatch = htmlText.match(/var\s+urlParams\s*=\s*'([^']+)'/);
+    const videoInfoTypeMatch = htmlText.match(/vInfo\.type\s*=\s*'([^']+)'/);
+    const videoInfoHashMatch = htmlText.match(/vInfo\.hash\s*=\s*'([^']+)'/);
+    const videoInfoIdMatch = htmlText.match(/vInfo\.id\s*=\s*'([^']+)'/);
+
+    const urlParams = urlParamsMatch ? _safeJsonParse(urlParamsMatch[1], {}) : {};
+    const videoInfoType = videoInfoTypeMatch ? videoInfoTypeMatch[1] : "";
+    const videoInfoHash = videoInfoHashMatch ? videoInfoHashMatch[1] : "";
+    const videoInfoId = videoInfoIdMatch ? videoInfoIdMatch[1] : "";
+
+    const finalData =
+      `d=${urlParams.d || ""}` +
+      `&d_sign=${urlParams.d_sign || ""}` +
+      `&pd=${urlParams.pd || ""}` +
+      `&pd_sign=${urlParams.pd_sign || ""}` +
+      `&ref=${urlParams.ref || ""}` +
+      `&ref_sign=${urlParams.ref_sign || ""}` +
+      `&bad_user=false&cdn_is_working=true` +
+      `&type=${encodeURIComponent(videoInfoType)}` +
+      `&hash=${encodeURIComponent(videoInfoHash)}` +
+      `&id=${encodeURIComponent(videoInfoId)}` +
+      `&info=%7B%7D`;
+
+    const headers2 = {
+      "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+      "Referer": site + "/",
+      "User-Agent": _ua(),
+      "X-Requested-With": "XMLHttpRequest"
+    };
+
+    const apiResponse = await fetchv2(
+      "https://kodikplayer.com/ftor",
+      headers2,
+      "POST",
+      finalData
+    );
+
+    const apiJson = await apiResponse.json();
+
+    const qualities = {};
+
+    if (apiJson?.links) {
+      for (const quality in apiJson.links) {
+        const qualityArray = apiJson.links[quality];
+        const first = Array.isArray(qualityArray) ? qualityArray[0] : null;
+
+        if (!first?.src) continue;
+
+        qualities[quality] = {
+          src: decode(first.src),
+          type: first.type || "application/x-mpegURL"
+        };
+      }
+    }
+
+    return JSON.stringify(qualities, null, 2);
+  } catch (_) {
+    return JSON.stringify({});
+  }
+}
+
+function decode(input) {
+  const map = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+  let out = "";
+  let buffer = 0;
+  let count = 0;
+
+  const rotated = [];
+  const source = String(input || "");
+
+  for (let i = 0; i < source.length; i++) {
+    const ch = source[i];
+
+    if (/[a-zA-Z]/.test(ch)) {
+      const code = ch.charCodeAt(0);
+      const max = ch <= "Z" ? 90 : 122;
+      const shifted = code + 18;
+
+      rotated.push(String.fromCharCode(shifted <= max ? shifted : shifted - 26));
+    } else {
+      rotated.push(ch);
+    }
+  }
+
+  const rot = rotated.join("");
+
+  for (let j = 0; j < rot.length; j++) {
+    const ch = rot[j];
+
+    if (ch === "=") break;
+
+    const val = map.indexOf(ch);
+    if (val === -1) continue;
+
+    buffer = (buffer << 6) | val;
+    count += 6;
+
+    if (count >= 8) {
+      count -= 8;
+      out += String.fromCharCode((buffer >> count) & 0xff);
+    }
+  }
+
+  return out;
+}
+
+function _defaultExport() {
+  return {
+    searchResults,
+    extractDetails,
+    extractEpisodes,
+    extractStreamUrl
+  };
+}
+
+try {
+  globalThis.default = _defaultExport;
+} catch (_) {}
+
+try {
+  this.default = _defaultExport;
+} catch (_) {}
+
+try {
+  globalThis.module = globalThis.module || {};
+  globalThis.module.exports = { default: _defaultExport };
+} catch (_) {}

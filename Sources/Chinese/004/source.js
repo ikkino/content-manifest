@@ -1,6 +1,6 @@
 async function searchResults(keyword) {
     const results = [];
-    const response = await fetchv2(`https://crimsonfansubs.com/?s=${keyword}`);
+    const response = await fetchv2(`https://anoboye.com/?s=${keyword}`);
     const html = await response.text();
 
     const regex = /<article class="bs"[^>]*>.*?<a href="([^"]+)"[^>]*>.*?<img src="([^"]+)"[^>]*>.*?<h2[^>]*>(.*?)<\/h2>/gs;
@@ -67,50 +67,20 @@ async function extractStreamUrl(url) {
         const response = await fetchv2(url);
         const html = await response.text();
 
-        let videoId;
+        const iframeMatch = html.match(/<iframe[^>]+src=["']([^"']+)["']/i);
+        if (!iframeMatch) throw new Error("iframe not found");
 
-        const geoMatch = html.match(/https:\/\/geo\.dailymotion\.com\/player\/([a-zA-Z0-9]+)\.js"\s*data-video="([a-zA-Z0-9]+)"/);
-        if (geoMatch) {
-            videoId = geoMatch[2];
-        } else {
-            const embedMatch = html.match(/https:\/\/www\.dailymotion\.com\/embed\/video\/([a-zA-Z0-9]+)/);
-            if (embedMatch) {
-                videoId = embedMatch[1];
-            } else {
-                return "no dailymotion video found";
-            }
-        }
+        const iframeUrl = iframeMatch[1];
 
-        const metaRes = await fetchv2(`https://www.dailymotion.com/player/metadata/video/${videoId}`);
-        const metaJson = await metaRes.json();
-        const hlsLink = metaJson.qualities?.auto?.[0]?.url;
-        if (!hlsLink) return "no hls";
+        const iframeResponse = await fetchv2(iframeUrl);
+        const iframeHtml = await iframeResponse.text();
 
-        async function getBestHls(hlsUrl) {
-            try {
-                const res = await fetchv2(hlsUrl);
-                const text = await res.text();
-                const regex = /#EXT-X-STREAM-INF:.*RESOLUTION=(\d+)x(\d+).*?\n(https?:\/\/[^\n]+)/g;
-                const streams = [];
-                let match;
-                while ((match = regex.exec(text)) !== null) {
-                    streams.push({ width: parseInt(match[1]), height: parseInt(match[2]), url: match[3] });
-                }
-                if (streams.length === 0) return hlsUrl;
-                streams.sort((a, b) => b.height - a.height);
-                return streams[0].url;
-            } catch {
-                return hlsUrl;
-            }
-        }
+        const videoMatch = iframeHtml.match(/videoUrl:\s*["']([^"']+)["']/i);
+        if (!videoMatch) throw new Error("videoUrl not found");
 
-        const bestHls = await getBestHls(hlsLink);
-        return bestHls;
-
-    } catch {
-        const empty = "{ streams: [";
-        console.log("Extracted stream result:" + JSON.stringify(empty));
-        return JSON.stringify(empty);
+        return videoMatch[1].replace(/\\/g, ""); 
+    } catch (err) {
+        return "https://files.catbox.moe/avolvc.mp4";
     }
 }
 
