@@ -1,467 +1,233 @@
-const BASE_URL = "https://sameband.studio";
-const SEARCH_URL = BASE_URL + "/";
-
-function _ua() {
-	return "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
-}
-
-function _safeJsonParse(value, fallback) {
-	try {
-		return JSON.parse(value);
-	} catch (_) {
-		return fallback;
-	}
-}
-
-function _htmlDecode(value) {
-	const s = String(value || "");
-	if (!s) return "";
-
-	const named = {
-		"&amp;": "&",
-		"&lt;": "<",
-		"&gt;": ">",
-		"&quot;": '"',
-		"&#39;": "'",
-		"&apos;": "'",
-		"&nbsp;": " ",
-		"&laquo;": "<<",
-		"&raquo;": ">>"
-	};
-
-	const withNamed = s.replace(/&(amp|lt|gt|quot|#39|apos|nbsp|laquo|raquo);/g, m => named[m] || m);
-	const withDec = withNamed.replace(/&#(\d+);/g, (_, d) => {
-		const code = parseInt(d, 10);
-		return Number.isFinite(code) ? String.fromCharCode(code) : "";
-	});
-
-	return withDec.replace(/&#x([0-9a-f]+);/gi, (_, h) => {
-		const code = parseInt(h, 16);
-		return Number.isFinite(code) ? String.fromCharCode(code) : "";
-	});
-}
-
-function _stripTags(value) {
-	return _htmlDecode(String(value || "")
-		.replace(/<br\s*\/?>/gi, "\n")
-		.replace(/<\/p>/gi, "\n")
-		.replace(/<[^>]+>/g, " ")
-		.replace(/\s+/g, " ")
-		.trim());
-}
-
-function _absUrl(url, base) {
-	const raw = String(url || "").trim();
-	if (!raw) return "";
-	if (raw.startsWith("http://") || raw.startsWith("https://")) return raw;
-	if (raw.startsWith("//")) return "https:" + raw;
-
-	const root = String(base || BASE_URL).replace(/\/+$/, "");
-	return root + "/" + raw.replace(/^\/+/, "");
-}
-
-function _attr(tag, name) {
-	const block = String(tag || "");
-	if (!block) return "";
-
-	const quoted = new RegExp(name + "\\s*=\\s*(['\"])(.*?)\\1", "i").exec(block);
-	if (quoted && quoted[2]) return quoted[2];
-
-	const plain = new RegExp(name + "\\s*=\\s*([^\\s>]+)", "i").exec(block);
-	return plain && plain[1] ? plain[1] : "";
-}
-
-function _extractMeta(html, attrName, attrValue) {
-	const src = String(html || "");
-	const re = new RegExp(
-		"<meta[^>]*" + attrName + "=['\"]" + attrValue + "['\"][^>]*content=['\"]([^'\"]+)['\"][^>]*>",
-		"i"
-	);
-	const m = src.match(re);
-	return m && m[1] ? _htmlDecode(m[1]).trim() : "";
-}
-
-function _packEpisode(payload) {
-	return "sameband:" + encodeURIComponent(JSON.stringify(payload || {}));
-}
-
-function _unpackEpisode(href) {
-	const raw = String(href || "");
-	if (!raw.startsWith("sameband:")) return null;
-	return _safeJsonParse(decodeURIComponent(raw.slice("sameband:".length)), null);
-}
-
-function _searchHeaders() {
-	return {
-		"User-Agent": _ua(),
-		"Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-		"Accept-Language": "ru-RU,ru;q=0.9,en;q=0.8",
-		"Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-		"Origin": BASE_URL,
-		"Referer": SEARCH_URL
-	};
-}
-
-function _htmlHeaders(referer) {
-	return {
-		"User-Agent": _ua(),
-		"Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-		"Accept-Language": "ru-RU,ru;q=0.9,en;q=0.8",
-		"Referer": referer || SEARCH_URL,
-		"Origin": BASE_URL
-	};
-}
-
-async function _postSearch(query) {
-	const body =
-		"story=" + encodeURIComponent(String(query || "")) +
-		"&do=search&subaction=search";
-
-	try {
-		const r = await fetchv2(SEARCH_URL, _searchHeaders(), "POST", body);
-		const txt = await r.text();
-		if (txt && txt.includes("class=\"poster\"")) return txt;
-	} catch (_) {}
-
-	const fallback = await fetchv2(BASE_URL + "/index.php?do=search", _searchHeaders(), "POST", body);
-	return fallback.text();
-}
-
-function _parseSearchResults(html) {
-	const src = String(html || "");
-	const out = [];
-	const seen = new Set();
-
-	const articleRegex = /<article[^>]*class=["'][^"']*shortstory[^"']*["'][^>]*>[\s\S]*?<\/article>/gi;
-	const blocks = src.match(articleRegex) || [];
-
-	for (const block of blocks) {
-		const posterTag = (block.match(/<div[^>]*class=["'][^"']*poster[^"']*["'][^>]*>/i) || [""])[0];
-		const imageLinkTag = (block.match(/<a[^>]*class=["'][^"']*image[^"']*["'][^>]*>/i) || [""])[0];
-		const infoTitleMatch = block.match(/<div[^>]*class=["'][^"']*info-title[^"']*["'][^>]*>([\s\S]*?)<\/div>/i);
-		const imgTag = (block.match(/<img[^>]*>/i) || [""])[0];
-
-		const href = _absUrl(_attr(imageLinkTag, "href"), BASE_URL);
-		const titleRaw = _attr(posterTag, "title") || (infoTitleMatch ? infoTitleMatch[1] : "");
-		const title = _stripTags(titleRaw);
-		const image = _absUrl(_attr(imgTag, "src") || _attr(imgTag, "data-src"), BASE_URL);
-
-		if (!href || !title || seen.has(href)) continue;
-		seen.add(href);
-
-		out.push({
-			title,
-			image,
-			href
-		});
-	}
-
-	return out;
-}
-
-function _extractAnimeUrl(input) {
-	const raw = String(input || "").trim();
-	if (!raw) return "";
-
-	const packed = _unpackEpisode(raw);
-	if (packed && packed.animeUrl) return _absUrl(packed.animeUrl, BASE_URL);
-
-	return _absUrl(raw, BASE_URL);
-}
-
-function _bestYearCandidate(html) {
-	const src = String(html || "");
-	const years = [];
-	const regex = /\b(19\d{2}|20\d{2})\b/g;
-	let m;
-
-	while ((m = regex.exec(src)) !== null) {
-		const year = parseInt(m[1], 10);
-		if (year >= 1950 && year <= (new Date().getFullYear() + 1)) {
-			years.push(year);
-		}
-	}
-
-	if (!years.length) return "Unknown";
-	return String(Math.min.apply(null, years));
-}
-
-function _extractIframeSrc(html) {
-	const src = String(html || "");
-
-	const inPlayer = src.match(
-		/<div[^>]*class=["'][^"']*player-content[^"']*["'][^>]*>[\s\S]*?<iframe[^>]*src=["']([^"']+)["']/i
-	);
-	if (inPlayer && inPlayer[1]) return inPlayer[1];
-
-	const anyIframe = src.match(/<iframe[^>]*src=["']([^"']+)["']/i);
-	return anyIframe && anyIframe[1] ? anyIframe[1] : "";
-}
-
-function _buildListCandidates(iframeSrc) {
-	const iframeAbs = _absUrl(iframeSrc, BASE_URL);
-	const candidates = [];
-
-	const add = (u) => {
-		const v = String(u || "").trim();
-		if (!v) return;
-		if (!candidates.includes(v)) candidates.push(v);
-	};
-
-	const playMatch = iframeAbs.match(/\/v\/play\/([^/?#]+)\.html/i);
-	if (playMatch && playMatch[1]) {
-		const fileName = decodeURIComponent(playMatch[1]);
-		const withUnderscores = `${BASE_URL}/v/list/${fileName}_list.txt`;
-		const withSpaces = `${BASE_URL}/v/list/${fileName.replace(/_/g, " ")}_list.txt`;
-
-		add(withUnderscores);
-		add(encodeURI(withUnderscores));
-		add(withSpaces);
-		add(encodeURI(withSpaces));
-	}
-
-	return candidates;
-}
-
-async function _fetchPlaylistArray(candidates, referer) {
-	for (const candidate of candidates) {
-		try {
-			const r = await fetchv2(candidate, _htmlHeaders(referer || SEARCH_URL));
-			const txt = await r.text();
-			const parsed = _safeJsonParse(txt, null);
-			if (Array.isArray(parsed) && parsed.length) {
-				return parsed;
-			}
-		} catch (_) {}
-	}
-
-	return [];
-}
-
-function _extractEpisodeTitle(titleHtml, fallbackNum) {
-	const clean = _stripTags(titleHtml || "").replace(/\b\d{1,2}:\d{2}\b/g, "").trim();
-	return clean || `Episode ${fallbackNum}`;
-}
-
-function _extractEpisodeNumber(label, fallbackNum) {
-	const m = String(label || "").match(/(\d{1,4})/);
-	if (!m || !m[1]) return fallbackNum;
-
-	const n = parseInt(m[1], 10);
-	return Number.isFinite(n) ? n : fallbackNum;
-}
-
-function _parseFileVariants(fileField) {
-	const raw = String(fileField || "").trim();
-	if (!raw) return [];
-
-	const out = [];
-	const parts = raw.split(",");
-
-	for (const part of parts) {
-		const item = String(part || "").trim();
-		if (!item) continue;
-
-		const m = item.match(/^\[([^\]]+)\](.+)$/);
-		const qualityLabel = m && m[1] ? String(m[1]).trim() : "";
-		const path = m && m[2] ? String(m[2]).trim() : item;
-
-		const abs = _absUrl(path, BASE_URL);
-		if (!abs) continue;
-
-		const q = parseInt(qualityLabel.replace(/[^\d]/g, ""), 10) || 0;
-		out.push({
-			quality: q,
-			label: qualityLabel,
-			url: encodeURI(abs)
-		});
-	}
-
-	out.sort((a, b) => b.quality - a.quality);
-	return out;
-}
-
 async function searchResults(keyword) {
-	try {
-		const query = String(keyword || "").trim();
-		if (!query) return JSON.stringify([]);
+    try {
+        const responseText = await soraFetch(`https://anime-portal.su/search/one/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `do=search&subaction=search&from_page=0&story=${keyword}`,
+        });
+        const html = await responseText.text();
 
-		const html = await _postSearch(query);
-		const results = _parseSearchResults(html);
-		return JSON.stringify(results);
-	} catch (_) {
-		return JSON.stringify([]);
-	}
+        // Parse results from HTML (not JSON)
+        // Each result is an <a href="..."><div class="mov">...</div></a>
+        const regex = /<a\s+href="([^"]+)">\s*<div class="mov">[\s\S]*?<img\s+src="([^"]+)"[^>]*>[\s\S]*?<div class="name">([\s\S]*?)<\/div>/g;
+
+        const results = [];
+        let match;
+
+        while ((match = regex.exec(html)) !== null) {
+            results.push({
+                title: match[3].trim(),
+                image: `https://anime-portal.su${match[2].trim()}`,
+                href: match[1].startsWith('http') ? match[1].trim() : `https://anime-portal.su${match[1].trim()}`
+            });
+        }
+
+        console.log(results);
+        return JSON.stringify(results);
+    } catch (error) {
+        console.log('Fetch error in searchResults: ' + error);
+        return JSON.stringify([{ title: 'Error', image: '', href: '' }]);
+    }
 }
 
 async function extractDetails(url) {
-	try {
-		const animeUrl = _extractAnimeUrl(url);
-		if (!animeUrl) return JSON.stringify([]);
+    try {
+        const responseText = await soraFetch(url);
+        const html = await responseText.text();
 
-		const r = await fetchv2(animeUrl, _htmlHeaders(SEARCH_URL));
-		const html = await r.text();
+        // Description
+        const descMatch = html.match(/<div class="page__text full-text clearfix"[^>]*>([\s\S]*?)<\/div>/);
+        const description = descMatch
+            ? descMatch[1]
+                .replace(/<\/p>\s*<p>/gi, ' ')
+                .replace(/<[^>]+>/g, '')
+                .replace(/\s+/g, ' ')
+                .trim()
+            : 'Описание недоступно';
 
-		const descMatch = html.match(
-			/<div[^>]*class=["'][^"']*description[^"']*["'][^>]*>[\s\S]*?<div[^>]*class=["'][^"']*limiter[^"']*["'][^>]*>([\s\S]*?)<\/div>/i
-		);
+        // Aliases
+        // Duration
+        const durationMatch = html.match(/Тип аниме:<\/div>\s*<div class="mov-desc">([^<]+)<\/div>/);
+        const duration = durationMatch ? `Длительность: ${durationMatch[1]}` : null;
 
-		const description = _stripTags(
-			(descMatch && descMatch[1]) || _extractMeta(html, "name", "description") || "No description available"
-		) || "No description available";
+        // Studio
+        const studioMatch = html.match(/Студия:<\/div>\s*<div class="mov-desc"><a[^>]*>([^<]+)<\/a>/);
+        const studio = studioMatch ? `Студия: ${studioMatch[1]}` : null;
 
-		let aliases = _extractMeta(html, "property", "og:title") || "";
-		aliases = aliases.replace(/\s*(?:>|\u00BB)+\s*SameBand\s*$/i, "").trim();
+        // Genres
+        const genresMatch = html.match(/Жанры:<\/div>\s*<div class="mov-desc">([\s\S]*?)<\/div>/);
+        let genres = null;
+        if (genresMatch) {
+            const genreList = Array.from(genresMatch[1].matchAll(/<a[^>]*>([^<]+)<\/a>/g)).map(m => m[1]);
+            genres = `Жанры: ${genreList.join(', ')}`;
+        }
 
-		return JSON.stringify([
-			{
-				description,
-				aliases: aliases || "SameBand",
-				airdate: _bestYearCandidate(html)
-			}
-		]);
-	} catch (_) {
-		return JSON.stringify([]);
-	}
+        // Rating (World-Art)
+        const waRatingMatch = html.match(/<div class="pmovie__rating pmovie__rating--kp">\s*<div class="pmovie__rating-content">([\d.]+)<\/div>/);
+        const rating = waRatingMatch ? `Оценка: ${waRatingMatch[1]}` : null;
+
+        const aliasesParts = [duration, genres, studio, rating].filter(Boolean);
+        const aliases = aliasesParts.length ? aliasesParts.join('\n') : 'Информация недоступна';
+
+        // Airdate
+        const airdateMatch = html.match(/Год:<\/div>\s*<div class="mov-desc"[^>]*><a[^>]*>(\d{4})<\/a>/);
+        const airdate = airdateMatch ? `Год выхода: ${airdateMatch[1]}` : 'Год выхода: неизвестен';
+
+        const transformedResults = [{
+            description,
+            aliases,
+            airdate
+        }];
+
+        console.log(transformedResults);
+        return JSON.stringify(transformedResults);
+    } catch (error) {
+        console.log('Details error: ' + error);
+        return JSON.stringify([{
+            description: 'Ошибка загрузки описания',
+            aliases: 'Информация недоступна',
+            airdate: 'Год выхода: неизвестен'
+        }]);
+    }
 }
 
 async function extractEpisodes(url) {
-	try {
-		const animeUrl = _extractAnimeUrl(url);
-		if (!animeUrl) return JSON.stringify([]);
+    try {
+        const responseText = await soraFetch(url);
+        const html = await responseText.text();
 
-		const page = await fetchv2(animeUrl, _htmlHeaders(SEARCH_URL));
-		const html = await page.text();
+        // Find the videodb JSON object in the HTML
+        const videodbMatch = html.match(/var\s+videodb\s*=\s*({[\s\S]+?});/);
+        if (!videodbMatch) throw new Error("videodb not found");
 
-		const iframeSrc = _extractIframeSrc(html);
-		if (!iframeSrc) return JSON.stringify([]);
+        const videodb = JSON.parse(videodbMatch[1]);
+        const translators = videodb.translators || {};
 
-		const candidates = _buildListCandidates(iframeSrc);
-		const playlist = await _fetchPlaylistArray(candidates, animeUrl);
-		if (!playlist.length) return JSON.stringify([]);
+        const results = [];
 
-		const episodes = playlist.map((item, index) => {
-			const titleHtml = String(item?.title || "");
-			const title = _extractEpisodeTitle(titleHtml, index + 1);
-			const number = _extractEpisodeNumber(title, index + 1);
+        for (const translatorBlock of Object.values(translators)) {
+            const seasons = translatorBlock.seasons || {};
+            for (const [seasonNum, episodesArr] of Object.entries(seasons)) {
+                for (const ep of episodesArr) {
+                    // Avoid duplicates
+                    if (!results.some(e => e.href === `${url}|${seasonNum}|${ep.num}`)) {
+                        results.push({
+                            href: `${url}|${seasonNum}|${ep.num}`,
+                            number: Number(ep.num)
+                        });
+                    }
+                }
+            }
+        }
 
-			const imgTag = (titleHtml.match(/<img[^>]*>/i) || [""])[0];
-			const image = _absUrl(_attr(imgTag, "src"), BASE_URL);
+        // Sort by season and episode number
+        results.sort((a, b) => {
+            const [ , seasonA, epA ] = a.href.split('|').map(Number);
+            const [ , seasonB, epB ] = b.href.split('|').map(Number);
+            return seasonA - seasonB || epA - epB;
+        });
 
-			const payload = {
-				animeUrl,
-				file: String(item?.file || ""),
-				thumbnails: String(item?.thumbnails || ""),
-				title,
-				image
-			};
-
-			const out = {
-				href: _packEpisode(payload),
-				number,
-				title
-			};
-
-			if (image) out.image = image;
-			return out;
-		});
-
-		episodes.sort((a, b) => Number(a.number) - Number(b.number));
-		return JSON.stringify(episodes);
-	} catch (_) {
-		return JSON.stringify([]);
-	}
+        console.log(`Episodes: ${JSON.stringify(results)}`);
+        return JSON.stringify(results);
+    } catch (error) {
+        console.log('Fetch error in extractEpisodes: ' + error);
+        return JSON.stringify([]);
+    }
 }
 
-async function extractStreamUrl(href) {
-	try {
-		const payload = _unpackEpisode(href);
-		const fileField = payload?.file ? String(payload.file) : "";
-		if (!fileField) {
-			return JSON.stringify({ streams: [], subtitle: "https://none.com" });
-		}
+// searchResults('one punch');
+// extractDetails('https://anime-portal.su/4900-klinok-rassekajushhij-demonov.html');
+// extractEpisodes('https://anime-portal.su/4900-klinok-rassekajushhij-demonov.html');
+// extractStreamUrl('https://anime-portal.su/4900-klinok-rassekajushhij-demonov.html|1|1');
 
-		const variants = _parseFileVariants(fileField);
-		if (!variants.length) {
-			return JSON.stringify({ streams: [], subtitle: "https://none.com" });
-		}
+async function extractStreamUrl(url) {
+    try {
+        const [url2, season, episode] = url.split('|');
 
-		const byQuality = {
-			1080: "",
-			720: "",
-			480: ""
-		};
+        const responseText = await soraFetch(url2);
+        const html = await responseText.text();
 
-		for (const v of variants) {
-			if ((v.quality === 1080 || v.quality === 720 || v.quality === 480) && !byQuality[v.quality]) {
-				byQuality[v.quality] = v.url;
-			}
-		}
+        // Find the videodb JSON object in the HTML
+        const videodbMatch = html.match(/var\s+videodb\s*=\s*({[\s\S]+?});/);
+        if (!videodbMatch) throw new Error("videodb not found");
 
-		const url1080 = byQuality[1080] || null;
-		const url720 = byQuality[720] || null;
-		const url480 = byQuality[480] || null;
+        const videodb = JSON.parse(videodbMatch[1]);
 
-		const headers = {
-			"User-Agent": _ua(),
-			"Referer": payload?.animeUrl ? String(payload.animeUrl) : (BASE_URL + "/"),
-			"Origin": BASE_URL
-		};
+        // Get all translators
+        const translators = videodb.translators || {};
+        const translatorKeys = Object.keys(translators);
+        if (translatorKeys.length === 0) throw new Error("No translators found");
 
-		const streams = [];
+        let streams = [];
 
-		if (url1080) {
-			streams.push({
-				title: "1080p",
-				streamUrl: url1080,
-				url1080,
-				url720,
-				url480,
-				headers
-			});
-		}
+        for (const translatorKey of translatorKeys) {
+            const translatorBlock = translators[translatorKey];
+            const seasons = translatorBlock.seasons || {};
+            const episodesArr = seasons[season];
+            if (!episodesArr) continue;
 
-		if (url720) {
-			streams.push({
-				title: "720p",
-				streamUrl: url720,
-				url1080,
-				url720,
-				url480,
-				headers
-			});
-		}
+            // Get all episodes for this season and translator
+            for (const episodeObj of episodesArr) {
+                // Only use hls.m3u8
+                if (episodeObj.hls !== "hls.m3u8" && !episodeObj.hls.endsWith(".m3u8")) continue;
 
-		if (url480) {
-			streams.push({
-				title: "480p",
-				streamUrl: url480,
-				url1080,
-				url720,
-				url480,
-				headers
-			});
-		}
+                // If a specific episode is requested, skip others
+                if (episode && String(episodeObj.num) !== String(episode)) continue;
 
-		if (!streams.length) {
-			const first = variants[0];
-			if (first?.url) {
-				streams.push({
-					title: "1080p",
-					streamUrl: first.url,
-					url1080: first.url,
-					url720: null,
-					url480: null,
-					headers
-				});
-			}
-		}
+                const queryString = episodeObj.quality
+                    .map(q => `quality%5B%5D=${q}`)
+                    .join("&");
 
-		return JSON.stringify({
-			streams,
-			subtitle: "https://none.com"
-		});
-	} catch (_) {
-		return JSON.stringify({ streams: [], subtitle: "https://none.com" });
-	}
+                const response = await soraFetch(`https://anime-portal.su/engine/videodb/sources.php`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:140.0) Gecko/20100101 Firefox/140.0',
+                        'Referer': url2
+                    },
+                    body: `sub=${episodeObj.sub}&allsubs=${encodeURIComponent(episodeObj.allsubs)}&num=${episodeObj.num}&hls=${episodeObj.hls}&hash=${episodeObj.hash}&${queryString}&type=animetvseries`
+                });
+
+                const data = await response.json();
+
+                streams.push({
+                    title: translatorKey,
+                    streamUrl: data.hls,
+                    headers: {}
+                });
+            }
+        }
+
+        const result = {
+            streams,
+            subtitles: ""
+        };
+
+        console.log(result);
+        return JSON.stringify(result);
+    } catch (error) {
+        console.log('Fetch error in extractStreamUrl: ' + error);
+
+        const result = {
+            streams: [],
+            subtitles: ""
+        };
+
+        console.log(result);
+        return JSON.stringify(result);
+    }
+}
+
+async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
+    try {
+        return await fetchv2(url, options.headers ?? {}, options.method ?? 'GET', options.body ?? null);
+    } catch(e) {
+        try {
+            return await fetch(url, options);
+        } catch(error) {
+            return null;
+        }
+    }
 }

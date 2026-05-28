@@ -22,7 +22,7 @@ async function searchResults(keyword) {
             if (linkMatch) {
                 results.push({
                     href: linkMatch[1].trim(),
-                    title: decodeHtml(linkMatch[2].trim()),
+                    title: decodeHtml(linkMatch[2].trim()).replace(/^Watch\s+/i, ""),
                     image: image
                 });
             }

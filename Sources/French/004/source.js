@@ -32,10 +32,10 @@ async function soraFetch(url, options = {}) {
         ...(options.headers || {})
     };
 
-    if (url.includes('movix.cash')) {
+    if (url.includes('movix.cloud')) {
         if (!finalHeaders["Accept"]) finalHeaders["Accept"] = "application/json";
-        if (!finalHeaders["Referer"]) finalHeaders["Referer"] = "https://movix.cash/";
-        if (!finalHeaders["Origin"]) finalHeaders["Origin"] = "https://movix.cash";
+        if (!finalHeaders["Referer"]) finalHeaders["Referer"] = "https://movix.cloud/";
+        if (!finalHeaders["Origin"]) finalHeaders["Origin"] = "https://movix.cloud";
     } else {
         if (!finalHeaders["Accept"]) finalHeaders["Accept"] = "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8";
     }
@@ -238,7 +238,7 @@ async function extractStreamUrl(href) {
         let movixInternalId = null;
         try {
             console.log(`[Movix | 🚀 Agrégateur] 🔄 Recherche de l'ID Interne Movix pour "${mediaTitle}"...`);
-            let searchUrl = `https://api.movix.cash/api/search?title=${encodeURIComponent(mediaTitle)}`;
+            let searchUrl = `https://api.movix.cloud/api/search?title=${encodeURIComponent(mediaTitle)}`;
             let searchRes = await soraFetch(searchUrl);
             if (searchRes) {
                 let searchJson = JSON.parse(await searchRes.text());
@@ -278,7 +278,7 @@ const addLink = (url, langStr, qualityStr = null, parentDomain = null) => {
         else if (q.includes("720")) prefix += " 720p";
     }
 
-    let finalParent = parentDomain || "https://movix.cash/";
+    let finalParent = parentDomain || "https://movix.cloud/";
 
     if (!targetLinks.find(t => t.url === url)) {
         targetLinks.push({ url, prefix, parentDomain: finalParent });
@@ -292,19 +292,19 @@ const addLink = (url, langStr, qualityStr = null, parentDomain = null) => {
             if (type === 'tv') {
                 
                 if (movixInternalId) {
-                    let urlDL = `https://api.movix.cash/api/series/download/${movixInternalId}/season/${seasonNum}/episode/${episodeNum}`;
+                    let urlDL = `https://api.movix.cloud/api/series/download/${movixInternalId}/season/${seasonNum}/episode/${episodeNum}`;
                     console.log(`   📡 [Sonde] Direct (Interne) : ${urlDL}`);
                     fetchPromises.push(soraFetch(urlDL).then(async r => {
                         if(!r) return;
                         const j = JSON.parse(await r.text());
                         if(j?.sources) j.sources.forEach(src => {
-                            if (src.m3u8) addLink(src.m3u8, src.language, src.quality, "https://movix.cash/");
-                            else addLink(src.src, src.language, src.quality, "https://movix.cash/");
+                            if (src.m3u8) addLink(src.m3u8, src.language, src.quality, "https://movix.cloud/");
+                            else addLink(src.src, src.language, src.quality, "https://movix.cloud/");
                         });
                     }).catch(()=>{}));
                 }
 
-                let urlTMDB = `https://api.movix.cash/api/tmdb/tv/${tmdbId}?season=${seasonNum}&episode=${episodeNum}`;
+                let urlTMDB = `https://api.movix.cloud/api/tmdb/tv/${tmdbId}?season=${seasonNum}&episode=${episodeNum}`;
                 console.log(`   📡 [Sonde] TMDB : ${urlTMDB}`);
                 fetchPromises.push(soraFetch(urlTMDB).then(async r => {
                     if(!r) { console.log(`   ❌ [Réponse] TMDB : pas de réponse`); return; }
@@ -314,7 +314,7 @@ const addLink = (url, langStr, qualityStr = null, parentDomain = null) => {
                     if(j?.current_episode?.player_links) j.current_episode.player_links.forEach(p => addLink(p.decoded_url, p.language, p.quality, "https://www.themoviedb.org/"));
                 }).catch(e => console.log(`   ❌ [Réponse] TMDB : erreur ${e.message}`)));
 
-                let urlPurstream = `https://api.movix.cash/api/purstream/tv/${tmdbId}/stream?season=${seasonNum}&episode=${episodeNum}`;
+                let urlPurstream = `https://api.movix.cloud/api/purstream/tv/${tmdbId}/stream?season=${seasonNum}&episode=${episodeNum}`;
                 console.log(`   📡 [Sonde] Purstream : ${urlPurstream}`);
                 fetchPromises.push(soraFetch(urlPurstream).then(async r => {
                     if(!r) { console.log(`   ❌ [Réponse] Purstream : pas de réponse`); return; }
@@ -324,7 +324,7 @@ const addLink = (url, langStr, qualityStr = null, parentDomain = null) => {
                     if(j?.sources) j.sources.forEach(src => addLink(src.url, src.name, null, "https://purstream.ac/"));
                 }).catch(e => console.log(`   ❌ [Réponse] Purstream : erreur ${e.message}`)));
 
-                let urlFstream = `https://api.movix.cash/api/fstream/tv/${tmdbId}/season/${seasonNum}`;
+                let urlFstream = `https://api.movix.cloud/api/fstream/tv/${tmdbId}/season/${seasonNum}`;
                 console.log(`   📡 [Sonde] Fstream : ${urlFstream}`);
                 fetchPromises.push(soraFetch(urlFstream).then(async r => {
                     if(!r) { console.log(`   ❌ [Réponse] Fstream : pas de réponse`); return; }
@@ -336,7 +336,7 @@ const addLink = (url, langStr, qualityStr = null, parentDomain = null) => {
                     if(ep?.languages) Object.keys(ep.languages).forEach(lang => ep.languages[lang].forEach(p => addLink(p.url, lang, p.quality, "https://french-stream.one/")));
                 }).catch(e => console.log(`   ❌ [Réponse] Fstream : erreur ${e.message}`)));
 
-                let urlWiflix = `https://api.movix.cash/api/wiflix/tv/${tmdbId}/${seasonNum}`;
+                let urlWiflix = `https://api.movix.cloud/api/wiflix/tv/${tmdbId}/${seasonNum}`;
                 console.log(`   📡 [Sonde] Wiflix : ${urlWiflix}`);
                 fetchPromises.push(soraFetch(urlWiflix).then(async r => {
                     if(!r) { console.log(`   ❌ [Réponse] Wiflix : pas de réponse`); return; }
@@ -350,7 +350,7 @@ const addLink = (url, langStr, qualityStr = null, parentDomain = null) => {
                     });
                 }).catch(e => console.log(`   ❌ [Réponse] Wiflix : erreur ${e.message}`)));
 
-                let urlCpasmal = `https://api.movix.cash/api/cpasmal/tv/${tmdbId}/${seasonNum}/${episodeNum}`;
+                let urlCpasmal = `https://api.movix.cloud/api/cpasmal/tv/${tmdbId}/${seasonNum}/${episodeNum}`;
                 console.log(`   📡 [Sonde] Cpasmal : ${urlCpasmal}`);
                 fetchPromises.push(soraFetch(urlCpasmal).then(async r => {
                     if(!r) { console.log(`   ❌ [Réponse] Cpasmal : pas de réponse`); return; }
@@ -361,7 +361,7 @@ const addLink = (url, langStr, qualityStr = null, parentDomain = null) => {
                     if(j?.links) Object.keys(j.links).forEach(lang => j.links[lang].forEach(p => addLink(p.url, lang, null, "https://cpasmal.com/")));
                 }).catch(e => console.log(`   ❌ [Réponse] Cpasmal : erreur ${e.message}`)));
 
-                let urlLinks = `https://api.movix.cash/api/links/tv/${tmdbId}?season=${seasonNum}&episode=${episodeNum}`;
+                let urlLinks = `https://api.movix.cloud/api/links/tv/${tmdbId}?season=${seasonNum}&episode=${episodeNum}`;
                 console.log(`   📡 [Sonde] Links : ${urlLinks}`);
                 fetchPromises.push(soraFetch(urlLinks).then(async r => {
                     if(!r) { console.log(`   ❌ [Réponse] Links : pas de réponse`); return; }
@@ -370,12 +370,12 @@ const addLink = (url, langStr, qualityStr = null, parentDomain = null) => {
                     console.log(`   📥 [Réponse] Links : ${count} lien(s)`);
                     if(j?.success && j?.data) {
                         j.data.forEach(d => {
-                            if(d.links) d.links.forEach(link => addLink(link, "VF", null, "https://movix.cash/")); 
+                            if(d.links) d.links.forEach(link => addLink(link, "VF", null, "https://movix.cloud/")); 
                         });
                     }
                 }).catch(e => console.log(`   ❌ [Réponse] Links : erreur ${e.message}`)));
 
-                let urlImdb = `https://api.movix.cash/api/imdb/tv/${tmdbId}`;
+                let urlImdb = `https://api.movix.cloud/api/imdb/tv/${tmdbId}`;
                 console.log(`   📡 [Sonde] IMDB : ${urlImdb}`);
                 fetchPromises.push(soraFetch(urlImdb).then(async r => {
                     if(!r) { console.log(`   ❌ [Réponse] IMDB : pas de réponse`); return; }
@@ -394,19 +394,19 @@ const addLink = (url, langStr, qualityStr = null, parentDomain = null) => {
             } else {
                 
                 if (movixInternalId) {
-                    let urlDL = `https://api.movix.cash/api/movies/download/${movixInternalId}`;
+                    let urlDL = `https://api.movix.cloud/api/movies/download/${movixInternalId}`;
                     console.log(`   📡 [Sonde] Direct (Interne) : ${urlDL}`);
                     fetchPromises.push(soraFetch(urlDL).then(async r => {
                         if(!r) return;
                         const j = JSON.parse(await r.text());
                         if(j?.sources) j.sources.forEach(src => {
-                            if (src.m3u8) addLink(src.m3u8, src.language, src.quality, "https://movix.cash/");
-                            else addLink(src.src, src.language, src.quality, "https://movix.cash/");
+                            if (src.m3u8) addLink(src.m3u8, src.language, src.quality, "https://movix.cloud/");
+                            else addLink(src.src, src.language, src.quality, "https://movix.cloud/");
                         });
                     }).catch(()=>{}));
                 }
 
-                let urlTMDB = `https://api.movix.cash/api/tmdb/movie/${tmdbId}`;
+                let urlTMDB = `https://api.movix.cloud/api/tmdb/movie/${tmdbId}`;
                 console.log(`   📡 [Sonde] TMDB : ${urlTMDB}`);
                 fetchPromises.push(soraFetch(urlTMDB).then(async r => {
                      if(!r) { console.log(`   ❌ [Réponse] TMDB : pas de réponse`); return; }
@@ -417,7 +417,7 @@ const addLink = (url, langStr, qualityStr = null, parentDomain = null) => {
                      if(j?.player_links) j.player_links.forEach(p => addLink(p.decoded_url, p.language, p.quality, "https://www.themoviedb.org/"));
                 }).catch(e => console.log(`   ❌ [Réponse] TMDB : erreur ${e.message}`)));
                 
-                let urlPurstream = `https://api.movix.cash/api/purstream/movie/${tmdbId}/stream`;
+                let urlPurstream = `https://api.movix.cloud/api/purstream/movie/${tmdbId}/stream`;
                 console.log(`   📡 [Sonde] Purstream : ${urlPurstream}`);
                 fetchPromises.push(soraFetch(urlPurstream).then(async r => {
                      if(!r) { console.log(`   ❌ [Réponse] Purstream : pas de réponse`); return; }
@@ -427,7 +427,7 @@ const addLink = (url, langStr, qualityStr = null, parentDomain = null) => {
                      if(j?.sources) j.sources.forEach(src => addLink(src.url, src.name, null, "https://purstream.ac/"));
                 }).catch(e => console.log(`   ❌ [Réponse] Purstream : erreur ${e.message}`)));
                 
-                let urlFstream = `https://api.movix.cash/api/fstream/movie/${tmdbId}`;
+                let urlFstream = `https://api.movix.cloud/api/fstream/movie/${tmdbId}`;
                 console.log(`   📡 [Sonde] Fstream : ${urlFstream}`);
                 fetchPromises.push(soraFetch(urlFstream).then(async r => {
                      if(!r) { console.log(`   ❌ [Réponse] Fstream : pas de réponse`); return; }
@@ -439,7 +439,7 @@ const addLink = (url, langStr, qualityStr = null, parentDomain = null) => {
                      else if(j?.languages) Object.keys(j.languages).forEach(lang => j.languages[lang].forEach(p => addLink(p.url, lang, p.quality, "https://french-stream.one/")));
                 }).catch(e => console.log(`   ❌ [Réponse] Fstream : erreur ${e.message}`)));
                 
-                let urlWiflix = `https://api.movix.cash/api/wiflix/movie/${tmdbId}`;
+                let urlWiflix = `https://api.movix.cloud/api/wiflix/movie/${tmdbId}`;
                 console.log(`   📡 [Sonde] Wiflix : ${urlWiflix}`);
                 fetchPromises.push(soraFetch(urlWiflix).then(async r => {
                      if(!r) { console.log(`   ❌ [Réponse] Wiflix : pas de réponse`); return; }
@@ -455,7 +455,7 @@ const addLink = (url, langStr, qualityStr = null, parentDomain = null) => {
                      if(j?.links) Object.keys(j.links).forEach(lang => j.links[lang].forEach(p => addLink(p.url, lang, null, "https://wiflix.voto/")));
                 }).catch(e => console.log(`   ❌ [Réponse] Wiflix : erreur ${e.message}`)));
                 
-                let urlCpasmal = `https://api.movix.cash/api/cpasmal/movie/${tmdbId}`;
+                let urlCpasmal = `https://api.movix.cloud/api/cpasmal/movie/${tmdbId}`;
                 console.log(`   📡 [Sonde] Cpasmal : ${urlCpasmal}`);
                 fetchPromises.push(soraFetch(urlCpasmal).then(async r => {
                      if(!r) { console.log(`   ❌ [Réponse] Cpasmal : pas de réponse`); return; }
@@ -466,7 +466,7 @@ const addLink = (url, langStr, qualityStr = null, parentDomain = null) => {
                      if(j?.links) Object.keys(j.links).forEach(lang => j.links[lang].forEach(p => addLink(p.url, lang, null, "https://cpasmal.com/")));
                 }).catch(e => console.log(`   ❌ [Réponse] Cpasmal : erreur ${e.message}`)));
 
-                let urlLinks = `https://api.movix.cash/api/links/movie/${tmdbId}`;
+                let urlLinks = `https://api.movix.cloud/api/links/movie/${tmdbId}`;
                 console.log(`   📡 [Sonde] Links : ${urlLinks}`);
                 fetchPromises.push(soraFetch(urlLinks).then(async r => {
                      if(!r) { console.log(`   ❌ [Réponse] Links : pas de réponse`); return; }
@@ -475,7 +475,7 @@ const addLink = (url, langStr, qualityStr = null, parentDomain = null) => {
                      console.log(`   📥 [Réponse] Links : ${count} lien(s)`);
                      if(j?.success && j?.data) {
                          j.data.forEach(d => {
-                             if(d.links) d.links.forEach(link => addLink(link, "VF", null, "https://movix.cash/")); 
+                             if(d.links) d.links.forEach(link => addLink(link, "VF", null, "https://movix.cloud/")); 
                          });
                      }
                 }).catch(e => console.log(`   ❌ [Réponse] Links : erreur ${e.message}`)));
@@ -507,7 +507,7 @@ const addLink = (url, langStr, qualityStr = null, parentDomain = null) => {
 
             let movixData = [];
             for (let t of titlesToTry) {
-                let movixUrl = `https://api.movix.cash/anime/search/${encodeURIComponent(t)}?includeSeasons=true&includeEpisodes=true`;
+                let movixUrl = `https://api.movix.cloud/anime/search/${encodeURIComponent(t)}?includeSeasons=true&includeEpisodes=true`;
                 console.log(`   📡 [Sonde] Secours Anime : ${movixUrl}`);
                 let movixRes = await soraFetch(movixUrl);
                 if (movixRes) {
@@ -546,7 +546,7 @@ const addLink = (url, langStr, qualityStr = null, parentDomain = null) => {
                 let animeLinks = exactMatch || absMatch || [];
                 for (let streamGroup of animeLinks) {
                     for (let playerUrl of streamGroup.players) {
-                        addLink(playerUrl, streamGroup.language, null, "https://movix.cash/");
+                        addLink(playerUrl, streamGroup.language, null, "https://movix.cloud/");
                     }
                 }
             }
@@ -680,7 +680,7 @@ async function extractDirectVideo(embedUrl, langPrefix, originalUrl, parentDomai
     let isDeleted = false;
     
     // 🌟 Sécurisation du Referer dynamique basé sur le site parent !
-    let pDomain = parentDomain || "https://movix.cash/";
+    let pDomain = parentDomain || "https://movix.cloud/";
     const hostDomain = (embedUrl.match(/https?:\/\/(?:www\.)?([^/]+)/i) || [])[1] || "inconnu";
 
     const checkIfDeleted = (html) => {

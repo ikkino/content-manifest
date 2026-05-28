@@ -33,7 +33,17 @@ async function extractDetails(url) {
     const regex = /<div id="sinopse2">(.*?)<\/div>/s;
     const match = regex.exec(html);
 
-    const description = match ? match[1].trim() : "N/A";
+    let description = "N/A";
+    if (match) {
+      description = match[1]
+        .replace(/<br\s*\/?>/gi, "\n")
+        .replace(/<p[^>]*>/gi, "")
+        .replace(/<\/p>/gi, "\n")
+        .replace(/&nbsp;/g, " ")
+        .replace(/<[^>]*>/g, "")
+        .replace(/\n\s*\n+/g, "\n")
+        .trim();
+    }
 
     return JSON.stringify([{
       description: description,
@@ -62,7 +72,7 @@ async function extractEpisodes(url) {
     while ((match = epRegex.exec(html)) !== null) {
       const href = match[1].trim();
 
-      if (href === "https://www.anitube.news") continue;
+      if (!href.includes("/video/")) continue;
 
       const title = match[2];
       const numMatch = /Episódio\s+(\d+)/.exec(title);
@@ -96,13 +106,22 @@ async function extractStreamUrl(url) {
     const match = regex.exec(html);
 
     if (!match) {
-      return "Error: stream not found";
+      return JSON.stringify({ streams: [], subtitle: "" });
     }
 
     const hlsUrl = decodeURIComponent(match[1]);
 
-    return hlsUrl;
+    return JSON.stringify({
+      streams: [{
+        title: "Standard",
+        streamUrl: hlsUrl,
+        headers: {
+          "Referer": "https://api.anivideo.net/"
+        }
+      }],
+      subtitle: ""
+    });
   } catch (err) {
-    return "Error: " + err.message;
+    return JSON.stringify({ streams: [], subtitle: "" });
   }
 }

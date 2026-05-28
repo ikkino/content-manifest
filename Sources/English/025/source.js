@@ -1,161 +1,322 @@
+//Thanks ibro for the TMDB search!
+
 async function searchResults(keyword) {
     try {
+        let transformedResults = [];
+
+        const keywordGroups = {
+            trending: ["!trending", "!hot", "!tr", "!!"],
+            topRatedMovie: ["!top-rated-movie", "!topmovie", "!tm", "??"],
+            topRatedTV: ["!top-rated-tv", "!toptv", "!tt", "::"],
+            popularMovie: ["!popular-movie", "!popmovie", "!pm", ";;"],
+            popularTV: ["!popular-tv", "!poptv", "!pt", "++"],
+        };
+
+        const skipTitleFilter = Object.values(keywordGroups).flat();
+
+        const shouldFilter = !matchesKeyword(keyword, skipTitleFilter);
+
+        // --- TMDB Section ---
         const encodedKeyword = encodeURIComponent(keyword);
-        const responseText = await soraFetch(`https://anizone.to/anime?search=${encodedKeyword}`);
-        const html = await responseText.text();
+        let baseUrlTemplate = null;
 
-        const regex = /<img\s+src="([^"]+)"[^>]*alt="([^"]+)"[\s\S]+?<a[^>]+href="([^"]+)"\s+title="([^"]+)"/g;
-
-        const results = [];
-        let match;
-
-        results.push({
-            title: "Use External Player",
-            image: "https://git.luna-app.eu/ibro/services/raw/branch/main/anizone/UseExternalPlayer.png",
-            href: ""
-        });
-
-        while ((match = regex.exec(html)) !== null) {
-            results.push({
-                title: match[4].trim(),
-                image: match[1].trim(),
-                href: match[3].trim()
-            });
+        if (matchesKeyword(keyword, keywordGroups.trending)) {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/trending/all/week?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+        } else if (matchesKeyword(keyword, keywordGroups.topRatedMovie)) {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/top_rated?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+        } else if (matchesKeyword(keyword, keywordGroups.topRatedTV)) {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/top_rated?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+        } else if (matchesKeyword(keyword, keywordGroups.popularMovie)) {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/popular?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+        } else if (matchesKeyword(keyword, keywordGroups.popularTV)) {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/popular?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+        } else {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/search/multi?api_key=9801b6b0548ad57581d111ea690c85c8&query=${encodedKeyword}&include_adult=false&page=${page}`)}&simple=true`;
         }
 
-        console.log(results);
-        return JSON.stringify(results);
+        let dataResults = [];
+
+        if (baseUrlTemplate) {
+            const pagePromises = Array.from({ length: 5 }, (_, i) =>
+                soraFetch(baseUrlTemplate(i + 1)).then(r => r.json())
+            );
+            const pages = await Promise.all(pagePromises);
+            dataResults = pages.flatMap(p => p.results || []);
+        }
+
+        if (dataResults.length > 0) {
+            transformedResults = transformedResults.concat(
+                dataResults
+                    .map(result => {
+                        if (result.media_type === "movie" || result.title) {
+                            return {
+                                title: result.title || result.name || result.original_title || result.original_name || "Untitled",
+                                image: result.poster_path ? `https://image.tmdb.org/t/p/w500${result.poster_path}` : "",
+                                href: `movie/${result.id}`,
+                            };
+                        } else if (result.media_type === "tv" || result.name) {
+                            return {
+                                title: result.name || result.title || result.original_name || result.original_title || "Untitled",
+                                image: result.poster_path ? `https://image.tmdb.org/t/p/w500${result.poster_path}` : "",
+                                href: `tv/${result.id}/1/1`,
+                            };
+                        }
+                    })
+                    .filter(Boolean)
+                    .filter(result => result.title !== "Overflow")
+                    .filter(result => result.title !== "My Marriage Partner Is My Student, a Cocky Troublemaker")
+                    .filter(r => !shouldFilter || r.title.toLowerCase().includes(keyword.toLowerCase()))
+            );
+        }
+
+        console.log("Transformed Results: " + JSON.stringify(transformedResults));
+        return JSON.stringify(transformedResults);
     } catch (error) {
-        console.log('Fetch error in searchResults: ' + error);
-        return JSON.stringify([{ title: 'Error', image: '', href: '' }]);
+        console.log("Fetch error in searchResults: " + error);
+        return JSON.stringify([{ title: "Error", image: "", href: "" }]);
     }
+}
+
+function matchesKeyword(keyword, commands) {
+    const lower = keyword.toLowerCase();
+    return commands.some(cmd => lower.startsWith(cmd.toLowerCase()));
 }
 
 async function extractDetails(url) {
     try {
-        const response = await soraFetch(url);
-        const htmlText = await response.text();
+        if(url.includes('movie')) {
+            const match = url.match(/movie\/([^\/]+)/);
+            if (!match) throw new Error("Invalid URL format");
 
-        const descriptionMatch = htmlText.match(/<h3 class="sr-only">Synopsis<\/h3>\s*<div>([\s\S]*?)<\/div>/);
-        const description = descriptionMatch ? descriptionMatch[1].replace(/\s+/g, ' ').trim() : 'No description available';
+            const movieId = match[1];
+            const responseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/${movieId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
+            const data = await responseText.json();
 
-        const yearMatch = htmlText.match(/>\s*(\d{4})\s*</);
-        const airdate = yearMatch ? `Released: ${yearMatch[1]}` : 'Released: Unknown';
+            const transformedResults = [{
+                description: data.overview || 'No description available',
+                aliases: `Duration: ${data.runtime ? data.runtime + " minutes" : 'Unknown'}`,
+                airdate: `Released: ${data.release_date ? data.release_date : 'Unknown'}`
+            }];
 
-        const typeMatch = htmlText.match(/>\s*(TV Series|Movie|ONA|OVA|Special|Music)\s*</i);
-        const mediaType = typeMatch ? typeMatch[1].trim() : 'Unknown';
+            return JSON.stringify(transformedResults);
+        } else if(url.includes('tv')) {
+            const match = url.match(/tv\/([^\/]+)/);
+            if (!match) throw new Error("Invalid URL format");
 
-        const statusMatch = htmlText.match(/>\s*(Completed|Ongoing|Upcoming)\s*</i);
-        const status = statusMatch ? statusMatch[1].trim() : 'Unknown';
+            const showId = match[1];
+            const responseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
+            const data = await responseText.json();
 
-        const episodeMatch = htmlText.match(/>\s*(\d+)\s*Episodes?\s*</i);
-        const episodeCount = episodeMatch ? episodeMatch[1].trim() : 'Unknown';
+            const transformedResults = [{
+                description: data.overview || 'No description available',
+                aliases: `Duration: ${data.episode_run_time && data.episode_run_time.length ? data.episode_run_time.join(', ') + " minutes" : 'Unknown'}`,
+                airdate: `Aired: ${data.first_air_date ? data.first_air_date : 'Unknown'}`
+            }];
 
-        const genreRegex = /<a[^>]+title="([^"]+)"[^>]*class="[^"]*bg-gray-600[^"]*">[^<]+<\/a>/g;
-        let genreList = [];
-        let match;
-        while ((match = genreRegex.exec(htmlText)) !== null) {
-            genreList.push(match[1].trim());
+            console.log(JSON.stringify(transformedResults));
+            return JSON.stringify(transformedResults);
+        } else {
+            throw new Error("Invalid URL format");
         }
-
-        const aliases = `
-Type: ${mediaType}
-Status: ${status}
-Episodes: ${episodeCount}
-Genres: ${genreList.join(', ') || 'Unknown'}
-        `.trim();
-
-        const transformedResults = [{
-            description,
-            aliases,
-            airdate
-        }];
-
-        console.log(transformedResults);
-        return JSON.stringify(transformedResults);
     } catch (error) {
         console.log('Details error: ' + error);
         return JSON.stringify([{
             description: 'Error loading description',
-            aliases: 'Unknown',
-            airdate: 'Unknown'
+            aliases: 'Duration: Unknown',
+            airdate: 'Aired/Released: Unknown'
         }]);
     }
 }
 
 async function extractEpisodes(url) {
     try {
-        const response = await soraFetch(url);
-        const html = await response.text();
+        if(url.includes('movie')) {
+            const match = url.match(/movie\/([^\/]+)/);
+            
+            if (!match) throw new Error("Invalid URL format");
+            
+            const movieId = match[1];
+            
+            const movie = [
+                { href: `/movie/${movieId}`, number: 1, title: "Full Movie" }
+            ];
 
-        const episodeMatch = html.match(/>\s*(\d+)\s*Episodes?\s*</i);
-        const episodeCount = episodeMatch ? episodeMatch[1].trim() : 'Unknown';
+            console.log(movie);
+            return JSON.stringify(movie);
+        } else if(url.includes('tv')) {
+            const match = url.match(/tv\/([^\/]+)\/([^\/]+)\/([^\/]+)/);
+            
+            if (!match) throw new Error("Invalid URL format");
+            
+            const showId = match[1];
+            
+            const showResponseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
+            const showData = await showResponseText.json();
+            
+            let allEpisodes = [];
+            for (const season of showData.seasons) {
+                const seasonNumber = season.season_number;
 
-        let episodes = [];
-
-        for (let i = 1; i <= episodeCount; i++) {
-            const episodeUrl = `${url}/${i}`;
-            const episodeTitle = `Episode ${i}`;
-
-            episodes.push({
-                title: episodeTitle,
-                href: episodeUrl,
-                number: i
-            });
+                if(seasonNumber === 0) continue;
+                
+                const seasonResponseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}/season/${seasonNumber}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
+                const seasonData = await seasonResponseText.json();
+                
+                if (seasonData.episodes && seasonData.episodes.length) {
+                    const episodes = seasonData.episodes.map(episode => ({
+                        href: `/tv/${showId}/${seasonNumber}/${episode.episode_number}`,
+                        number: episode.episode_number,
+                        title: episode.name || ""
+                    }));
+                    allEpisodes = allEpisodes.concat(episodes);
+                }
+            }
+            
+            console.log(allEpisodes);
+            return JSON.stringify(allEpisodes);
+        } else {
+            throw new Error("Invalid URL format");
         }
-
-        console.log(episodes);
-        return JSON.stringify(episodes);
     } catch (error) {
         console.log('Fetch error in extractEpisodes: ' + error);
         return JSON.stringify([]);
-    }
+    }    
 }
 
-async function extractStreamUrl(url) {
-    try {
-        const response = await soraFetch(url);
-        const htmlText = await response.text();
+async function extractStreamUrl(ID) {
+  if (ID.includes('movie')) {
+    const tmdbID = ID.replace('/movie/', '');
+    const cinebyResponse = await soraFetch(`https://db.videasy.net/3/movie/${tmdbID}?append_to_response=credits,external_ids,videos,recommendations,translations,similar,images&language=en`);
+    const cinebyData = await cinebyResponse.json();
 
-        const streamMatch = htmlText.match(/<media-player[^>]*\s+src="([^"]+\.m3u8)"/);
-        const resultStreams = streamMatch ? streamMatch[1] : null;
+    const title = encodeURIComponent(cinebyData.title);
+    const year = new Date(cinebyData.release_date).getFullYear();
+    const imdbId = cinebyData.external_ids?.imdb_id || '';
+    const tmdbId = cinebyData.id;
 
-        const subtitleMatch = htmlText.match(/<track[^>]+src=([^\s>"]+\.srt)[^>]*label="([^"]*?)"[^>]*>/gi);
-        let subtitleUrl = null;
+    const fullUrl = `https://api.videasy.net/cdn/sources-with-title?title=${title}&mediaType=movie&year=${year}&episodeId=1&seasonId=1&tmdbId=${tmdbId}&imdbId=${imdbId}`;
 
-        if (subtitleMatch) {
-            for (const track of subtitleMatch) {
-                const match = track.match(/src=([^\s>"]+\.srt)[^>]*label="([^"]*?)"/i);
-                if (match && !/song/i.test(match[2])) {
-                    subtitleUrl = match[1];
-                    break;
-                }
-            }
-        }
+    console.log('Full URL:' + fullUrl);
 
-        const result = {
-            stream: resultStreams,
-            subtitles: subtitleUrl
-        };
+    const responseTwo = await soraFetch(fullUrl);
+    const encrypted = await responseTwo.text();
 
-        console.log(result);
-        return JSON.stringify(result);
-    } catch (error) {
-        console.log('Fetch error in extractStreamUrl: ' + error);
+    const headers = {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
+    };
 
-        const result = {
-            streams: [],
-            subtitles: ""
-        };
+    const postData = JSON.stringify({
+        text: encrypted,
+        id: tmdbID.split('-')[0]
+    });
+    console.log('Post Data:' + postData);
+    const decryptedResponse = await fetchv2("https://enc-dec.app/api/dec-videasy", headers, "POST", postData);
+    const decryptedData = await decryptedResponse.json();
+    console.log('Decrypted Data:' + JSON.stringify(decryptedData));
 
-        console.log(result);
-        return JSON.stringify(result);
+    const result = decryptedData.result || {};
+    const sources = result.sources || [];
+    const subtitles = result.subtitles || [];
+
+    const nonHDRSources = sources.filter(s => !s.quality.includes("HDR"));
+
+    const streamObjects = nonHDRSources.map(src => ({
+      title: src.quality,
+      streamUrl: src.url,
+      headers: {
+        "Origin": "https://player.videasy.net",
+        "Referer": "https://player.videasy.net/"
+      }
+    }));
+
+    const englishSubtitle = subtitles.find(sub => (sub.language || sub.lang)?.toLowerCase() === 'english');
+    let subtitleUrl = englishSubtitle ? englishSubtitle.url : "";
+
+    if (subtitleUrl) {
+      subtitleUrl = `https://passthrough-worker.simplepostrequest.workers.dev/?url=${encodeURIComponent(subtitleUrl)}&type=vtt&referer=https%3A%2F%2Fplayer.videasy.net%2F`;
     }
+
+    return JSON.stringify({
+      streams: streamObjects,
+      subtitles: subtitleUrl
+    });
+} else if (ID.includes('tv')) {
+    const parts = ID.split('/'); 
+    const tmdbID = parts[2];
+    const seasonNumber = parts[3];
+    const episodeNumber = parts[4];
+
+    const cinebyResponse = await soraFetch(`https://db.videasy.net/3/tv/${tmdbID}?append_to_response=credits,external_ids,videos,recommendations,translations,similar,images&language=en`);
+    const cinebyData = await cinebyResponse.json();
+
+    const title = encodeURIComponent(cinebyData.name);
+    const year = new Date(cinebyData.first_air_date).getFullYear();
+    const imdbId = cinebyData.external_ids?.imdb_id || '';
+    const tmdbId = cinebyData.id;
+
+    const fullUrl = `https://api.videasy.net/cdn/sources-with-title?title=${title}&mediaType=tv&year=${year}&episodeId=${episodeNumber}&seasonId=${seasonNumber}&tmdbId=${tmdbId}&imdbId=${imdbId}`;
+
+    console.log('Full URL:' + fullUrl);
+    
+    const responseTwo = await soraFetch(fullUrl);
+    const encrypted = await responseTwo.text();
+
+    const headers = {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
+    };
+
+    const postData = JSON.stringify({
+        text: encrypted,
+        id: tmdbID.split('-')[0]
+    });
+
+    const decryptedResponse = await fetchv2("https://enc-dec.app/api/dec-videasy", headers, "POST", postData);
+    const decryptedData = await decryptedResponse.json();
+    console.log('Decrypted Data:' + JSON.stringify(decryptedData));
+
+    const result = decryptedData.result || {};
+    const sources = result.sources || [];
+    const subtitles = result.subtitles || [];
+
+    const nonHDRSources = sources.filter(s => !s.quality.includes("HDR"));
+
+    const streamObjects = nonHDRSources.map(src => ({
+      title: src.quality,
+      streamUrl: src.url,
+      headers: {
+        "Origin": "https://player.videasy.net",
+        "Referer": "https://player.videasy.net/"
+      }
+    }));
+
+    const englishSubtitle = subtitles.find(sub => (sub.language || sub.lang)?.toLowerCase() === 'english');
+    let subtitleUrl = englishSubtitle ? englishSubtitle.url : "";
+
+    if (subtitleUrl) {
+      subtitleUrl = `https://passthrough-worker.simplepostrequest.workers.dev/?url=${encodeURIComponent(subtitleUrl)}&type=vtt&referer=https%3A%2F%2Fplayer.videasy.net%2F`;
+    }
+
+    return JSON.stringify({
+      streams: streamObjects,
+      subtitles: subtitleUrl
+    });
+  }
 }
 
-async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
+async function soraFetch(url, options = { headers: {}, method: 'GET', body: null, encoding: 'utf-8' }) {
     try {
-        return await fetchv2(url, options.headers ?? {}, options.method ?? 'GET', options.body ?? null);
+        return await fetchv2(
+            url,
+            options.headers ?? {},
+            options.method ?? 'GET',
+            options.body ?? null,
+            true,
+            options.encoding ?? 'utf-8'
+        );
     } catch(e) {
         try {
             return await fetch(url, options);

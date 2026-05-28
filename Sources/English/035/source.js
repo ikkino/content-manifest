@@ -1,980 +1,600 @@
-//
-//
-// Main functions
-//
-// 
+//Thanks ibro for the TMDB search!
 
-const DENO_PROXY_PREFIX = "https://deno-proxies-sznvnpnxwhbv.deno.dev/?url=";
-const ANIKAI_HOME_TITLE_REGEX = /<title>Home - AnimeKai - Watch Free Anime Online, Stream Subbed &amp; Dubbed Anime in HD<\/title>/i;
-const ANIKAI_CHECK_TIMEOUT_MS = 900;
-let animekaiBlockCheckPromise = null;
-
-function proxyUrl(url) {
-  return DENO_PROXY_PREFIX + encodeURIComponent(url);
-}
-
-async function isAnimekaiBlockedForUser() {
-  if (!animekaiBlockCheckPromise) {
-    animekaiBlockCheckPromise = (async () => {
-      let timeoutId;
-      try {
-        const htmlText = await Promise.race([
-          fetchv2("https://anikai.to/home").then(response => response.text()),
-          new Promise(resolve => {
-            timeoutId = setTimeout(() => resolve(""), ANIKAI_CHECK_TIMEOUT_MS);
-          })
-        ]);
-
-        if (timeoutId) {
-          clearTimeout(timeoutId);
-        }
-
-        return !ANIKAI_HOME_TITLE_REGEX.test(htmlText);
-      } catch (error) {
-        if (timeoutId) {
-          clearTimeout(timeoutId);
-        }
-        console.error("Animekai accessibility check failed:" + error);
-        return true;
-      }
-    })();
-  }
-
-  return animekaiBlockCheckPromise;
-}
-
-async function searchResults(query) {
-  const encodeQuery = keyword => encodeURIComponent(keyword);
-  const MIN_RESULTS_FAST_RETURN = 8;
-  const HIGH_CONFIDENCE_SCORE = 900;
-  const queryNormalized = query.toLowerCase().trim();
-  const queryTokens = queryNormalized.split(/\s+/).filter(Boolean);
-  const isSpecificQuery = queryTokens.length <= 2 && queryNormalized.length >= 5;
-
-  const decodeHtmlEntities = (str) => {
-    if (!str) return str;
-    return str.replace(/&#(\d+);/g, (match, dec) => String.fromCharCode(dec))
-              .replace(/&quot;/g, '"')
-              .replace(/&amp;/g, '&')
-              .replace(/&lt;/g, '<')
-              .replace(/&gt;/g, '>');
-  };
-
-  const fuzzyMatch = (query, title) => {
-    const q = query.toLowerCase().trim();
-    const t = title.toLowerCase().trim();
-    
-    if (t === q) return 1000;
-    
-    if (t.startsWith(q + ' ') || t.startsWith(q + ':') || t.startsWith(q + '-')) return 950;
-    
-    const wordBoundaryRegex = new RegExp(`\\b${q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`);
-    if (wordBoundaryRegex.test(t)) return 900;
-    
-    const qTokens = q.split(/\s+/).filter(token => token.length > 0);
-    const tTokens = t.split(/[\s\-:]+/).filter(token => token.length > 0);
-    
-    const stopwords = new Set(['the', 'a', 'an', 'and', 'or', 'of', 'in', 'on', 'at', 'to', 'for', 'with']);
-    
-    let score = 0;
-    let exactMatches = 0;
-    let partialMatches = 0;
-    let significantMatches = 0;
-    
-    qTokens.forEach(qToken => {
-      const isStopword = stopwords.has(qToken);
-      let bestMatch = 0;
-      let hasExactMatch = false;
-      
-      tTokens.forEach(tToken => {
-        let matchScore = 0;
-        
-        if (tToken === qToken) {
-          matchScore = isStopword ? 25 : 120;
-          hasExactMatch = true;
-          if (!isStopword) significantMatches++;
-        }
-        else if (qToken.includes(tToken) && tToken.length >= 3 && qToken.length <= tToken.length + 2) {
-          matchScore = isStopword ? 8 : 40;
-          if (!isStopword) significantMatches++;
-        }
-        else if (tToken.startsWith(qToken) && qToken.length >= 3) {
-          matchScore = isStopword ? 12 : 70;
-          if (!isStopword) significantMatches++;
-        }
-        else if (qToken.length >= 4 && tToken.length >= 4) {
-          if (Math.abs(qToken.length - tToken.length) > 2) {
-            return;
-          }
-
-          if (qToken[0] !== tToken[0]) {
-            return;
-          }
-
-          const dist = levenshteinDistance(qToken, tToken);
-          const maxLen = Math.max(qToken.length, tToken.length);
-          const similarity = 1 - (dist / maxLen);
-          
-          if (similarity > 0.8) {
-            matchScore = Math.floor(similarity * 60);
-            if (!isStopword) significantMatches++;
-          }
-        }
-        
-        bestMatch = Math.max(bestMatch, matchScore);
-      });
-      
-      if (bestMatch > 0) {
-        score += bestMatch;
-        if (hasExactMatch) exactMatches++;
-        else partialMatches++;
-      }
-    });
-    
-    const significantTokens = qTokens.filter(t => !stopwords.has(t)).length;
-    
-    const requiredMatches = Math.max(1, Math.ceil(significantTokens * 0.8));
-    if (significantMatches < requiredMatches) {
-      return 0;
-    }
-    
-    if (exactMatches + partialMatches >= qTokens.length) {
-      score += 80;
-    }
-    
-    score += exactMatches * 20;
-    
-    const extraWords = tTokens.length - qTokens.length;
-    if (extraWords > 2) {
-      score -= (extraWords - 2) * 25;
-    }
-    
-    let orderBonus = 0;
-    for (let i = 0; i < qTokens.length - 1; i++) {
-      const currentTokenIndex = tTokens.findIndex(t => t.includes(qTokens[i]));
-      const nextTokenIndex = tTokens.findIndex(t => t.includes(qTokens[i + 1]));
-      
-      if (currentTokenIndex !== -1 && nextTokenIndex !== -1 && currentTokenIndex < nextTokenIndex) {
-        orderBonus += 15;
-      }
-    }
-    score += orderBonus;
-    
-    return Math.max(0, score);
-  };
-
-  const levenshteinDistance = (a, b) => {
-    const matrix = [];
-    
-    for (let i = 0; i <= b.length; i++) {
-      matrix[i] = [i];
-    }
-    
-    for (let j = 0; j <= a.length; j++) {
-      matrix[0][j] = j;
-    }
-    
-    for (let i = 1; i <= b.length; i++) {
-      for (let j = 1; j <= a.length; j++) {
-        if (b.charAt(i - 1) === a.charAt(j - 1)) {
-          matrix[i][j] = matrix[i - 1][j - 1];
-        } else {
-          matrix[i][j] = Math.min(
-            matrix[i - 1][j - 1] + 1, 
-            matrix[i][j - 1] + 1,     
-            matrix[i - 1][j] + 1     
-          );
-        }
-      }
-    }
-    
-    return matrix[b.length][a.length];
-  };
-
-  const animekaiSearch = async () => {
-    const searchBaseUrl = "https://anikai.to/browser?keyword=";
-    const baseUrl = "https://anikai.to";
-
-    const posterHrefRegex = /href="[^"]*" class="poster"/g;
-    const titleRegex = /class="title"[^>]*title="[^"]*"/g;
-    const imageRegex = /data-src="[^"]*"/g;
-    const extractHrefRegex = /href="([^"]*)"/;
-    const extractImageRegex = /data-src="([^"]*)"/;
-    const extractTitleRegex = /title="([^"]*)"/;
-    let useProxy = true;
-
-    const extractResultsFromHTML = (htmlText) => {
-      const results = [];
-      const posterMatches = htmlText.match(posterHrefRegex) || [];
-      const titleMatches = htmlText.match(titleRegex) || [];
-      const imageMatches = htmlText.match(imageRegex) || [];
-      const minLength = Math.min(posterMatches.length, titleMatches.length, imageMatches.length);
-
-      for (let i = 0; i < minLength; i++) {
-        const hrefMatch = posterMatches[i].match(extractHrefRegex);
-        const fullHref = hrefMatch ? (hrefMatch[1].startsWith("http") ? hrefMatch[1] : baseUrl + hrefMatch[1]) : null;
-
-        const imageMatch = imageMatches[i].match(extractImageRegex);
-        const imageSrc = imageMatch ? imageMatch[1] : null;
-
-        const titleMatch = titleMatches[i].match(extractTitleRegex);
-        const cleanTitle = titleMatch ? decodeHtmlEntities(titleMatch[1]) : null;
-
-        if (fullHref && imageSrc && cleanTitle) {
-          results.push({
-            href: `Animekai:${fullHref}`,
-            image: useProxy ? proxyUrl(imageSrc) : imageSrc,
-            title: cleanTitle
-          });
-        }
-      }
-
-      return results;
-    };
-
+async function searchResults(keyword) {
     try {
-      const encodedQuery = encodeQuery(query);
-      useProxy = await isAnimekaiBlockedForUser();
-      const fetchPages = async (pages) => {
-        const urls = pages.map(page =>
-          page === 1
-            ? `${searchBaseUrl}${encodedQuery}`
-            : `${searchBaseUrl}${encodedQuery}&page=${page}`
-        );
+        let transformedResults = [];
 
-        const responses = await Promise.all(urls.map(url => fetchv2(useProxy ? proxyUrl(url) : url)));
-        const htmlTexts = await Promise.all(responses.map(res => res.text()));
-
-        const allResults = [];
-        htmlTexts.forEach(html => allResults.push(...extractResultsFromHTML(html)));
-        return allResults;
-      };
-
-      const page1Results = await fetchPages([1]);
-      return {
-        page1Results,
-        fetchRemaining: () => fetchPages([2, 3])
-      };
-    } catch (error) {
-      console.error("Animekai search error:" + error);
-      return {
-        page1Results: [],
-        fetchRemaining: async () => []
-      };
-    }
-  };
-
-  const oneMoviesSearch = async () => {
-    const searchBaseUrl = "https://1movies.bz/browser?keyword=";
-    const baseUrl = "https://1movies.bz";
-
-    const posterHrefRegex = /href="([^"]*)" class="poster"/g;
-    const titleRegex = /class="title" href="[^"]*">([^<]*)</g;
-    const imageRegex = /data-src="([^"]*)"/g;
-
-    const extractResultsFromHTML = (htmlText) => {
-      const results = [];
-      const posterMatches = [...htmlText.matchAll(posterHrefRegex)];
-      const titleMatches = [...htmlText.matchAll(titleRegex)];
-      const imageMatches = [...htmlText.matchAll(imageRegex)];
-      const minLength = Math.min(posterMatches.length, titleMatches.length, imageMatches.length);
-
-      for (let i = 0; i < minLength; i++) {
-        const href = posterMatches[i][1];
-        const fullHref = href.startsWith("http") ? href : baseUrl + href;
-
-        const imageSrc = imageMatches[i][1];
-        const title = decodeHtmlEntities(titleMatches[i][1]);
-
-        results.push({ href: fullHref, image: "https://deno-proxies-sznvnpnxwhbv.deno.dev/?url=" + encodeURIComponent(imageSrc), title });
-      }
-      return results;
-    };
-
-    try {
-      const encodedQuery = encodeQuery(query);
-      const fetchPages = async (pages) => {
-        const urls = pages.map(page =>
-          page === 1
-            ? `${searchBaseUrl}${encodedQuery}`
-            : `${searchBaseUrl}${encodedQuery}&page=${page}`
-        );
-
-        const responses = await Promise.all(urls.map(url => fetchv2("https://deno-proxies-sznvnpnxwhbv.deno.dev/?url=" + encodeURIComponent(url))));
-        const htmlTexts = await Promise.all(responses.map(res => res.text()));
-
-        const allResults = [];
-        htmlTexts.forEach(html => allResults.push(...extractResultsFromHTML(html)));
-        return allResults;
-      };
-
-      const page1Results = await fetchPages([1]);
-      return {
-        page1Results,
-        fetchRemaining: () => fetchPages([2, 3])
-      };
-    } catch (error) {
-      console.error("1Movies search error:" + error);
-      return {
-        page1Results: [],
-        fetchRemaining: async () => []
-      };
-    }
-  };
-
-  try {
-    const animekaiPromise = animekaiSearch();
-
-    const animekaiData = await animekaiPromise;
-
-    const dedupeResults = (results) => {
-      const seen = new Set();
-      return results.filter(item => {
-        const key = `${item.href}|${item.title}`;
-        if (seen.has(key)) {
-          return false;
-        }
-        seen.add(key);
-        return true;
-      });
-    };
-
-    const scoreCache = new Map();
-    const rankResults = (results) => {
-      const scoredResults = results.map(r => {
-        const cacheKey = r.title;
-        const cached = scoreCache.get(cacheKey);
-        const score = cached !== undefined ? cached : fuzzyMatch(query, r.title);
-
-        if (cached === undefined) {
-          scoreCache.set(cacheKey, score);
-        }
-
-        return {
-          ...r,
-          score
+        const keywordGroups = {
+            trending: ["!trending", "!hot", "!tr", "!!"],
+            topRatedMovie: ["!top-rated-movie", "!topmovie", "!tm", "??"],
+            topRatedTV: ["!top-rated-tv", "!toptv", "!tt", "::"],
+            popularMovie: ["!popular-movie", "!popmovie", "!pm", ";;"],
+            popularTV: ["!popular-tv", "!poptv", "!pt", "++"],
         };
-      });
 
-      const sorted = scoredResults
-        .filter(r => r.score > 50)
-        .sort((a, b) => b.score - a.score);
+        const skipTitleFilter = Object.values(keywordGroups).flat();
 
-      return {
-        topScore: sorted[0]?.score || 0,
-        items: sorted.map(({ score, ...rest }) => rest)
-      };
-    };
+        const shouldFilter = !matchesKeyword(keyword, skipTitleFilter);
 
-    const shouldFastReturn = (resultCount, topScore) => {
-      if (resultCount >= MIN_RESULTS_FAST_RETURN) {
-        return true;
-      }
+        const encodedKeyword = encodeURIComponent(keyword);
+        let baseUrlTemplate = null;
 
-      return isSpecificQuery && resultCount >= 1 && topScore >= HIGH_CONFIDENCE_SCORE;
-    };
+        if (matchesKeyword(keyword, keywordGroups.trending)) {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/trending/all/week?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+        } else if (matchesKeyword(keyword, keywordGroups.topRatedMovie)) {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/top_rated?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+        } else if (matchesKeyword(keyword, keywordGroups.topRatedTV)) {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/top_rated?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+        } else if (matchesKeyword(keyword, keywordGroups.popularMovie)) {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/popular?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+        } else if (matchesKeyword(keyword, keywordGroups.popularTV)) {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/popular?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+        } else {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/search/multi?api_key=9801b6b0548ad57581d111ea690c85c8&query=${encodedKeyword}&include_adult=false&page=${page}`)}&simple=true`;
+        }
 
-    let mergedResults = dedupeResults([...animekaiData.page1Results]);
+        let dataResults = [];
 
-    let rankedResults = rankResults(mergedResults);
-    let filteredResults = rankedResults.items;
+        if (baseUrlTemplate) {
+            const pagePromises = Array.from({ length: 5 }, (_, i) =>
+                soraFetch(baseUrlTemplate(i + 1)).then(r => r.json())
+            );
+            const pages = await Promise.all(pagePromises);
+            dataResults = pages.flatMap(p => p.results || []);
+        }
 
-    if (shouldFastReturn(filteredResults.length, rankedResults.topScore)) {
-      return JSON.stringify(filteredResults);
+        if (dataResults.length > 0) {
+            transformedResults = transformedResults.concat(
+                dataResults
+                    .map(result => {
+                        if (result.media_type === "movie" || result.title) {
+                            return {
+                                title: result.title || result.name || result.original_title || result.original_name || "Untitled",
+                                image: result.poster_path ? `https://image.tmdb.org/t/p/w500${result.poster_path}` : "",
+                                href: `movie/${result.id}`,
+                            };
+                        } else if (result.media_type === "tv" || result.name) {
+                            return {
+                                title: result.name || result.title || result.original_name || result.original_title || "Untitled",
+                                image: result.poster_path ? `https://image.tmdb.org/t/p/w500${result.poster_path}` : "",
+                                href: `tv/${result.id}/1/1`,
+                            };
+                        }
+                    })
+                    .filter(Boolean)
+                    .filter(result => result.title !== "Overflow")
+                    .filter(result => result.title !== "My Marriage Partner Is My Student, a Cocky Troublemaker")
+                    .filter(r => !shouldFilter || r.title.toLowerCase().includes(keyword.toLowerCase()))
+            );
+        }
+
+        console.log("Transformed Results: " + JSON.stringify(transformedResults));
+        return JSON.stringify(transformedResults);
+    } catch (error) {
+        console.log("Fetch error in searchResults: " + error);
+        return JSON.stringify([{ title: "Error", image: "", href: "" }]);
     }
+}
 
-    const oneMoviesData = await oneMoviesSearch();
-
-    mergedResults = dedupeResults([
-      ...mergedResults,
-      ...oneMoviesData.page1Results
-    ]);
-
-    rankedResults = rankResults(mergedResults);
-    filteredResults = rankedResults.items;
-
-    if (shouldFastReturn(filteredResults.length, rankedResults.topScore)) {
-      return JSON.stringify(filteredResults);
-    }
-
-    const [animekaiExtra, oneMoviesExtra] = await Promise.all([
-      animekaiData.fetchRemaining(),
-      oneMoviesData.fetchRemaining()
-    ]);
-
-    mergedResults = dedupeResults([
-      ...mergedResults,
-      ...animekaiExtra,
-      ...oneMoviesExtra
-    ]);
-
-    rankedResults = rankResults(mergedResults);
-    filteredResults = rankedResults.items;
-
-    return JSON.stringify(filteredResults.length > 0 ? filteredResults : [{
-      href: "",
-      image: "",
-      title: "No results found, please refine query."
-    }]);
-  } catch (error) {
-    return JSON.stringify([{
-      href: "",
-      image: "",
-      title: "Search failed: " + error.message
-    }]);
-  }
+function matchesKeyword(keyword, commands) {
+    const lower = keyword.toLowerCase();
+    return commands.some(cmd => lower.startsWith(cmd.toLowerCase()));
 }
 
 async function extractDetails(url) {
-  
-  if (url.startsWith("Animekai:")) {
-    const actualUrl = url.replace("Animekai:", "").trim();
-    
     try {
-      const useProxy = await isAnimekaiBlockedForUser();
-      const response = await fetchv2(useProxy ? proxyUrl(actualUrl) : actualUrl);
-      const htmlText = await response.text();
-      
-      const descriptionMatch = (/<div class="desc text-expand">([\s\S]*?)<\/div>/.exec(htmlText) || [])[1];
-      const aliasesMatch = (/<small class="al-title text-expand">([\s\S]*?)<\/small>/.exec(htmlText) || [])[1];
-      
-      return JSON.stringify([{
-        description: descriptionMatch ? cleanHtmlSymbols(descriptionMatch) : "Not available",
-        aliases: aliasesMatch ? cleanHtmlSymbols(aliasesMatch) : "Not available",
-        airdate: "If stream doesn't load try later or disable VPN/DNS"
-      }]);
-    } catch (error) {
-      console.error("Error fetching Animekai details:" + error);
-      return JSON.stringify([{
-        description: "Error loading description",
-        aliases: "Aliases: Unknown",
-        airdate: "Aired: Unknown"
-      }]);
-    }
-  } else {    
-    try {
-      const response = await fetchv2("https://deno-proxies-sznvnpnxwhbv.deno.dev/?url=" + encodeURIComponent(url));
-      const htmlText = await response.text();
+        if (url.includes('movie')) {
+            const match = url.match(/movie\/([^\/]+)/);
+            if (!match) throw new Error("Invalid URL format");
 
-      const descriptionMatch = (/<div class="description text-expand">([\s\S]*?)<\/div>/.exec(htmlText) || [])[1];
-      const aliasesMatch = (/<small class="al-title text-expand">([\s\S]*?)<\/small>/.exec(htmlText) || [])[1];
-      const airdateMatch = (/<li>Released:\s*<span[^>]*>(.*?)<\/span>/.exec(htmlText) || [])[1];
+            const movieId = match[1];
+            const responseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/${movieId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
+            const data = await responseText.json();
 
-      return JSON.stringify([{
-        description: descriptionMatch ? cleanHtmlSymbols(descriptionMatch) : "Not available",
-        aliases: aliasesMatch ? cleanHtmlSymbols(aliasesMatch) : "Not aliases",
-        airdate: airdateMatch ? cleanHtmlSymbols(airdateMatch) : "Not available"
-      }]);
+            const transformedResults = [{
+                description: data.overview || 'No description available',
+                aliases: `Duration: ${data.runtime ? data.runtime + " minutes" : 'Unknown'}`,
+                airdate: `Released: ${data.release_date ? data.release_date : 'Unknown'}`
+            }];
+
+            return JSON.stringify(transformedResults);
+        } else if (url.includes('tv')) {
+            const match = url.match(/tv\/([^\/]+)/);
+            if (!match) throw new Error("Invalid URL format");
+
+            const showId = match[1];
+            const responseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
+            const data = await responseText.json();
+
+            const transformedResults = [{
+                description: data.overview || 'No description available',
+                aliases: `Duration: ${data.episode_run_time && data.episode_run_time.length ? data.episode_run_time.join(', ') + " minutes" : 'Unknown'}`,
+                airdate: `Aired: ${data.first_air_date ? data.first_air_date : 'Unknown'}`
+            }];
+
+            console.log(JSON.stringify(transformedResults));
+            return JSON.stringify(transformedResults);
+        } else {
+            throw new Error("Invalid URL format");
+        }
     } catch (error) {
-      console.error("Error fetching 1Movies details:"+ error);
-      return JSON.stringify([{
-        description: "Error loading description",
-        aliases: "Not available",
-        airdate: "Not available"
-      }]);
+        console.log('Details error: ' + error);
+        return JSON.stringify([{
+            description: 'Error loading description',
+            aliases: 'Duration: Unknown',
+            airdate: 'Aired/Released: Unknown'
+        }]);
     }
-  }
 }
 
-async function extractEpisodes(url) {  
-  try {
-    if (url.startsWith("Animekai:")) {
-      const actualUrl = url.replace("Animekai:", "").trim();
-      const useProxy = await isAnimekaiBlockedForUser();
-      const htmlText = await (await fetchv2(useProxy ? proxyUrl(actualUrl) : actualUrl)).text();
-      const animeIdMatch = (htmlText.match(/<div class="rate-box"[^>]*data-id="([^"]+)"/) || [])[1];
-      if (!animeIdMatch) return JSON.stringify([{ error: "AniID not found" }]);
+async function extractEpisodes(url) {
+    try {
+        if (url.includes('movie')) {
+            const match = url.match(/movie\/([^\/]+)/);
 
-      const tokenResponse = await fetchv2(`https://enc-dec.app/api/enc-kai?text=${encodeURIComponent(animeIdMatch)}`);
-      const tokenData = await tokenResponse.json();
-      const token = tokenData.result;
+            if (!match) throw new Error("Invalid URL format");
 
-      const episodeListUrl = `https://anikai.to/ajax/episodes/list?ani_id=${animeIdMatch}&_=${token}`;
-        const episodeListData = await (await fetchv2(useProxy ? proxyUrl(episodeListUrl) : episodeListUrl)).json();
-      const cleanedHtml = cleanJsonHtml(episodeListData.result);
+            const movieId = match[1];
 
-      const episodeRegex = /<a[^>]+num="([^"]+)"[^>]+token="([^"]+)"[^>]*>/g;
-      const episodeMatches = [...cleanedHtml.matchAll(episodeRegex)];
+            const movie = [
+                { href: `/movie/${movieId}`, number: 1, title: "Full Movie" }
+            ];
 
-      const episodes = episodeMatches.map(([_, episodeNum, episodeToken]) => ({
-        number: parseInt(episodeNum, 10),
-        href: `Animekai:https://anikai.to/ajax/links/list?token=${episodeToken}&_=ENCRYPT_ME`
-      }));
+            console.log(movie);
+            return JSON.stringify(movie);
+        } else if (url.includes('tv')) {
+            const match = url.match(/tv\/([^\/]+)\/([^\/]+)\/([^\/]+)/);
 
-      return JSON.stringify(episodes);
+            if (!match) throw new Error("Invalid URL format");
+
+            const showId = match[1];
+
+            const showResponseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
+            const showData = await showResponseText.json();
+
+            let allEpisodes = [];
+            for (const season of showData.seasons) {
+                const seasonNumber = season.season_number;
+
+                if (seasonNumber === 0) continue;
+
+                const seasonResponseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}/season/${seasonNumber}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
+                const seasonData = await seasonResponseText.json();
+
+                if (seasonData.episodes && seasonData.episodes.length) {
+                    const episodes = seasonData.episodes.map(episode => ({
+                        href: `/tv/${showId}/${seasonNumber}/${episode.episode_number}`,
+                        number: episode.episode_number,
+                        title: episode.name || ""
+                    }));
+                    allEpisodes = allEpisodes.concat(episodes);
+                }
+            }
+
+            console.log(allEpisodes);
+            return JSON.stringify(allEpisodes);
+        } else {
+            throw new Error("Invalid URL format");
+        }
+    } catch (error) {
+        console.log('Fetch error in extractEpisodes: ' + error);
+        return JSON.stringify([]);
+    }
+}
+
+async function extractStreamUrl(ID) {
+    const startTime = Date.now();
+
+    if (ID.includes('movie')) {
+        const tmdbID = ID.replace('/movie/', '');
+        const headersOne = {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI2NTQ0MWU0MTg4NjhhMWI0NDZiM2I0Mzg1MmE4OWQ2NyIsIm5iZiI6MTYzMDg4NDI0My40NzMsInN1YiI6IjYxMzU1MTkzZmQ0YTk2MDA0NDVkMTJjNiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.Hm0W-hUx-7ph-ASvk2TpMxZbMtwVa5DEXWcgNgcqXJM",
+            "Referer": "https://player.smashystream.com/",
+            "Origin": "https://player.smashystream.com",
+            "X-Requested-With": "XMLHttpRequest",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/"
+        };
+        const tmdbResponse = await fetchv2(`https://api.themoviedb.org/3/movie/${tmdbID}?append_to_response=external_ids`, headersOne);
+        const tmdbData = await tmdbResponse.json();
+        const imdbID = tmdbData.imdb_id;
+
+        const streamResponse = await ilovefeet(imdbID, false, null, null, 'm3u8');
+
+        const streams = [];
+
+        if (streamResponse && streamResponse.defaultUrl) {
+            streams.push("1080p", streamResponse.defaultUrl);
+        }
+
+        if (streamResponse && streamResponse.vFastUrl) {
+            const fourKResult = await ilovearmpits(streamResponse.vFastUrl);
+            if (fourKResult.available && fourKResult.url) {
+                streams.push("4K", fourKResult.url);
+            }
+        }
+
+        const final = {
+            streams,
+            subtitles: streamResponse.subtitles || "None"
+        };
+
+        const endTime = Date.now();
+        const elapsed = ((endTime - startTime) / 1000).toFixed(2);
+        console.log(`Stream fetched in ${elapsed}s`);
+
+        console.log(JSON.stringify(final));
+        return JSON.stringify(final);
+    } else if (ID.includes('tv')) {
+        const parts = ID.split('/');
+        const tmdbID = parts[2];
+        const seasonNumber = parts[3];
+        const episodeNumber = parts[4];
+        console.log(`TMDB ID: ${tmdbID}, Season: ${seasonNumber}, Episode: ${episodeNumber}`);
+        const headersOne = {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI2NTQ0MWU0MTg4NjhhMWI0NDZiM2I0Mzg1MmE4OWQ2NyIsIm5iZiI6MTYzMDg4NDI0My40NzMsInN1YiI6IjYxMzU1MTkzZmQ0YTk2MDA0NDVkMTJjNiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.Hm0W-hUx-7ph-ASvk2TpMxZbMtwVa5DEXWcgNgcqXJM",
+            "Referer": "https://player.smashystream.com/",
+            "Origin": "https://player.smashystream.com",
+            "X-Requested-With": "XMLHttpRequest",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/"
+        };
+        const tmdbResponse = await fetchv2(`https://api.themoviedb.org/3/tv/${tmdbID}?append_to_response=external_ids`, headersOne);
+        const tmdbData = await tmdbResponse.json();
+        const imdbID = tmdbData.external_ids.imdb_id;
+
+        const streamResponse = await ilovefeet(imdbID, true, seasonNumber, episodeNumber, 'm3u8');
+
+        const streams = [];
+
+        if (streamResponse && streamResponse.defaultUrl) {
+            streams.push("1080p", streamResponse.defaultUrl);
+        }
+
+        if (streamResponse && streamResponse.vFastUrl) {
+            const fourKResult = await ilovearmpits(streamResponse.vFastUrl);
+            if (fourKResult.available && fourKResult.url) {
+                streams.push("4K", fourKResult.url);
+            }
+        }
+
+        const final = {
+            streams,
+            subtitles: streamResponse.subtitles || "None"
+        };
+
+        const endTime = Date.now();
+        const elapsed = ((endTime - startTime) / 1000).toFixed(2);
+        console.log(`Stream fetched in ${elapsed}s`);
+
+        console.log(JSON.stringify(final));
+        return JSON.stringify(final);
+    }
+}
+
+async function soraFetch(url, options = { headers: {}, method: 'GET', body: null, encoding: 'utf-8' }) {
+    try {
+        return await fetchv2(
+            url,
+            options.headers ?? {},
+            options.method ?? 'GET',
+            options.body ?? null,
+            true,
+            options.encoding ?? 'utf-8'
+        );
+    } catch (e) {
+        try {
+            return await fetch(url, options);
+        } catch (error) {
+            return null;
+        }
+    }
+}
+
+async function ilovearmpits(m3u8Url) {
+    try {
+        const headers = {
+            "Accept": "*/*",
+            "User-Agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Mobile Safari/537.36",
+            "Referer": "https://vidfast.pro/",
+            "X-Requested-With": "XMLHttpRequest"
+        };
+
+        const response = await fetchv2(m3u8Url, headers);
+        const playlistContent = await response.text();
+
+        const has4K = playlistContent.includes('RESOLUTION=3840x2160');
+
+        if (!has4K) {
+            console.log(`4K Check for ${m3u8Url}: NO`);
+            return { available: false, url: null };
+        }
+
+        const lines = playlistContent.split('\n');
+        let fourKPath = null;
+        let fourKCount = 0;
+
+        for (let i = 0; i < lines.length; i++) {
+            if (lines[i].includes('RESOLUTION=3840x2160')) {
+                fourKCount++;
+                if (fourKCount === 2 && i + 1 < lines.length) {
+                    fourKPath = lines[i + 1].trim();
+                    break;
+                }
+            }
+        }
+
+        if (!fourKPath && fourKCount === 1) {
+            for (let i = 0; i < lines.length; i++) {
+                if (lines[i].includes('RESOLUTION=3840x2160')) {
+                    if (i + 1 < lines.length) {
+                        fourKPath = lines[i + 1].trim();
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (!fourKPath) {
+            console.log('4K resolution found but could not extract path');
+            return { available: false, url: null };
+        }
+
+        let baseUrl = '';
+        if (m3u8Url.startsWith('https://')) {
+            const afterProtocol = m3u8Url.substring(8);
+            const hostEnd = afterProtocol.indexOf('/');
+            const host = hostEnd !== -1 ? afterProtocol.substring(0, hostEnd) : afterProtocol;
+            baseUrl = 'https://' + host;
+        } else if (m3u8Url.startsWith('http://')) {
+            const afterProtocol = m3u8Url.substring(7);
+            const hostEnd = afterProtocol.indexOf('/');
+            const host = hostEnd !== -1 ? afterProtocol.substring(0, hostEnd) : afterProtocol;
+            baseUrl = 'http://' + host;
+        }
+
+        const full4KUrl = fourKPath.startsWith('http') ? fourKPath : `${baseUrl}${fourKPath}`;
+
+        return { available: true, url: full4KUrl };
+    } catch (error) {
+        console.log('Error checking 4K availability: ' + error);
+        return { available: false, url: null };
+    }
+}
+
+async function ilovefeet(imdbId, isSeries = false, season = null, episode = null, preferredFormat = null) {
+    let baseUrl;
+    if (isSeries) {
+        baseUrl = `https://vidfast.pro/tv/${imdbId}/${season}/${episode}`;
     } else {
-      const htmlText = await (await fetchv2("https://deno-proxies-sznvnpnxwhbv.deno.dev/?url=" + encodeURIComponent(url))).text();
-      const movieIDMatch = (htmlText.match(/<div class="detail-lower"[^>]*id="movie-rating"[^>]*data-id="([^"]+)"/) || [])[1];
-      if (!movieIDMatch) return JSON.stringify([{ error: "MovieID not found" }]);
-
-      const tokenResponse = await fetchv2("https://enc-dec.app/api/enc-movies-flix?text=" + encodeURIComponent(movieIDMatch));
-      const temp = await tokenResponse.json();
-      const token = temp.result;
-
-      const episodeListUrl = `https://1movies.bz/ajax/episodes/list?id=${movieIDMatch}&_=${token}`;
-      const episodeListData = await (await fetchv2("https://deno-proxies-sznvnpnxwhbv.deno.dev/?url=" + encodeURIComponent(episodeListUrl))).json();
-      const cleanedHtml = cleanJsonHtml(episodeListData.result);
-
-      const episodeRegex = /<a[^>]+eid="([^"]+)"[^>]+num="([^"]+)"[^>]*>/g;
-      const episodeMatches = [...cleanedHtml.matchAll(episodeRegex)];
-
-      const episodes = episodeMatches.map(([_, episodeToken, episodeNum]) => ({
-        number: parseInt(episodeNum, 10),
-        href: `https://1movies.bz/ajax/links/list?eid=${episodeToken}&_=ENCRYPT_ME`
-      }));
-
-      return JSON.stringify(episodes);
+        baseUrl = `https://vidfast.pro/movie/${imdbId}`;
     }
-  } catch (err) {
-    console.error("Error fetching episodes:" + err);
-    return JSON.stringify([{ number: 1, href: "Error fetching episodes" }]);
-  }
-}
 
-async function extractStreamUrl(url) {
-  let source, actualUrl;
-  
-  if (url.startsWith("Animekai:")) {
-    source = "Animekai";
-    actualUrl = url.replace("Animekai:", "").trim();
-  } else if (url.includes("1movies.bz")) {
-    source = "1Movies";
-    actualUrl = url.trim();
-  } else {
-    console.log("Failed to match URL:", url);
-    return "Invalid URL format: " + url;
-  }
-  
-  if (source === "Animekai") {
     const headers = {
-      "Referer": "https://anikai.to/",
-      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) Gecko/20100101 Firefox/134.0",
-      "Accept": "text/html, */*; q=0.01",
-      "Accept-Language": "en-US,en;q=0.5",
-      "Sec-Fetch-Dest": "empty",
-      "Sec-Fetch-Mode": "cors",
-      "Sec-Fetch-Site": "same-origin",
-      "Pragma": "no-cache",
-      "Cache-Control": "no-cache"
+        "Accept": "*/*",
+        "User-Agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Mobile Safari/537.36",
+        "Referer": baseUrl,
+        "X-Requested-With": "XMLHttpRequest"
     };
 
-    try {
-      const useProxy = await isAnimekaiBlockedForUser();
-      const tokenMatch = actualUrl.match(/token=([^&]+)/);
-      if (tokenMatch && tokenMatch[1]) {
-        const rawToken = tokenMatch[1];
-        const encryptResponse = await fetchv2(`https://enc-dec.app/api/enc-kai?text=${encodeURIComponent(rawToken)}`);
-        const encryptData = await encryptResponse.json();
-        const encryptedToken = encryptData.result;
-        actualUrl = actualUrl.replace('&_=ENCRYPT_ME', `&_=${encryptedToken}`);
-      }
-      
-      const response = await fetchv2(useProxy ? proxyUrl(actualUrl) : actualUrl);
-      const text = await response.text();
+    console.log(`Requesting Base URL: ${baseUrl}`);
+    const pageResponse = await fetchv2(baseUrl, headers);
+    const pageText = await pageResponse.text();
 
-      let ajaxResultHtml = "";
-      try {
-        const parsedAjax = JSON.parse(text);
-        ajaxResultHtml = parsedAjax?.result || "";
-      } catch {}
+    let match = pageText.match(/\\"en\\":\\"([^"]+)\\"/) ||
+        pageText.match(/"en":"([^"]+)"/) ||
+        pageText.match(/'en':'([^']+)'/) ||
+        pageText.match(/["']en["']:\s*["']([^"']+)["']/);
 
-      const cleanedHtml = cleanJsonHtml(text);
-      const cleanedAjaxResultHtml = cleanJsonHtml(ajaxResultHtml);
-      const serverHtmlSource = cleanedAjaxResultHtml || cleanedHtml;
+    if (!match) {
+        throw new Error('Could not find data in page');
+    }
+    const rawData = match[1];
+    console.log("Raw Data extracted:", rawData);
 
-      const subRegex = /<div class="server-items lang-group" data-id="sub"[^>]*>([\s\S]*?)<\/div>/;
-      const softsubRegex = /<div class="server-items lang-group" data-id="softsub"[^>]*>([\s\S]*?)<\/div>/;
-      const dubRegex = /<div class="server-items lang-group" data-id="dub"[^>]*>([\s\S]*?)<\/div>/;
-      const subContent = subRegex.exec(serverHtmlSource)?.[1]?.trim() || "";
-      const softsubContent = softsubRegex.exec(serverHtmlSource)?.[1]?.trim() || "";
-      const dubContent = dubRegex.exec(serverHtmlSource)?.[1]?.trim() || "";
+    const apiUrl = `https://enc-dec.app/api/enc-vidfast?text=${encodeURIComponent(rawData)}&version=1`;
+    console.log(`Requesting Decrypt API: ${apiUrl}`);
+    const apiResponse = await soraFetch(apiUrl);
+    const apiData = await apiResponse.json();
+    console.log("API Data from enc-dec.app:", JSON.stringify(apiData));
 
-      const extractServerId = (content) => {
-        if (!content) return null;
-        const spanRegex = /<span class="server"[^>]*data-lid="([^"]+)"[^>]*>/g;
-        const ids = [];
-        let match;
-        while ((match = spanRegex.exec(content)) !== null) ids.push(match[1]);
-        return ids.length > 1 ? ids[1] : ids[0] ?? null;
-      };
-
-      const serverIdDub = extractServerId(dubContent);
-      const serverIdSoftsub = extractServerId(softsubContent);
-      const serverIdSub = extractServerId(subContent);
-
-      const tokenRequestData = [
-        { name: "Dub", data: serverIdDub },
-        { name: "Softsub", data: serverIdSoftsub },
-        { name: "Sub", data: serverIdSub }
-      ].filter(item => item.data);
-
-      const tokenResults = await Promise.all(tokenRequestData.map(item => 
-        fetchv2(`https://enc-dec.app/api/enc-kai?text=${encodeURIComponent(item.data)}`)
-          .then(res => res.json())
-          .then(json => ({ name: item.name, data: json.result }))
-          .catch(err => ({ name: item.name, error: err.toString() }))
-      ));
-
-      const serverIdMap = { "Dub": serverIdDub, "Softsub": serverIdSoftsub, "Sub": serverIdSub };
-
-      const streamUrls = tokenResults.map(result => ({
-        type: result.name,
-        url: `https://anikai.to/ajax/links/view?id=${serverIdMap[result.name]}&_=${result.data}`
-      }));
-
-      const streamResponses = await Promise.all(
-        streamUrls.map(async ({ type, url }) => {
-          try {
-            const res = await fetchv2(useProxy ? proxyUrl(url) : url);
-            const json = await res.json();
-            return { type, result: json.result };
-          } catch (error) {
-            console.log(`Error fetching ${type} stream:` + error);
-            return { type, result: null };
-          }
-        })
-      );
-
-      const decryptResults = await Promise.all(
-        streamResponses
-          .filter(item => item.result)
-          .map(item =>
-            fetchv2(
-              "https://enc-dec.app/api/dec-kai",
-              { "Content-Type": "application/json" },
-              "POST",
-              JSON.stringify({ text: item.result })
-            )
-              .then(res => res.json())
-              .then(json => {
-                console.log(`decrypted${item.type} URL:` + json.result?.url);
-                return { name: item.type, url: json.result?.url || null };
-              })
-              .catch(err => {
-                console.log(`Error parsing ${item.type} result:` + err);
-                return { name: item.type, url: null };
-              })
-          )
-      );
-
-      const urlMap = Object.fromEntries(decryptResults.map(i => [i.name, i.url]));
-      const decryptedSub = urlMap.Sub;
-      const decryptedDub = urlMap.Dub;
-      const decryptedRaw = urlMap.Softsub;
-
-      async function getStream(url) {
-        try {
-          if (url.includes("anikai.to/iframe")) {
-            const iframePageRes = await fetchv2(url, headers);
-            const iframePageText = await iframePageRes.text();
-            const iframeSrcMatch = iframePageText.match(/<iframe[^>]+src="([^"]+)"/i);
-            if (iframeSrcMatch && iframeSrcMatch[1]) {
-              url = iframeSrcMatch[1];
-            }
-          }
-
-          const response = await fetchv2(url.replace("/e/", "/media/").replace("/e2/", "/media/"), headers);
-          const responseJson = await response.json();
-          const result = responseJson?.result;
-          const finalResponse = await fetchv2(
-            "https://enc-dec.app/api/dec-mega",
-            { "Content-Type": "application/json" },
-            "POST",
-            JSON.stringify({ text: result, agent: headers["User-Agent"] })
-          );
-          const finalJson = await finalResponse.json();
-          return finalJson?.result?.sources?.[0]?.file || null;
-        } catch {
-          return null;
-        }
-      }
-
-      const [subStream, dubStream, rawStream] = await Promise.all([
-        decryptedSub ? getStream(decryptedSub) : Promise.resolve(null),
-        decryptedDub ? getStream(decryptedDub) : Promise.resolve(null),
-        decryptedRaw ? getStream(decryptedRaw) : Promise.resolve(null)
-      ]);
-
-      const streams = [];
-      
-      async function addStreamQualities(m3u8Link, baseTitle) {
-        let pushedQualities = 0;
-        try {
-          const proxyReqUrl = "https://1anime.app/api/m3u8-proxy?url=" + encodeURIComponent(m3u8Link);
-          const m3u8Response = await fetchv2(proxyReqUrl);
-          const m3u8Text = await m3u8Response.text();
-          const lines = m3u8Text.split('\n');
-          for (let i = 0; i < lines.length; i++) {
-            const line = lines[i].trim();
-            if (line.startsWith('#EXT-X-STREAM-INF:')) {
-              const resolutionMatch = line.match(/RESOLUTION=(\d+x\d+)/);
-              const nameMatch = line.match(/NAME="([^"]+)"/i) || line.match(/BANDWIDTH=(\d+)/i);
-
-              let quality = 'Unknown';
-              if (resolutionMatch) {
-                const [width, height] = resolutionMatch[1].split('x');
-                quality = `${height}p`;
-              } else if (nameMatch && nameMatch[1]) {
-                quality = nameMatch[1];
-              }
-
-              if (i + 1 < lines.length) {
-                const streamPath = lines[i + 1].trim();
-                let absolutePath;
-                if (streamPath.startsWith('/api/')) {
-                  absolutePath = 'https://1anime.app' + streamPath;
-                } else if (streamPath.startsWith('http')) {
-                  absolutePath = "https://1anime.app/api/m3u8-proxy?url=" + encodeURIComponent(streamPath);
-                } else {
-                  const baseUrl = m3u8Link.substring(0, m3u8Link.lastIndexOf('/') + 1);
-                  absolutePath = "https://1anime.app/api/m3u8-proxy?url=" + encodeURIComponent(baseUrl + streamPath);
-                }
-                streams.push({
-                  title: `${quality} - ${baseTitle}`,
-                  streamUrl: absolutePath
-                });
-                pushedQualities++;
-              }
-            }
-          }
-        } catch (e) {
-          console.log("Failed to extract qualities:", e);
-        }
-        if (pushedQualities === 0) {
-          streams.push({ title: baseTitle, streamUrl: "https://1anime.app/api/m3u8-proxy?url=" + encodeURIComponent(m3u8Link) });
-        }
-      }
-
-      if (subStream) await addStreamQualities(subStream, "Hardsub English");
-      if (dubStream) await addStreamQualities(dubStream, "Dubbed English");
-      if (rawStream) await addStreamQualities(rawStream, "Original audio");
-
-      const final = { streams, subtitles: "" };
-      console.log("RETURN: " + JSON.stringify(final));
-      return JSON.stringify(final);
-
-    } catch (error) {
-      console.log("Animekai fetch error:" + error);
-      return "https://error.org";
+    if (apiData.status !== 200 || !apiData.result) {
+        throw new Error('Failed to decrypt data via enc-dec.app API');
     }
 
-  } else if (source === "1Movies") {
-    const headers = {
-      "Referer": "https://1movies.bz/",
-      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36"
+    const apiServers = apiData.result.servers;
+    const streamBase = apiData.result.stream;
+    const csrfToken = apiData.result.token;
+
+    if (csrfToken) {
+        headers["X-CSRF-Token"] = csrfToken;
+    }
+
+    console.log(`Requesting Servers URL: ${apiServers}`);
+    const serversResponse = await soraFetch(apiServers, { method: 'POST', headers: headers });
+    const serversEncrypted = await serversResponse.text();
+
+    const decServersResponse = await soraFetch('https://enc-dec.app/api/dec-vidfast', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: serversEncrypted, version: "1" })
+    });
+    const decServersData = await decServersResponse.json();
+
+    if (decServersData.status !== 200 || !decServersData.result) {
+        throw new Error('Failed to decrypt servers data via enc-dec.app API');
+    }
+    const serverList = decServersData.result;
+
+    if (!serverList || serverList.length === 0) {
+        throw new Error('No servers available');
+    }
+
+    const testServer = async (serverObj, index) => {
+        const server = serverObj.data;
+        const apiStream = streamBase + '/' + server;
+
+        try {
+            console.log(`Requesting Stream URL for server ${index}: ${apiStream}`);
+            const streamResponse = await soraFetch(apiStream, { method: 'POST', headers: headers });
+
+            const streamEncrypted = await streamResponse.text();
+
+            const decStreamResponse = await soraFetch('https://enc-dec.app/api/dec-vidfast', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: streamEncrypted, version: "1" })
+            });
+            const decStreamData = await decStreamResponse.json();
+
+            if (decStreamData.status !== 200 || !decStreamData.result) {
+                throw new Error(`Server ${index} failed to decrypt stream`);
+            }
+
+            let data = decStreamData.result;
+
+            if (!data.url) {
+                throw new Error(`Server ${index} has no URL`);
+            }
+
+            const format = data.url.includes('.m3u8') ? 'm3u8' : data.url.includes('.mpd') ? 'mpd' : 'unknown';
+
+            const hasEnglishSubs = data.tracks && Array.isArray(data.tracks) &&
+                data.tracks.some(track => track.label && track.label.toLowerCase().includes('english') && track.file);
+
+
+            if (preferredFormat === 'm3u8' && format === 'm3u8' && hasEnglishSubs) {
+                return { index, server, success: true, format, data, preferred: true, hasSubtitles: true };
+            }
+
+            if (preferredFormat === 'm3u8' && format === 'm3u8') {
+                return { index, server, success: true, format, data, preferred: true, hasSubtitles: false };
+            }
+
+            return { index, server, success: true, format, data, preferred: false, hasSubtitles: hasEnglishSubs };
+
+        } catch (error) {
+            throw new Error(`Server ${index} failed: ${error.message}`);
+        }
     };
 
+    let selectedServer = null;
+    let vFastServer = null;
+
     try {
-      const eidMatch = actualUrl.match(/eid=([^&]+)/);
-      if (eidMatch && eidMatch[1]) {
-        const rawEpisodeToken = eidMatch[1];
-        const encryptResponse = await fetchv2(`https://enc-dec.app/api/enc-movies-flix?text=${rawEpisodeToken}`);
-        const encryptData = await encryptResponse.json();
-        const encryptedToken = encryptData.result;
-        actualUrl = actualUrl.replace('&_=ENCRYPT_ME', `&_=${encryptedToken}`);
-      }
-      
-      const response = await fetchv2(actualUrl);
-      const responseData = await response.json();
-      const cleanedHtml = cleanJsonHtml(responseData.result);
-      
-      const spanRegex = /<div class="server wnav-item"[^>]*data-lid="([^"]+)"[^>]*>/g;
-      const ids = [];
-      let match;
-      while ((match = spanRegex.exec(cleanedHtml)) !== null) ids.push(match[1]);
-      
-      if (ids.length === 0) {
-        console.log("No servers found");
-        return "error";
-      }
-      
-      const serverId = ids.length > 1 ? ids[1] : ids[0];
-      const tokenData = await fetchv2(`https://enc-dec.app/api/enc-movies-flix?text=${encodeURIComponent(serverId)}`)
-        .then(res => res.json());
-      const token = tokenData.result;
-      
-      if (!token) {
-        console.log("Token not found");
-        return "error";
-      }
-      
-      const streamUrl = `https://1movies.bz/ajax/links/view?id=${serverId}&_=${token}`;
-      const streamResponse = await fetchv2(streamUrl);
-      const streamData = await streamResponse.json();
-      
-      if (!streamData.result) {
-        console.log("Stream result not found");
-        return "error";
-      }
-      
-      const decryptData = await fetchv2(
-        `https://enc-dec.app/api/dec-movies-flix?text=${streamData.result}`,
-        headers
-      ).then(res => res.json());
+        if (preferredFormat === 'm3u8') {
+            const serverPromises = serverList.map((serverObj, index) => testServer(serverObj, index));
 
-      console.log("Decrypted response:" + JSON.stringify(decryptData));
-      const decryptedUrl = decryptData.result?.url;
+            const raceForSubtitles = new Promise((resolve, reject) => {
+                let completedCount = 0;
+                let firstWorkingServer = null;
 
-      if (!decryptedUrl) {
-        console.log("Decryption failed");
-        return "error";
-      }
+                serverPromises.forEach(promise => {
+                    promise.then(result => {
+                        completedCount++;
 
-      const subListEncoded = decryptedUrl.split("sub.list=")[1]?.split("&")[0];
-      let subtitles = "N/A";
-      if (subListEncoded) {
-        try {
-          const subListUrl = decodeURIComponent(subListEncoded);
-          const subResponse = await fetchv2(subListUrl);
-          subtitles = await subResponse.json();
-        } catch {
-          subtitles = "N/A";
-        }
-      }
+                        if (result.hasSubtitles) {
+                            console.log(`Found server ${result.index} with subtitles, stopping other requests`);
+                            resolve(result);
+                            return;
+                        }
 
-      const englishSubUrl = Array.isArray(subtitles)
-        ? subtitles.find(sub => sub.label === "English")?.file.replace(/\\\//g, "/")
-        : "N/A";
-      
-      let finalUrl = decryptedUrl;
-      if (finalUrl.includes(".to/iframe")) {
-        try {
-          const iframeResponse = await fetchv2(finalUrl, headers);
-          const iframeHtml = await iframeResponse.text();
-          const iframeSrcMatch = iframeHtml.match(/<iframe[^>]+src="([^"]+)"/i);
-          if (iframeSrcMatch && iframeSrcMatch[1]) {
-            finalUrl = iframeSrcMatch[1];
-          } else {
-            console.log("No iframe src found in:", finalUrl);
-            return "error";
-          }
-        } catch (e) {
-          console.log("Error fetching iframe:", e);
-          return "error";
-        }
-      }
-      
-      const mediaResponse = await fetchv2(finalUrl.replace("/e/", "/media/"), headers);
-      const mediaJson = await mediaResponse.json();
-      const result = mediaJson?.result;
+                        if (!firstWorkingServer && result.format === 'm3u8') {
+                            firstWorkingServer = result;
+                        }
 
-      if (!result) {
-        console.log("Media result not found");
-        return "error";
-      }
-      
-      const finalResponse = await fetchv2(`https://enc-dec.app/api/dec-rapid?text=${encodeURIComponent(result)}&agent=${encodeURIComponent(headers["User-Agent"])}`);
-      const finalJson = JSON.parse(await finalResponse.text());
-      
-      const m3u8Link = finalJson?.result?.sources?.[0]?.file;
-      const streams = [];
-      if (m3u8Link) {
-        let pushedQualities = 0;
-        try {
-          const m3u8Response = await fetchv2("https://1anime.app/api/m3u8-proxy?url=" + encodeURIComponent(m3u8Link));
-          const m3u8Text = await m3u8Response.text();
-          const lines = m3u8Text.split('\n');
-          
-          for (let i = 0; i < lines.length; i++) {
-            const line = lines[i].trim();
-            if (line.startsWith('#EXT-X-STREAM-INF:')) {
-              const resolutionMatch = line.match(/RESOLUTION=(\d+x\d+)/);
-              const nameMatch = line.match(/NAME="([^"]+)"/i) || line.match(/BANDWIDTH=(\d+)/i);
-              
-              let quality = 'Unknown';
-              if (resolutionMatch) {
-                const [width, height] = resolutionMatch[1].split('x');
-                quality = `${height}p`;
-              } else if (nameMatch && nameMatch[1]) {
-                quality = nameMatch[1];
-              }
+                        if (completedCount === serverPromises.length) {
+                            if (firstWorkingServer) {
+                                console.log(`No servers with subtitles found, using fallback server ${firstWorkingServer.index}`);
+                                resolve(firstWorkingServer);
+                            } else {
+                                reject(new Error('No working m3u8 servers found'));
+                            }
+                        }
+                    }).catch(() => {
+                        completedCount++;
 
-              if (i + 1 < lines.length) {
-                const streamPath = lines[i + 1].trim();
-                let absolutePath;
-                if (streamPath.startsWith('/api/')) {
-                  absolutePath = 'https://1anime.app' + streamPath;
-                } else if (streamPath.startsWith('http')) {
-                  absolutePath = "https://1anime.app/api/m3u8-proxy?url=" + encodeURIComponent(streamPath);
-                } else {
-                  const baseUrl = m3u8Link.substring(0, m3u8Link.lastIndexOf('/') + 1);
-                  absolutePath = "https://1anime.app/api/m3u8-proxy?url=" + encodeURIComponent(baseUrl + streamPath);
-                }
-                streams.push({
-                  title: quality,
-                  streamUrl: absolutePath
+                        if (completedCount === serverPromises.length) {
+                            if (firstWorkingServer) {
+                                console.log(`No servers with subtitles found, using fallback server ${firstWorkingServer.index}`);
+                                resolve(firstWorkingServer);
+                            } else {
+                                reject(new Error('No working m3u8 servers found'));
+                            }
+                        }
+                    });
                 });
-                pushedQualities++;
-              }
+            });
+
+            let vFastPromise = Promise.resolve(null);
+            const vFastServerObj = serverList.find(server => server.name === 'vFast');
+            if (vFastServerObj) {
+                const vFastIndex = serverList.indexOf(vFastServerObj);
+                vFastPromise = serverPromises[vFastIndex].catch(error => {
+                    console.log('vFast server failed: ' + error.message);
+                    return null;
+                });
+            } else {
+                console.log('vFast server not found in server list');
             }
-          }
-        } catch (e) {
-          console.log("Failed to extract qualities:", e);
-        }
-        
-        if (pushedQualities === 0) {
-          streams.push({
-            title: "Source",
-            streamUrl: "https://1anime.app/api/m3u8-proxy?url=" + encodeURIComponent(m3u8Link)
-          });
-        }
-      }
 
-      const returnValue = {
-        streams,
-        subtitles: englishSubUrl !== "N/A" ? englishSubUrl : ""
-      };
-      console.log("RETURN: " + JSON.stringify(returnValue));
-      return JSON.stringify(returnValue);
+            const [selected, vFastResult] = await Promise.all([raceForSubtitles, vFastPromise]);
+            selectedServer = selected;
+            vFastServer = vFastResult;
 
+        } else {
+            const serverPromises = serverList.map((serverObj, index) => testServer(serverObj, index));
+            selectedServer = await Promise.any(serverPromises);
+
+            console.log(`Found working server ${selectedServer.index} with format ${selectedServer.format}`);
+        }
     } catch (error) {
-      console.log("1Movies fetch error:" + error);
-      return "https://error.org";
+        console.log('All servers failed:' + error);
+        throw new Error('No working servers found');
     }
-  }
+
+    const workingServers = [selectedServer];
+
+    if (preferredFormat === 'm3u8' && selectedServer.format === 'mpd') {
+        selectedServer.data.url = selectedServer.data.url.replace('.mpd', '.m3u8');
+        selectedServer.format = 'm3u8';
+    }
+
+    let finalUrl = selectedServer.data.url;
+
+    let englishSubtitles = null;
+    try {
+        if (selectedServer.data.tracks && Array.isArray(selectedServer.data.tracks)) {
+            const englishTrack = selectedServer.data.tracks.find(track =>
+                track.label && track.label.toLowerCase().includes('english') && track.file
+            );
+            if (englishTrack) {
+                englishSubtitles = englishTrack.file;
+            } else {
+                console.log('No English subtitle track found in tracks array');
+            }
+        } else {
+            console.log('No tracks array found in server response');
+        }
+    } catch (error) {
+        console.log('Error extracting subtitles:' + error);
+    }
+
+    return {
+        defaultUrl: selectedServer.data.url,
+        vFastUrl: vFastServer ? vFastServer.data.url : null,
+        referer: baseUrl,
+        format: selectedServer.format,
+        subtitles: englishSubtitles,
+        fullData: selectedServer.data,
+        vFastData: vFastServer ? vFastServer.data : null,
+        serverStats: {
+            total: serverList.length,
+            working: vFastServer ? 2 : 1,
+            failed: serverList.length - (vFastServer ? 2 : 1),
+            selectedServerIndex: selectedServer.index,
+            vFastServerIndex: vFastServer ? vFastServer.index : null
+        }
+    };
 }
 
-///
-///
-/// Helper functions
-///
-///
-
-function cleanHtmlSymbols(string) {
-  if (!string) {
-    return "";
-  }
-  return string
-    .replace(/&#8217;/g, "'")
-    .replace(/&#8211;/g, "-")
-    .replace(/&#[0-9]+;/g, "")
-    .replace(/\r?\n|\r/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-function cleanJsonHtml(jsonHtml) {
-  if (!jsonHtml) {
-    return "";
-  }
-  return jsonHtml
-    .replace(/\\"/g, "\"")
-    .replace(/\\'/g, "'")
-    .replace(/\\\\/g, "\\")
-    .replace(/\\n/g, "\n")
-    .replace(/\\t/g, "\t")
-    .replace(/\\r/g, "\r");
-}
-
-function decodeHtmlEntities(text) {
-  if (!text) {
-    return "";
-  }
-  return text
-    .replace(/&#039;/g, "'")
-    .replace(/&quot;/g, "\"")
-    .replace(/&amp;/g, "&")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&nbsp;/g, " ");
-}
