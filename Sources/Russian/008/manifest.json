@@ -1,16 +1,16 @@
 {
-  "sourceName": "AniDub",
-  "iconUrl": "https://anidub.org/templates/CinemaBlue/images/jutfun.png",
+  "sourceName": "YummyAnime",
+  "iconUrl": "https://site.yummyani.me/img/icon/yummy-192.png",
   "author": {
     "name": "emp0ry",
     "icon": "https://avatars.githubusercontent.com/u/64217088"
   },
-  "version": "1.0.2",
+  "version": "1.0.5",
   "language": "Russian",
-  "streamType": "MP4",
-  "quality": "4K",
-  "baseUrl": "https://anidub.org/",
-  "searchBaseUrl": "https://anidub.org/index.php?do=search&subaction=search&story=%s",
+  "streamType": "HLS",
+  "quality": "720p",
+  "baseUrl": "https://api.yani.tv",
+  "searchBaseUrl": "https://api.yani.tv/search?limit=30&q=%s",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Russian/008/source.js",
   "asyncJS": true,
   "streamAsyncJS": true,
@@ -21,5 +21,5 @@
   "supportsDartotsu": true,
   "supportsSora": true,
   "supportsLuna": true,
-  "id": "jxvZL"
+  "id": "jxx3t"
 }
