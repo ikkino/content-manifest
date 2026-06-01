@@ -1,10 +1,10 @@
 {
-  "generatedAt": "2026-06-01T18:02:49.055Z",
+  "generatedAt": "2026-06-01T18:57:12.408Z",
   "mediaRequested": 60,
   "mediaChecked": 60,
   "modulesChecked": 15,
   "animeWithRoutes": 60,
-  "routeCount": 177,
+  "routeCount": 178,
   "failures": [
     {
       "aniListId": 21,
@@ -27,6 +27,16 @@
       ]
     },
     {
+      "aniListId": 21,
+      "title": "ONE PIECE",
+      "moduleId": "jWuL6",
+      "catalogPath": "Sources/English/015",
+      "sourceName": "Bingebox",
+      "errors": [
+        "implausible episode match: verified=1 available=1 expected<=1164"
+      ]
+    },
+    {
       "aniListId": 147105,
       "title": "Witch Hat Atelier",
       "moduleId": "jWuL6",
@@ -39,11 +49,21 @@
       ]
     },
     {
-      "aniListId": 197824,
-      "title": "Farming Life in Another World 2",
-      "moduleId": "mod_163960337",
-      "catalogPath": "Sources/English/009",
-      "sourceName": "AnimeLand",
+      "aniListId": 147105,
+      "title": "Witch Hat Atelier",
+      "moduleId": "jLYn4",
+      "catalogPath": "Sources/English/018",
+      "sourceName": "Anikuro",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 147105,
+      "title": "Witch Hat Atelier",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/020",
+      "sourceName": "OneTouch TV",
       "errors": [
         "search: searchResults returned an unusable result"
       ]
@@ -51,33 +71,81 @@
     {
       "aniListId": 21,
       "title": "ONE PIECE",
-      "moduleId": "jWuL6",
-      "catalogPath": "Sources/English/015",
-      "sourceName": "Bingebox",
+      "moduleId": "jLYn4",
+      "catalogPath": "Sources/English/018",
+      "sourceName": "Anikuro",
       "errors": [
-        "implausible episode match: verified=1 available=1 expected<=1164"
+        "implausible episode match: verified=7 available=7 expected<=1164"
       ]
     },
     {
-      "aniListId": 189987,
-      "title": "The Klutzy Class Monitor and the Girl with the Short Skirt",
-      "moduleId": "mod_163960337",
-      "catalogPath": "Sources/English/009",
-      "sourceName": "AnimeLand",
+      "aniListId": 147105,
+      "title": "Witch Hat Atelier",
+      "moduleId": "BvIyX",
+      "catalogPath": "Sources/English/023",
+      "sourceName": "VidLink",
+      "errors": [
+        "stream: Unexpected end of JSON input"
+      ]
+    },
+    {
+      "aniListId": 21,
+      "title": "ONE PIECE",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/020",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "implausible episode match: verified=8 available=8 expected<=1164"
+      ]
+    },
+    {
+      "aniListId": 21,
+      "title": "ONE PIECE",
+      "moduleId": "BvIyX",
+      "catalogPath": "Sources/English/023",
+      "sourceName": "VidLink",
+      "errors": [
+        "implausible episode match: verified=8 available=17 expected<=1164"
+      ]
+    },
+    {
+      "aniListId": 147105,
+      "title": "Witch Hat Atelier",
+      "moduleId": "jLHFz",
+      "catalogPath": "Sources/English/024",
+      "sourceName": "AniCrush",
       "errors": [
         "search: searchResults returned an unusable result"
       ]
     },
     {
-      "aniListId": 189987,
-      "title": "The Klutzy Class Monitor and the Girl with the Short Skirt",
-      "moduleId": "jWuL6",
-      "catalogPath": "Sources/English/015",
-      "sourceName": "Bingebox",
+      "aniListId": 21,
+      "title": "ONE PIECE",
+      "moduleId": "jLHFz",
+      "catalogPath": "Sources/English/024",
+      "sourceName": "AniCrush",
       "errors": [
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result"
+        "implausible episode match: verified=12 available=12 expected<=1164"
+      ]
+    },
+    {
+      "aniListId": 21,
+      "title": "ONE PIECE",
+      "moduleId": "BPSIM",
+      "catalogPath": "Sources/English/025",
+      "sourceName": "VidEasy",
+      "errors": [
+        "implausible episode match: verified=8 available=17 expected<=1164"
+      ]
+    },
+    {
+      "aniListId": 197824,
+      "title": "Farming Life in Another World 2",
+      "moduleId": "mod_163960337",
+      "catalogPath": "Sources/English/009",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
       ]
     },
     {
@@ -91,11 +159,103 @@
       ]
     },
     {
+      "aniListId": 147105,
+      "title": "Witch Hat Atelier",
+      "moduleId": "BPSIM",
+      "catalogPath": "Sources/English/025",
+      "sourceName": "VidEasy",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 189987,
+      "title": "The Klutzy Class Monitor and the Girl with the Short Skirt",
+      "moduleId": "mod_163960337",
+      "catalogPath": "Sources/English/009",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
       "aniListId": 182300,
       "title": "Wistoria: Wand and Sword Season 2",
       "moduleId": "mod_163960337",
       "catalogPath": "Sources/English/009",
       "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 182300,
+      "title": "Wistoria: Wand and Sword Season 2",
+      "moduleId": "jWuL6",
+      "catalogPath": "Sources/English/015",
+      "sourceName": "Bingebox",
+      "errors": [
+        "implausible episode match: verified=8 available=24 expected<=8"
+      ]
+    },
+    {
+      "aniListId": 189987,
+      "title": "The Klutzy Class Monitor and the Girl with the Short Skirt",
+      "moduleId": "jWuL6",
+      "catalogPath": "Sources/English/015",
+      "sourceName": "Bingebox",
+      "errors": [
+        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 182300,
+      "title": "Wistoria: Wand and Sword Season 2",
+      "moduleId": "G7jX",
+      "catalogPath": "Sources/English/016",
+      "sourceName": "Animetsu",
+      "errors": [
+        "episodes: extractEpisodes timed out"
+      ]
+    },
+    {
+      "aniListId": 182300,
+      "title": "Wistoria: Wand and Sword Season 2",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/020",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "implausible episode match: verified=1 available=1 expected<=8"
+      ]
+    },
+    {
+      "aniListId": 182300,
+      "title": "Wistoria: Wand and Sword Season 2",
+      "moduleId": "BvIyX",
+      "catalogPath": "Sources/English/023",
+      "sourceName": "VidLink",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 182300,
+      "title": "Wistoria: Wand and Sword Season 2",
+      "moduleId": "jLHFz",
+      "catalogPath": "Sources/English/024",
+      "sourceName": "AniCrush",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 182300,
+      "title": "Wistoria: Wand and Sword Season 2",
+      "moduleId": "BPSIM",
+      "catalogPath": "Sources/English/025",
+      "sourceName": "VidEasy",
       "errors": [
         "search: searchResults returned an unusable result"
       ]
@@ -111,60 +271,48 @@
       ]
     },
     {
-      "aniListId": 182300,
-      "title": "Wistoria: Wand and Sword Season 2",
-      "moduleId": "jWuL6",
-      "catalogPath": "Sources/English/015",
-      "sourceName": "Bingebox",
+      "aniListId": 189987,
+      "title": "The Klutzy Class Monitor and the Girl with the Short Skirt",
+      "moduleId": "jLYn4",
+      "catalogPath": "Sources/English/018",
+      "sourceName": "Anikuro",
       "errors": [
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result",
         "stream: extractStreamUrl timed out"
       ]
     },
     {
+      "aniListId": 189987,
+      "title": "The Klutzy Class Monitor and the Girl with the Short Skirt",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/020",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 189987,
+      "title": "The Klutzy Class Monitor and the Girl with the Short Skirt",
+      "moduleId": "BvIyX",
+      "catalogPath": "Sources/English/023",
+      "sourceName": "VidLink",
+      "errors": [
+        "stream: Unexpected end of JSON input"
+      ]
+    },
+    {
+      "aniListId": 189987,
+      "title": "The Klutzy Class Monitor and the Girl with the Short Skirt",
+      "moduleId": "jLHFz",
+      "catalogPath": "Sources/English/024",
+      "sourceName": "AniCrush",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
       "aniListId": 195600,
       "title": "Daemons of the Shadow Realm",
-      "moduleId": "mod_163960337",
-      "catalogPath": "Sources/English/009",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 182205,
-      "title": "That Time I Got Reincarnated as a Slime Season 4",
-      "moduleId": "mod_163960337",
-      "catalogPath": "Sources/English/009",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 182205,
-      "title": "That Time I Got Reincarnated as a Slime Season 4",
-      "moduleId": "jWuL6",
-      "catalogPath": "Sources/English/015",
-      "sourceName": "Bingebox",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 195600,
-      "title": "Daemons of the Shadow Realm",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/014",
-      "sourceName": "Anikoto",
-      "errors": [
-        "search: searchResults timed out"
-      ]
-    },
-    {
-      "aniListId": 206914,
-      "title": "NIPPON SANGOKU: The Three Nations of the Crimson Sun",
       "moduleId": "mod_163960337",
       "catalogPath": "Sources/English/009",
       "sourceName": "AnimeLand",
@@ -183,6 +331,96 @@
       ]
     },
     {
+      "aniListId": 189987,
+      "title": "The Klutzy Class Monitor and the Girl with the Short Skirt",
+      "moduleId": "BPSIM",
+      "catalogPath": "Sources/English/025",
+      "sourceName": "VidEasy",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 182205,
+      "title": "That Time I Got Reincarnated as a Slime Season 4",
+      "moduleId": "mod_163960337",
+      "catalogPath": "Sources/English/009",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 182205,
+      "title": "That Time I Got Reincarnated as a Slime Season 4",
+      "moduleId": "jWuL6",
+      "catalogPath": "Sources/English/015",
+      "sourceName": "Bingebox",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 195600,
+      "title": "Daemons of the Shadow Realm",
+      "moduleId": "jLYn4",
+      "catalogPath": "Sources/English/018",
+      "sourceName": "Anikuro",
+      "errors": [
+        "implausible episode match: verified=9 available=24 expected<=9"
+      ]
+    },
+    {
+      "aniListId": 206914,
+      "title": "NIPPON SANGOKU: The Three Nations of the Crimson Sun",
+      "moduleId": "mod_163960337",
+      "catalogPath": "Sources/English/009",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 195600,
+      "title": "Daemons of the Shadow Realm",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/020",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 195600,
+      "title": "Daemons of the Shadow Realm",
+      "moduleId": "BvIyX",
+      "catalogPath": "Sources/English/023",
+      "sourceName": "VidLink",
+      "errors": [
+        "stream: extractStreamUrl returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 195600,
+      "title": "Daemons of the Shadow Realm",
+      "moduleId": "jLHFz",
+      "catalogPath": "Sources/English/024",
+      "sourceName": "AniCrush",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 195600,
+      "title": "Daemons of the Shadow Realm",
+      "moduleId": "BPSIM",
+      "catalogPath": "Sources/English/025",
+      "sourceName": "VidEasy",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
       "aniListId": 269,
       "title": "Bleach",
       "moduleId": "mod_163960337",
@@ -190,18 +428,6 @@
       "sourceName": "AnimeLand",
       "errors": [
         "implausible episode match: verified=13 available=13 expected<=366"
-      ]
-    },
-    {
-      "aniListId": 206914,
-      "title": "NIPPON SANGOKU: The Three Nations of the Crimson Sun",
-      "moduleId": "jWuL6",
-      "catalogPath": "Sources/English/015",
-      "sourceName": "Bingebox",
-      "errors": [
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result"
       ]
     },
     {
@@ -225,6 +451,166 @@
       ]
     },
     {
+      "aniListId": 180745,
+      "title": "Classroom of the Elite 4th Season: Second Year, First Semester",
+      "moduleId": "Rf8D",
+      "catalogPath": "Sources/English/017",
+      "sourceName": "AnimeHeaven",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 180745,
+      "title": "Classroom of the Elite 4th Season: Second Year, First Semester",
+      "moduleId": "jLYn4",
+      "catalogPath": "Sources/English/018",
+      "sourceName": "Anikuro",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 180745,
+      "title": "Classroom of the Elite 4th Season: Second Year, First Semester",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/020",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "implausible episode match: verified=12 available=42 expected<=12"
+      ]
+    },
+    {
+      "aniListId": 180745,
+      "title": "Classroom of the Elite 4th Season: Second Year, First Semester",
+      "moduleId": "BvIyX",
+      "catalogPath": "Sources/English/023",
+      "sourceName": "VidLink",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 180745,
+      "title": "Classroom of the Elite 4th Season: Second Year, First Semester",
+      "moduleId": "jLHFz",
+      "catalogPath": "Sources/English/024",
+      "sourceName": "AniCrush",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 180745,
+      "title": "Classroom of the Elite 4th Season: Second Year, First Semester",
+      "moduleId": "BPSIM",
+      "catalogPath": "Sources/English/025",
+      "sourceName": "VidEasy",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 180745,
+      "title": "Classroom of the Elite 4th Season: Second Year, First Semester",
+      "moduleId": "BRHoq",
+      "catalogPath": "Sources/English/028",
+      "sourceName": "AnimeNana",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 180745,
+      "title": "Classroom of the Elite 4th Season: Second Year, First Semester",
+      "moduleId": "jhWaO",
+      "catalogPath": "Sources/English/029",
+      "sourceName": "AnimeGG",
+      "errors": [
+        "implausible episode match: verified=11 available=6 expected<=12"
+      ]
+    },
+    {
+      "aniListId": 180745,
+      "title": "Classroom of the Elite 4th Season: Second Year, First Semester",
+      "moduleId": "mod_530574073",
+      "catalogPath": "Sources/English/030",
+      "sourceName": "AniWorld (ENG SUB)",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 189046,
+      "title": "Re:ZERO -Starting Life in Another World- Season 4",
+      "moduleId": "mod_163960337",
+      "catalogPath": "Sources/English/009",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 189046,
+      "title": "Re:ZERO -Starting Life in Another World- Season 4",
+      "moduleId": "jWuL6",
+      "catalogPath": "Sources/English/015",
+      "sourceName": "Bingebox",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 189046,
+      "title": "Re:ZERO -Starting Life in Another World- Season 4",
+      "moduleId": "jLYn4",
+      "catalogPath": "Sources/English/018",
+      "sourceName": "Anikuro",
+      "errors": [
+        "implausible episode match: verified=8 available=19 expected<=8"
+      ]
+    },
+    {
+      "aniListId": 189046,
+      "title": "Re:ZERO -Starting Life in Another World- Season 4",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/020",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 189046,
+      "title": "Re:ZERO -Starting Life in Another World- Season 4",
+      "moduleId": "BvIyX",
+      "catalogPath": "Sources/English/023",
+      "sourceName": "VidLink",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 189046,
+      "title": "Re:ZERO -Starting Life in Another World- Season 4",
+      "moduleId": "jLHFz",
+      "catalogPath": "Sources/English/024",
+      "sourceName": "AniCrush",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 189046,
+      "title": "Re:ZERO -Starting Life in Another World- Season 4",
+      "moduleId": "BPSIM",
+      "catalogPath": "Sources/English/025",
+      "sourceName": "VidEasy",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
       "aniListId": 269,
       "title": "Bleach",
       "moduleId": "jWuL6",
@@ -239,11 +625,11 @@
     {
       "aniListId": 189046,
       "title": "Re:ZERO -Starting Life in Another World- Season 4",
-      "moduleId": "mod_163960337",
-      "catalogPath": "Sources/English/009",
-      "sourceName": "AnimeLand",
+      "moduleId": "jCtAp",
+      "catalogPath": "Sources/English/027",
+      "sourceName": "123Anime",
       "errors": [
-        "search: searchResults returned an unusable result"
+        "No matching route found"
       ]
     },
     {
@@ -267,6 +653,146 @@
       ]
     },
     {
+      "aniListId": 199221,
+      "title": "Dr. STONE SCIENCE FUTURE Cour 3",
+      "moduleId": "G7jX",
+      "catalogPath": "Sources/English/016",
+      "sourceName": "Animetsu",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 199221,
+      "title": "Dr. STONE SCIENCE FUTURE Cour 3",
+      "moduleId": "Rf8D",
+      "catalogPath": "Sources/English/017",
+      "sourceName": "AnimeHeaven",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 269,
+      "title": "Bleach",
+      "moduleId": "G7jX",
+      "catalogPath": "Sources/English/016",
+      "sourceName": "Animetsu",
+      "errors": [
+        "implausible episode match: verified=40 available=18 expected<=366"
+      ]
+    },
+    {
+      "aniListId": 269,
+      "title": "Bleach",
+      "moduleId": "Rf8D",
+      "catalogPath": "Sources/English/017",
+      "sourceName": "AnimeHeaven",
+      "errors": [
+        "implausible episode match: verified=96 available=96 expected<=366"
+      ]
+    },
+    {
+      "aniListId": 199221,
+      "title": "Dr. STONE SCIENCE FUTURE Cour 3",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/020",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 199221,
+      "title": "Dr. STONE SCIENCE FUTURE Cour 3",
+      "moduleId": "BvIyX",
+      "catalogPath": "Sources/English/023",
+      "sourceName": "VidLink",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 199221,
+      "title": "Dr. STONE SCIENCE FUTURE Cour 3",
+      "moduleId": "jLHFz",
+      "catalogPath": "Sources/English/024",
+      "sourceName": "AniCrush",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 199221,
+      "title": "Dr. STONE SCIENCE FUTURE Cour 3",
+      "moduleId": "BPSIM",
+      "catalogPath": "Sources/English/025",
+      "sourceName": "VidEasy",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 199221,
+      "title": "Dr. STONE SCIENCE FUTURE Cour 3",
+      "moduleId": "jCtAp",
+      "catalogPath": "Sources/English/027",
+      "sourceName": "123Anime",
+      "errors": [
+        "No matching route found"
+      ]
+    },
+    {
+      "aniListId": 269,
+      "title": "Bleach",
+      "moduleId": "jLYn4",
+      "catalogPath": "Sources/English/018",
+      "sourceName": "Anikuro",
+      "errors": [
+        "implausible episode match: verified=14 available=14 expected<=366"
+      ]
+    },
+    {
+      "aniListId": 199221,
+      "title": "Dr. STONE SCIENCE FUTURE Cour 3",
+      "moduleId": "BRHoq",
+      "catalogPath": "Sources/English/028",
+      "sourceName": "AnimeNana",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 199221,
+      "title": "Dr. STONE SCIENCE FUTURE Cour 3",
+      "moduleId": "jhWaO",
+      "catalogPath": "Sources/English/029",
+      "sourceName": "AnimeGG",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 199221,
+      "title": "Dr. STONE SCIENCE FUTURE Cour 3",
+      "moduleId": "mod_530574073",
+      "catalogPath": "Sources/English/030",
+      "sourceName": "AniWorld (ENG SUB)",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 269,
+      "title": "Bleach",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/020",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "implausible episode match: verified=1 available=1 expected<=366"
+      ]
+    },
+    {
       "aniListId": 169580,
       "title": "I Made Friends with the Second Prettiest Girl in My Class",
       "moduleId": "mod_163960337",
@@ -277,25 +803,35 @@
       ]
     },
     {
+      "aniListId": 269,
+      "title": "Bleach",
+      "moduleId": "jLHFz",
+      "catalogPath": "Sources/English/024",
+      "sourceName": "AniCrush",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 269,
+      "title": "Bleach",
+      "moduleId": "BPSIM",
+      "catalogPath": "Sources/English/025",
+      "sourceName": "VidEasy",
+      "errors": [
+        "implausible episode match: verified=1 available=1 expected<=366"
+      ]
+    },
+    {
       "aniListId": 169580,
       "title": "I Made Friends with the Second Prettiest Girl in My Class",
       "moduleId": "jWuL6",
       "catalogPath": "Sources/English/015",
       "sourceName": "Bingebox",
       "errors": [
-        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl timed out",
         "stream: extractStreamUrl returned an unusable result",
         "stream: extractStreamUrl returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 189046,
-      "title": "Re:ZERO -Starting Life in Another World- Season 4",
-      "moduleId": "jWuL6",
-      "catalogPath": "Sources/English/015",
-      "sourceName": "Bingebox",
-      "errors": [
-        "search: searchResults returned an unusable result"
       ]
     },
     {
@@ -309,6 +845,16 @@
       ]
     },
     {
+      "aniListId": 97940,
+      "title": "Black Clover",
+      "moduleId": "mod_163960337",
+      "catalogPath": "Sources/English/009",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "episodes: extractEpisodes timed out"
+      ]
+    },
+    {
       "aniListId": 190704,
       "title": "Mistress Kanan is Devilishly Easy",
       "moduleId": "mod_163960337",
@@ -319,11 +865,133 @@
       ]
     },
     {
+      "aniListId": 190704,
+      "title": "Mistress Kanan is Devilishly Easy",
+      "moduleId": "jWuL6",
+      "catalogPath": "Sources/English/015",
+      "sourceName": "Bingebox",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 190704,
+      "title": "Mistress Kanan is Devilishly Easy",
+      "moduleId": "jLYn4",
+      "catalogPath": "Sources/English/018",
+      "sourceName": "Anikuro",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 190704,
+      "title": "Mistress Kanan is Devilishly Easy",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/020",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 190704,
+      "title": "Mistress Kanan is Devilishly Easy",
+      "moduleId": "BvIyX",
+      "catalogPath": "Sources/English/023",
+      "sourceName": "VidLink",
+      "errors": [
+        "stream: extractStreamUrl returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 190704,
+      "title": "Mistress Kanan is Devilishly Easy",
+      "moduleId": "jLHFz",
+      "catalogPath": "Sources/English/024",
+      "sourceName": "AniCrush",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 97940,
+      "title": "Black Clover",
+      "moduleId": "jWuL6",
+      "catalogPath": "Sources/English/015",
+      "sourceName": "Bingebox",
+      "errors": [
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 190704,
+      "title": "Mistress Kanan is Devilishly Easy",
+      "moduleId": "BPSIM",
+      "catalogPath": "Sources/English/025",
+      "sourceName": "VidEasy",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
       "aniListId": 11061,
       "title": "Hunter x Hunter (2011)",
       "moduleId": "mod_163960337",
       "catalogPath": "Sources/English/009",
       "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 97940,
+      "title": "Black Clover",
+      "moduleId": "jLYn4",
+      "catalogPath": "Sources/English/018",
+      "sourceName": "Anikuro",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 11061,
+      "title": "Hunter x Hunter (2011)",
+      "moduleId": "Rf8D",
+      "catalogPath": "Sources/English/017",
+      "sourceName": "AnimeHeaven",
+      "errors": [
+        "implausible episode match: verified=58 available=58 expected<=148"
+      ]
+    },
+    {
+      "aniListId": 97940,
+      "title": "Black Clover",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/020",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "No matching route found"
+      ]
+    },
+    {
+      "aniListId": 97940,
+      "title": "Black Clover",
+      "moduleId": "BvIyX",
+      "catalogPath": "Sources/English/023",
+      "sourceName": "VidLink",
+      "errors": [
+        "implausible episode match: verified=1 available=1 expected<=170"
+      ]
+    },
+    {
+      "aniListId": 97940,
+      "title": "Black Clover",
+      "moduleId": "jLHFz",
+      "catalogPath": "Sources/English/024",
+      "sourceName": "AniCrush",
       "errors": [
         "search: searchResults returned an unusable result"
       ]
@@ -341,13 +1009,11 @@
     {
       "aniListId": 97940,
       "title": "Black Clover",
-      "moduleId": "jWuL6",
-      "catalogPath": "Sources/English/015",
-      "sourceName": "Bingebox",
+      "moduleId": "BPSIM",
+      "catalogPath": "Sources/English/025",
+      "sourceName": "VidEasy",
       "errors": [
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result"
+        "implausible episode match: verified=1 available=1 expected<=170"
       ]
     },
     {
@@ -373,16 +1039,6 @@
       ]
     },
     {
-      "aniListId": 182255,
-      "title": "Frieren: Beyond Journey’s End Season 2",
-      "moduleId": "mod_163960337",
-      "catalogPath": "Sources/English/009",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
       "aniListId": 170019,
       "title": "The Angel Next Door Spoils Me Rotten2",
       "moduleId": "jWuL6",
@@ -395,6 +1051,56 @@
       ]
     },
     {
+      "aniListId": 186497,
+      "title": "The Ramparts of Ice",
+      "moduleId": "jLYn4",
+      "catalogPath": "Sources/English/018",
+      "sourceName": "Anikuro",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 186497,
+      "title": "The Ramparts of Ice",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/020",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 186497,
+      "title": "The Ramparts of Ice",
+      "moduleId": "BvIyX",
+      "catalogPath": "Sources/English/023",
+      "sourceName": "VidLink",
+      "errors": [
+        "stream: extractStreamUrl returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 186497,
+      "title": "The Ramparts of Ice",
+      "moduleId": "jLHFz",
+      "catalogPath": "Sources/English/024",
+      "sourceName": "AniCrush",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 182255,
+      "title": "Frieren: Beyond Journey’s End Season 2",
+      "moduleId": "mod_163960337",
+      "catalogPath": "Sources/English/009",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
       "aniListId": 182255,
       "title": "Frieren: Beyond Journey’s End Season 2",
       "moduleId": "jWuL6",
@@ -405,6 +1111,26 @@
       ]
     },
     {
+      "aniListId": 182255,
+      "title": "Frieren: Beyond Journey’s End Season 2",
+      "moduleId": "Rf8D",
+      "catalogPath": "Sources/English/017",
+      "sourceName": "AnimeHeaven",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 186497,
+      "title": "The Ramparts of Ice",
+      "moduleId": "BPSIM",
+      "catalogPath": "Sources/English/025",
+      "sourceName": "VidEasy",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
       "aniListId": 198113,
       "title": "KILL BLUE",
       "moduleId": "mod_163960337",
@@ -412,6 +1138,68 @@
       "sourceName": "AnimeLand",
       "errors": [
         "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 198113,
+      "title": "KILL BLUE",
+      "moduleId": "jWuL6",
+      "catalogPath": "Sources/English/015",
+      "sourceName": "Bingebox",
+      "errors": [
+        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 198113,
+      "title": "KILL BLUE",
+      "moduleId": "G7jX",
+      "catalogPath": "Sources/English/016",
+      "sourceName": "Animetsu",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 198113,
+      "title": "KILL BLUE",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/020",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "No matching route found"
+      ]
+    },
+    {
+      "aniListId": 198113,
+      "title": "KILL BLUE",
+      "moduleId": "BvIyX",
+      "catalogPath": "Sources/English/023",
+      "sourceName": "VidLink",
+      "errors": [
+        "stream: Unexpected end of JSON input"
+      ]
+    },
+    {
+      "aniListId": 198113,
+      "title": "KILL BLUE",
+      "moduleId": "jLHFz",
+      "catalogPath": "Sources/English/024",
+      "sourceName": "AniCrush",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 198113,
+      "title": "KILL BLUE",
+      "moduleId": "BPSIM",
+      "catalogPath": "Sources/English/025",
+      "sourceName": "VidEasy",
+      "errors": [
+        "stream: extractStreamUrl timed out"
       ]
     },
     {
@@ -425,15 +1213,73 @@
       ]
     },
     {
-      "aniListId": 198113,
-      "title": "KILL BLUE",
+      "aniListId": 182255,
+      "title": "Frieren: Beyond Journey’s End Season 2",
+      "moduleId": "jLYn4",
+      "catalogPath": "Sources/English/018",
+      "sourceName": "Anikuro",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 182255,
+      "title": "Frieren: Beyond Journey’s End Season 2",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/020",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "implausible episode match: verified=10 available=16 expected<=10"
+      ]
+    },
+    {
+      "aniListId": 199588,
+      "title": "Gals Can't Be Kind to Otaku!?",
       "moduleId": "jWuL6",
       "catalogPath": "Sources/English/015",
       "sourceName": "Bingebox",
       "errors": [
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 182255,
+      "title": "Frieren: Beyond Journey’s End Season 2",
+      "moduleId": "BvIyX",
+      "catalogPath": "Sources/English/023",
+      "sourceName": "VidLink",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 182255,
+      "title": "Frieren: Beyond Journey’s End Season 2",
+      "moduleId": "jLHFz",
+      "catalogPath": "Sources/English/024",
+      "sourceName": "AniCrush",
+      "errors": [
         "stream: extractStreamUrl returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 182255,
+      "title": "Frieren: Beyond Journey’s End Season 2",
+      "moduleId": "BPSIM",
+      "catalogPath": "Sources/English/025",
+      "sourceName": "VidEasy",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 199588,
+      "title": "Gals Can't Be Kind to Otaku!?",
+      "moduleId": "Rf8D",
+      "catalogPath": "Sources/English/017",
+      "sourceName": "AnimeHeaven",
+      "errors": [
+        "search: searchResults returned an unusable result"
       ]
     },
     {
@@ -442,6 +1288,36 @@
       "moduleId": "mod_163960337",
       "catalogPath": "Sources/English/009",
       "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 199588,
+      "title": "Gals Can't Be Kind to Otaku!?",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/020",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 199588,
+      "title": "Gals Can't Be Kind to Otaku!?",
+      "moduleId": "BvIyX",
+      "catalogPath": "Sources/English/023",
+      "sourceName": "VidLink",
+      "errors": [
+        "stream: Unexpected end of JSON input"
+      ]
+    },
+    {
+      "aniListId": 199588,
+      "title": "Gals Can't Be Kind to Otaku!?",
+      "moduleId": "jLHFz",
+      "catalogPath": "Sources/English/024",
+      "sourceName": "AniCrush",
       "errors": [
         "search: searchResults returned an unusable result"
       ]
@@ -454,18 +1330,6 @@
       "sourceName": "AnimeLand",
       "errors": [
         "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 196935,
-      "title": "Akane-banashi",
-      "moduleId": "jWuL6",
-      "catalogPath": "Sources/English/015",
-      "sourceName": "Bingebox",
-      "errors": [
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl timed out"
       ]
     },
     {
@@ -489,62 +1353,70 @@
       ]
     },
     {
-      "aniListId": 200769,
-      "title": "The strongest job is apparently not a hero or a sage, but an appraiser (provisional)!",
-      "moduleId": "mod_163960337",
-      "catalogPath": "Sources/English/009",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 200769,
-      "title": "The strongest job is apparently not a hero or a sage, but an appraiser (provisional)!",
-      "moduleId": "jWuL6",
-      "catalogPath": "Sources/English/015",
-      "sourceName": "Bingebox",
-      "errors": [
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 172463,
-      "title": "JUJUTSU KAISEN Season 3: The Culling Game Part 1",
-      "moduleId": "mod_163960337",
-      "catalogPath": "Sources/English/009",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
       "aniListId": 190143,
       "title": "Agents of the Four Seasons: Dance of Spring",
       "moduleId": "jWuL6",
       "catalogPath": "Sources/English/015",
       "sourceName": "Bingebox",
       "errors": [
-        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl returned an unusable result",
         "stream: extractStreamUrl returned an unusable result",
         "stream: extractStreamUrl returned an unusable result"
       ]
     },
     {
-      "aniListId": 172463,
-      "title": "JUJUTSU KAISEN Season 3: The Culling Game Part 1",
-      "moduleId": "jWuL6",
-      "catalogPath": "Sources/English/015",
-      "sourceName": "Bingebox",
+      "aniListId": 199547,
+      "title": "MARRIAGETOXIN",
+      "moduleId": "jLYn4",
+      "catalogPath": "Sources/English/018",
+      "sourceName": "Anikuro",
+      "errors": [
+        "implausible episode match: verified=8 available=13 expected<=8"
+      ]
+    },
+    {
+      "aniListId": 199547,
+      "title": "MARRIAGETOXIN",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/020",
+      "sourceName": "OneTouch TV",
       "errors": [
         "search: searchResults returned an unusable result"
       ]
     },
     {
-      "aniListId": 171110,
-      "title": "Ascendance of a Bookworm: Adopted Daughter of an Archduke",
+      "aniListId": 199547,
+      "title": "MARRIAGETOXIN",
+      "moduleId": "BvIyX",
+      "catalogPath": "Sources/English/023",
+      "sourceName": "VidLink",
+      "errors": [
+        "stream: Unexpected end of JSON input"
+      ]
+    },
+    {
+      "aniListId": 199547,
+      "title": "MARRIAGETOXIN",
+      "moduleId": "jLHFz",
+      "catalogPath": "Sources/English/024",
+      "sourceName": "AniCrush",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 199547,
+      "title": "MARRIAGETOXIN",
+      "moduleId": "BPSIM",
+      "catalogPath": "Sources/English/025",
+      "sourceName": "VidEasy",
+      "errors": [
+        "implausible episode match: verified=8 available=13 expected<=8"
+      ]
+    },
+    {
+      "aniListId": 200769,
+      "title": "The strongest job is apparently not a hero or a sage, but an appraiser (provisional)!",
       "moduleId": "mod_163960337",
       "catalogPath": "Sources/English/009",
       "sourceName": "AnimeLand",
@@ -553,21 +1425,83 @@
       ]
     },
     {
-      "aniListId": 171110,
-      "title": "Ascendance of a Bookworm: Adopted Daughter of an Archduke",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/014",
-      "sourceName": "Anikoto",
-      "errors": [
-        "search: searchResults timed out"
-      ]
-    },
-    {
-      "aniListId": 171110,
-      "title": "Ascendance of a Bookworm: Adopted Daughter of an Archduke",
+      "aniListId": 200769,
+      "title": "The strongest job is apparently not a hero or a sage, but an appraiser (provisional)!",
       "moduleId": "jWuL6",
       "catalogPath": "Sources/English/015",
       "sourceName": "Bingebox",
+      "errors": [
+        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 200769,
+      "title": "The strongest job is apparently not a hero or a sage, but an appraiser (provisional)!",
+      "moduleId": "G7jX",
+      "catalogPath": "Sources/English/016",
+      "sourceName": "Animetsu",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 200769,
+      "title": "The strongest job is apparently not a hero or a sage, but an appraiser (provisional)!",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/020",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 200769,
+      "title": "The strongest job is apparently not a hero or a sage, but an appraiser (provisional)!",
+      "moduleId": "BvIyX",
+      "catalogPath": "Sources/English/023",
+      "sourceName": "VidLink",
+      "errors": [
+        "stream: Unexpected end of JSON input"
+      ]
+    },
+    {
+      "aniListId": 200769,
+      "title": "The strongest job is apparently not a hero or a sage, but an appraiser (provisional)!",
+      "moduleId": "jLHFz",
+      "catalogPath": "Sources/English/024",
+      "sourceName": "AniCrush",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 200769,
+      "title": "The strongest job is apparently not a hero or a sage, but an appraiser (provisional)!",
+      "moduleId": "BPSIM",
+      "catalogPath": "Sources/English/025",
+      "sourceName": "VidEasy",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 200769,
+      "title": "The strongest job is apparently not a hero or a sage, but an appraiser (provisional)!",
+      "moduleId": "jCtAp",
+      "catalogPath": "Sources/English/027",
+      "sourceName": "123Anime",
+      "errors": [
+        "No matching route found"
+      ]
+    },
+    {
+      "aniListId": 172463,
+      "title": "JUJUTSU KAISEN Season 3: The Culling Game Part 1",
+      "moduleId": "mod_163960337",
+      "catalogPath": "Sources/English/009",
+      "sourceName": "AnimeLand",
       "errors": [
         "search: searchResults returned an unusable result"
       ]
@@ -575,11 +1509,11 @@
     {
       "aniListId": 172463,
       "title": "JUJUTSU KAISEN Season 3: The Culling Game Part 1",
-      "moduleId": "j2ecl",
-      "catalogPath": "Sources/English/013",
-      "sourceName": "Animepahe (DUB)",
+      "moduleId": "jWuL6",
+      "catalogPath": "Sources/English/015",
+      "sourceName": "Bingebox",
       "errors": [
-        "search: searchResults timed out"
+        "search: searchResults returned an unusable result"
       ]
     },
     {
@@ -593,8 +1527,48 @@
       ]
     },
     {
-      "aniListId": 184492,
-      "title": "Welcome to Demon School! Iruma-kun Season 4",
+      "aniListId": 172463,
+      "title": "JUJUTSU KAISEN Season 3: The Culling Game Part 1",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/020",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "implausible episode match: verified=1 available=1 expected<=12"
+      ]
+    },
+    {
+      "aniListId": 172463,
+      "title": "JUJUTSU KAISEN Season 3: The Culling Game Part 1",
+      "moduleId": "BvIyX",
+      "catalogPath": "Sources/English/023",
+      "sourceName": "VidLink",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 172463,
+      "title": "JUJUTSU KAISEN Season 3: The Culling Game Part 1",
+      "moduleId": "jLHFz",
+      "catalogPath": "Sources/English/024",
+      "sourceName": "AniCrush",
+      "errors": [
+        "stream: extractStreamUrl returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 172463,
+      "title": "JUJUTSU KAISEN Season 3: The Culling Game Part 1",
+      "moduleId": "BPSIM",
+      "catalogPath": "Sources/English/025",
+      "sourceName": "VidEasy",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 171110,
+      "title": "Ascendance of a Bookworm: Adopted Daughter of an Archduke",
       "moduleId": "mod_163960337",
       "catalogPath": "Sources/English/009",
       "sourceName": "AnimeLand",
@@ -605,21 +1579,31 @@
     {
       "aniListId": 171110,
       "title": "Ascendance of a Bookworm: Adopted Daughter of an Archduke",
-      "moduleId": "j2ecl",
-      "catalogPath": "Sources/English/013",
-      "sourceName": "Animepahe (DUB)",
+      "moduleId": "jWuL6",
+      "catalogPath": "Sources/English/015",
+      "sourceName": "Bingebox",
       "errors": [
-        "search: searchResults timed out"
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 190143,
+      "title": "Agents of the Four Seasons: Dance of Spring",
+      "moduleId": "jLYn4",
+      "catalogPath": "Sources/English/018",
+      "sourceName": "Anikuro",
+      "errors": [
+        "stream: extractStreamUrl timed out"
       ]
     },
     {
       "aniListId": 184492,
       "title": "Welcome to Demon School! Iruma-kun Season 4",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/014",
-      "sourceName": "Anikoto",
+      "moduleId": "mod_163960337",
+      "catalogPath": "Sources/English/009",
+      "sourceName": "AnimeLand",
       "errors": [
-        "search: searchResults timed out"
+        "search: searchResults returned an unusable result"
       ]
     },
     {
@@ -633,31 +1617,11 @@
       ]
     },
     {
-      "aniListId": 178025,
-      "title": "Gachiakuta",
-      "moduleId": "mod_163960337",
-      "catalogPath": "Sources/English/009",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 184492,
-      "title": "Welcome to Demon School! Iruma-kun Season 4",
-      "moduleId": "j2ecl",
-      "catalogPath": "Sources/English/013",
-      "sourceName": "Animepahe (DUB)",
-      "errors": [
-        "search: searchResults timed out"
-      ]
-    },
-    {
-      "aniListId": 178025,
-      "title": "Gachiakuta",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/014",
-      "sourceName": "Anikoto",
+      "aniListId": 190143,
+      "title": "Agents of the Four Seasons: Dance of Spring",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/020",
+      "sourceName": "OneTouch TV",
       "errors": [
         "search: searchResults returned an unusable result"
       ]
@@ -673,13 +1637,95 @@
       ]
     },
     {
+      "aniListId": 190143,
+      "title": "Agents of the Four Seasons: Dance of Spring",
+      "moduleId": "BvIyX",
+      "catalogPath": "Sources/English/023",
+      "sourceName": "VidLink",
+      "errors": [
+        "stream: Unexpected end of JSON input",
+        "stream: Unexpected end of JSON input",
+        "stream: Unexpected end of JSON input"
+      ]
+    },
+    {
+      "aniListId": 184492,
+      "title": "Welcome to Demon School! Iruma-kun Season 4",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/020",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "implausible episode match: verified=6 available=6 expected<=9"
+      ]
+    },
+    {
+      "aniListId": 184492,
+      "title": "Welcome to Demon School! Iruma-kun Season 4",
+      "moduleId": "BvIyX",
+      "catalogPath": "Sources/English/023",
+      "sourceName": "VidLink",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 190143,
+      "title": "Agents of the Four Seasons: Dance of Spring",
+      "moduleId": "jLHFz",
+      "catalogPath": "Sources/English/024",
+      "sourceName": "AniCrush",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 184492,
+      "title": "Welcome to Demon School! Iruma-kun Season 4",
+      "moduleId": "jLHFz",
+      "catalogPath": "Sources/English/024",
+      "sourceName": "AniCrush",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 184492,
+      "title": "Welcome to Demon School! Iruma-kun Season 4",
+      "moduleId": "BPSIM",
+      "catalogPath": "Sources/English/025",
+      "sourceName": "VidEasy",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 184492,
+      "title": "Welcome to Demon School! Iruma-kun Season 4",
+      "moduleId": "jCtAp",
+      "catalogPath": "Sources/English/027",
+      "sourceName": "123Anime",
+      "errors": [
+        "No matching route found"
+      ]
+    },
+    {
+      "aniListId": 178025,
+      "title": "Gachiakuta",
+      "moduleId": "mod_163960337",
+      "catalogPath": "Sources/English/009",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
       "aniListId": 154587,
       "title": "Frieren: Beyond Journey’s End",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/014",
-      "sourceName": "Anikoto",
+      "moduleId": "jWuL6",
+      "catalogPath": "Sources/English/015",
+      "sourceName": "Bingebox",
       "errors": [
-        "implausible episode match: verified=23 available=23 expected<=28"
+        "stream: extractStreamUrl timed out"
       ]
     },
     {
@@ -703,13 +1749,25 @@
       ]
     },
     {
-      "aniListId": 196974,
-      "title": "The Classroom of the Black Cat and a Witch",
-      "moduleId": "mod_163960337",
-      "catalogPath": "Sources/English/009",
-      "sourceName": "AnimeLand",
+      "aniListId": 190143,
+      "title": "Agents of the Four Seasons: Dance of Spring",
+      "moduleId": "BPSIM",
+      "catalogPath": "Sources/English/025",
+      "sourceName": "VidEasy",
       "errors": [
-        "search: searchResults returned an unusable result"
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 163134,
+      "title": "Re:ZERO -Starting Life in Another World- Season 3",
+      "moduleId": "jLYn4",
+      "catalogPath": "Sources/English/018",
+      "sourceName": "Anikuro",
+      "errors": [
+        "stream: extractStreamUrl timed out"
       ]
     },
     {
@@ -723,23 +1781,93 @@
       ]
     },
     {
-      "aniListId": 196974,
-      "title": "The Classroom of the Black Cat and a Witch",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/014",
-      "sourceName": "Anikoto",
+      "aniListId": 1735,
+      "title": "Naruto: Shippuden",
+      "moduleId": "jWuL6",
+      "catalogPath": "Sources/English/015",
+      "sourceName": "Bingebox",
       "errors": [
-        "implausible episode match: verified=8 available=24 expected<=8"
+        "stored route too slow: 2425ms > 2200ms"
+      ]
+    },
+    {
+      "aniListId": 1735,
+      "title": "Naruto: Shippuden",
+      "moduleId": "Rf8D",
+      "catalogPath": "Sources/English/017",
+      "sourceName": "AnimeHeaven",
+      "errors": [
+        "implausible episode match: verified=71 available=71 expected<=500"
+      ]
+    },
+    {
+      "aniListId": 163134,
+      "title": "Re:ZERO -Starting Life in Another World- Season 3",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/020",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 163134,
+      "title": "Re:ZERO -Starting Life in Another World- Season 3",
+      "moduleId": "BvIyX",
+      "catalogPath": "Sources/English/023",
+      "sourceName": "VidLink",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 163134,
+      "title": "Re:ZERO -Starting Life in Another World- Season 3",
+      "moduleId": "jLHFz",
+      "catalogPath": "Sources/English/024",
+      "sourceName": "AniCrush",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 163134,
+      "title": "Re:ZERO -Starting Life in Another World- Season 3",
+      "moduleId": "BPSIM",
+      "catalogPath": "Sources/English/025",
+      "sourceName": "VidEasy",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 163134,
+      "title": "Re:ZERO -Starting Life in Another World- Season 3",
+      "moduleId": "jCtAp",
+      "catalogPath": "Sources/English/027",
+      "sourceName": "123Anime",
+      "errors": [
+        "No matching route found"
       ]
     },
     {
       "aniListId": 196974,
       "title": "The Classroom of the Black Cat and a Witch",
-      "moduleId": "j2ecl",
-      "catalogPath": "Sources/English/013",
-      "sourceName": "Animepahe (DUB)",
+      "moduleId": "mod_163960337",
+      "catalogPath": "Sources/English/009",
+      "sourceName": "AnimeLand",
       "errors": [
-        "implausible episode match: verified=8 available=24 expected<=8"
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 202102,
+      "title": "NEEDY GIRL OVERDOSE",
+      "moduleId": "mod_163960337",
+      "catalogPath": "Sources/English/009",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
       ]
     },
     {
@@ -753,245 +1881,63 @@
       ]
     },
     {
-      "aniListId": 202102,
-      "title": "NEEDY GIRL OVERDOSE",
-      "moduleId": "mod_163960337",
-      "catalogPath": "Sources/English/009",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 202102,
-      "title": "NEEDY GIRL OVERDOSE",
+      "aniListId": 182483,
+      "title": "The Warrior Princess and the Barbaric King",
       "moduleId": "jWuL6",
       "catalogPath": "Sources/English/015",
       "sourceName": "Bingebox",
       "errors": [
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result"
+        "stored route too slow: 2407ms > 2200ms"
       ]
     },
     {
-      "aniListId": 194393,
-      "title": "I Want to End this Love Game",
-      "moduleId": "mod_163960337",
-      "catalogPath": "Sources/English/009",
-      "sourceName": "AnimeLand",
+      "aniListId": 182483,
+      "title": "The Warrior Princess and the Barbaric King",
+      "moduleId": "jLYn4",
+      "catalogPath": "Sources/English/018",
+      "sourceName": "Anikuro",
       "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 194393,
-      "title": "I Want to End this Love Game",
-      "moduleId": "jWuL6",
-      "catalogPath": "Sources/English/015",
-      "sourceName": "Bingebox",
-      "errors": [
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 161645,
-      "title": "The Apothecary Diaries",
-      "moduleId": "jWuL6",
-      "catalogPath": "Sources/English/015",
-      "sourceName": "Bingebox",
-      "errors": [
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 187869,
-      "title": "Botan Kamiina Fully Blossoms When Drunk",
-      "moduleId": "mod_163960337",
-      "catalogPath": "Sources/English/009",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 16498,
-      "title": "Attack on Titan",
-      "moduleId": "jWuL6",
-      "catalogPath": "Sources/English/015",
-      "sourceName": "Bingebox",
-      "errors": [
-        "implausible episode match: verified=25 available=87 expected<=25"
-      ]
-    },
-    {
-      "aniListId": 5114,
-      "title": "Fullmetal Alchemist: Brotherhood",
-      "moduleId": "mod_163960337",
-      "catalogPath": "Sources/English/009",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 1535,
-      "title": "Death Note",
-      "moduleId": "mod_163960337",
-      "catalogPath": "Sources/English/009",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "stream: extractStreamUrl returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 181444,
-      "title": "The Fragrant Flower Blooms With Dignity",
-      "moduleId": "jWuL6",
-      "catalogPath": "Sources/English/015",
-      "sourceName": "Bingebox",
-      "errors": [
-        "implausible episode match: verified=6 available=12 expected<=13"
-      ]
-    },
-    {
-      "aniListId": 184951,
-      "title": "You and I Are Polar Opposites",
-      "moduleId": "mod_163960337",
-      "catalogPath": "Sources/English/009",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 1535,
-      "title": "Death Note",
-      "moduleId": "jWuL6",
-      "catalogPath": "Sources/English/015",
-      "sourceName": "Bingebox",
-      "errors": [
-        "implausible episode match: verified=1 available=1 expected<=37"
-      ]
-    },
-    {
-      "aniListId": 1535,
-      "title": "Death Note",
-      "moduleId": "j2ecl",
-      "catalogPath": "Sources/English/013",
-      "sourceName": "Animepahe (DUB)",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 182578,
-      "title": "Mission: Yozakura Family Season 2",
-      "moduleId": "mod_163960337",
-      "catalogPath": "Sources/English/009",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 182578,
-      "title": "Mission: Yozakura Family Season 2",
-      "moduleId": "jWuL6",
-      "catalogPath": "Sources/English/015",
-      "sourceName": "Bingebox",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 184951,
-      "title": "You and I Are Polar Opposites",
-      "moduleId": "jWuL6",
-      "catalogPath": "Sources/English/015",
-      "sourceName": "Bingebox",
-      "errors": [
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 19,
-      "title": "Monster",
-      "moduleId": "mod_163960337",
-      "catalogPath": "Sources/English/009",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "implausible episode match: verified=1 available=1 expected<=74"
-      ]
-    },
-    {
-      "aniListId": 192808,
-      "title": "An Observation Log of My Fiancée Who Calls Herself a Villainess",
-      "moduleId": "mod_163960337",
-      "catalogPath": "Sources/English/009",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 19,
-      "title": "Monster",
-      "moduleId": "jWuL6",
-      "catalogPath": "Sources/English/015",
-      "sourceName": "Bingebox",
-      "errors": [
-        "implausible episode match: verified=12 available=12 expected<=74"
-      ]
-    },
-    {
-      "aniListId": 192808,
-      "title": "An Observation Log of My Fiancée Who Calls Herself a Villainess",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/014",
-      "sourceName": "Anikoto",
-      "errors": [
-        "episodes: extractEpisodes timed out"
-      ]
-    },
-    {
-      "aniListId": 192808,
-      "title": "An Observation Log of My Fiancée Who Calls Herself a Villainess",
-      "moduleId": "jWuL6",
-      "catalogPath": "Sources/English/015",
-      "sourceName": "Bingebox",
-      "errors": [
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 19,
-      "title": "Monster",
-      "moduleId": "j2ecl",
-      "catalogPath": "Sources/English/013",
-      "sourceName": "Animepahe (DUB)",
-      "errors": [
-        "episodes: extractEpisodes timed out",
-        "episodes: extractEpisodes timed out",
         "stream: extractStreamUrl timed out"
       ]
     },
     {
-      "aniListId": 19,
-      "title": "Monster",
-      "moduleId": "Rf8D",
-      "catalogPath": "Sources/English/017",
-      "sourceName": "AnimeHeaven",
+      "aniListId": 182483,
+      "title": "The Warrior Princess and the Barbaric King",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/020",
+      "sourceName": "OneTouch TV",
       "errors": [
-        "implausible episode match: verified=9 available=9 expected<=74"
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 182483,
+      "title": "The Warrior Princess and the Barbaric King",
+      "moduleId": "BvIyX",
+      "catalogPath": "Sources/English/023",
+      "sourceName": "VidLink",
+      "errors": [
+        "stream: Unexpected end of JSON input"
+      ]
+    },
+    {
+      "aniListId": 182483,
+      "title": "The Warrior Princess and the Barbaric King",
+      "moduleId": "jLHFz",
+      "catalogPath": "Sources/English/024",
+      "sourceName": "AniCrush",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 182483,
+      "title": "The Warrior Princess and the Barbaric King",
+      "moduleId": "BPSIM",
+      "catalogPath": "Sources/English/025",
+      "sourceName": "VidEasy",
+      "errors": [
+        "stream: extractStreamUrl timed out"
       ]
     },
     {
@@ -1015,378 +1961,28 @@
       ]
     },
     {
-      "aniListId": 101922,
-      "title": "Demon Slayer: Kimetsu no Yaiba",
-      "moduleId": "mod_163960337",
-      "catalogPath": "Sources/English/009",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "implausible episode match: verified=11 available=11 expected<=26"
-      ]
-    },
-    {
-      "aniListId": 101922,
-      "title": "Demon Slayer: Kimetsu no Yaiba",
-      "moduleId": "jWuL6",
-      "catalogPath": "Sources/English/015",
-      "sourceName": "Bingebox",
-      "errors": [
-        "implausible episode match: verified=1 available=1 expected<=26"
-      ]
-    },
-    {
-      "aniListId": 113415,
-      "title": "JUJUTSU KAISEN",
-      "moduleId": "mod_163960337",
-      "catalogPath": "Sources/English/009",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "implausible episode match: verified=23 available=23 expected<=24"
-      ]
-    },
-    {
-      "aniListId": 113415,
-      "title": "JUJUTSU KAISEN",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/014",
-      "sourceName": "Anikoto",
-      "errors": [
-        "implausible episode match: verified=1 available=1 expected<=24"
-      ]
-    },
-    {
-      "aniListId": 113415,
-      "title": "JUJUTSU KAISEN",
-      "moduleId": "jWuL6",
-      "catalogPath": "Sources/English/015",
-      "sourceName": "Bingebox",
-      "errors": [
-        "implausible episode match: verified=24 available=59 expected<=24"
-      ]
-    },
-    {
-      "aniListId": 113415,
-      "title": "JUJUTSU KAISEN",
-      "moduleId": "j2ecl",
-      "catalogPath": "Sources/English/013",
-      "sourceName": "Animepahe (DUB)",
-      "errors": [
-        "implausible episode match: verified=1 available=1 expected<=24"
-      ]
-    },
-    {
-      "aniListId": 113415,
-      "title": "JUJUTSU KAISEN",
-      "moduleId": "Rf8D",
-      "catalogPath": "Sources/English/017",
-      "sourceName": "AnimeHeaven",
-      "errors": [
-        "implausible episode match: verified=12 available=12 expected<=24"
-      ]
-    },
-    {
-      "aniListId": 113415,
-      "title": "JUJUTSU KAISEN",
-      "moduleId": "jLYn4",
-      "catalogPath": "Sources/English/018",
-      "sourceName": "Anikuro",
-      "errors": [
-        "implausible episode match: verified=1 available=1 expected<=24"
-      ]
-    },
-    {
-      "aniListId": 113415,
-      "title": "JUJUTSU KAISEN",
-      "moduleId": "jLCx0",
-      "catalogPath": "Sources/English/019",
-      "sourceName": "AnimePahe",
-      "errors": [
-        "implausible episode match: verified=1 available=1 expected<=24"
-      ]
-    },
-    {
-      "aniListId": 113415,
-      "title": "JUJUTSU KAISEN",
+      "aniListId": 1735,
+      "title": "Naruto: Shippuden",
       "moduleId": "BmnXo",
       "catalogPath": "Sources/English/020",
       "sourceName": "OneTouch TV",
       "errors": [
-        "implausible episode match: verified=1 available=1 expected<=24"
+        "implausible episode match: verified=1 available=1 expected<=500"
       ]
     },
     {
-      "aniListId": 113415,
-      "title": "JUJUTSU KAISEN",
-      "moduleId": "BMF8K",
-      "catalogPath": "Sources/English/022",
-      "sourceName": "Animepahe (SUB)",
-      "errors": [
-        "implausible episode match: verified=1 available=1 expected<=24"
-      ]
-    },
-    {
-      "aniListId": 113415,
-      "title": "JUJUTSU KAISEN",
+      "aniListId": 1735,
+      "title": "Naruto: Shippuden",
       "moduleId": "BvIyX",
       "catalogPath": "Sources/English/023",
       "sourceName": "VidLink",
       "errors": [
-        "implausible episode match: verified=24 available=59 expected<=24"
+        "implausible episode match: verified=1 available=1 expected<=500"
       ]
     },
     {
-      "aniListId": 113415,
-      "title": "JUJUTSU KAISEN",
-      "moduleId": "jLHFz",
-      "catalogPath": "Sources/English/024",
-      "sourceName": "AniCrush",
-      "errors": [
-        "stream: extractStreamUrl returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 113415,
-      "title": "JUJUTSU KAISEN",
-      "moduleId": "BPSIM",
-      "catalogPath": "Sources/English/025",
-      "sourceName": "VidEasy",
-      "errors": [
-        "implausible episode match: verified=24 available=59 expected<=24"
-      ]
-    },
-    {
-      "aniListId": 113415,
-      "title": "JUJUTSU KAISEN",
-      "moduleId": "BRHoq",
-      "catalogPath": "Sources/English/028",
-      "sourceName": "AnimeNana",
-      "errors": [
-        "implausible episode match: verified=23 available=23 expected<=24"
-      ]
-    },
-    {
-      "aniListId": 21087,
-      "title": "One-Punch Man",
-      "moduleId": "jWuL6",
-      "catalogPath": "Sources/English/015",
-      "sourceName": "Bingebox",
-      "errors": [
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 21459,
-      "title": "My Hero Academia",
-      "moduleId": "jWuL6",
-      "catalogPath": "Sources/English/015",
-      "sourceName": "Bingebox",
-      "errors": [
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 20958,
-      "title": "Attack on Titan Season 2",
-      "moduleId": "mod_163960337",
-      "catalogPath": "Sources/English/009",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 20605,
-      "title": "Tokyo Ghoul",
-      "moduleId": "jWuL6",
-      "catalogPath": "Sources/English/015",
-      "sourceName": "Bingebox",
-      "errors": [
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 11757,
-      "title": "Sword Art Online",
-      "moduleId": "mod_163960337",
-      "catalogPath": "Sources/English/009",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "implausible episode match: verified=1 available=1 expected<=25"
-      ]
-    },
-    {
-      "aniListId": 11757,
-      "title": "Sword Art Online",
-      "moduleId": "jWuL6",
-      "catalogPath": "Sources/English/015",
-      "sourceName": "Bingebox",
-      "errors": [
-        "implausible episode match: verified=1 available=1 expected<=25"
-      ]
-    },
-    {
-      "aniListId": 21519,
-      "title": "Your Name.",
-      "moduleId": "mod_163960337",
-      "catalogPath": "Sources/English/009",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 20958,
-      "title": "Attack on Titan Season 2",
-      "moduleId": "jWuL6",
-      "catalogPath": "Sources/English/015",
-      "sourceName": "Bingebox",
-      "errors": [
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 99147,
-      "title": "Attack on Titan Season 3",
-      "moduleId": "mod_163960337",
-      "catalogPath": "Sources/English/009",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 99147,
-      "title": "Attack on Titan Season 3",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/014",
-      "sourceName": "Anikoto",
-      "errors": [
-        "implausible episode match: verified=2 available=2 expected<=12"
-      ]
-    },
-    {
-      "aniListId": 99147,
-      "title": "Attack on Titan Season 3",
-      "moduleId": "jWuL6",
-      "catalogPath": "Sources/English/015",
-      "sourceName": "Bingebox",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 99147,
-      "title": "Attack on Titan Season 3",
-      "moduleId": "G7jX",
-      "catalogPath": "Sources/English/016",
-      "sourceName": "Animetsu",
-      "errors": [
-        "implausible episode match: verified=12 available=22 expected<=12"
-      ]
-    },
-    {
-      "aniListId": 20954,
-      "title": "A Silent Voice",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/014",
-      "sourceName": "Anikoto",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 99147,
-      "title": "Attack on Titan Season 3",
-      "moduleId": "j2ecl",
-      "catalogPath": "Sources/English/013",
-      "sourceName": "Animepahe (DUB)",
-      "errors": [
-        "implausible episode match: verified=12 available=22 expected<=12"
-      ]
-    },
-    {
-      "aniListId": 99147,
-      "title": "Attack on Titan Season 3",
-      "moduleId": "Rf8D",
-      "catalogPath": "Sources/English/017",
-      "sourceName": "AnimeHeaven",
-      "errors": [
-        "implausible episode match: verified=10 available=10 expected<=12"
-      ]
-    },
-    {
-      "aniListId": 99147,
-      "title": "Attack on Titan Season 3",
-      "moduleId": "jLYn4",
-      "catalogPath": "Sources/English/018",
-      "sourceName": "Anikuro",
-      "errors": [
-        "implausible episode match: verified=10 available=10 expected<=12"
-      ]
-    },
-    {
-      "aniListId": 99147,
-      "title": "Attack on Titan Season 3",
-      "moduleId": "jLCx0",
-      "catalogPath": "Sources/English/019",
-      "sourceName": "AnimePahe",
-      "errors": [
-        "implausible episode match: verified=12 available=22 expected<=12"
-      ]
-    },
-    {
-      "aniListId": 99147,
-      "title": "Attack on Titan Season 3",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/020",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "implausible episode match: verified=1 available=1 expected<=12"
-      ]
-    },
-    {
-      "aniListId": 99147,
-      "title": "Attack on Titan Season 3",
-      "moduleId": "BMF8K",
-      "catalogPath": "Sources/English/022",
-      "sourceName": "Animepahe (SUB)",
-      "errors": [
-        "implausible episode match: verified=12 available=22 expected<=12"
-      ]
-    },
-    {
-      "aniListId": 20954,
-      "title": "A Silent Voice",
-      "moduleId": "jWuL6",
-      "catalogPath": "Sources/English/015",
-      "sourceName": "Bingebox",
-      "errors": [
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 99147,
-      "title": "Attack on Titan Season 3",
-      "moduleId": "BvIyX",
-      "catalogPath": "Sources/English/023",
-      "sourceName": "VidLink",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 99147,
-      "title": "Attack on Titan Season 3",
+      "aniListId": 1735,
+      "title": "Naruto: Shippuden",
       "moduleId": "jLHFz",
       "catalogPath": "Sources/English/024",
       "sourceName": "AniCrush",
@@ -1395,21 +1991,43 @@
       ]
     },
     {
-      "aniListId": 99147,
-      "title": "Attack on Titan Season 3",
+      "aniListId": 1735,
+      "title": "Naruto: Shippuden",
       "moduleId": "BPSIM",
       "catalogPath": "Sources/English/025",
       "sourceName": "VidEasy",
+      "errors": [
+        "implausible episode match: verified=1 available=1 expected<=500"
+      ]
+    },
+    {
+      "aniListId": 194393,
+      "title": "I Want to End this Love Game",
+      "moduleId": "mod_163960337",
+      "catalogPath": "Sources/English/009",
+      "sourceName": "AnimeLand",
       "errors": [
         "search: searchResults returned an unusable result"
       ]
     },
     {
-      "aniListId": 99147,
-      "title": "Attack on Titan Season 3",
-      "moduleId": "BRHoq",
-      "catalogPath": "Sources/English/028",
-      "sourceName": "AnimeNana",
+      "aniListId": 194393,
+      "title": "I Want to End this Love Game",
+      "moduleId": "jWuL6",
+      "catalogPath": "Sources/English/015",
+      "sourceName": "Bingebox",
+      "errors": [
+        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 182578,
+      "title": "Mission: Yozakura Family Season 2",
+      "moduleId": "mod_163960337",
+      "catalogPath": "Sources/English/009",
+      "sourceName": "AnimeLand",
       "errors": [
         "search: searchResults returned an unusable result"
       ]
