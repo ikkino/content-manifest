@@ -558,7 +558,7 @@ function slugify(title) {
       .replace(/-+/g, "-");
 }
 
-// ─── Extract Stream URL (DUB ONLY) ───
+// ─── Extract Stream URL (SUB ONLY) ───
 async function extractStreamUrl(url) {
     try {
         const match = url.match(/anime\/(\d+)\/([^\/]+)\/(\d+)/);
@@ -567,38 +567,38 @@ async function extractStreamUrl(url) {
         const slug = match[2];
         const episodeNumber = match[3];
 
-        console.log("[extractStreamUrl-DUB] Slug: " + slug + " Episode: " + episodeNumber);
+        console.log("[extractStreamUrl-SUB] Slug: " + slug + " Episode: " + episodeNumber);
 
         // Fetch available servers
         const serversUrl = `https://pp.animex.one/rest/api/servers?id=${encodeURIComponent(slug)}&epNum=${episodeNumber}`;
-        console.log("[extractStreamUrl-DUB] Fetching servers: " + serversUrl);
+        console.log("[extractStreamUrl-SUB] Fetching servers: " + serversUrl);
 
         const serversResp = await animexFetch(serversUrl);
         if (!serversResp || serversResp.status !== 200) {
-            console.error("[extractStreamUrl-DUB] Failed to fetch servers, status: " + serversResp?.status);
+            console.error("[extractStreamUrl-SUB] Failed to fetch servers, status: " + serversResp?.status);
             return JSON.stringify({ streams: [], subtitles: "" });
         }
 
         const serversData = await serversResp.json();
-        const dubProviders = serversData.dubProviders || [];
+        const subProviders = serversData.subProviders || [];
 
-        console.log("[extractStreamUrl-DUB] Dub providers: " + JSON.stringify(dubProviders.map(p => p.id)));
+        console.log("[extractStreamUrl-SUB] Sub providers: " + JSON.stringify(subProviders.map(p => p.id)));
 
         // Helper to fetch a stream from a provider
         async function fetchProviderStream(provider) {
             const providerId = provider.id;
-            const sourcesUrl = `https://pp.animex.one/rest/api/sources?id=${encodeURIComponent(slug)}&epNum=${episodeNumber}&type=dub&providerId=${providerId}`;
-            console.log("[extractStreamUrl-DUB] Fetching sources: " + sourcesUrl);
+            const sourcesUrl = `https://pp.animex.one/rest/api/sources?id=${encodeURIComponent(slug)}&epNum=${episodeNumber}&type=sub&providerId=${providerId}`;
+            console.log("[extractStreamUrl-SUB] Fetching sources: " + sourcesUrl);
 
             const sourcesResp = await animexFetch(sourcesUrl);
             if (!sourcesResp || sourcesResp.status !== 200) {
-                console.error("[extractStreamUrl-DUB] Failed to fetch sources for " + providerId + ", status: " + sourcesResp?.status);
+                console.error("[extractStreamUrl-SUB] Failed to fetch sources for " + providerId + ", status: " + sourcesResp?.status);
                 return null;
             }
 
             const sourcesData = await sourcesResp.json();
             if (!sourcesData.sources || sourcesData.sources.length === 0) {
-                console.warn("[extractStreamUrl-DUB] No sources for " + providerId);
+                console.warn("[extractStreamUrl-SUB] No sources for " + providerId);
                 return null;
             }
 
@@ -607,27 +607,27 @@ async function extractStreamUrl(url) {
             const headers = sourcesData.headers || {};
 
             const tip = provider.tip ? ` (${provider.tip})` : '';
-            const title = `${providerId.toUpperCase()} - DUB${tip}`;
+            const title = `${providerId.toUpperCase()} - SUB${tip}`;
 
             return { title, streamUrl, headers };
         }
 
-        // Build only dub streams sequentially
+        // Build only sub streams sequentially
         const streams = [];
         let subtitles = "";
 
-        for (const provider of dubProviders) {
+        for (const provider of subProviders) {
             const stream = await fetchProviderStream(provider);
             if (stream) streams.push(stream);
         }
 
-        console.log("[extractStreamUrl-DUB] Total streams found: " + streams.length);
+        console.log("[extractStreamUrl-SUB] Total streams found: " + streams.length);
         const result = JSON.stringify({ streams, subtitles });
-        console.log("[extractStreamUrl-DUB] Result: " + result.substring(0, 300));
+        console.log("[extractStreamUrl-SUB] Result: " + result.substring(0, 300));
         return result;
 
     } catch (error) {
-        console.log('[extractStreamUrl-DUB] Fetch error: ' + error);
+        console.log('[extractStreamUrl-SUB] Fetch error: ' + error);
         return JSON.stringify({ streams: [], subtitles: "" });
     }
 }

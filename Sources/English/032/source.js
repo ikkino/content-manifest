@@ -1,166 +1,98 @@
 async function searchResults(keyword) {
+    const postData = `op=title_search&q=${encodeURIComponent(keyword)}`;
+    const headers = await getDefaultHeaders();
+    const results = [];
     try {
-        const encodedKeyword = encodeURIComponent(keyword);
-        const responseText = await soraFetch(`https://anizone.to/anime?search=${encodedKeyword}`);
-        const html = await responseText.text();
+        const response = await fetchv2("https://beta.otaku-streamers.com/a.php", headers, "POST", postData);
+        const data = await response.json();
 
-        const regex = /<img\s+src="([^"]+)"[^>]*alt="([^"]+)"[\s\S]+?<a[^>]+href="([^"]+)"\s+title="([^"]+)"/g;
-
-        const results = [];
-        let match;
-
-        results.push({
-            title: "Use External Player",
-            image: "https://git.luna-app.eu/ibro/services/raw/branch/main/anizone/UseExternalPlayer.png",
-            href: ""
-        });
-
-        while ((match = regex.exec(html)) !== null) {
-            results.push({
-                title: match[4].trim(),
-                image: match[1].trim(),
-                href: match[3].trim()
+        if (data && data.content) {
+            data.content.forEach(item => {
+                results.push({
+                    title: item.title,
+                    image: item.cover,
+                    href: item.url
+                });
             });
         }
 
-        console.log(results);
         return JSON.stringify(results);
-    } catch (error) {
-        console.log('Fetch error in searchResults: ' + error);
-        return JSON.stringify([{ title: 'Error', image: '', href: '' }]);
+    } catch (err) {
+        return JSON.stringify([{
+            title: "Error",
+            image: "Error",
+            href: "Error"
+        }]);
     }
 }
 
 async function extractDetails(url) {
+    const headers = await getDefaultHeaders();
     try {
-        const response = await soraFetch(url);
-        const htmlText = await response.text();
+        const response = await fetchv2(url, headers);
+        const html = await response.text();
 
-        const descriptionMatch = htmlText.match(/<h3 class="sr-only">Synopsis<\/h3>\s*<div>([\s\S]*?)<\/div>/);
-        const description = descriptionMatch ? descriptionMatch[1].replace(/\s+/g, ' ').trim() : 'No description available';
+        const descriptionMatch = html.match(/<div class="tp-synopsis">[\s\S]*?<p>([\s\S]*?)<\/p>/i);
+        const description = descriptionMatch ? descriptionMatch[1].replace(/<br\s*\/?>/gi, "\n").replace(/<\/?[^>]+(>|$)/g, "").trim() : "N/A";
 
-        const yearMatch = htmlText.match(/>\s*(\d{4})\s*</);
-        const airdate = yearMatch ? `Released: ${yearMatch[1]}` : 'Released: Unknown';
-
-        const typeMatch = htmlText.match(/>\s*(TV Series|Movie|ONA|OVA|Special|Music)\s*</i);
-        const mediaType = typeMatch ? typeMatch[1].trim() : 'Unknown';
-
-        const statusMatch = htmlText.match(/>\s*(Completed|Ongoing|Upcoming)\s*</i);
-        const status = statusMatch ? statusMatch[1].trim() : 'Unknown';
-
-        const episodeMatch = htmlText.match(/>\s*(\d+)\s*Episodes?\s*</i);
-        const episodeCount = episodeMatch ? episodeMatch[1].trim() : 'Unknown';
-
-        const genreRegex = /<a[^>]+title="([^"]+)"[^>]*class="[^"]*bg-gray-600[^"]*">[^<]+<\/a>/g;
-        let genreList = [];
-        let match;
-        while ((match = genreRegex.exec(htmlText)) !== null) {
-            genreList.push(match[1].trim());
-        }
-
-        const aliases = `
-Type: ${mediaType}
-Status: ${status}
-Episodes: ${episodeCount}
-Genres: ${genreList.join(', ') || 'Unknown'}
-        `.trim();
-
-        const transformedResults = [{
-            description,
-            aliases,
-            airdate
-        }];
-
-        console.log(transformedResults);
-        return JSON.stringify(transformedResults);
-    } catch (error) {
-        console.log('Details error: ' + error);
         return JSON.stringify([{
-            description: 'Error loading description',
-            aliases: 'Unknown',
-            airdate: 'Unknown'
+            description: description,
+            aliases: "N/A",
+            airdate: "N/A"
+        }]);
+    } catch (err) {
+        return JSON.stringify([{
+            description: "Error",
+            aliases: "Error",
+            airdate: "Error"
         }]);
     }
 }
 
 async function extractEpisodes(url) {
+    const headers = await getDefaultHeaders();
+    const results = [];
     try {
-        const response = await soraFetch(url);
+        const response = await fetchv2(url, headers);
         const html = await response.text();
 
-        const episodeMatch = html.match(/>\s*(\d+)\s*Episodes?\s*</i);
-        const episodeCount = episodeMatch ? episodeMatch[1].trim() : 'Unknown';
-
-        let episodes = [];
-
-        for (let i = 1; i <= episodeCount; i++) {
-            const episodeUrl = `${url}/${i}`;
-            const episodeTitle = `Episode ${i}`;
-
-            episodes.push({
-                title: episodeTitle,
-                href: episodeUrl,
-                number: i
+        const regex = /<a href="(.*?)" class="tp-ep-row" data-no="(.*?)">/g;
+        let match;
+        while ((match = regex.exec(html)) !== null) {
+            results.push({
+                href: match[1].trim(),
+                number: parseInt(match[2], 10)
             });
         }
-
-        console.log(episodes);
-        return JSON.stringify(episodes);
-    } catch (error) {
-        console.log('Fetch error in extractEpisodes: ' + error);
-        return JSON.stringify([]);
+        results.reverse(); 
+        return JSON.stringify(results);
+    } catch (err) {
+        return JSON.stringify([{
+            href: "Error",
+            number: "Error"
+        }]);
     }
 }
 
 async function extractStreamUrl(url) {
+    const headers = await getDefaultHeaders();
     try {
-        const response = await soraFetch(url);
-        const htmlText = await response.text();
+        const response = await fetchv2(url, headers);
+        const html = await response.text();
 
-        const streamMatch = htmlText.match(/<media-player[^>]*\s+src="([^"]+\.m3u8)"/);
-        const resultStreams = streamMatch ? streamMatch[1] : null;
-
-        const subtitleMatch = htmlText.match(/<track[^>]+src=([^\s>"]+\.srt)[^>]*label="([^"]*?)"[^>]*>/gi);
-        let subtitleUrl = null;
-
-        if (subtitleMatch) {
-            for (const track of subtitleMatch) {
-                const match = track.match(/src=([^\s>"]+\.srt)[^>]*label="([^"]*?)"/i);
-                if (match && !/song/i.test(match[2])) {
-                    subtitleUrl = match[1];
-                    break;
-                }
-            }
-        }
-
-        const result = {
-            stream: resultStreams,
-            subtitles: subtitleUrl
-        };
-
-        console.log(result);
-        return JSON.stringify(result);
-    } catch (error) {
-        console.log('Fetch error in extractStreamUrl: ' + error);
-
-        const result = {
-            streams: [],
-            subtitles: ""
-        };
-
-        console.log(result);
-        return JSON.stringify(result);
+        const streamMatch = html.match(/<source src="(.*?)" type=".*?"\/>/i);
+        return streamMatch ? streamMatch[1] : "https://error.org/";
+    } catch (err) {
+        return "https://error.org/";
     }
 }
 
-async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
-    try {
-        return await fetchv2(url, options.headers ?? {}, options.method ?? 'GET', options.body ?? null);
-    } catch(e) {
-        try {
-            return await fetch(url, options);
-        } catch(error) {
-            return null;
-        }
-    }
+async function getDefaultHeaders() {
+    const session = await fetchv2("https://ilovefeet.simplepostrequest.workers.dev/session");
+    const sessionKey = await session.text();
+    return {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+        "Cookie": `bb_betasessionhash=${sessionKey}`
+    };
 }

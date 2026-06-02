@@ -1,19 +1,24 @@
 {
-  "sourceName": "AllAnime(Default)",
-  "iconUrl": "https://raw.githubusercontent.com/Kohi-den/extensions-source/refs/heads/main/src/en/allanime/res/mipmap-xxxhdpi/ic_launcher.png",
+  "sourceName": "LordFlix",
+  "iconUrl": "https://lordflix.org/mstile-150x150.png",
   "author": {
-    "name": "Churly",
-    "icon": "https://i.pinimg.com/236x/90/2c/ea/902ceaa5610ef7f8f81c2f3881799f2c.jpg"
+    "name": "50/50",
+    "icon": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ3122kQwublLkZ6rf1fEpUP79BxZOFmH9BSA&s"
   },
   "version": "1.0.0",
-  "type": "anime",
   "language": "English",
   "streamType": "HLS",
-  "quality": "720p",
-  "baseUrl": "https://mp4upload.com/",
-  "searchBaseUrl": "https://mp4upload.com/",
+  "quality": "4K",
+  "baseUrl": "https://lordflix.org/",
+  "searchBaseUrl": "https://lordflix.org/",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/040/source.js",
+  "type": "shows/movies/anime",
   "asyncJS": true,
-  "streamAsyncJS": true,
-  "id": "Tkat"
+  "softsub": true,
+  "downloadSupport": false,
+  "supportsSora": true,
+  "supportsLuna": true,
+  "supportsTsumi": true,
+  "supportsHiyoku": true,
+  "id": "jU0dy"
 }

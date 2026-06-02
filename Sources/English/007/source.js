@@ -2,21 +2,15 @@ async function searchResults(keyword) {
     const results = [];
 
     results.push({
-        title: "Use External Player",
-        image: "https://git.luna-app.eu/ibro/services/raw/branch/main/narucannon/UseExternalPlayer.png",
-        href: ""
+        title: "Black Clover Pace [SUB]",
+        image: "https://git.luna-app.eu/ibro/services/raw/branch/main/blackCloverPace/icon.png",
+        href: "https://pixeldrain.net/l/nhfMpi4V"
     });
 
     results.push({
-        title: "Narucannon Subbed",
-        image: "https://git.luna-app.eu/ibro/services/raw/branch/main/narucannon/icon.png",
-        href: "https://pixeldrain.net/l/dX3cF5Q3"
-    });
-
-    results.push({
-        title: "Narucannon Dubbed",
-        image: "https://git.luna-app.eu/ibro/services/raw/branch/main/narucannon/icon.png",
-        href: "https://pixeldrain.net/l/tqeCisSm"
+        title: "Black Clover Pace [DUB]",
+        image: "https://git.luna-app.eu/ibro/services/raw/branch/main/blackCloverPace/icon.png",
+        href: "https://pixeldrain.net/l/iryu2NWQ"
     });
     
     console.log(`Results: ${JSON.stringify(results)}`);

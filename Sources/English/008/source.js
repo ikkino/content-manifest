@@ -1,64 +1,122 @@
 async function searchResults(keyword) {
-    const responseA = await soraFetch(`https://pixeldrain.com/api/filesystem/rwPVCu7Z`);
-    const jsonA = await responseA.json();
+    const baseUrl = "https://w7.animeland.tv";
+    const results = [];
+    try {
+        const response = await fetchv2(baseUrl + "/?s=" + encodeURIComponent(keyword));
+        const html = await response.text();
 
-    const responseB = await soraFetch(`https://pixeldrain.com/api/filesystem/goCGsiJG`);
-    const jsonB = await responseB.json();
+        const regex = /<a href="([^"]+)"[^>]*>\s*<img[^>]*src="([^"]*)"[^>]*alt="([^"]*)"/g;
 
-    const dirsA = jsonA.children
-        .filter(item => item.type === "dir")
-        .map(item => ({
-            title: item.name,
-            image: "https://git.luna-app.eu/ibro/services/raw/branch/main/concentratedBleach/image.jpg",
-            href: `https://pixeldrain.com/api/filesystem/${encodeURIComponent(item.path)}`
-        }));
+        let match;
+        while ((match = regex.exec(html)) !== null) {
+            let href = match[1].trim();
+            let image = match[2].trim();
+            let title = match[3].trim();
 
-    const dirsB = jsonB.children
-        .filter(item => item.type === "dir")
-        .map(item => ({
-            title: item.name,
-            image: "https://git.luna-app.eu/ibro/services/raw/branch/main/concentratedBleach/image.jpg",
-            href: `https://pixeldrain.com/api/filesystem/${encodeURIComponent(item.path)}`
-        }));
+            if (href.startsWith("/")) {
+                href = baseUrl + href;
+            }
+            if (image.startsWith("/")) {
+                image = baseUrl + image;
+            }
 
-    const results = [...dirsA, ...dirsB];
+            if (href === baseUrl + "/" || href.includes("kissanimes.net")) {
+                continue;
+            }
 
-    console.log(`Results: ${JSON.stringify(results)}`);
-    return JSON.stringify(results);
+            results.push({
+                href,
+                image,
+                title
+            });
+        }
+
+        return JSON.stringify(results);
+    } catch (err) {
+        return JSON.stringify([{
+            title: "Error",
+            image: "Error",
+            href: "Error"
+        }]);
+    }
 }
 
 async function extractDetails(url) {
-    return JSON.stringify([{"description":"Concentrated Bleach fan edit hosted on Pixeldrain.","aliases":"Pixeldrain filesystem source","airdate":"Not available"}]);
+    try {
+        const response = await fetchv2(url);
+        const html = await response.text();
+
+        const regex = /<div class="Anime Info">\s*<\/div>\s*([\s\S]*?)<\/div>/i;
+        const match = html.match(regex);
+
+        const description = match ? match[1].trim() : "N/A";
+
+        return JSON.stringify([{
+            description: description,
+            aliases: "N/A",
+            airdate: "N/A"
+        }]);
+    } catch (err) {
+        return JSON.stringify([{
+            description: "Error",
+            aliases: "Error",
+            airdate: "Error"
+        }]);
+    }
 }
 
 async function extractEpisodes(url) {
-    const response = await soraFetch(url);
-    const data = await response.json();
+    const results = [];
+    try {
+        const response = await fetchv2(url);
+        const html = await response.text();
 
-    const transformedResults = data.children
-        .filter(result => result.type === "file" && result.file_type === "video/mp4")
-        .map((result, index) => ({
-            href: `${result.path}`,
-            number: index + 1,
-            title: result.name
-        }));
+        const regex = /<li class="play"><a[^>]*href="([^"]+)"[^>]*>([^<]*)<\/a><\/li>/g;
 
-    console.log(`Episodes: ${JSON.stringify(transformedResults)}`);
-    return JSON.stringify(transformedResults);
+        let match;
+        while ((match = regex.exec(html)) !== null) {
+            const href = match[1].trim();
+            const text = match[2].trim();
+
+            let number = null;
+            const urlMatch = href.match(/-episode-(\d+)/i);
+            if (urlMatch) {
+                number = parseInt(urlMatch[1], 10);
+            } else {
+                const textMatch = text.match(/Episode\s*(\d+)/i);
+                if (textMatch) number = parseInt(textMatch[1], 10);
+            }
+
+            results.push({
+                href,
+                number
+            });
+        }
+
+        return JSON.stringify(results.reverse());
+    } catch (err) {
+        return JSON.stringify([{
+            href: "Error",
+            number: "Error"
+        }]);
+    }
 }
 
 async function extractStreamUrl(url) {
-    return `https://pixeldrain.com/api/filesystem/${encodeURIComponent(url)}`;
-}
-
-async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
     try {
-        return await fetchv2(url, options.headers ?? {}, options.method ?? 'GET', options.body ?? null);
-    } catch(e) {
-        try {
-            return await fetch(url, options);
-        } catch(error) {
-            return null;
+        const response = await fetchv2(url);
+        const html = await response.text();
+        const match = html.match(/file=([a-zA-Z0-9]+\.html)/);
+        if (match) {
+            const filename = match[1];
+            console.log('Filename:' + filename);
+            const videoUrl = `https://animesource.me/cache/${filename}.mp4`;
+            console.log('Video URL:' + videoUrl);
+            return videoUrl;
         }
+
+    } catch (err) {
+        console.error("Error:" + err);
+        return null;
     }
 }
