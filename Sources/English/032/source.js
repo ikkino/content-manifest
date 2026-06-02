@@ -1,149 +1,166 @@
 async function searchResults(keyword) {
-    const results = [];
     try {
-        const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com|youtu\.be)\/(?:watch\?v=)?([a-zA-Z0-9_-]{11})/;
-        const youtubeMatch = keyword.match(youtubeRegex);
-        
-        if (youtubeMatch) {
-            const videoId = youtubeMatch[1];
-            try {
-                const response = await fetchv2("https://invidious.nikkosphere.com/api/v1/videos/" + videoId);
-                const data = await response.json();
-                
-                results.push({
-                    title: data.title || "YouTube Video",
-                    image: "https://proxy.piped.private.coffee" + (data.videoThumbnails && data.videoThumbnails.length > 0 ? data.videoThumbnails[0].url : ""),
-                    href: videoId
-                });
-                
-                return JSON.stringify(results);
-            } catch (err) {
-                console.error("Error fetching YouTube video:", err);
-                return JSON.stringify([{
-                    title: "Error",
-                    image: "Error",
-                    href: "Error"
-                }]);
-            }
-        }
-        
-        const response = await fetchv2("https://api.piped.private.coffee/search?q=" + encodeURIComponent(keyword) + "&filter=all");
-        const data = await response.json();
+        const encodedKeyword = encodeURIComponent(keyword);
+        const responseText = await soraFetch(`https://anizone.to/anime?search=${encodedKeyword}`);
+        const html = await responseText.text();
 
-        if (data && Array.isArray(data.items)) {
-            for (const item of data.items) {
-                if (item.type === "stream") {
-                    const videoId = item.url ? item.url.replace("/watch?v=", "") : "";
-                    results.push({
-                        title: item.title || "",
-                        image: item.thumbnail || "",
-                        href: videoId
-                    });
-                }
-            }
-        }
+        const regex = /<img\s+src="([^"]+)"[^>]*alt="([^"]+)"[\s\S]+?<a[^>]+href="([^"]+)"\s+title="([^"]+)"/g;
 
-        let nextpage = data.nextpage;
-        if (nextpage) {
-            try {
-                const response2 = await fetchv2("https://api.piped.private.coffee/nextpage/search?nextpage=" + encodeURIComponent(nextpage) + "&q=" + encodeURIComponent(keyword) + "&filter=all");
-                const data2 = await response2.json();
+        const results = [];
+        let match;
 
-                if (data2 && Array.isArray(data2.items)) {
-                    for (const item of data2.items) {
-                        if (item.type === "stream") {
-                            const videoId = item.url ? item.url.replace("/watch?v=", "") : "";
-                            results.push({
-                                title: item.title || "",
-                                image: item.thumbnail || "",
-                                href: videoId
-                            });
-                        }
-                    }
-                }
+        results.push({
+            title: "Use External Player",
+            image: "https://git.luna-app.eu/ibro/services/raw/branch/main/anizone/UseExternalPlayer.png",
+            href: ""
+        });
 
-                nextpage = data2.nextpage;
-                if (nextpage) {
-                    const response3 = await fetchv2("https://api.piped.private.coffee/nextpage/search?nextpage=" + encodeURIComponent(nextpage) + "&q=" + encodeURIComponent(keyword) + "&filter=all");
-                    const data3 = await response3.json();
-
-                    if (data3 && Array.isArray(data3.items)) {
-                        for (const item of data3.items) {
-                            if (item.type === "stream") {
-                                const videoId = item.url ? item.url.replace("/watch?v=", "") : "";
-                                results.push({
-                                    title: item.title || "",
-                                    image: item.thumbnail || "",
-                                    href: videoId
-                                });
-                            }
-                        }
-                    }
-                }
-            } catch (err) {
-                console.error("Error fetching additional pages:", err);
-            }
-        }
-
-        return JSON.stringify(results);
-    } catch (err) {
-        console.error(err);
-        return JSON.stringify([{
-            title: "Error",
-            image: "Error",
-            href: "Error"
-        }]);
-    }
-}
-
-async function extractDetails(ID) {
-    try {
-        const response = await fetchv2("https://invidious.nikkosphere.com/api/v1/videos/" + ID);
-        const data = await response.json();
-
-        return JSON.stringify([{
-            description: data.description,
-            aliases: data.author,
-            airdate: data.publishedText
-        }]);
-    } catch (err) {
-        return JSON.stringify([{
-            description: "Error",
-            aliases: "Error",
-            airdate: "Error"
-        }]);
-    }
-}
-
-async function extractEpisodes(ID) {
-    const results = [];
-    try {
-
+        while ((match = regex.exec(html)) !== null) {
             results.push({
-                href: ID,
-                number: 1
+                title: match[4].trim(),
+                image: match[1].trim(),
+                href: match[3].trim()
             });
+        }
 
+        console.log(results);
         return JSON.stringify(results);
-    } catch (err) {
+    } catch (error) {
+        console.log('Fetch error in searchResults: ' + error);
+        return JSON.stringify([{ title: 'Error', image: '', href: '' }]);
+    }
+}
+
+async function extractDetails(url) {
+    try {
+        const response = await soraFetch(url);
+        const htmlText = await response.text();
+
+        const descriptionMatch = htmlText.match(/<h3 class="sr-only">Synopsis<\/h3>\s*<div>([\s\S]*?)<\/div>/);
+        const description = descriptionMatch ? descriptionMatch[1].replace(/\s+/g, ' ').trim() : 'No description available';
+
+        const yearMatch = htmlText.match(/>\s*(\d{4})\s*</);
+        const airdate = yearMatch ? `Released: ${yearMatch[1]}` : 'Released: Unknown';
+
+        const typeMatch = htmlText.match(/>\s*(TV Series|Movie|ONA|OVA|Special|Music)\s*</i);
+        const mediaType = typeMatch ? typeMatch[1].trim() : 'Unknown';
+
+        const statusMatch = htmlText.match(/>\s*(Completed|Ongoing|Upcoming)\s*</i);
+        const status = statusMatch ? statusMatch[1].trim() : 'Unknown';
+
+        const episodeMatch = htmlText.match(/>\s*(\d+)\s*Episodes?\s*</i);
+        const episodeCount = episodeMatch ? episodeMatch[1].trim() : 'Unknown';
+
+        const genreRegex = /<a[^>]+title="([^"]+)"[^>]*class="[^"]*bg-gray-600[^"]*">[^<]+<\/a>/g;
+        let genreList = [];
+        let match;
+        while ((match = genreRegex.exec(htmlText)) !== null) {
+            genreList.push(match[1].trim());
+        }
+
+        const aliases = `
+Type: ${mediaType}
+Status: ${status}
+Episodes: ${episodeCount}
+Genres: ${genreList.join(', ') || 'Unknown'}
+        `.trim();
+
+        const transformedResults = [{
+            description,
+            aliases,
+            airdate
+        }];
+
+        console.log(transformedResults);
+        return JSON.stringify(transformedResults);
+    } catch (error) {
+        console.log('Details error: ' + error);
         return JSON.stringify([{
-            href: "Error",
-            number: "Error"
+            description: 'Error loading description',
+            aliases: 'Unknown',
+            airdate: 'Unknown'
         }]);
     }
 }
 
-async function extractStreamUrl(ID) {
+async function extractEpisodes(url) {
     try {
-        const response = await fetchv2("https://invidious.nikkosphere.com/api/v1/videos/" + ID);
-        const data = await response.json();
+        const response = await soraFetch(url);
+        const html = await response.text();
 
-        if (data && Array.isArray(data.formatStreams) && data.formatStreams.length > 0) {
-            return data.formatStreams[0].url || "https://error.org/";
+        const episodeMatch = html.match(/>\s*(\d+)\s*Episodes?\s*</i);
+        const episodeCount = episodeMatch ? episodeMatch[1].trim() : 'Unknown';
+
+        let episodes = [];
+
+        for (let i = 1; i <= episodeCount; i++) {
+            const episodeUrl = `${url}/${i}`;
+            const episodeTitle = `Episode ${i}`;
+
+            episodes.push({
+                title: episodeTitle,
+                href: episodeUrl,
+                number: i
+            });
         }
 
-        return "https://error.org/";
-    } catch (err) {
-        return "https://error.org/";
+        console.log(episodes);
+        return JSON.stringify(episodes);
+    } catch (error) {
+        console.log('Fetch error in extractEpisodes: ' + error);
+        return JSON.stringify([]);
+    }
+}
+
+async function extractStreamUrl(url) {
+    try {
+        const response = await soraFetch(url);
+        const htmlText = await response.text();
+
+        const streamMatch = htmlText.match(/<media-player[^>]*\s+src="([^"]+\.m3u8)"/);
+        const resultStreams = streamMatch ? streamMatch[1] : null;
+
+        const subtitleMatch = htmlText.match(/<track[^>]+src=([^\s>"]+\.srt)[^>]*label="([^"]*?)"[^>]*>/gi);
+        let subtitleUrl = null;
+
+        if (subtitleMatch) {
+            for (const track of subtitleMatch) {
+                const match = track.match(/src=([^\s>"]+\.srt)[^>]*label="([^"]*?)"/i);
+                if (match && !/song/i.test(match[2])) {
+                    subtitleUrl = match[1];
+                    break;
+                }
+            }
+        }
+
+        const result = {
+            stream: resultStreams,
+            subtitles: subtitleUrl
+        };
+
+        console.log(result);
+        return JSON.stringify(result);
+    } catch (error) {
+        console.log('Fetch error in extractStreamUrl: ' + error);
+
+        const result = {
+            streams: [],
+            subtitles: ""
+        };
+
+        console.log(result);
+        return JSON.stringify(result);
+    }
+}
+
+async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
+    try {
+        return await fetchv2(url, options.headers ?? {}, options.method ?? 'GET', options.body ?? null);
+    } catch(e) {
+        try {
+            return await fetch(url, options);
+        } catch(error) {
+            return null;
+        }
     }
 }

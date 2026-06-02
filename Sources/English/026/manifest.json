@@ -1,21 +1,24 @@
 {
-  "sourceName": "Anizone",
-  "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/anizone/icon.png",
+  "sourceName": "VidEasy",
+  "iconUrl": "https://www.videasy.net/logo.png",
   "author": {
-    "name": "ibro",
-    "icon": "https://git.luna-app.eu/ibro/services/raw/branch/main/profile.jpg",
-    "url": "https://github.com/xibrox"
+    "name": "50/50",
+    "icon": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ3122kQwublLkZ6rf1fEpUP79BxZOFmH9BSA&s"
   },
-  "version": "1.0.7",
+  "version": "1.1.4",
   "language": "English",
   "streamType": "HLS",
-  "quality": "1080p",
-  "baseUrl": "https://anizone.to/",
-  "searchBaseUrl": "https://anizone.to/anime?search=%s",
+  "quality": "4K",
+  "baseUrl": "https://player.videasy.net/",
+  "searchBaseUrl": "https://player.videasy.net/",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/026/source.js",
-  "type": "anime",
-  "note": "Use default (Apple Player) or external player to watch the streams (e.g. VLC).",
+  "type": "shows/movies/anime",
   "asyncJS": true,
   "softsub": true,
-  "id": "KXPn"
+  "downloadSupport": false,
+  "supportsSora": true,
+  "supportsLuna": true,
+  "supportsTsumi": true,
+  "supportsHiyoku": true,
+  "id": "BPSIM"
 }

@@ -1,25 +1,20 @@
 {
-  "sourceName": "YummyAnime",
-  "iconUrl": "https://site.yummyani.me/img/icon/yummy-192.png",
+  "sourceName": "Anime-Portal",
+  "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/animeportal/icon.png",
   "author": {
-    "name": "emp0ry",
-    "icon": "https://avatars.githubusercontent.com/u/64217088"
+    "name": "ibro",
+    "icon": "https://git.luna-app.eu/ibro/services/raw/branch/main/profile.jpg",
+    "url": "https://github.com/xibrox"
   },
-  "version": "1.0.5",
+  "version": "1.0.4",
   "language": "Russian",
   "streamType": "HLS",
-  "quality": "720p",
-  "baseUrl": "https://api.yani.tv",
-  "searchBaseUrl": "https://api.yani.tv/search?limit=30&q=%s",
+  "quality": "1080p",
+  "baseUrl": "https://anime-portal.su/",
+  "searchBaseUrl": "https://anime-portal.su/?do=search&subaction=search&search_start=0&full_search=0&story=%s",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Russian/008/source.js",
-  "asyncJS": true,
-  "streamAsyncJS": true,
-  "softsub": false,
   "type": "anime",
-  "downloadSupport": false,
-  "supportsMojuru": true,
-  "supportsDartotsu": true,
-  "supportsSora": true,
-  "supportsLuna": true,
-  "id": "jxx3t"
+  "asyncJS": true,
+  "softsub": true,
+  "id": "fw1x"
 }

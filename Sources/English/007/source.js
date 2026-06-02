@@ -1,54 +1,74 @@
 async function searchResults(keyword) {
-    const responseA = await soraFetch(`https://pixeldrain.com/api/filesystem/rwPVCu7Z`);
-    const jsonA = await responseA.json();
+    const results = [];
 
-    const responseB = await soraFetch(`https://pixeldrain.com/api/filesystem/goCGsiJG`);
-    const jsonB = await responseB.json();
+    results.push({
+        title: "Use External Player",
+        image: "https://git.luna-app.eu/ibro/services/raw/branch/main/narucannon/UseExternalPlayer.png",
+        href: ""
+    });
 
-    const dirsA = jsonA.children
-        .filter(item => item.type === "dir")
-        .map(item => ({
-            title: item.name,
-            image: "https://git.luna-app.eu/ibro/services/raw/branch/main/concentratedBleach/image.jpg",
-            href: `https://pixeldrain.com/api/filesystem/${encodeURIComponent(item.path)}`
-        }));
+    results.push({
+        title: "Narucannon Subbed",
+        image: "https://git.luna-app.eu/ibro/services/raw/branch/main/narucannon/icon.png",
+        href: "https://pixeldrain.net/l/dX3cF5Q3"
+    });
 
-    const dirsB = jsonB.children
-        .filter(item => item.type === "dir")
-        .map(item => ({
-            title: item.name,
-            image: "https://git.luna-app.eu/ibro/services/raw/branch/main/concentratedBleach/image.jpg",
-            href: `https://pixeldrain.com/api/filesystem/${encodeURIComponent(item.path)}`
-        }));
-
-    const results = [...dirsA, ...dirsB];
-
+    results.push({
+        title: "Narucannon Dubbed",
+        image: "https://git.luna-app.eu/ibro/services/raw/branch/main/narucannon/icon.png",
+        href: "https://pixeldrain.net/l/tqeCisSm"
+    });
+    
     console.log(`Results: ${JSON.stringify(results)}`);
     return JSON.stringify(results);
 }
 
 async function extractDetails(url) {
-    return JSON.stringify([{"description":"Concentrated Bleach fan edit hosted on Pixeldrain.","aliases":"Pixeldrain filesystem source","airdate":"Not available"}]);
+    const match = url.match(/https:\/\/pixeldrain\.net\/l\/([^\/]+)/);
+    if (!match) throw new Error("Invalid URL format");
+            
+    const arcId = match[1];
+
+    const response = await soraFetch(`https://pixeldrain.net/api/list/${arcId}`);
+    const data = await response.json();    
+
+    const transformedResults = [{
+        description: `Title: ${data.title}\nFile Count: ${data.file_count}`,
+        aliases: `Title: ${data.title}\nFile Count: ${data.file_count}`,
+        airdate: ''
+    }];
+
+    console.log(`Details: ${JSON.stringify(transformedResults)}`);
+    return JSON.stringify(transformedResults);
 }
 
 async function extractEpisodes(url) {
-    const response = await soraFetch(url);
+    const match = url.match(/https:\/\/pixeldrain\.net\/l\/([^\/]+)/);
+    if (!match) throw new Error("Invalid URL format");
+            
+    const arcId = match[1];
+
+    const response = await soraFetch(`https://pixeldrain.net/api/list/${arcId}`);
     const data = await response.json();
 
-    const transformedResults = data.children
-        .filter(result => result.type === "file" && result.file_type === "video/mp4")
-        .map((result, index) => ({
-            href: `${result.path}`,
+    const transformedResults = data.files.map((result, index) => {
+        return {
+            href: `${result.id}`,
             number: index + 1,
-            title: result.name
-        }));
+        };
+    });
 
     console.log(`Episodes: ${JSON.stringify(transformedResults)}`);
     return JSON.stringify(transformedResults);
 }
 
+// searchResults("all");
+// extractDetails("https://pixeldrain.net/l/dX3cF5Q3");
+// extractEpisodes("https://pixeldrain.net/l/dX3cF5Q3");
+// extractStreamUrl(`EDg7Q9Uu`);
+
 async function extractStreamUrl(url) {
-    return `https://pixeldrain.com/api/filesystem/${encodeURIComponent(url)}`;
+    return `https://pixeldrain.net/api/file/${url}?download`;
 }
 
 async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {

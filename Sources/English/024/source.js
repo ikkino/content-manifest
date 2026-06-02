@@ -1,4 +1,4 @@
-const BASE_URL = "https://anicrush.wiki";
+const BASE_URL = "https://123animes.ru";
 
 function absoluteUrl(value) {
   if (!value) return "";
@@ -6,45 +6,22 @@ function absoluteUrl(value) {
   return BASE_URL + (value.startsWith("/") ? value : "/" + value);
 }
 
+function animeSlug(url) {
+  return String(url || "").split("/anime/").pop().split("/")[0].split("?")[0];
+}
+
 function cleanText(value) {
-  return String(value || "")
-    .replace(/&hellip;|&#8230;/g, "...")
-    .replace(/&amp;/g, "&")
-    .replace(/&#8217;/g, "'")
-    .replace(/&#038;/g, "&")
-    .replace(/<[^>]*>/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
+  return String(value || "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
 }
 
-function parseJsonLdBlocks(html) {
-  const blocks = [];
-  const regex = /<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi;
-  let match;
-  while ((match = regex.exec(html)) !== null) {
-    try {
-      blocks.push(JSON.parse(match[1].trim()));
-    } catch {
-      // Ignore malformed metadata and keep parsing the page.
-    }
-  }
-  return blocks;
-}
-
-function findSchema(blocks, type) {
-  for (const block of blocks) {
-    const graph = Array.isArray(block["@graph"]) ? block["@graph"] : [block];
-    const found = graph.find((item) => item && item["@type"] === type);
-    if (found) return found;
-  }
-  return null;
+function normalizeTitle(value) {
+  return String(value || "").toLowerCase().replace(/\([^)]*\)/g, "").replace(/[^a-z0-9]+/g, "");
 }
 
 async function fetchText(url, options = {}) {
   const response = await fetchv2(url, {
     "Accept": "text/html,application/json,*/*",
     "Referer": BASE_URL + "/",
-    "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1",
     ...(options.headers || {})
   }, options.method, options.body);
   if (!response.ok) throw new Error("HTTP " + response.status);
@@ -52,52 +29,75 @@ async function fetchText(url, options = {}) {
 }
 
 async function searchResults(keyword) {
-  const query = encodeURIComponent(String(keyword || "").trim());
-  if (!query) return JSON.stringify([]);
-
-  const json = await fetchText(BASE_URL + "/wp-json/wp/v2/search?search=" + query);
-  const data = JSON.parse(json);
+  const html = await fetchText(BASE_URL + "/search?keyword=" + encodeURIComponent(keyword));
+  const blocks = html.match(/<div class="item">[\s\S]*?(?=<div class="item">|<div class="clearfix"><\/div>)/g) || [];
+  const wanted = normalizeTitle(keyword);
   const results = [];
 
-  for (const item of Array.isArray(data) ? data : []) {
-    if (!item.url || !item.title) continue;
+  for (const block of blocks) {
+    const href = block.match(/<a href="([^"]+)"[^>]*class="(?:thumb|poster)[^"]*"/)?.[1]
+      || block.match(/<a href="([^"]+)"/)?.[1];
+    const title = block.match(/<a[^>]*class="name"[^>]*>([\s\S]*?)<\/a>/)?.[1]
+      || block.match(/<img[^>]*alt="([^"]+)"/)?.[1];
+    const image = block.match(/\sdata-src="([^"]+)"/)?.[1]
+      || block.match(/\ssrc="([^"]+)"/)?.[1]
+      || "";
+
+    if (!href || !title) continue;
     results.push({
-      title: cleanText(item.title),
-      image: "",
-      href: item.url
+      title: cleanText(title),
+      image: absoluteUrl(image),
+      href: absoluteUrl(href)
     });
   }
+
+  results.sort((a, b) => {
+    const aTitle = normalizeTitle(a.title);
+    const bTitle = normalizeTitle(b.title);
+    const aExact = aTitle === wanted ? 0 : 1;
+    const bExact = bTitle === wanted ? 0 : 1;
+    return aExact - bExact || a.title.length - b.title.length;
+  });
 
   return JSON.stringify(results);
 }
 
 async function extractDetails(url) {
   const html = await fetchText(url);
-  const blocks = parseJsonLdBlocks(html);
-  const series = findSchema(blocks, "TVSeries") || {};
-  const description = cleanText(series.description)
-    || cleanText(html.match(/<meta name="description" content="([^"]+)"/)?.[1])
-    || "N/A";
-  const aliases = cleanText(series.alternateName) || "N/A";
-  const airdate = cleanText(series.datePublished) || "N/A";
+  const description = cleanText(html.match(/<div class="desc">([\s\S]*?)<\/div>/)?.[1]) || "N/A";
+  const aliases = cleanText(html.match(/<p class="alias">([\s\S]*?)<\/p>/)?.[1]) || "N/A";
+  const airdate = cleanText(html.match(/<dt>Released:<\/dt>\s*<dd>\s*<a[^>]*>([\s\S]*?)<\/a>/)?.[1]) || "N/A";
 
   return JSON.stringify([{ description, aliases, airdate }]);
 }
 
 async function extractEpisodes(url) {
-  const html = await fetchText(url);
+  const slug = animeSlug(url);
+  if (!slug) return JSON.stringify([]);
+
+  const responseText = await fetchText(BASE_URL + "/ajax/film/sv?id=" + encodeURIComponent(slug));
+  let html = responseText;
+  try {
+    html = JSON.parse(responseText).html || "";
+  } catch {
+    html = responseText;
+  }
+
+  const server = html.match(/<div class="server[^"]*"[^>]*data-name="([^"]+)"/)?.[1]
+    || html.match(/<div class="server[^"]*"[^>]*data-id="([^"]+)"/)?.[1]
+    || "vidstreaming.io";
   const episodes = [];
   const seen = new Set();
-  const regex = /<a\b[^>]*href="([^"]+)"[^>]*class="[^"]*\bep-item\b[^"]*"[^>]*data-number="([^"]+)"[^>]*data-id="([^"]+)"/gi;
+  const anchorRegex = /<a\b[^>]*data-id="([^"]+)"[^>]*data-base="([^"]+)"[^>]*href="([^"]+)"/g;
   let match;
 
-  while ((match = regex.exec(html)) !== null) {
-    const href = absoluteUrl(match[1]);
+  while ((match = anchorRegex.exec(html)) !== null) {
+    const episodeId = match[1];
     const number = Number.parseFloat(match[2]);
-    if (!href || seen.has(href)) continue;
-    seen.add(href);
+    if (!episodeId || seen.has(episodeId)) continue;
+    seen.add(episodeId);
     episodes.push({
-      href,
+      href: episodeId + "/" + server,
       number: Number.isFinite(number) ? number : episodes.length + 1
     });
   }
@@ -106,30 +106,14 @@ async function extractEpisodes(url) {
   return JSON.stringify(episodes);
 }
 
-async function extractStreamUrl(url) {
-  const html = await fetchText(url);
-  const blocks = parseJsonLdBlocks(html);
-  const episode = findSchema(blocks, "TVEpisode") || {};
-  const embed = episode.video?.embedUrl
-    || html.match(/<iframe[^>]+src="([^"]+)"/i)?.[1]
-    || html.match(/data-hash="([^"]+)"/i)?.[1];
+async function extractStreamUrl(id) {
+  const data = JSON.parse(await fetchText(BASE_URL + "/ajax/episode/info?epr=" + encodeURIComponent(id)));
+  if (!data.target || !/^https?:\/\//i.test(data.target)) return JSON.stringify({ streams: [] });
 
-  let streamUrl = embed || "";
-  if (streamUrl && !/^https?:\/\//i.test(streamUrl)) {
-    try {
-      const decoded = atob(streamUrl);
-      streamUrl = decoded.match(/<iframe[^>]+src="([^"]+)"/i)?.[1] || "";
-    } catch {
-      streamUrl = "";
-    }
-  }
-
-  if (!streamUrl) return JSON.stringify({ streams: [] });
   return JSON.stringify({
     streams: [{
-      title: "AniCrush",
-      streamUrl,
-      url: streamUrl
+      title: data.name || "123Anime",
+      streamUrl: data.target
     }]
   });
 }
