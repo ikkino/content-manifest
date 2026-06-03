@@ -1,233 +1,316 @@
 async function searchResults(keyword) {
+    const results = [];
+    const headers = {
+        "Referer": "https://v3.animelib.org/",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
+    };
     try {
-        const responseText = await soraFetch(`https://anime-portal.su/search/one/`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: `do=search&subaction=search&from_page=0&story=${keyword}`,
-        });
-        const html = await responseText.text();
+        const response = await fetchv2(
+            "https://hapi.hentaicdn.org/api/anime?fields[]=rate_avg&fields[]=rate&fields[]=releaseDate&q=" + keyword,
+            headers
+        );
+        const json = await response.json();
 
-        // Parse results from HTML (not JSON)
-        // Each result is an <a href="..."><div class="mov">...</div></a>
-        const regex = /<a\s+href="([^"]+)">\s*<div class="mov">[\s\S]*?<img\s+src="([^"]+)"[^>]*>[\s\S]*?<div class="name">([\s\S]*?)<\/div>/g;
+        if (json && Array.isArray(json.data)) {
+            for (const item of json.data) {
+                const title = item.eng_name || item.name || "Unknown";
+                const image = item.cover?.default || item.cover?.thumbnail || "";
 
-        const results = [];
-        let match;
-
-        while ((match = regex.exec(html)) !== null) {
-            results.push({
-                title: match[3].trim(),
-                image: `https://anime-portal.su${match[2].trim()}`,
-                href: match[1].startsWith('http') ? match[1].trim() : `https://anime-portal.su${match[1].trim()}`
-            });
+                results.push({
+                    title,
+                    image: "https://passthrough-worker.simplepostrequest.workers.dev/?simple=" +
+                           image +
+                           "&referer=https://v3.animelib.org/",
+                    href: item.slug_url || item.slug || item.id,
+                    _score: scoreTitle(title, keyword)
+                });
+            }
         }
 
-        console.log(results);
-        return JSON.stringify(results);
-    } catch (error) {
-        console.log('Fetch error in searchResults: ' + error);
-        return JSON.stringify([{ title: 'Error', image: '', href: '' }]);
-    }
-}
+        results.sort((a, b) => a._score - b._score);
 
-async function extractDetails(url) {
-    try {
-        const responseText = await soraFetch(url);
-        const html = await responseText.text();
-
-        // Description
-        const descMatch = html.match(/<div class="page__text full-text clearfix"[^>]*>([\s\S]*?)<\/div>/);
-        const description = descMatch
-            ? descMatch[1]
-                .replace(/<\/p>\s*<p>/gi, ' ')
-                .replace(/<[^>]+>/g, '')
-                .replace(/\s+/g, ' ')
-                .trim()
-            : 'Описание недоступно';
-
-        // Aliases
-        // Duration
-        const durationMatch = html.match(/Тип аниме:<\/div>\s*<div class="mov-desc">([^<]+)<\/div>/);
-        const duration = durationMatch ? `Длительность: ${durationMatch[1]}` : null;
-
-        // Studio
-        const studioMatch = html.match(/Студия:<\/div>\s*<div class="mov-desc"><a[^>]*>([^<]+)<\/a>/);
-        const studio = studioMatch ? `Студия: ${studioMatch[1]}` : null;
-
-        // Genres
-        const genresMatch = html.match(/Жанры:<\/div>\s*<div class="mov-desc">([\s\S]*?)<\/div>/);
-        let genres = null;
-        if (genresMatch) {
-            const genreList = Array.from(genresMatch[1].matchAll(/<a[^>]*>([^<]+)<\/a>/g)).map(m => m[1]);
-            genres = `Жанры: ${genreList.join(', ')}`;
-        }
-
-        // Rating (World-Art)
-        const waRatingMatch = html.match(/<div class="pmovie__rating pmovie__rating--kp">\s*<div class="pmovie__rating-content">([\d.]+)<\/div>/);
-        const rating = waRatingMatch ? `Оценка: ${waRatingMatch[1]}` : null;
-
-        const aliasesParts = [duration, genres, studio, rating].filter(Boolean);
-        const aliases = aliasesParts.length ? aliasesParts.join('\n') : 'Информация недоступна';
-
-        // Airdate
-        const airdateMatch = html.match(/Год:<\/div>\s*<div class="mov-desc"[^>]*><a[^>]*>(\d{4})<\/a>/);
-        const airdate = airdateMatch ? `Год выхода: ${airdateMatch[1]}` : 'Год выхода: неизвестен';
-
-        const transformedResults = [{
-            description,
-            aliases,
-            airdate
-        }];
-
-        console.log(transformedResults);
-        return JSON.stringify(transformedResults);
-    } catch (error) {
-        console.log('Details error: ' + error);
+        return JSON.stringify(
+            results.map(({ _score, ...rest }) => rest)
+        );
+    } catch (err) {
         return JSON.stringify([{
-            description: 'Ошибка загрузки описания',
-            aliases: 'Информация недоступна',
-            airdate: 'Год выхода: неизвестен'
+            title: err.message,
+            image: "Error",
+            href: "Error"
         }]);
     }
 }
 
-async function extractEpisodes(url) {
+function scoreTitle(title, keyword) {
+    const t = title.toLowerCase();
+    const k = keyword.toLowerCase();
+
+    if (t === k) return 0;              
+    if (t.startsWith(k)) return 1;     
+    if (t.includes(k)) return 2;        
+    return 3;                         
+}
+
+async function extractDetails(slug) {
+    const headers = {
+        "Referer": "https://v3.animelib.org/",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
+    };
     try {
-        const responseText = await soraFetch(url);
-        const html = await responseText.text();
+        const response = await fetchv2(
+            "https://hapi.hentaicdn.org/api/anime/" + slug + 
+            "?fields[]=background&fields[]=eng_name&fields[]=otherNames&fields[]=summary&fields[]=releaseDate&fields[]=type_id&fields[]=caution&fields[]=views&fields[]=close_view&fields[]=rate_avg&fields[]=rate&fields[]=genres&fields[]=tags&fields[]=teams&fields[]=user&fields[]=franchise&fields[]=authors&fields[]=publisher&fields[]=userRating&fields[]=moderated&fields[]=metadata&fields[]=metadata.count&fields[]=metadata.close_comments&fields[]=anime_status_id&fields[]=time&fields[]=episodes&fields[]=episodes_count&fields[]=episodesSchedule&fields[]=shiki_rate"
+        , headers);
+        const json = await response.json();
+        const data = json.data || {};
 
-        // Find the videodb JSON object in the HTML
-        const videodbMatch = html.match(/var\s+videodb\s*=\s*({[\s\S]+?});/);
-        if (!videodbMatch) throw new Error("videodb not found");
-
-        const videodb = JSON.parse(videodbMatch[1]);
-        const translators = videodb.translators || {};
-
-        const results = [];
-
-        for (const translatorBlock of Object.values(translators)) {
-            const seasons = translatorBlock.seasons || {};
-            for (const [seasonNum, episodesArr] of Object.entries(seasons)) {
-                for (const ep of episodesArr) {
-                    // Avoid duplicates
-                    if (!results.some(e => e.href === `${url}|${seasonNum}|${ep.num}`)) {
-                        results.push({
-                            href: `${url}|${seasonNum}|${ep.num}`,
-                            number: Number(ep.num)
-                        });
-                    }
-                }
+        let description = "No summary available";
+        if (data.summary) {
+            if (typeof data.summary === "string") {
+                description = data.summary;
+            } else if (data.summary.content && Array.isArray(data.summary.content)) {
+                description = data.summary.content
+                    .map(block => {
+                        if (block.content && Array.isArray(block.content)) {
+                            return block.content.map(t => t.text || "").join("");
+                        }
+                        return "";
+                    })
+                    .join("\n")
+                    .trim();
             }
         }
 
-        // Sort by season and episode number
-        results.sort((a, b) => {
-            const [ , seasonA, epA ] = a.href.split('|').map(Number);
-            const [ , seasonB, epB ] = b.href.split('|').map(Number);
-            return seasonA - seasonB || epA - epB;
-        });
+        const aliases = Array.isArray(data.otherNames) ? data.otherNames.join(", ") : "";
+        return JSON.stringify([{
+            description: description,
+            airdate: data.releaseDate || "Unknown",
+            aliases: aliases
+        }]);
+    } catch (err) {
+        return JSON.stringify([{
+            description: "Error",
+            airdate: "Error",
+            aliases: ""
+        }]);
+    }
+}
 
-        console.log(`Episodes: ${JSON.stringify(results)}`);
+async function extractEpisodes(slug) {
+    const results = [];
+    const headers = {
+        "Referer": "https://v3.animelib.org/",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
+    };
+    try {
+        const response = await fetchv2("https://hapi.hentaicdn.org/api/episodes?anime_id=" + slug, headers);
+        const json = await response.json();
+
+        if (json && Array.isArray(json.data)) {
+            for (const episode of json.data) {
+                results.push({
+                    href: episode.id ? String(episode.id) : "",
+                    number: parseFloat(episode.number) || 0
+                });
+            }
+        }
+
         return JSON.stringify(results);
-    } catch (error) {
-        console.log('Fetch error in extractEpisodes: ' + error);
-        return JSON.stringify([]);
+    } catch (err) {
+        return JSON.stringify([{
+            href: "Error",
+            number: "Error"
+        }]);
     }
 }
 
-// searchResults('one punch');
-// extractDetails('https://anime-portal.su/4900-klinok-rassekajushhij-demonov.html');
-// extractEpisodes('https://anime-portal.su/4900-klinok-rassekajushhij-demonov.html');
-// extractStreamUrl('https://anime-portal.su/4900-klinok-rassekajushhij-demonov.html|1|1');
-
-async function extractStreamUrl(url) {
+async function extractStreamUrl(ID) {
+    const headers = {
+        "Referer": "https://v3.animelib.org/",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
+    };
     try {
-        const [url2, season, episode] = url.split('|');
+        const url = "https://hapi.hentaicdn.org/api/episodes/" + ID;
+        const response = await fetchv2(url, headers);
+        const json = await response.json();
+        
+        const data = json.data || {};
+        const players = data.players || [];
+        players.sort((a, b) => {
+            const order = { Animelib: 0, Kodik: 1 };
+            return (order[a.player] ?? 99) - (order[b.player] ?? 99);
+        });
+        const parserPromises = players
+            .filter(player => player.team && player.team.name)
+            .map(async (player) => {
+                try {
+                    let streamUrl = null;
+                    let highestQualityNum = 0;
 
-        const responseText = await soraFetch(url2);
-        const html = await responseText.text();
+                    if (player.player === "Animelib" && player.video && player.video.quality) {
+                        const qualities = player.video.quality;
 
-        // Find the videodb JSON object in the HTML
-        const videodbMatch = html.match(/var\s+videodb\s*=\s*({[\s\S]+?});/);
-        if (!videodbMatch) throw new Error("videodb not found");
+                        
+                        for (const qualityItem of qualities) {
+                            if (qualityItem.href && qualityItem.quality > highestQualityNum) {
+                                highestQualityNum = qualityItem.quality;
+                                streamUrl = qualityItem.href;
 
-        const videodb = JSON.parse(videodbMatch[1]);
+                            }
+                        }
+                        
+                        if (streamUrl && !streamUrl.startsWith('http')) {
+                            streamUrl = 'https://video1.cdnlibs.org/.%D0%B0s/' + streamUrl;
+                        }
+                    } else if (player.player === "Kodik" && player.src) {
+                        let kodikUrl = player.src;
+                        if (!kodikUrl.startsWith('http')) {
+                            kodikUrl = "https:" + kodikUrl;
+                        }
+                        const qualitiesJson = await kodikParser(kodikUrl);
+                        const qualities = JSON.parse(qualitiesJson);
+                        
+                        for (const quality in qualities) {
+                            if (qualities[quality].src) {
+                                const qualityNum = parseInt(quality.replace('p', '')) || 0;
+                                if (qualityNum > highestQualityNum) {
+                                    highestQualityNum = qualityNum;
+                                    streamUrl = qualities[quality].src;
+                                }
+                            }
+                        }
+                        
+                        if (streamUrl && streamUrl.startsWith('//')) {
+                            streamUrl = 'https:' + streamUrl;
+                        }
+                    }
 
-        // Get all translators
-        const translators = videodb.translators || {};
-        const translatorKeys = Object.keys(translators);
-        if (translatorKeys.length === 0) throw new Error("No translators found");
-
-        let streams = [];
-
-        for (const translatorKey of translatorKeys) {
-            const translatorBlock = translators[translatorKey];
-            const seasons = translatorBlock.seasons || {};
-            const episodesArr = seasons[season];
-            if (!episodesArr) continue;
-
-            // Get all episodes for this season and translator
-            for (const episodeObj of episodesArr) {
-                // Only use hls.m3u8
-                if (episodeObj.hls !== "hls.m3u8" && !episodeObj.hls.endsWith(".m3u8")) continue;
-
-                // If a specific episode is requested, skip others
-                if (episode && String(episodeObj.num) !== String(episode)) continue;
-
-                const queryString = episodeObj.quality
-                    .map(q => `quality%5B%5D=${q}`)
-                    .join("&");
-
-                const response = await soraFetch(`https://anime-portal.su/engine/videodb/sources.php`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-                        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:140.0) Gecko/20100101 Firefox/140.0',
-                        'Referer': url2
-                    },
-                    body: `sub=${episodeObj.sub}&allsubs=${encodeURIComponent(episodeObj.allsubs)}&num=${episodeObj.num}&hls=${episodeObj.hls}&hash=${episodeObj.hash}&${queryString}&type=animetvseries`
-                });
-
-                const data = await response.json();
-
-                streams.push({
-                    title: translatorKey,
-                    streamUrl: data.hls,
-                    headers: {}
-                });
-            }
-        }
-
-        const result = {
-            streams,
-            subtitles: ""
-        };
-
-        console.log(result);
-        return JSON.stringify(result);
-    } catch (error) {
-        console.log('Fetch error in extractStreamUrl: ' + error);
-
-        const result = {
+                    if (streamUrl) {
+                        return {
+                            title: player.team.name + (highestQualityNum ? ` (${highestQualityNum}p)` : '') + (player.player === "Animelib" ? " (Animelib)" : " (Kodik)"),
+                            streamUrl,
+                            headers: {
+                                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+                                "Referer": player.player === "Kodik" ? "https://kodik.info/" : "https://v3.animelib.org/"
+                            }
+                        };
+                    }
+                    
+                    return null;
+                } catch (err) {
+                    console.error("[extractStreamUrl] Player processing error:", err.message, err.code);
+                    return null;
+                }
+            });
+        
+        const results = await Promise.all(parserPromises);
+        const streams = results.filter(stream => stream !== null);
+        return JSON.stringify({
+            streams: streams,
+            subtitle: "https://none.com"
+        });
+    } catch (err) {
+        console.error("[extractStreamUrl] ERROR:", err.message);
+        return JSON.stringify({
             streams: [],
-            subtitles: ""
-        };
-
-        console.log(result);
-        return JSON.stringify(result);
+            subtitle: "https://none.com"
+        });
     }
 }
 
-async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
-    try {
-        return await fetchv2(url, options.headers ?? {}, options.method ?? 'GET', options.body ?? null);
-    } catch(e) {
-        try {
-            return await fetch(url, options);
-        } catch(error) {
-            return null;
+async function kodikParser(url) {
+  try {
+    const headers = {
+      "Referer": "https://v3.animelib.org/",
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
+    };
+    const response = await fetchv2(url, headers);
+    const htmlText = await response.text();
+
+    const urlParamsMatch = htmlText.match(/var\s+urlParams\s*=\s*'([^']+)'/);
+    const videoInfoTypeMatch = htmlText.match(/vInfo\.type\s*=\s*'([^']+)'/);
+    const videoInfoHashMatch = htmlText.match(/vInfo\.hash\s*=\s*'([^']+)'/);
+    const videoInfoIdMatch = htmlText.match(/vInfo\.id\s*=\s*'([^']+)'/);
+
+    const urlParams = urlParamsMatch ? JSON.parse(urlParamsMatch[1]) : {};
+    const videoInfo_type = videoInfoTypeMatch ? videoInfoTypeMatch[1] : '';
+    const videoInfo_hash = videoInfoHashMatch ? videoInfoHashMatch[1] : '';
+    const videoInfo_id = videoInfoIdMatch ? videoInfoIdMatch[1] : '';
+
+    const finalData =
+      `d=${urlParams.d}` +
+      `&d_sign=${urlParams.d_sign}` +
+      `&pd=${urlParams.pd}` +
+      `&pd_sign=${urlParams.pd_sign}` +
+      `&ref=${urlParams.ref}` +
+      `&ref_sign=${urlParams.ref_sign}` +
+      `&bad_user=false&cdn_is_working=true` +
+      `&type=${videoInfo_type}&hash=${videoInfo_hash}&id=${videoInfo_id}&info=%7B%7D`;
+
+
+    const headers2 = {
+      "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+      "Referer": "https://v3.animelib.org/",
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3",
+      "X-Requested-With": "XMLHttpRequest"
+    };
+    const apiResponse = await fetchv2("https://kodikplayer.com/ftor", headers2, "POST", finalData);
+    const apiJson = await apiResponse.json();
+
+    const qualities = {};
+    
+    if (apiJson?.links) {
+      for (const quality in apiJson.links) {
+        const qualityData = apiJson.links[quality];
+        
+        if (qualityData && qualityData[0] && qualityData[0].src) {
+          const encodedSrc = qualityData[0].src;
+          const decodedUrl = decode(encodedSrc);
+          
+          qualities[quality] = {
+            src: decodedUrl,
+            type: qualityData[0].type || 'application/x-mpegURL'
+          };
+        }
+      }
+    }
+
+    return JSON.stringify(qualities, null, 2);
+  } catch (error) {
+    console.error("[kodikParser] ERROR:", error.message);
+    return JSON.stringify({ error: "error.org" });
+  }
+}
+
+function decode(input) {
+    const _0x1a = ["ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/", "=", String.fromCharCode, ">="];
+    (function() {})();
+    const _map = _0x1a[0];
+    let _o = '',
+        _b = 0,
+        _c = 0;
+    const _r = [];
+    for (let _i = 0; _i < input.length; _i++) {
+        const _ch = input[_i];
+        if (/[a-zA-Z]/.test(_ch)) {
+            const _cc = _ch.charCodeAt(0);
+            const _max = _ch <= 'Z' ? 90 : 122;
+            let _sh = _cc + 18;
+            _r.push(String.fromCharCode(_sh <= _max ? _sh : _sh - 26));
+        } else _r.push(_ch);
+    }
+    const _rot = _r.join('');
+    for (let _j = 0; _j < _rot.length; _j++) {
+        const _ch = _rot[_j];
+        if (_ch === _0x1a[1]) break;
+        const _v = _map.indexOf(_ch);
+        if (_v === -1) continue;
+        _b = (_b << 6) | _v;
+        _c += 6;
+        if (_c >= 8) {
+            _c -= 8;
+            _o += _0x1a[2]((_b >> _c) & 0xFF);
         }
     }
+    return _o;
 }

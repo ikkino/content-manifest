@@ -1,423 +1,333 @@
+// ==========================================
+// ⚙️ SORA MODULE — BINGEBOX v2 (FIXED)
+// ==========================================
 
-class MProvider {
-  constructor() {
-    this.source = typeof mangayomiSources !== "undefined" && Array.isArray(mangayomiSources) ? mangayomiSources[0] : {};
-    globalThis.__mangayomiBaseUrl = this.source.baseUrl || this.source.apiUrl || "";
-  }
-}
+const TMDB_API_KEY = "f5b2cdde0b678e87f5c68b61b43c688c";
+const BINGEBOX_API = "https://bingebox.to/api/stream";
+const BINGEBOX_REFERER = "https://bingebox.to/";
 
-class SharedPreferences {
-  get(key) {
-    const defaults = {
-      pref_content_priority: "series",
-      pref_latest_time_window: "day",
-      pref_video_resolution: "1080",
-      autoembed_stream_source_4: "4",
-      autoembed_pref_navtive_subtitle: false,
-      autoembed_split_stream_quality: false,
-      autoembed_pref_subtitle_source_2: "1"
-    };
-    return defaults[key] ?? "";
-  }
-
-  getString(key) {
-    return String(this.get(key) ?? "");
-  }
-
-  getInt(key) {
-    return Number.parseInt(this.get(key), 10) || 0;
-  }
-
-  getBool(key) {
-    return Boolean(this.get(key));
-  }
-}
-
-class Client {
-  async get(url, headers = {}) {
-    const response = await fetchv2(this.normalizeUrl(url), { headers });
-    return {
-      body: await response.text(),
-      statusCode: response.status,
-      headers: Object.fromEntries(response.headers?.entries?.() ?? [])
-    };
-  }
-
-  async post(url, headers = {}, body = null) {
-    const response = await fetchv2(this.normalizeUrl(url), {
-      method: "POST",
-      headers,
-      body
-    });
-    return {
-      body: await response.text(),
-      statusCode: response.status,
-      headers: Object.fromEntries(response.headers?.entries?.() ?? [])
-    };
-  }
-
-  normalizeUrl(url) {
-    const value = String(url ?? "");
-    if (/^https?:\/\//i.test(value)) return value;
-    const base = globalThis.__mangayomiBaseUrl || "";
-    if (!base) return value;
-    return new URL(value, base.endsWith("/") ? base : base + "/").toString();
-  }
-}
-
-
-const mangayomiSources = [
-  {
-    "name": "AnimeHeaven",
-    "id": -1744325818,
-    "lang": "en",
-    "baseUrl": "https://animeheaven.me",
-    "iconUrl": "https://www.google.com/s2/favicons?sz=256&domain=https://animeheaven.me",
-    "typeSource": "single",
-    "itemType": 1,
-    "version": "0.0.7",
-    "pkgPath": "anime/src/en/animeheaven.js",
-    "isManga": false,
-    "isNsfw": false,
-    "hasCloudflare": false,
-    "isFullData": false,
-    "appMinVerReq": "0.5.0",
-    "sourceCodeUrl": "https://raw.githubusercontent.com/Mallyd11/mangayomi-anime-extensions/refs/heads/main/javascript/anime/src/en/animeheaven.js",
-    "dateFormat": "",
-    "dateFormatLocale": "",
-    "additionalParams": "",
-    "sourceCodeLanguage": 1,
-    "notes": "",
-  },
+const SOURCES = [
+    "neon", "yoru", "oneroom", "aldebaran", "sage", "breach",
+    "killjoy", "harbor", "chamber", "omen", "gekko", "raze", "phoenix", "fade"
 ];
 
-class DefaultExtension extends MProvider {
-  constructor() {
-    super();
-    this.client = new Client();
-  }
+// Priorité des langues pour le sous-titre par défaut
+const SUB_PRIORITY = ["fre", "fra", "french", "eng", "english"];
 
-  get ua() {
-    return "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36";
-  }
+// ==========================================
+// 🛠️ HELPERS
+// ==========================================
 
-  get headers() {
-    return {
-      "User-Agent": this.ua,
-      "Referer": this.source.baseUrl + "/",
-    };
-  }
-
-  async fetchHtml(path) {
-    var url = path.startsWith("http") ? path : this.source.baseUrl + "/" + path.replace(/^\/+/, "");
-    var res = await this.client.get(url, this.headers);
-    return res.body || "";
-  }
-
-  // Parse a list page (popular.php / new.php / search.php).
-  // Site structure per item:
-  //   <a href="anime.php?CODE"><img src="image.php?CODE"></a>
-  //   <a href="anime.php?CODE">Title Text</a>
-  // Attributes use double quotes; no class on img tags.
-  parseList(html) {
-    var list = [];
-    var seen = {};
-
-    // First pass: build href → imgSrc map from image-anchor elements.
-    var imgMap = {};
-    var imgRx = /<a[^>]+href=["'](anime\.php\?[\w]+)["'][^>]*>\s*<img[^>]+src=["']([^"']+)["']/g;
-    var im;
-    while ((im = imgRx.exec(html)) !== null) {
-      if (!imgMap[im[1]]) imgMap[im[1]] = im[2];
+function parseQuery(queryString) {
+    const params = {};
+    const pairs = queryString.split('&');
+    for (let pair of pairs) {
+        const idx = pair.indexOf('=');
+        if (idx === -1) continue;
+        const key = decodeURIComponent(pair.slice(0, idx));
+        const val = decodeURIComponent(pair.slice(idx + 1));
+        params[key] = val;
     }
-
-    // Second pass: find plain-text title anchors and assemble list items.
-    var titleRx = /<a[^>]+href=["'](anime\.php\?[\w]+)["'][^>]*>([^<]{2,120})<\/a>/g;
-    var tm;
-    while ((tm = titleRx.exec(html)) !== null) {
-      var href = tm[1];
-      var name = tm[2].trim();
-      if (!name || seen[href]) continue;
-      seen[href] = true;
-      var imgSrc = imgMap[href] || "";
-      var imageUrl = imgSrc ? (imgSrc.indexOf("http") === 0 ? imgSrc : this.source.baseUrl + "/" + imgSrc) : "";
-      list.push({
-        name: this._decodeHtml(name),
-        link: this.source.baseUrl + "/" + href,
-        imageUrl: imageUrl,
-      });
-    }
-    return list;
-  }
-
-  _decodeHtml(s) {
-    return (s || "")
-      .replace(/&#0*39;|&apos;/g, "'")
-      .replace(/&#0*34;|&quot;/g, '"')
-      .replace(/&#0*38;|&amp;/g, "&")
-      .replace(/&#0*60;|&lt;/g, "<")
-      .replace(/&#0*62;|&gt;/g, ">")
-      .replace(/&nbsp;/g, " ")
-      .replace(/&#(\d+);/g, function(_m, n) { return String.fromCharCode(parseInt(n, 10)); })
-      .replace(/&#x([0-9a-fA-F]+);/g, function(_m, n) { return String.fromCharCode(parseInt(n, 16)); });
-  }
-
-  get supportsLatest() {
-    return true;
-  }
-
-  async getPopular(page) {
-    // The site returns all items on one HTML page. We slice client-side so
-    // Mangayomi only receives 30 items at a time and can load more on scroll.
-    var html = await this.fetchHtml("popular.php");
-    var all = this.parseList(html);
-    var pageSize = 30;
-    var start = (page - 1) * pageSize;
-    var slice = all.slice(start, start + pageSize);
-    return { list: slice, hasNextPage: (start + pageSize) < all.length };
-  }
-
-  async getLatestUpdates(page) {
-    var html = await this.fetchHtml("new.php");
-    var all = this.parseList(html);
-    var pageSize = 30;
-    var start = (page - 1) * pageSize;
-    var slice = all.slice(start, start + pageSize);
-    return { list: slice, hasNextPage: (start + pageSize) < all.length };
-  }
-
-  async search(query, page, filters) {
-    if (page > 1) return { list: [], hasNextPage: false };
-    try {
-      var html = await this.fetchHtml("search.php?s=" + encodeURIComponent(query));
-      return { list: this.parseList(html), hasNextPage: false };
-    } catch (e) {
-      return { list: [], hasNextPage: false };
-    }
-  }
-
-  // Status mapping. AnimeHeaven uses "Currently Airing" / "Finished Airing".
-  statusCode(status) {
-    var s = (status || "").toLowerCase();
-    if (s.includes("finished") || s.includes("completed")) return 1;
-    if (s.includes("not yet") || s.includes("upcoming")) return 4;
-    if (s.includes("airing") || s.includes("ongoing") || s.includes("releasing")) return 0;
-    return 5;
-  }
-
-  async getDetail(url) {
-    var html = await this.fetchHtml(url);
-
-    // Title
-    var name = "";
-    var nameMatch = html.match(/<div class='infotitle c'>([^<]+)<\/div>/);
-    if (nameMatch) name = this._decodeHtml(nameMatch[1].trim());
-
-    // Cover image — detail page uses class='posterimg' for the main poster.
-    // Do NOT match 'coverimg'; those are related-anime thumbnails lower on the page.
-    // Fall back to og:image which always points to the correct art.
-    var imageUrl = "";
-    var posterMatch = html.match(/<img[^>]+class='[^']*posterimg[^']*'[^>]+src='([^']+)'/);
-    if (posterMatch) {
-      var rel = posterMatch[1];
-      imageUrl = rel.indexOf("http") === 0 ? rel : this.source.baseUrl + "/" + rel.replace(/^\/+/, "");
-    }
-    if (!imageUrl) {
-      var og = html.match(/<meta property='og:image' content='([^']+)'/);
-      if (og) imageUrl = og[1];
-    }
-
-    // Description
-    var description = "";
-    var descMatch = html.match(/<div class='infodes c'>([\s\S]*?)<\/div>/);
-    if (descMatch) {
-      description = this._decodeHtml(descMatch[1].replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim());
-    }
-
-    // Genres — every <a class='boxitem ...'> in the tags section is a genre tag.
-    var genre = [];
-    var genreSection = html.match(/<div class='infotags[^']*'[^>]*>([\s\S]*?)<\/div>\s*<div class='infoyear/);
-    if (genreSection) {
-      var gRx = /<a[^>]+href='tags\.php\?[^']+'[^>]*>([^<]+)<\/a>/g;
-      var gm;
-      while ((gm = gRx.exec(genreSection[1])) !== null) {
-        genre.push(this._decodeHtml(gm[1].trim()));
-      }
-    }
-    // Fallback: just look for any tags.php links
-    if (genre.length === 0) {
-      var gRx2 = /<a[^>]+href='tags\.php\?tag=([^']+)'/g;
-      var seen = {};
-      var gm2;
-      while ((gm2 = gRx2.exec(html)) !== null) {
-        var t = decodeURIComponent(gm2[1]);
-        if (!seen[t]) { seen[t] = true; genre.push(t); }
-      }
-    }
-
-    // Status — site shows "Status:" inline followed by an inline div.
-    // "Episodes:" 11 etc. are in inline divs after labels. Use "Status" label if present.
-    var status = 5;
-    var statusBlock = html.match(/Status[\s\S]{0,40}?<div[^>]+class='inline c2'>([^<]+)</);
-    if (statusBlock) status = this.statusCode(statusBlock[1]);
-    else {
-      // If no status label, infer: if "Episodes" count appears followed by total, treat as completed; else default unknown
-      // Site mostly shows finished anime; default to 5 (UNKNOWN) when not stated.
-    }
-
-    // Episodes — every anchor with onclick="gatea(...)" is an episode.
-    var chapters = [];
-    var epRx = /<a[^>]*onclick='gatea\(\\?["']([a-f0-9]+)\\?["']\)'[^>]*>([\s\S]*?)<\/a>/g;
-    var em;
-    while ((em = epRx.exec(html)) !== null) {
-      var hash = em[1];
-      var body = em[2];
-      var numMatch = body.match(/watch2[^>]*>(\d+(?:\.\d+)?)/);
-      var epNum = numMatch ? numMatch[1] : String(chapters.length + 1);
-      chapters.push({
-        name: "Episode " + epNum,
-        url: hash, // chapter URL is just the gate cookie key
-      });
-    }
-    // Latest episode is usually first in the source; reverse so episode 1 is at the
-    // bottom (Mangayomi convention: most recent at top).
-    // The site already lists newest first, so no reverse needed.
-
-    return {
-      name: name,
-      imageUrl: imageUrl,
-      description: description,
-      genre: genre,
-      status: status,
-      link: url,
-      chapters: chapters,
-    };
-  }
-
-  // Fetch the gate.php page for an episode and pull every video URL out of it.
-  async getVideoList(url) {
-    var hash = url; // we stored just the hash as the chapter URL
-    var streams = [];
-
-    var refer = this.source.baseUrl + "/anime.php";
-    var headers = {
-      "User-Agent": this.ua,
-      "Referer": refer,
-      "Cookie": "key=" + hash,
-    };
-    var res;
-    try {
-      res = await this.client.get(this.source.baseUrl + "/gate.php", headers);
-    } catch (e) {
-      return streams;
-    }
-    var html = res.body || "";
-
-    // Pull every distinct mp4 URL. Different subdomains rotate per refresh, but
-    // each page lists ax/ct/ck etc. as fallbacks. We surface them as quality options.
-    var seen = {};
-    var rx = /['"](https?:\/\/[\w\-]+\.animeheaven\.me\/video\.mp4\?[^'"\s]+)['"]/g;
-    var m;
-    // The video CDN validates access via the token embedded in the URL query
-    // string, not via cookies. Sending only UA + Referer keeps the request
-    // clean and avoids any cookie-related rejection by the CDN or downloader.
-    var streamHeaders = {
-      "User-Agent": this.ua,
-      "Referer": this.source.baseUrl + "/",
-    };
-    while ((m = rx.exec(html)) !== null) {
-      var u = m[1];
-      // The player embeds three kinds of URL suffix:
-      //   &error  → Server 2 fallback
-      //   &error2 → Server 3 fallback
-      //   &d      → "download alias" — INTENTIONALLY omits the access token,
-      //             making it a different (broken) URL that returns HTTP 404.
-      //             Skip it; the full-token Server 1–3 URLs are downloadable.
-      if (/&d(\b|$)/.test(u)) continue;
-
-      // Strip &error / &error2 to get the clean URL with the access token.
-      var clean = u.replace(/&error2?$/, "");
-      if (seen[clean]) continue;
-      seen[clean] = true;
-
-      // Label by suffix so users can pick a fallback if the primary fails.
-      var label;
-      if (/&error2(\b|$)/.test(u)) label = "Server 3";
-      else if (/&error(\b|$)/.test(u)) label = "Server 2";
-      else label = "Server 1";
-
-      streams.push({
-        url: clean,
-        originalUrl: clean,
-        quality: label,
-        headers: streamHeaders,
-        subtitles: [],
-      });
-    }
-    return streams;
-  }
-
-  getFilterList() {
-    return [];
-  }
-
-  getSourcePreferences() {
-    return [];
-  }
+    return params;
 }
 
-
-const __mangayomiExtension = new DefaultExtension();
-
-function __list(value) {
-  if (!value) return [];
-  if (Array.isArray(value)) return value;
-  if (Array.isArray(value.list)) return value.list;
-  return [];
+// Sélection du meilleur sous-titre selon priorité de langue
+function selectBestSubtitle(allSubtitles) {
+    for (let lang of SUB_PRIORITY) {
+        const found = allSubtitles.find(s =>
+            (s.label || "").toLowerCase().includes(lang) ||
+            (s.language || "").toLowerCase().includes(lang)
+        );
+        if (found) return found.url;
+    }
+    return allSubtitles.length > 0 ? allSubtitles[0].url : "";
 }
 
-function __text(value) {
-  return String(value ?? "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
-}
+// ==========================================
+// ⚙️ CORE LOGIC
+// ==========================================
 
+// 1. RECHERCHE (Via TMDB)
 async function searchResults(keyword) {
-  const result = await __mangayomiExtension.search(keyword, 1, []);
-  return JSON.stringify(__list(result).map((item) => ({
-    title: __text(item.name || item.title),
-    image: item.imageUrl || item.image || "",
-    href: item.link || item.url || ""
-  })).filter((item) => item.title && item.href));
+    console.log(`[Bingebox] 🔍 Recherche de : "${keyword}"`);
+    try {
+        const url = `https://api.themoviedb.org/3/search/multi?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(keyword)}&page=1&include_adult=false&language=en-US`;
+        const res = await soraFetch(url);
+        if (!res) return JSON.stringify([]);
+
+        const data = JSON.parse(await res.text());
+        const results = [];
+
+        for (let item of (data.results || [])) {
+            if (item.media_type !== 'movie' && item.media_type !== 'tv') continue;
+
+            const title = item.title || item.name || "Titre inconnu";
+            const year = (item.release_date || item.first_air_date || '').split('-')[0];
+            const image = item.poster_path
+                ? `https://image.tmdb.org/t/p/w500${item.poster_path}`
+                : 'https://via.placeholder.com/500x750?text=No+Image';
+
+            const href = `bingebox://${item.media_type}/${item.id}?title=${encodeURIComponent(title)}&year=${year}`;
+
+            results.push({
+                title: year ? `${title} (${year})` : title,
+                image,
+                href
+            });
+        }
+
+        console.log(`[Bingebox] ✅ ${results.length} résultats trouvés.`);
+        return JSON.stringify(results);
+    } catch (e) {
+        console.error(`[Bingebox] ❌ Erreur Recherche: ${e.message}`);
+        return JSON.stringify([]);
+    }
 }
 
+// 2. DÉTAILS (Via TMDB)
 async function extractDetails(url) {
-  const detail = await __mangayomiExtension.getDetail(url);
-  return JSON.stringify([{
-    description: __text(detail.description || "Not available"),
-    aliases: Array.isArray(detail.genre) ? detail.genre.join(", ") : __text(detail.genre || detail.name || "Not available"),
-    airdate: detail.status != null ? "Status: " + detail.status : "Not available"
-  }]);
+    console.log(`[Bingebox] 📖 Chargement détails : ${url}`);
+    try {
+        const match = url.match(/bingebox:\/\/([^/]+)\/([^?]+)/);
+        if (!match) throw new Error("URL invalide");
+
+        const [, type, id] = match;
+        const res = await soraFetch(`https://api.themoviedb.org/3/${type}/${id}?api_key=${TMDB_API_KEY}&language=en-US`);
+        if (!res) throw new Error("Échec réseau TMDB");
+
+        const data = JSON.parse(await res.text());
+
+        return JSON.stringify([{
+            description: data.overview || "No description available.",
+            aliases: `Rating: ${data.vote_average ? data.vote_average.toFixed(1) + '/10' : 'N/A'}`,
+            airdate: `Released: ${data.release_date || data.first_air_date || 'Unknown'}`
+        }]);
+    } catch (e) {
+        console.error(`[Bingebox] ❌ Erreur Détails: ${e.message}`);
+        return JSON.stringify([{ description: "Erreur lors du chargement des détails." }]);
+    }
 }
 
+// 3. ÉPISODES / FILM
 async function extractEpisodes(url) {
-  const detail = await __mangayomiExtension.getDetail(url);
-  const chapters = Array.isArray(detail.chapters) ? detail.chapters : [];
-  return JSON.stringify(chapters.map((chapter, index) => {
-    const label = String(chapter.name || chapter.title || "");
-    const parsed = label.match(/(?:episode|ep|capitulo|chapter)\s*([\d.]+)/i)?.[1] || label.match(/\b([\d.]+)\b/)?.[1];
-    return {
-      href: chapter.url || chapter.link || "",
-      number: Number.parseFloat(parsed) || index + 1
-    };
-  }).filter((item) => item.href));
+    console.log(`[Bingebox] 📂 Chargement épisodes : ${url}`);
+    try {
+        const match = url.match(/bingebox:\/\/([^/]+)\/([^?]+)\?(.+)/);
+        if (!match) throw new Error("URL invalide");
+
+        const type = match[1];
+        const id   = match[2];
+        const params = parseQuery(match[3]);
+        const title = params['title'] || "";
+        const year  = params['year']  || "";
+
+        // CAS A : Film
+        if (type === 'movie') {
+            return JSON.stringify([{
+                href: `bingebox-play://movie/${id}?title=${encodeURIComponent(title)}&year=${year}`,
+                title: "Full Movie",
+                number: 1,
+                season: 1
+            }]);
+        }
+
+        // CAS B : Série
+        const res = await soraFetch(`https://api.themoviedb.org/3/tv/${id}?api_key=${TMDB_API_KEY}&language=en-US`);
+        if (!res) throw new Error("Échec réseau TMDB");
+        const data = JSON.parse(await res.text());
+
+        let episodes = [];
+
+        const seasonPromises = (data.seasons || []).map(async (season) => {
+            if (season.season_number === 0) return;
+
+            const sRes = await soraFetch(
+                `https://api.themoviedb.org/3/tv/${id}/season/${season.season_number}?api_key=${TMDB_API_KEY}&language=en-US`
+            );
+            if (!sRes) return;
+
+            const sData = JSON.parse(await sRes.text());
+            for (let ep of (sData.episodes || [])) {
+                episodes.push({
+                    href: `bingebox-play://tv/${id}?title=${encodeURIComponent(title)}&year=${year}&s=${season.season_number}&e=${ep.episode_number}`,
+                    title: ep.name || `Episode ${ep.episode_number}`,
+                    number: ep.episode_number,
+                    season: season.season_number,
+                    image: ep.still_path ? `https://image.tmdb.org/t/p/w500${ep.still_path}` : ''
+                });
+            }
+        });
+
+        await Promise.all(seasonPromises);
+        episodes.sort((a, b) => a.season !== b.season ? a.season - b.season : a.number - b.number);
+
+        console.log(`[Bingebox] ✅ ${episodes.length} épisodes chargés.`);
+        return JSON.stringify(episodes);
+
+    } catch (e) {
+        console.error(`[Bingebox] ❌ Erreur Épisodes: ${e.message}`);
+        return JSON.stringify([]);
+    }
 }
 
+// 4. LECTEUR VIDÉO
 async function extractStreamUrl(url) {
-  const videos = await __mangayomiExtension.getVideoList(url);
-  const streams = __list(videos).map((video) => ({
-    title: video.quality || video.name || video.label || "Stream",
-    streamUrl: video.url || video.originalUrl || video.file || "",
-    url: video.url || video.originalUrl || video.file || "",
-    headers: video.headers || {}
-  })).filter((item) => /^https?:\/\//i.test(item.streamUrl));
-  return JSON.stringify({ streams, subtitles: "" });
+    console.log(`[Bingebox] 🎬 Extraction vidéo : ${url}`);
+    try {
+        const match = url.match(/bingebox-play:\/\/([^/]+)\/([^?]+)\?(.+)/);
+        if (!match) throw new Error("URL Play invalide");
+
+        const type   = match[1];
+        const id     = match[2];
+        const params = parseQuery(match[3]);
+        const title  = params['title'] || "";
+        const year   = params['year']  || "";
+        const s      = params['s'];
+        const e      = params['e'];
+
+        // 🌟 CORRECTION 1 : Bingebox veut "show" au lieu de "tv" dans son API
+        const apiMediaType = type === 'tv' ? 'show' : 'movie';
+
+        console.log(`[Bingebox] 📡 Interrogation de ${SOURCES.length} sources en parallèle...`);
+
+        let streams = [];
+        let allSubtitles = [];
+        const seenUrls = new Set();
+        const seenSubUrls = new Set();
+
+        // 🌟 CORRECTION: Mapping standard "async" SANS le timeout qui buggait
+        const promises = SOURCES.map(async (sourceName) => {
+            let apiUrl = `${BINGEBOX_API}?tmdbId=${id}&mediaType=${apiMediaType}&title=${encodeURIComponent(title)}&year=${year}&source=${sourceName}`;
+            if (type === 'tv' && s && e) apiUrl += `&season=${s}&episode=${e}`;
+
+            try {
+                const res = await soraFetch(apiUrl, {
+                    headers: {
+                        "Referer": BINGEBOX_REFERER,
+                        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+                    }
+                });
+
+                if (!res) { console.log(`   [${sourceName}] ❌ Pas de réponse`); return; }
+
+                const text = await res.text();
+                if (!text) return;
+
+                let json;
+                try { json = JSON.parse(text); } catch { return; }
+
+                if (!json.success || !json.data) {
+                    console.log(`   [${sourceName}] ⚠️ Pas de données`);
+                    return;
+                }
+
+                // 🌟 NOUVEAU : Extraction de TOUTES les qualités disponibles
+                if (json.data.qualities && Object.keys(json.data.qualities).length > 0) {
+                    // On trie du plus grand au plus petit (1080 -> 720 -> 480...)
+                    const sortedQualities = Object.keys(json.data.qualities).sort((a, b) => parseInt(b) - parseInt(a));
+                    
+                    for (const quality of sortedQualities) {
+                        const qUrl = json.data.qualities[quality].url;
+                        if (qUrl && !seenUrls.has(qUrl)) {
+                            seenUrls.add(qUrl);
+                            streams.push({
+                                title: `Bingebox ${sourceName.toUpperCase()} (${quality}p)`,
+                                streamUrl: qUrl,
+                                headers: { "Referer": BINGEBOX_REFERER }
+                            });
+                            console.log(`   [${sourceName}] ✅ Qualité ${quality}p ajoutée`);
+                        }
+                    }
+                } else {
+                    // Si ce n'est pas un objet "qualities", c'est un lien unique (ex: m3u8)
+                    let videoUrl = json.data.playlist || json.data.url;
+                    
+                    if (!videoUrl) { console.log(`   [${sourceName}] ⚠️ Pas d'URL vidéo`); return; }
+
+                    // Déduplication des streams
+                    if (seenUrls.has(videoUrl)) {
+                        console.log(`   [${sourceName}] ⏭️ Doublon ignoré`);
+                        return;
+                    }
+                    seenUrls.add(videoUrl);
+
+                    const isHLS = videoUrl.includes('.m3u8') || json.data.type === 'hls';
+                    console.log(`   [${sourceName}] ✅ ${isHLS ? 'HLS' : 'MP4'} trouvé`);
+
+                    streams.push({
+                        title: `Bingebox ${sourceName.toUpperCase()} (${isHLS ? 'Auto' : 'Direct'})`,
+                        streamUrl: videoUrl,
+                        headers: { "Referer": BINGEBOX_REFERER }
+                    });
+                }
+
+                // Sous-titres
+                if (Array.isArray(json.data.captions)) {
+                    for (let cap of json.data.captions) {
+                        if (!cap.url || seenSubUrls.has(cap.url)) continue;
+                        seenSubUrls.add(cap.url);
+
+                        const subReferer = (cap.url.match(/https?:\/\/[^/]+/) || [BINGEBOX_REFERER])[0] + "/";
+
+                        allSubtitles.push({
+                            url: cap.url,
+                            label: cap.label || cap.language || "SUB",
+                            language: cap.language || "",
+                            kind: cap.type === 'srt' ? 'subtitles' : 'captions',
+                            headers: { "Referer": subReferer }
+                        });
+                    }
+                }
+            } catch (err) {
+                // Ignore silently individual source failures
+            }
+        });
+
+        // 🌟 Attente stricte et native de toutes les réponses
+        await Promise.allSettled(promises);
+
+        console.log(`[Bingebox] 📊 ${streams.length} streams | ${allSubtitles.length} sous-titres`);
+
+        if (streams.length === 0) return JSON.stringify({ type: "none" });
+
+        // Trier les sous-titres : FRE en premier, puis ENG, puis le reste
+        allSubtitles.sort((a, b) => {
+            const getPrio = (s) => {
+                const lang = (s.label || s.language || "").toLowerCase();
+                for (let i = 0; i < SUB_PRIORITY.length; i++) {
+                    if (lang.includes(SUB_PRIORITY[i])) return i;
+                }
+                return 99;
+            };
+            return getPrio(a) - getPrio(b);
+        });
+
+        return JSON.stringify({
+            type: "servers",
+            streams,
+            subtitles: selectBestSubtitle(allSubtitles),
+            subtitlesHeaders: allSubtitles.length > 0
+                ? allSubtitles.find(s => s.url === selectBestSubtitle(allSubtitles))?.headers || {}
+                : {},
+            allSubtitles
+        });
+
+    } catch (e) {
+        console.error(`[Bingebox] ❌ Erreur Stream: ${e.message}`);
+        return JSON.stringify({ type: "none" });
+    }
+}
+
+// ==========================================
+// 🛠️ OUTIL RÉSEAU
+// ==========================================
+async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
+    try {
+        if (typeof fetchv2 !== 'undefined') {
+            return await fetchv2(url, options.headers ?? {}, options.method ?? 'GET', options.body ?? null);
+        }
+        return await fetch(url, options);
+    } catch(e) {
+        try { return await fetch(url, options); } catch { return null; }
+    }
 }
