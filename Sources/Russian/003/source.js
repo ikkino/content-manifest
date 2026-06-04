@@ -1,28 +1,77 @@
-const API_BASE = "https://api.yani.tv";
-const IMAGE_REFERER = "https://site.yummyani.me/";
-const PASSTHROUGH = "https://passthrough-worker.simplepostrequest.workers.dev/?simple=";
+const DEFAULT_IMAGE_HOST = "https://aniliberty.top";
 
-function _ua() {
-  return "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36";
+function originFromApi(urlOrBase) {
+  if (!urlOrBase) return DEFAULT_IMAGE_HOST;
+  const raw = String(urlOrBase);
+  const m = raw.match(/^(https?:\/\/[^/]+)\/api\/v1\/?/i);
+  if (m && m[1]) return m[1];
+  const m2 = raw.match(/^(https?:\/\/[^/]+)/i);
+  return (m2 && m2[1]) ? m2[1] : DEFAULT_IMAGE_HOST;
 }
 
-function _absUrl(u) {
-  if (!u) return "";
-  const s = String(u);
-  if (s.startsWith("http://") || s.startsWith("https://")) return s;
-  if (s.startsWith("//")) return "https:" + s;
-  return s;
+function fullImg(path, host) {
+  if (!path) return;
+  if (path.startsWith("http")) return path;
+  const base = host || DEFAULT_IMAGE_HOST;
+  return `${base}${path}`;
 }
 
-function _wrapImage(url) {
-  const abs = _absUrl(url);
-  if (!abs) return "";
-  return (
-    PASSTHROUGH +
-    encodeURIComponent(abs) +
-    "&referer=" +
-    encodeURIComponent(IMAGE_REFERER)
-  );
+
+function normalizeAniLibertyHlsUrl(input) {
+  const raw = String(input || '').trim();
+  if (!raw) return null;
+
+  try {
+    const u = new URL(raw);
+    const adParams = [
+      'isWithVideoAds',
+      'isWithVideoAdsAlways',
+      'withVideoAds',
+      'videoAds',
+      'ads',
+      'ad',
+    ];
+
+    for (const key of adParams) {
+      u.searchParams.delete(key);
+    }
+
+    return u.toString();
+  } catch (_) {
+    const parts = raw.split('?');
+    if (parts.length < 2) return raw;
+    const base = parts.shift();
+    const query = parts.join('?');
+    const kept = query
+      .split('&')
+      .filter(Boolean)
+      .filter((part) => {
+        const key = decodeURIComponent(part.split('=')[0] || '').toLowerCase();
+        return ![
+          'iswithvideoads',
+          'iswithvideoadsalways',
+          'withvideoads',
+          'videoads',
+          'ads',
+          'ad',
+        ].includes(key);
+      });
+    return kept.length ? `${base}?${kept.join('&')}` : base;
+  }
+}
+
+function pickBestHls(ep) {
+  return normalizeAniLibertyHlsUrl(ep?.hls_1080) || normalizeAniLibertyHlsUrl(ep?.hls_720) || normalizeAniLibertyHlsUrl(ep?.hls_480) || null;
+}
+
+function _packEpisode(payload) {
+  return "aniliberty:" + encodeURIComponent(JSON.stringify(payload || {}));
+}
+
+function _unpackEpisode(href) {
+  const s = String(href || "");
+  if (!s.startsWith("aniliberty:")) return null;
+  return _safeJsonParse(decodeURIComponent(s.slice("aniliberty:".length)), null);
 }
 
 function _safeJsonParse(s, fallback) {
@@ -33,555 +82,199 @@ function _safeJsonParse(s, fallback) {
   }
 }
 
-function scoreTitle(title, keyword) {
-  const t = String(title || "").toLowerCase().trim();
-  const k = String(keyword || "").toLowerCase().trim();
-  if (!t || !k) return 99;
-  if (t === k) return 0;
-  if (t.startsWith(k)) return 1;
-  if (t.includes(k)) return 2;
-  return 3;
-}
-
-function _dubbingRank(name) {
-  const s = String(name || "").toLowerCase();
-
-  const order = [
-    "anilibria",
-    "aniliberty",
-    "jam",
-    "anidub",
-    "shiza",
-    "studio band",
-    "studioband",
-    "dream cast",
-    "dreamcast",
-    "crunchyroll",
-    "sub",
-    "субтит"
+async function checkApiStatus() {
+  const domains = [
+    "https://aniliberty.top/api/v1/",
+    "https://anilibria.top/api/v1/",
+    "https://anilibria.wtf/api/v1/"
   ];
-
-  for (let i = 0; i < order.length; i++) {
-    if (s.includes(order[i])) return i;
+  for (const base of domains) {
+    try {
+      const res = await fetchv2(base + "app/status");
+      const data = await res.json();
+      if (data?.is_alive || data?.result === "ok") return base;
+    } catch (_) {}
   }
-  return 999;
-}
-
-function _pack(obj) {
-  return "yummy:" + encodeURIComponent(JSON.stringify(obj || {}));
-}
-
-function _unpack(href) {
-  const s = String(href || "");
-  if (!s.startsWith("yummy:")) return null;
-  return _safeJsonParse(decodeURIComponent(s.slice("yummy:".length)), null);
-}
-
-async function _apiGet(url) {
-  const headers = {
-    "User-Agent": _ua(),
-    "Accept": "application/json",
-    "Accept-Language": "ru-RU,ru;q=0.9,en;q=0.8",
-    "Referer": IMAGE_REFERER,
-    "Origin": IMAGE_REFERER
-  };
-  return fetchv2(url, headers);
+  return "https://aniliberty.top/api/v1/";
 }
 
 async function searchResults(keyword) {
-  const results = [];
-
   try {
-    const url = `${API_BASE}/search?limit=30&offset=0&q=${encodeURIComponent(keyword)}`;
-    const res = await _apiGet(url);
-    const json = await res.json();
+    const base = await checkApiStatus();
+    const origin = originFromApi(base);
+    const url = `${base}app/search/releases?query=${encodeURIComponent(keyword)}&include=id,name.main,poster.src`;
 
-    const arr = Array.isArray(json?.response) ? json.response : [];
+    const res = await fetchv2(url);
+    const data = await res.json();
 
-    for (const item of arr) {
-      const title = item?.title || "Unknown";
+    const out = (Array.isArray(data) ? data : []).map(it => ({
+      title: it?.name?.main || "Unknown title",
+      image: fullImg(it?.poster?.src, origin),
+      href:
+        `${base}anime/releases/${it.id}?` +
+        [
+          "include=name.main,poster.src,description,average_duration_of_episode",
+          "episodes.ordinal,episodes.name,episodes.duration",
+          "episodes.preview.src",
+          "episodes.opening.start,episodes.opening.stop",
+          "episodes.ending.start,episodes.ending.stop",
+          "episodes.hls_1080,episodes.hls_720,episodes.hls_480"
+        ].join(",")
+    }));
 
-      const poster =
-        item?.poster?.fullsize ||
-        item?.poster?.mega ||
-        item?.poster?.huge ||
-        item?.poster?.big ||
-        item?.poster?.medium ||
-        item?.poster?.small ||
-        "";
+    if (!out.length) {
+      return JSON.stringify([]);;
+    }
+    return JSON.stringify(out);
+  } catch (e) {
+    return JSON.stringify([]);;
+  }
+}
 
-      const href =
-        item?.anime_id != null
-          ? String(item.anime_id)
-          : item?.anime_url || "";
+async function extractDetails(url) {
+  try {
+    const res = await fetchv2(url);
+    const data = await res.json();
 
-      results.push({
+    const description = data?.description || "No description available.";
+    const mins = Number.isFinite(data?.average_duration_of_episode)
+      ? `${data.average_duration_of_episode}m`
+      : "Unknown";
+
+    const out = [{
+      description,
+      aliases: `Duration: ${mins}`,
+      airdate: "Unknown"
+    }];
+    return JSON.stringify(out);
+  } catch (e) {
+    return JSON.stringify([]);;
+  }
+}
+
+async function extractEpisodes(url) {
+  try {
+    const res = await fetchv2(url);
+    const data = await res.json();
+
+    const origin = originFromApi(url);
+
+    const eps = Array.isArray(data?.episodes) ? data.episodes : [];
+
+    const out = eps.map((ep, idx) => {
+      const url1080 = normalizeAniLibertyHlsUrl(ep?.hls_1080);
+      const url720 = normalizeAniLibertyHlsUrl(ep?.hls_720);
+      const url480 = normalizeAniLibertyHlsUrl(ep?.hls_480);
+      const best = url1080 || url720 || url480;
+      if (!best) return null;
+
+      const num = Number.isFinite(ep?.ordinal)
+        ? ep.ordinal
+        : (Number.isFinite(ep?.sort_order) ? ep.sort_order : (idx + 1));
+
+      const title = ep?.name ? String(ep.name) : `Episode ${num}`;
+      const image = fullImg(ep?.preview?.src, origin);
+
+      // Build skip blocks only if numbers present
+      const opening = (ep?.opening && Number.isFinite(ep.opening.start) && Number.isFinite(ep.opening.stop))
+        ? { start: ep.opening.start, stop: ep.opening.stop }
+        : undefined;
+
+      const ending = (ep?.ending && Number.isFinite(ep.ending.start) && Number.isFinite(ep.ending.stop))
+        ? { start: ep.ending.start, stop: ep.ending.stop }
+        : undefined;
+
+      const entry = {
+        href: _packEpisode({
+          url1080,
+          url720,
+          url480,
+          fallback: best
+        }),
+        number: num,
         title,
-        image: _wrapImage(poster),
-        href,
-        _score: scoreTitle(title, keyword)
-      });
-    }
+        image
+      };
 
-    results.sort((a, b) => a._score - b._score);
+      // Attach only when available
+      if (opening) entry.opening = opening;
+      if (ending) entry.ending = ending;
+      if (Number.isFinite(ep?.duration)) entry.duration = ep.duration; // seconds (optional)
 
-    return JSON.stringify(
-      results.map(({ _score, ...rest }) => rest)
-    );
-  } catch (err) {
-    return JSON.stringify([
-      {
-        title: err?.message || "Error",
-        image: "Error",
-        href: "Error"
-      }
-    ]);
-  }
-}
-
-async function extractDetails(animeIdOrUrl) {
-  try {
-    const url = `${API_BASE}/anime/${encodeURIComponent(String(animeIdOrUrl))}?need_videos=false`;
-    const res = await _apiGet(url);
-    const json = await res.json();
-    const data = json?.response || {};
-
-    const other = Array.isArray(data?.other_titles) ? data.other_titles : [];
-
-    return JSON.stringify([
-      {
-        description: data?.description || "No description available",
-        airdate: data?.year != null ? String(data.year) : "Unknown",
-        aliases: other.length ? other.join(", ") : ""
-      }
-    ]);
-  } catch (_) {
-    return JSON.stringify([
-      {
-        description: "Error",
-        airdate: "Error",
-        aliases: ""
-      }
-    ]);
-  }
-}
-
-async function extractEpisodes(animeIdOrUrl) {
-  try {
-    const raw = String(animeIdOrUrl || "").trim();
-    let animeId = null;
-
-    if (/^\d+$/.test(raw)) {
-      animeId = raw;
-    } else {
-      const infoUrl = `${API_BASE}/anime/${encodeURIComponent(raw)}?need_videos=false`;
-      const infoRes = await _apiGet(infoUrl);
-      const infoJson = await infoRes.json();
-      const info = infoJson?.response || {};
-      animeId = info?.anime_id != null ? String(info.anime_id) : null;
-    }
-
-    if (!animeId) return JSON.stringify([]);
-
-    const url = `${API_BASE}/anime/${encodeURIComponent(animeId)}/videos`;
-    const res = await _apiGet(url);
-    const json = await res.json();
-
-    const vids = Array.isArray(json?.response) ? json.response : [];
-
-    const kodikVids = vids.filter(v => {
-      const iframe = String(v?.iframe_url || "");
-      const player = String(v?.data?.player || "").toLowerCase();
-
-      return (
-        iframe.includes("kodik.info") ||
-        iframe.includes("kodikplayer.com") ||
-        player.includes("kodik")
-      );
-    });
-
-    const byNum = new Map();
-
-    for (const v of kodikVids) {
-      const num = parseFloat(v?.number) || 0;
-      if (!num) continue;
-
-      const iframeUrl = _absUrl(v?.iframe_url || "");
-      if (!iframeUrl) continue;
-
-      const dubbing =
-        String(v?.data?.dubbing || "").trim() || "Unknown voiceover";
-
-      const player =
-        String(v?.data?.player || "Kodik").trim();
-
-      const opening =
-        v?.skips?.opening &&
-        Number.isFinite(v.skips.opening.time) &&
-        Number.isFinite(v.skips.opening.length)
-          ? {
-              start: v.skips.opening.time,
-              stop: v.skips.opening.time + v.skips.opening.length
-            }
-          : undefined;
-
-      const ending =
-        v?.skips?.ending &&
-        Number.isFinite(v.skips.ending.time) &&
-        Number.isFinite(v.skips.ending.length)
-          ? {
-              start: v.skips.ending.time,
-              stop: v.skips.ending.time + v.skips.ending.length
-            }
-          : undefined;
-
-      const skips =
-        (
-          v?.skips?.opening &&
-          Number.isFinite(v.skips.opening.time) &&
-          Number.isFinite(v.skips.opening.length)
-        ) ||
-        (
-          v?.skips?.ending &&
-          Number.isFinite(v.skips.ending.time) &&
-          Number.isFinite(v.skips.ending.length)
-        )
-          ? {
-              opening:
-                v?.skips?.opening &&
-                Number.isFinite(v.skips.opening.time) &&
-                Number.isFinite(v.skips.opening.length)
-                  ? {
-                      time: v.skips.opening.time,
-                      length: v.skips.opening.length
-                    }
-                  : null,
-              ending:
-                v?.skips?.ending &&
-                Number.isFinite(v.skips.ending.time) &&
-                Number.isFinite(v.skips.ending.length)
-                  ? {
-                      time: v.skips.ending.time,
-                      length: v.skips.ending.length
-                    }
-                  : null
-            }
-          : undefined;
-
-      const duration =
-        Number.isFinite(v?.duration) && v.duration > 0
-          ? v.duration
-          : undefined;
-
-      if (!byNum.has(num)) {
-        byNum.set(num, {
-          num,
-          options: [],
-          opening,
-          ending,
-          duration,
-          skips
-        });
-      }
-
-      const ep = byNum.get(num);
-
-      if (!ep.opening && opening) ep.opening = opening;
-      if (!ep.ending && ending) ep.ending = ending;
-      if (!ep.duration && duration) ep.duration = duration;
-      if (!ep.skips && skips) ep.skips = skips;
-
-      ep.options.push({
-        dubbing,
-        player,
-        iframe_url: iframeUrl,
-        opening,
-        ending
-      });
-    }
-
-    const out = Array.from(byNum.values())
-      .sort((a, b) => a.num - b.num)
-      .map(ep => {
-        ep.options.sort(
-          (x, y) => _dubbingRank(x.dubbing) - _dubbingRank(y.dubbing)
-        );
-
-        const payload = {
-          animeId,
-          number: ep.num,
-          options: ep.options
-        };
-
-        const item = {
-          href: _pack(payload),
-          number: ep.num,
-          title: `Episode ${ep.num}`
-        };
-
-        const primary = ep.options[0];
-
-        if (primary?.opening) item.opening = primary.opening;
-        if (primary?.ending) item.ending = primary.ending;
-
-        if (ep.skips) item.skips = ep.skips;
-        if (ep.duration) item.duration = ep.duration;
-
-        return item;
-      });
+      return entry;
+    }).filter(Boolean);
 
     return JSON.stringify(out);
-  } catch (err) {
-    console.log("extractEpisodes error:", err?.message || err);
+  } catch (e) {
     return JSON.stringify([]);
   }
 }
 
-async function extractStreamUrl(href) {
+async function extractStreamUrl(url) {
   try {
-    const payload = _unpack(href);
-    const options = Array.isArray(payload?.options) ? payload.options : [];
-
-    if (!options.length) {
-      return JSON.stringify({
-        streams: [],
-        subtitle: "https://none.com"
-      });
+    const payload = _unpackEpisode(url);
+    if (!payload) {
+      return url; // backward compatibility for old episode href format
     }
 
-    options.sort(
-      (a, b) => _dubbingRank(a.dubbing) - _dubbingRank(b.dubbing)
-    );
+    const url1080 = normalizeAniLibertyHlsUrl(payload.url1080);
+    const url720 = normalizeAniLibertyHlsUrl(payload.url720);
+    const url480 = normalizeAniLibertyHlsUrl(payload.url480);
+    const fallback = normalizeAniLibertyHlsUrl(payload.fallback);
 
     const streams = [];
 
-    for (const opt of options) {
-      const iframeUrl = _absUrl(opt?.iframe_url);
-
-      if (
-        !iframeUrl ||
-        (
-          !iframeUrl.includes("kodik.info") &&
-          !iframeUrl.includes("kodikplayer.com")
-        )
-      ) {
-        continue;
-      }
-
-      const qualitiesJson = await kodikParser(iframeUrl);
-      const qualities = _safeJsonParse(qualitiesJson, {});
-
-      const qualityMap = {
-        "720p": null,
-        "480p": null,
-        "360p": null
-      };
-
-      for (const q in qualities) {
-        const srcRaw = qualities?.[q]?.src;
-
-        const src = srcRaw
-          ? (
-              String(srcRaw).startsWith("//")
-                ? "https:" + String(srcRaw)
-                : String(srcRaw)
-            )
-          : "";
-
-        if (!src) continue;
-
-        const n =
-          parseInt(String(q).replace(/[^\d]/g, ""), 10) || 0;
-
-        if (n === 720 && !qualityMap["720p"]) {
-          qualityMap["720p"] = src;
+    if (url1080) {
+      streams.push({
+        title: "1080p",
+        streamUrl: url1080,
+        url1080,
+        url720,
+        url480,
+        headers: {
+          "User-Agent": "Mozilla/5.0",
+          "Referer": DEFAULT_IMAGE_HOST + "/"
         }
+      });
+    }
 
-        if (n === 480 && !qualityMap["480p"]) {
-          qualityMap["480p"] = src;
+    if (url720) {
+      streams.push({
+        title: "720p",
+        streamUrl: url720,
+        url1080,
+        url720,
+        url480,
+        headers: {
+          "User-Agent": "Mozilla/5.0",
+          "Referer": DEFAULT_IMAGE_HOST + "/"
         }
+      });
+    }
 
-        if (n === 360 && !qualityMap["360p"]) {
-          qualityMap["360p"] = src;
+    if (url480) {
+      streams.push({
+        title: "480p",
+        streamUrl: url480,
+        url1080,
+        url720,
+        url480,
+        headers: {
+          "User-Agent": "Mozilla/5.0",
+          "Referer": DEFAULT_IMAGE_HOST + "/"
         }
-      }
+      });
+    }
 
-      for (const quality of ["720p", "480p", "360p"]) {
-        const streamUrl = qualityMap[quality];
-        if (!streamUrl) continue;
-
-        streams.push({
-          title: `${opt.dubbing} - ${quality}`,
-          streamUrl,
-          headers: {
-            "User-Agent": _ua(),
-            "Referer": IMAGE_REFERER
-          }
-        });
-      }
+    if (!streams.length) {
+      return fallback;
     }
 
     return JSON.stringify({
       streams,
       subtitle: "https://none.com"
     });
-  } catch (err) {
-    console.log("extractStreamUrl error:", err?.message || err);
-
-    return JSON.stringify({
-      streams: [],
-      subtitle: "https://none.com"
-    });
+  } catch (e) {
+    return null;
   }
 }
-
-async function kodikParser(url) {
-  try {
-    const headers = {
-      "Referer": IMAGE_REFERER,
-      "User-Agent": _ua()
-    };
-
-    const response = await fetchv2(url, headers);
-    const htmlText = await response.text();
-
-    const urlParamsMatch = htmlText.match(/var\s+urlParams\s*=\s*'([^']+)'/);
-    const videoInfoTypeMatch = htmlText.match(/vInfo\.type\s*=\s*'([^']+)'/);
-    const videoInfoHashMatch = htmlText.match(/vInfo\.hash\s*=\s*'([^']+)'/);
-    const videoInfoIdMatch = htmlText.match(/vInfo\.id\s*=\s*'([^']+)'/);
-
-    const urlParams =
-      urlParamsMatch
-        ? _safeJsonParse(urlParamsMatch[1], {})
-        : {};
-
-    const videoInfo_type =
-      videoInfoTypeMatch ? videoInfoTypeMatch[1] : "";
-
-    const videoInfo_hash =
-      videoInfoHashMatch ? videoInfoHashMatch[1] : "";
-
-    const videoInfo_id =
-      videoInfoIdMatch ? videoInfoIdMatch[1] : "";
-
-    const finalData =
-      `d=${urlParams.d || ""}` +
-      `&d_sign=${urlParams.d_sign || ""}` +
-      `&pd=${urlParams.pd || ""}` +
-      `&pd_sign=${urlParams.pd_sign || ""}` +
-      `&ref=${urlParams.ref || ""}` +
-      `&ref_sign=${urlParams.ref_sign || ""}` +
-      `&bad_user=false&cdn_is_working=true` +
-      `&type=${videoInfo_type}` +
-      `&hash=${videoInfo_hash}` +
-      `&id=${videoInfo_id}` +
-      `&info=%7B%7D`;
-
-    const headers2 = {
-      "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-      "Referer": IMAGE_REFERER,
-      "User-Agent": _ua(),
-      "X-Requested-With": "XMLHttpRequest"
-    };
-
-    const apiResponse = await fetchv2(
-      "https://kodikplayer.com/ftor",
-      headers2,
-      "POST",
-      finalData
-    );
-
-    const apiJson = await apiResponse.json();
-
-    const qualities = {};
-
-    if (apiJson?.links) {
-      for (const quality in apiJson.links) {
-        const qArr = apiJson.links[quality];
-        const first = Array.isArray(qArr) ? qArr[0] : null;
-
-        if (!first?.src) continue;
-
-        qualities[quality] = {
-          src: decode(first.src),
-          type: first.type || "application/x-mpegURL"
-        };
-      }
-    }
-
-    return JSON.stringify(qualities, null, 2);
-  } catch (err) {
-    console.log("kodikParser error:", err?.message || err);
-    return JSON.stringify({
-      error: "kodik_parse_failed"
-    });
-  }
-}
-
-function decode(input) {
-  const map = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-  let out = "";
-  let b = 0;
-  let c = 0;
-
-  const r = [];
-
-  for (let i = 0; i < input.length; i++) {
-    const ch = input[i];
-
-    if (/[a-zA-Z]/.test(ch)) {
-      const cc = ch.charCodeAt(0);
-      const max = ch <= "Z" ? 90 : 122;
-      const sh = cc + 18;
-
-      r.push(String.fromCharCode(sh <= max ? sh : sh - 26));
-    } else {
-      r.push(ch);
-    }
-  }
-
-  const rot = r.join("");
-
-  for (let j = 0; j < rot.length; j++) {
-    const ch = rot[j];
-
-    if (ch === "=") break;
-
-    const v = map.indexOf(ch);
-    if (v === -1) continue;
-
-    b = (b << 6) | v;
-    c += 6;
-
-    if (c >= 8) {
-      c -= 8;
-      out += String.fromCharCode((b >> c) & 0xff);
-    }
-  }
-
-  return out;
-}
-
-function _defaultExport() {
-  return {
-    searchResults,
-    extractDetails,
-    extractEpisodes,
-    extractStreamUrl
-  };
-}
-
-try {
-  globalThis.default = _defaultExport;
-} catch (_) {}
-
-try {
-  this.default = _defaultExport;
-} catch (_) {}
-
-try {
-  globalThis.module = globalThis.module || {};
-  globalThis.module.exports = {
-    default: _defaultExport
-  };
-} catch (_) {}

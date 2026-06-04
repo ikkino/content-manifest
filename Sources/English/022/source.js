@@ -1,4 +1,4 @@
-//Thanks ibro for the TMDB search!
+// thank you ibro for the search i love you!!
 
 async function searchResults(keyword) {
     try {
@@ -185,145 +185,48 @@ async function extractEpisodes(url) {
 
 async function extractStreamUrl(ID) {
   if (ID.includes('movie')) {
-    const tmdbID = ID.replace('/movie/', '');
-    const cinebyResponse = await soraFetch(`https://db.videasy.net/3/movie/${tmdbID}?append_to_response=credits,external_ids,videos,recommendations,translations,similar,images&language=en`);
-    const cinebyData = await cinebyResponse.json();
+    const parts = ID.split('/'); 
+    const tmdbID = parts[2];
 
-    const title = encodeURIComponent(cinebyData.title);
-    const year = new Date(cinebyData.release_date).getFullYear();
-    const imdbId = cinebyData.external_ids?.imdb_id || '';
-    const tmdbId = cinebyData.id;
+    const response = await fetchv2("https://enc-dec.app/api/enc-vidlink?text=" + tmdbID);
+    const data = await response.json();
 
-    const server = "Berlin";
-    const encUrl = `https://snowhouse.lordflix.club/?title=${title}&type=movie&year=${year}&imdb=${imdbId}&tmdb=${tmdbId}&server=${server}`;
-    const encResponse = await soraFetch(`https://enc-dec.app/api/enc-lordflix?url=${encodeURIComponent(encUrl)}`);
-    const encData = await encResponse.json();
-    
-    if (encData.status !== 200) throw new Error("Encryption failed");
+    console.log(data.result);
+    const responseTwo = await fetchv2(`https://vidlink.pro/api/b/movie/${data.result}?multiLang=0`);
+    const dataTwo = await responseTwo.json();
+    console.log('Data Two: ' + JSON.stringify(dataTwo));
+    const streamUrl = dataTwo.stream.playlist;
 
-    const encryptedUrl = encData.result.url;
-    const sign = encData.result.sign;
+    const englishSubtitle = dataTwo.stream.captions.find(
+      sub => sub.language.toLowerCase().includes("english")
+    )?.url || null;
 
-    const LordflixHeaders = {
-        "Origin": "https://lordflix.org",
-        "Referer": "https://lordflix.org/",
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36"
-    };
-
-    const mediaResponse = await soraFetch(encryptedUrl, { headers: LordflixHeaders });
-    const encryptedText = await mediaResponse.text();
-
-    const decheaders = {
-        "Content-Type": "application/json",
-        "Accept": "application/json"
-    };
-
-    const postData = JSON.stringify({
-        text: encryptedText,
-        sign: sign
-    });
-
-    const decryptedResponse = await fetchv2("https://enc-dec.app/api/dec-lordflix", decheaders, "POST", postData);
-    const decryptedData = await decryptedResponse.json();
-    
-    if (decryptedData.status !== 200) throw new Error("Decryption failed");
-    
-    const streamsResult = decryptedData.result.stream || [];
-    
-    const streamObjects = streamsResult.map(src => ({
-      title: src.id || "Unknown",
-      streamUrl: src.playlist,
-      headers: {
-        "Origin": "https://lordflix.org",
-        "Referer": "https://lordflix.org/"
-      }
-    }));
-
-    let subtitleUrl = "";
-    if (streamsResult.length > 0 && streamsResult[0].captions) {
-      const englishSubtitle = streamsResult[0].captions.find(sub => (sub.language || sub.id)?.toLowerCase().includes('en'));
-      if (englishSubtitle) {
-        subtitleUrl = englishSubtitle.url;
-      }
-    }
-    console.log(JSON.stringify({
-      streams: streamObjects,
-      subtitles: subtitleUrl
-    }));
     return JSON.stringify({
-      streams: streamObjects,
-      subtitles: subtitleUrl
+      streams: ["Primary", streamUrl],
+      subtitles: englishSubtitle
     });
 } else if (ID.includes('tv')) {
     const parts = ID.split('/'); 
     const tmdbID = parts[2];
     const seasonNumber = parts[3];
     const episodeNumber = parts[4];
+    console.log(`TMDB ID: ${tmdbID}, Season: ${seasonNumber}, Episode: ${episodeNumber}`);
+    const response = await fetchv2("https://enc-dec.app/api/enc-vidlink?text=" + tmdbID);
+    const data = await response.json();
 
-    const cinebyResponse = await soraFetch(`https://db.videasy.net/3/tv/${tmdbID}?append_to_response=credits,external_ids,videos,recommendations,translations,similar,images&language=en`);
-    const cinebyData = await cinebyResponse.json();
+    console.log(data.result);
+    const responseTwo = await fetchv2(`https://vidlink.pro/api/b/tv/${data.result}/${seasonNumber}/${episodeNumber}?multiLang=0`);
+    const dataTwo = await responseTwo.json();
+    console.log('Data Two: ' + JSON.stringify(dataTwo));
+    const streamUrl = dataTwo.stream.playlist;
 
-    const title = encodeURIComponent(cinebyData.name);
-    const year = new Date(cinebyData.first_air_date).getFullYear();
-    const imdbId = cinebyData.external_ids?.imdb_id || '';
-    const tmdbId = cinebyData.id;
-
-    const server = "Berlin";
-    const encUrl = `https://snowhouse.lordflix.club/?title=${title}&type=series&year=${year}&imdb=${imdbId}&tmdb=${tmdbId}&server=${server}&season=${seasonNumber}&episode=${episodeNumber}`;
-    const encResponse = await soraFetch(`https://enc-dec.app/api/enc-lordflix?url=${encodeURIComponent(encUrl)}`);
-    const encData = await encResponse.json();
-    
-    if (encData.status !== 200) throw new Error("Encryption failed");
-
-    const encryptedUrl = encData.result.url;
-    const sign = encData.result.sign;
-
-    const LordflixHeaders = {
-        "Origin": "https://lordflix.org",
-        "Referer": "https://lordflix.org/",
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36"
-    };
-
-    const mediaResponse = await soraFetch(encryptedUrl, { headers: LordflixHeaders });
-    const encryptedText = await mediaResponse.text();
-
-    const decheaders = {
-        "Content-Type": "application/json",
-        "Accept": "application/json"
-    };
-
-    const postData = JSON.stringify({
-        text: encryptedText,
-        sign: sign
-    });
-
-    const decryptedResponse = await fetchv2("https://enc-dec.app/api/dec-lordflix", decheaders, "POST", postData);
-    const decryptedData = await decryptedResponse.json();
-    
-    if (decryptedData.status !== 200) throw new Error("Decryption failed");
-    
-    const streamsResult = decryptedData.result.stream || [];
-    
-    const streamObjects = streamsResult.map(src => ({
-      title: src.id || "Unknown",
-      streamUrl: src.playlist,
-      headers: {
-        "Origin": "https://lordflix.org",
-        "Referer": "https://lordflix.org/"
-      }
-    }));
-
-    let subtitleUrl = "";
-    if (streamsResult.length > 0 && streamsResult[0].captions) {
-      const englishSubtitle = streamsResult[0].captions.find(sub => (sub.language || sub.id)?.toLowerCase().includes('en'));
-      if (englishSubtitle) {
-        subtitleUrl = englishSubtitle.url;
-      }
-    }
+    const englishSubtitle = dataTwo.stream.captions.find(
+      sub => sub.language.toLowerCase().includes("english")
+    )?.url || null;
 
     return JSON.stringify({
-      streams: streamObjects,
-      subtitles: subtitleUrl
+      streams: ["Primary", streamUrl],
+      subtitles: englishSubtitle
     });
   }
 }

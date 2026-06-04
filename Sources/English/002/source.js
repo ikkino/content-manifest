@@ -2,15 +2,9 @@ async function searchResults(keyword) {
     const results = [];
 
     results.push({
-        title: "Use External Player",
-        image: "https://git.luna-app.eu/ibro/services/raw/branch/main/onePieceFilmRedAmaLeeScore/UseExternalPlayer.png",
-        href: ""
-    });
-
-    results.push({
-        title: "Film Red AmaLee Score v2",
-        image: "https://git.luna-app.eu/ibro/services/raw/branch/main/onePieceFilmRedAmaLeeScore/icon.png",
-        href: "https://pixeldrain.net/u/5doVw29C"
+        title: "Onigashima Paced",
+        image: "https://git.luna-app.eu/ibro/services/raw/branch/main/onigashima/icon.png",
+        href: "https://pixeldrain.net/l/JVMSKn7c"
     });
     
     console.log(`Results: ${JSON.stringify(results)}`);
@@ -18,27 +12,51 @@ async function searchResults(keyword) {
 }
 
 async function extractDetails(url) {
-    return JSON.stringify([{"description":"One Piece Film Red AmaLee Score hosted on Pixeldrain.","aliases":"Pixeldrain file source","airdate":"Not available"}]);
+    const match = url.match(/https:\/\/pixeldrain\.net\/l\/([^\/]+)/);
+    if (!match) throw new Error("Invalid URL format");
+            
+    const arcId = match[1];
+
+    const response = await soraFetch(`https://pixeldrain.net/api/list/${arcId}`);
+    const data = await response.json();    
+
+    const transformedResults = [{
+        description: `Title: ${data.title}\nFile Count: ${data.file_count}`,
+        aliases: `Title: ${data.title}\nFile Count: ${data.file_count}`,
+        airdate: ''
+    }];
+
+    console.log(`Details: ${JSON.stringify(transformedResults)}`);
+    return JSON.stringify(transformedResults);
 }
 
 async function extractEpisodes(url) {
-    const match = url.match(/https:\/\/pixeldrain\.net\/u\/([^\/]+)/);
+    const match = url.match(/https:\/\/pixeldrain\.net\/l\/([^\/]+)/);
     if (!match) throw new Error("Invalid URL format");
             
-    const id = match[1];
+    const arcId = match[1];
 
-    const transformedResults = [];
-    transformedResults.push({
-        href: `${id}`,
-        number: 1,
+    const response = await soraFetch(`https://pixeldrain.net/api/list/${arcId}`);
+    const data = await response.json();
+
+    const transformedResults = data.files.map((result, index) => {
+        return {
+            href: `${result.id}`,
+            number: index + 1,
+        };
     });
 
     console.log(`Episodes: ${JSON.stringify(transformedResults)}`);
     return JSON.stringify(transformedResults);
 }
 
+// searchResults("all");
+// extractDetails("https://pixeldrain.net/l/dX3cF5Q3");
+// extractEpisodes("https://pixeldrain.net/l/dX3cF5Q3");
+// extractStreamUrl(`EDg7Q9Uu`);
+
 async function extractStreamUrl(url) {
-    return `https://pixeldrain.net/api/file/${url}`;
+    return `https://pixeldrain.net/api/file/${url}?download`;
 }
 
 async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
