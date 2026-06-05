@@ -1,24 +1,29 @@
 {
-  "sourceName": "Bingebox",
-  "iconUrl": "https://gitlab.com/mxfia19-group/module-sora/-/raw/main/bingebox/favicon.png?ref_type=heads",
+  "sourceName": "AniWorld (ENG SUB)",
+  "iconUrl": "https://git.luna-app.eu/Cufiy/sora-modules/raw/branch/main/modules/aniworld/aniworld.png",
   "author": {
-    "name": "MXFia19",
-    "icon": "https://i.pinimg.com/1200x/89/78/33/89783349d3270e4ab071db9a038db8ea.jpg",
-    "url": "https://github.com/MXFia19"
+    "name": "Cufiy & Hamzo",
+    "icon": "https://files.catbox.moe/ttj4fc.gif",
+    "url": "https://github.com/JMcrafter26"
   },
-  "version": "1.0.2",
+  "version": "0.3.3",
   "language": "English",
   "streamType": "HLS",
-  "quality": "1080p",
-  "baseUrl": "https://bingebox.to/",
-  "searchBaseUrl": "https://bingebox.to/",
+  "quality": "720p",
+  "baseUrl": "https://google.com",
+  "searchBaseUrl": "https://aniworld.to/ajax/seriesSearch?keyword=%s",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/013/source.js",
-  "type": "movies/shows/anime",
-  "downloadSupport": true,
   "asyncJS": true,
-  "softsub": true,
+  "streamAsyncJS": false,
+  "type": "anime",
+  "supportsMojuru": true,
+  "supportsDartotsu": true,
   "supportsSora": true,
   "supportsLuna": true,
-  "changelog": "",
-  "id": "jWuL6"
+  "supportsSoru": true,
+  "supportsAnymex": true,
+  "supportsTsumi": true,
+  "supportsHiyoku": true,
+  "supportsShirox": true,
+  "id": "mod_530574073"
 }

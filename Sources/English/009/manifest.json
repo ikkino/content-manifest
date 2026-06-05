@@ -1,21 +1,22 @@
 {
-  "sourceName": "AnimeLand",
-  "iconUrl": "https://w7.animeland.tv/wp-content/themes/twentytwelve/SAO2.ico",
+  "sourceName": "Animetsu",
+  "iconUrl": "https://animetsu.live/apple-touch-icon.png",
   "author": {
     "name": "50/50",
     "icon": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ3122kQwublLkZ6rf1fEpUP79BxZOFmH9BSA&s"
   },
-  "version": "1.0.0",
+  "version": "3.0.2",
   "language": "English",
-  "streamType": "mp4",
+  "streamType": "HLS",
   "quality": "1080p",
-  "baseUrl": "https://w7.animeland.tv/",
-  "searchBaseUrl": "https://w7.animeland.tv/",
+  "baseUrl": "https://animetsu.to/",
+  "searchBaseUrl": "https://animetsu.to/",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/009/source.js",
-  "type": "anime",
   "asyncJS": true,
-  "softsub": false,
-  "downloadSupport": true,
+  "type": "anime",
+  "softsub": true,
+  "downloadSupport": false,
+  "note": "",
   "supportsMojuru": true,
   "supportsDartotsu": true,
   "supportsSora": true,
@@ -23,5 +24,6 @@
   "supportsAnymex": true,
   "supportsTsumi": true,
   "supportsHiyoku": true,
-  "id": "mod_163960337"
+  "supportsShirox": true,
+  "id": "G7jX"
 }

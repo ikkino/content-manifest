@@ -1,84 +1,119 @@
+const BASE_URL = "https://123animes.ru";
+
+function absoluteUrl(value) {
+  if (!value) return "";
+  if (/^https?:\/\//i.test(value)) return value;
+  return BASE_URL + (value.startsWith("/") ? value : "/" + value);
+}
+
+function animeSlug(url) {
+  return String(url || "").split("/anime/").pop().split("/")[0].split("?")[0];
+}
+
+function cleanText(value) {
+  return String(value || "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+}
+
+function normalizeTitle(value) {
+  return String(value || "").toLowerCase().replace(/\([^)]*\)/g, "").replace(/[^a-z0-9]+/g, "");
+}
+
+async function fetchText(url, options = {}) {
+  const response = await fetchv2(url, {
+    "Accept": "text/html,application/json,*/*",
+    "Referer": BASE_URL + "/",
+    ...(options.headers || {})
+  }, options.method, options.body);
+  if (!response.ok) throw new Error("HTTP " + response.status);
+  return response.text();
+}
+
 async function searchResults(keyword) {
-    const results = [];
+  const html = await fetchText(BASE_URL + "/search?keyword=" + encodeURIComponent(keyword));
+  const blocks = html.match(/<div class="item">[\s\S]*?(?=<div class="item">|<div class="clearfix"><\/div>)/g) || [];
+  const wanted = normalizeTitle(keyword);
+  const results = [];
 
-    results.push({
-        title: "Use External Player",
-        image: "https://git.luna-app.eu/ibro/services/raw/branch/main/narucannon/UseExternalPlayer.png",
-        href: ""
-    });
+  for (const block of blocks) {
+    const href = block.match(/<a href="([^"]+)"[^>]*class="(?:thumb|poster)[^"]*"/)?.[1]
+      || block.match(/<a href="([^"]+)"/)?.[1];
+    const title = block.match(/<a[^>]*class="name"[^>]*>([\s\S]*?)<\/a>/)?.[1]
+      || block.match(/<img[^>]*alt="([^"]+)"/)?.[1];
+    const image = block.match(/\sdata-src="([^"]+)"/)?.[1]
+      || block.match(/\ssrc="([^"]+)"/)?.[1]
+      || "";
 
+    if (!href || !title) continue;
     results.push({
-        title: "Narucannon Subbed",
-        image: "https://git.luna-app.eu/ibro/services/raw/branch/main/narucannon/icon.png",
-        href: "https://pixeldrain.net/l/dX3cF5Q3"
+      title: cleanText(title),
+      image: absoluteUrl(image),
+      href: absoluteUrl(href)
     });
+  }
 
-    results.push({
-        title: "Narucannon Dubbed",
-        image: "https://git.luna-app.eu/ibro/services/raw/branch/main/narucannon/icon.png",
-        href: "https://pixeldrain.net/l/tqeCisSm"
-    });
-    
-    console.log(`Results: ${JSON.stringify(results)}`);
-    return JSON.stringify(results);
+  results.sort((a, b) => {
+    const aTitle = normalizeTitle(a.title);
+    const bTitle = normalizeTitle(b.title);
+    const aExact = aTitle === wanted ? 0 : 1;
+    const bExact = bTitle === wanted ? 0 : 1;
+    return aExact - bExact || a.title.length - b.title.length;
+  });
+
+  return JSON.stringify(results);
 }
 
 async function extractDetails(url) {
-    const match = url.match(/https:\/\/pixeldrain\.net\/l\/([^\/]+)/);
-    if (!match) throw new Error("Invalid URL format");
-            
-    const arcId = match[1];
+  const html = await fetchText(url);
+  const description = cleanText(html.match(/<div class="desc">([\s\S]*?)<\/div>/)?.[1]) || "N/A";
+  const aliases = cleanText(html.match(/<p class="alias">([\s\S]*?)<\/p>/)?.[1]) || "N/A";
+  const airdate = cleanText(html.match(/<dt>Released:<\/dt>\s*<dd>\s*<a[^>]*>([\s\S]*?)<\/a>/)?.[1]) || "N/A";
 
-    const response = await soraFetch(`https://pixeldrain.net/api/list/${arcId}`);
-    const data = await response.json();    
-
-    const transformedResults = [{
-        description: `Title: ${data.title}\nFile Count: ${data.file_count}`,
-        aliases: `Title: ${data.title}\nFile Count: ${data.file_count}`,
-        airdate: ''
-    }];
-
-    console.log(`Details: ${JSON.stringify(transformedResults)}`);
-    return JSON.stringify(transformedResults);
+  return JSON.stringify([{ description, aliases, airdate }]);
 }
 
 async function extractEpisodes(url) {
-    const match = url.match(/https:\/\/pixeldrain\.net\/l\/([^\/]+)/);
-    if (!match) throw new Error("Invalid URL format");
-            
-    const arcId = match[1];
+  const slug = animeSlug(url);
+  if (!slug) return JSON.stringify([]);
 
-    const response = await soraFetch(`https://pixeldrain.net/api/list/${arcId}`);
-    const data = await response.json();
+  const responseText = await fetchText(BASE_URL + "/ajax/film/sv?id=" + encodeURIComponent(slug));
+  let html = responseText;
+  try {
+    html = JSON.parse(responseText).html || "";
+  } catch {
+    html = responseText;
+  }
 
-    const transformedResults = data.files.map((result, index) => {
-        return {
-            href: `${result.id}`,
-            number: index + 1,
-        };
+  const server = html.match(/<div class="server[^"]*"[^>]*data-name="([^"]+)"/)?.[1]
+    || html.match(/<div class="server[^"]*"[^>]*data-id="([^"]+)"/)?.[1]
+    || "vidstreaming.io";
+  const episodes = [];
+  const seen = new Set();
+  const anchorRegex = /<a\b[^>]*data-id="([^"]+)"[^>]*data-base="([^"]+)"[^>]*href="([^"]+)"/g;
+  let match;
+
+  while ((match = anchorRegex.exec(html)) !== null) {
+    const episodeId = match[1];
+    const number = Number.parseFloat(match[2]);
+    if (!episodeId || seen.has(episodeId)) continue;
+    seen.add(episodeId);
+    episodes.push({
+      href: episodeId + "/" + server,
+      number: Number.isFinite(number) ? number : episodes.length + 1
     });
+  }
 
-    console.log(`Episodes: ${JSON.stringify(transformedResults)}`);
-    return JSON.stringify(transformedResults);
+  episodes.sort((a, b) => a.number - b.number);
+  return JSON.stringify(episodes);
 }
 
-// searchResults("all");
-// extractDetails("https://pixeldrain.net/l/dX3cF5Q3");
-// extractEpisodes("https://pixeldrain.net/l/dX3cF5Q3");
-// extractStreamUrl(`EDg7Q9Uu`);
+async function extractStreamUrl(id) {
+  const data = JSON.parse(await fetchText(BASE_URL + "/ajax/episode/info?epr=" + encodeURIComponent(id)));
+  if (!data.target || !/^https?:\/\//i.test(data.target)) return JSON.stringify({ streams: [] });
 
-async function extractStreamUrl(url) {
-    return `https://pixeldrain.net/api/file/${url}?download`;
-}
-
-async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
-    try {
-        return await fetchv2(url, options.headers ?? {}, options.method ?? 'GET', options.body ?? null);
-    } catch(e) {
-        try {
-            return await fetch(url, options);
-        } catch(error) {
-            return null;
-        }
-    }
+  return JSON.stringify({
+    streams: [{
+      title: data.name || "123Anime",
+      streamUrl: data.target
+    }]
+  });
 }

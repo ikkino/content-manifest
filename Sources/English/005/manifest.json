@@ -1,20 +1,24 @@
 {
-  "sourceName": "DBZ Recut",
-  "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/dbzRecut/icon.png",
+  "sourceName": "VidLink",
+  "iconUrl": "https://files.catbox.moe/cp4uzk.png",
   "author": {
-    "name": "ibro",
-    "icon": "https://git.luna-app.eu/ibro/services/raw/branch/main/profile.jpg",
-    "url": "https://github.com/xibrox"
+    "name": "50/50",
+    "icon": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ3122kQwublLkZ6rf1fEpUP79BxZOFmH9BSA&s"
   },
   "version": "1.0.0",
   "language": "English",
-  "streamType": "MP4",
-  "quality": "1080p - 720p - 480p",
-  "baseUrl": "https://pixeldrain.net/",
-  "searchBaseUrl": "https://pixeldrain.net/",
+  "streamType": "HLS",
+  "quality": "1080p",
+  "baseUrl": "https://vidlink.pro",
+  "searchBaseUrl": "https://vidlink.pro",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/005/source.js",
-  "type": "anime",
-  "downloadSupport": true,
+  "type": "shows/movies/anime",
   "asyncJS": true,
-  "id": "BMmQy"
+  "softsub": true,
+  "downloadSupport": false,
+  "supportsSora": true,
+  "supportsLuna": true,
+  "supportsTsumi": true,
+  "supportsHiyoku": true,
+  "id": "BvIyX"
 }

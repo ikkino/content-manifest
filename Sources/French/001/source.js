@@ -1,579 +1,512 @@
-async function searchResults(keyword) {
-    const results = [];
-    const response = await soraFetch(`https://onepace.net/fr/watch`);
-    const html = await response.text();
+// ==========================================
+// ⚙️ MODULE SORA — NAKIOS (Supabase + Xalaflix Fix)
+// ==========================================
 
-    // First, extract all images in order
-    const allImages = [...html.matchAll(/<img[^>]+src=["']([^"']+)["'][^>]*>/g)].map(m => m[1])
-                      .concat([...html.matchAll(/background-image:\s*url\(['"]([^'"]+)['"]\)/g)].map(m => m[1]));
-    
-    const arcSections = html.split('<h2');
-    
-    results.push({
-        title: "Utilisez «tout» ou «all» pour obtenir tout le contenu.",
-        href: "",
-        image: "https://git.luna-app.eu/ibro/services/raw/branch/main/onepace/onepaceFrInstructions.jpg"
-    });
+const TMDB_API_KEY = "f3d757824f08ea2cff45eb8f47ca3a1e";
 
-    // Process each arc section starting from index 1 (skip the first split result)
-    for (let i = 1; i < arcSections.length; i++) {
-        const currentSection = arcSections[i];
-        
-        // Extract title from current section
-        const titleMatch = currentSection.match(/>([^<]+)<\/a>/);
-        if (!titleMatch) continue;
-        let arcTitle = titleMatch[1].trim()
-            .replace(/&#x27;/g, "'")
-            .replace(/&amp;/g, '&')
-            .replace(/&quot;/g, '"');
-        
-        // Get image for this arc - shifted by 1 to align correctly
-        let arcImage = '';
-        if (allImages[i]) {  // Using i instead of i-1 to shift image index forward
-            arcImage = allImages[i].replace(/&amp;/g, '&');
-            if (arcImage.startsWith('/_next')) {
-                arcImage = 'https://onepace.net' + arcImage;
-            }
-        }
-        
-        // For the last arc, use the last image from the array
-        if (i === arcSections.length - 1 && allImages[0]) {
-            arcImage = allImages[0].replace(/&amp;/g, '&');
-            if (arcImage.startsWith('/_next')) {
-                arcImage = 'https://onepace.net' + arcImage;
-            }
-        }
+// Variables globales
+let BASE_URL = "";
+let API_URL = "";
+let HOSTNAME = "";
 
-        const episodeBlocks = currentSection.split('<span class="flex-1">');
-        for (let j = 1; j < episodeBlocks.length; j++) {
-            const block = episodeBlocks[j];
-            
-            let type = '';
-            if (block.includes('Sous-titres Français')) {
-                type = 'Sous-titres Français';
-                if (block.includes('Version Longue')) {
-                    type += ', Version Longue';
-                }
-                if (block.includes('Alternate')) {
-                    type += ', Alternate';
-                }
-            } else if (block.includes('Doublage français avec sous-titres codés')) {
-                type = 'Doublage français avec sous-titres codés';
-                if (block.includes('Version Longue')) {
-                    type += ', Version Longue';
-                }
-                if (block.includes('Alternate')) {
-                    type += ', Alternate';
-                }
-            } else if (block.includes('Doublage français')) {
-                type = 'Doublage français';
-                if (block.includes('Version Longue')) {
-                    type += ', Version Longue';
-                }
-                if (block.includes('Alternate')) {
-                    type += ', Alternate';
-                }
-            } else {
-                continue;
-            }
+// ==========================================
+// 🗄️ TRACKER SUPABASE (Base de données)
+// ==========================================
 
-            // Get quality-specific links
-            let qualityLinks = new Map();
-            const qualityMatches = [...block.matchAll(/>\s*(480p|720p|1080p)\s*</g)];
-            const linkMatches = [...block.matchAll(/href="(https:\/\/pixeldrain\.net\/l\/[^"]+)"/g)];
-            
-            // Match links with qualities in order
-            if (qualityMatches.length > 0 && linkMatches.length > 0) {
-                // Make sure we have at most one link per quality
-                const uniqueQualities = [...new Set(qualityMatches.map(m => m[1]))];
-                uniqueQualities.forEach((quality, index) => {
-                    if (index < linkMatches.length) {
-                        qualityLinks.set(quality, linkMatches[index][1]);
-                    }
-                });
-            }
-            
-            // Add entries for all found qualities
-            for (const [quality, href] of qualityLinks) {
-                const title = `${arcTitle}, ${type}, ${quality.trim()}`;
-                if (!keyword || title.toLowerCase().includes(keyword.toLowerCase()) || 
-                    keyword.toLowerCase() === 'all' ||
-                    keyword.toLowerCase() === 'tout' || 
-                    keyword.toLowerCase() === 'everything') {
-                    results.push({
-                        title: title,
-                        href: href,
-                        image: arcImage
-                    });
-                }
-            }
-        }
-    }
+const SUPABASE_URL = "https://qyeisgowjisqbatrmqta.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_F68CBjFVPh71U0SdD9BQJg_UJgL9-Fj";
 
-    if (results.length === 1) {
-        results.push({
-            title: "[SUB] [1080p] Romance Dawn",
-            href: "https://pixeldrain.net/l/H6S4Wx4X",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-1-Romance-Dawn-ALT.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [720p] Romance Dawn",
-            href: "https://pixeldrain.net/l/pKYpST8P",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-1-Romance-Dawn-ALT.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [480p] Romance Dawn",
-            href: "https://pixeldrain.net/l/vNW7Hdif",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-1-Romance-Dawn-ALT.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [1080p] Village d'Orange",
-            href: "https://pixeldrain.net/l/JRjMsPuh",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-2-Orange-Town-ALT.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [720p] Village d'Orange",
-            href: "https://pixeldrain.net/l/1m5LycDa",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-2-Orange-Town-ALT.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [480p] Village d'Orange",
-            href: "https://pixeldrain.net/l/XWihsa8r",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-2-Orange-Town-ALT.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [1080p] Village de Sirop",
-            href: "https://pixeldrain.net/l/XaYFFs72",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-3-Syrup-Village-ALT.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [720p] Village de Sirop",
-            href: "https://pixeldrain.net/l/jp3Vpn9T",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-3-Syrup-Village-ALT.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [480p] Village de Sirop",
-            href: "https://pixeldrain.net/l/AaZnjef6",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-3-Syrup-Village-ALT.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [1080p] Gaimon",
-            href: "https://pixeldrain.net/l/mqJFuoGM",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-4-Gaimon-ALT.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [720p] Gaimon",
-            href: "https://pixeldrain.net/l/aPG6xT2N",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-4-Gaimon-ALT.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [480p] Gaimon",
-            href: "https://pixeldrain.net/l/ba5rkjAt",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-4-Gaimon-ALT.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [1080p] Baratie",
-            href: "https://pixeldrain.net/l/iNhmF7P6",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-5-Baratie-ALT.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [720p] Baratie",
-            href: "https://pixeldrain.net/l/3JfKX4jV",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-5-Baratie-ALT.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [480p] Baratie",
-            href: "https://pixeldrain.net/l/9mkfjsrR",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-5-Baratie-ALT.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [1080p] Arlong Park",
-            href: "https://pixeldrain.net/l/YWzpJCC3",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-6-Arlong-Park-ALT.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [720p] Arlong Park",
-            href: "https://pixeldrain.net/l/9Z8qf7ao",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-6-Arlong-Park-ALT.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [480p] Arlong Park",
-            href: "https://pixeldrain.net/l/A3Uo7KkZ",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-6-Arlong-Park-ALT.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [1080p] Arlong Park Version Longue",
-            href: "https://pixeldrain.net/l/V3FfsFAN",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-6-Arlong-Park-ALT.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [720p] Arlong Park Version Longue",
-            href: "https://pixeldrain.net/l/GF9ALC6n",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-6-Arlong-Park-ALT.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [480p] Arlong Park Version Longue",
-            href: "https://pixeldrain.net/l/v9rQam7F",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-6-Arlong-Park-ALT.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [720p] Les Aventures de la Bande à Baggy",
-            href: "https://pixeldrain.net/l/L9kv6MqM",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-7-The-Adventures-of-Buggys-Crew-ALT.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [480p] Loguetown",
-            href: "https://pixeldrain.net/l/opNXdLKd",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-8-Loguetown-ALT-2.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [720p] Reverse Mountain",
-            href: "https://pixeldrain.net/l/URt26Et1",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-9-Reverse-Mountain-ALT-2.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [480p] Whisky Peak",
-            href: "https://pixeldrain.net/l/HDNpbaNF",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-10-Whiskey-Peak-ALT-2.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [720p] Le Combat Quotidien de Kobby et Hermep",
-            href: "https://pixeldrain.net/l/4uHb89DB",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-11-The-Trials-of-Koby-Meppo-ALT.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [1080p] Little Garden",
-            href: "https://pixeldrain.net/l/g6qoDNuT",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-12-Little-Garden-ALT-2.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [720p] Little Garden",
-            href: "https://pixeldrain.net/l/djeN6hsh",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-12-Little-Garden-ALT-2.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [480p] Little Garden",
-            href: "https://pixeldrain.net/l/cUgBgf7N",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-12-Little-Garden-ALT-2.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [720p] Île de Drum",
-            href: "https://pixeldrain.net/l/Ufj3Pygx",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-13-Drum-Island-ALT-2.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [1080p] Alabasta",
-            href: "https://pixeldrain.net/l/w7FvfvKH",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-14-Alabasta-ALT.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [720p] Alabasta",
-            href: "https://pixeldrain.net/l/CZqB17az",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-14-Alabasta-ALT.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [480p] Alabasta",
-            href: "https://pixeldrain.net/l/8G57d4Jv",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-14-Alabasta-ALT.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [720p] Jaya",
-            href: "https://pixeldrain.net/l/9atQ8mfC",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-15-Jaya-ALT-2.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [1080p] Skypiea",
-            href: "https://pixeldrain.net/l/3PcGBkaM",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-16-Skypiea-ALT.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [720p] Skypiea",
-            href: "https://pixeldrain.net/l/obEqXTav",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-16-Skypiea-ALT.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [480p] Skypiea",
-            href: "https://pixeldrain.net/l/6WfTy83i",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-16-Skypiea-ALT.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [1080p] Skypiea Alternate (G-8)",
-            href: "https://pixeldrain.net/l/p2sD43SS",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-16-Skypiea-ALT.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [720p] Skypiea Alternate (G-8)",
-            href: "https://pixeldrain.net/l/eYXhAeq6",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-16-Skypiea-ALT.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [480p] Skypiea Alternate (G-8)",
-            href: "https://pixeldrain.net/l/uiYWx8Tq",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-16-Skypiea-ALT.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [720p] Water Seven",
-            href: "https://pixeldrain.net/l/3N7mb2ty",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-18-Water-Seven-ALT.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [720p] Enies Lobby",
-            href: "https://pixeldrain.net/l/RFpMDGTk",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-19-Enies-Lobby-ALT.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [720p] Amazon Lily",
-            href: "https://pixeldrain.net/l/VPXkPbXz",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-23-Amazon-Lily-ALT.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [720p] Si tu pouvais voyager... Des Nouvelles de l'Équipage",
-            href: "https://pixeldrain.net/l/3bZFXVkX",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-25-If-You-Could-Go-Anywhere.-The-Adventures-of-the-Straw-Hats-ALT.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [480p] Si tu pouvais voyager... Des Nouvelles de l'Équipage",
-            href: "https://pixeldrain.net/l/1qjraYcj",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-25-If-You-Could-Go-Anywhere.-The-Adventures-of-the-Straw-Hats-ALT.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [720p] Marineford",
-            href: "https://pixeldrain.net/l/WXkKtKis",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-26-Marineford-ALT.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [720p] Post-Guerre",
-            href: "https://pixeldrain.net/l/95kTXhT5",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-27-Post-War-ALT.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [720p] Retour à Sabaody",
-            href: "https://pixeldrain.net/l/Jrm3Ma6M",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-28-Return-to-Sabaody-ALT.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [720p] Zo",
-            href: "https://pixeldrain.net/l/yXLVcDgo",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-32-Zou-ALT.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [720p] Whole Cake Island",
-            href: "https://pixeldrain.net/l/tqDyHLp3",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-33-Whole-Cake-Island-ALT.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [1080p] Rêverie",
-            href: "https://pixeldrain.net/l/GeGmz1B7",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-34-Reverie-ALT.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [720p] Rêverie",
-            href: "https://pixeldrain.net/l/UBqh7edW",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-34-Reverie-ALT.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [480p] Rêverie",
-            href: "https://pixeldrain.net/l/9EqGMxgL",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-34-Reverie-ALT.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [1080p] Wano",
-            href: "https://pixeldrain.net/l/n83vuQRD",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-35-Wano-ALT.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [720p] Wano",
-            href: "https://pixeldrain.net/l/EPGxaMq6",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-35-Wano-ALT.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [480p] Wano",
-            href: "https://pixeldrain.net/l/oDFoHdF5",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-35-Wano-ALT.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [1080p] Wano Version Longue",
-            href: "https://pixeldrain.net/l/cfjuMYwm",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-35-Wano-ALT.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [720p] Wano Version Longue",
-            href: "https://pixeldrain.net/l/7Q9f4HQh",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-35-Wano-ALT.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [480p] Wano Version Longue",
-            href: "https://pixeldrain.net/l/bG2GAZLT",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-35-Wano-ALT.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [1080p] Egghead",
-            href: "https://pixeldrain.net/l/8S1fWWqD",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-36-Egghead-ALT.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [720p] Egghead",
-            href: "https://pixeldrain.net/l/uf2SwitW",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-36-Egghead-ALT.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [480p] Egghead",
-            href: "https://pixeldrain.net/l/nzJdayDq",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-36-Egghead-ALT.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [1080p] Egghead Version Longue",
-            href: "https://pixeldrain.net/l/4fap9Z1s",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-36-Egghead-ALT.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [720p] Egghead Version Longue",
-            href: "https://pixeldrain.net/l/p1nucKM7",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-36-Egghead-ALT.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [480p] Egghead Version Longue",
-            href: "https://pixeldrain.net/l/DGn1XMyq",
-            image: "https://onepace.co/wp-content/uploads/2025/09/Season-36-Egghead-ALT.jpg"
-        });
-
-        results.push({
-            title: "[SUB] [1080p] One Piece Fan Letter",
-            href: "https://pixeldrain.net/l/9JNNTHhg",
-            image: ""
-        });
-
-        results.push({
-            title: "[SUB] [720p] One Piece Fan Letter",
-            href: "https://pixeldrain.net/l/muoYLttM",
-            image: ""
-        });
-
-        results.push({
-            title: "[SUB] [480p] One Piece Fan Letter",
-            href: "https://pixeldrain.net/l/CEZbhGgN",
-            image: ""
-        });
-    }
-    
-    console.log(`Results: ${JSON.stringify(results)}`);
-    return JSON.stringify(results);
-}
-
-async function extractDetails(url) {
-    const match = url.match(/https:\/\/pixeldrain\.net\/l\/([^\/]+)/);
-    if (!match) throw new Error("Invalid URL format");
-            
-    const arcId = match[1];
-
-    const response = await soraFetch(`https://pixeldrain.net/api/list/${arcId}`);
-    const data = await response.json();    
-
-    const transformedResults = [{
-        description: `Title: ${data.title}\nFile Count: ${data.file_count}`,
-        aliases: `Title: ${data.title}\nFile Count: ${data.file_count}`,
-        airdate: ''
-    }];
-
-    console.log(`Details: ${JSON.stringify(transformedResults)}`);
-    return JSON.stringify(transformedResults);
-}
-
-async function extractEpisodes(url) {
-    const match = url.match(/https:\/\/pixeldrain\.net\/l\/([^\/]+)/);
-    if (!match) throw new Error("Invalid URL format");
-            
-    const arcId = match[1];
-
-    const response = await soraFetch(`https://pixeldrain.net/api/list/${arcId}`);
-    const data = await response.json();
-
-    const transformedResults = data.files.map((result, index) => {
-        return {
-            href: `${result.id}`,
-            number: index + 1,
-        };
-    });
-
-    console.log(`Episodes: ${JSON.stringify(transformedResults)}`);
-    return JSON.stringify(transformedResults);
-}
-
-// searchResults("all");
-// extractDetails("https://pixeldrain.net/l/sT25hhHR");
-// extractEpisodes("https://pixeldrain.net/l/sT25hhHR");
-
-async function extractStreamUrl(url) {
-    return `https://pixeldrain.net/api/file/${url}?download`;
-}
-
-async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
+async function sendSupabaseLog(moduleName, actionType, dataPayload) {
     try {
-        return await fetchv2(url, options.headers ?? {}, options.method ?? 'GET', options.body ?? null);
+        const payload = {
+            module: moduleName,
+            action: actionType,
+            data: dataPayload
+        };
+
+        const headers = { 
+            "Content-Type": "application/json",
+            "apikey": SUPABASE_ANON_KEY,
+            "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
+            "Prefer": "return=minimal" 
+        };
+        
+        if (typeof fetchv2 !== 'undefined') {
+            await fetchv2(`${SUPABASE_URL}/rest/v1/app_logs`, headers, "POST", JSON.stringify(payload));
+        } else {
+            await fetch(`${SUPABASE_URL}/rest/v1/app_logs`, { method: "POST", headers: headers, body: JSON.stringify(payload) });
+        }
+    } catch (e) { 
+        console.log(`[Tracker] 🚨 Erreur d'envoi vers Supabase : ${e.message}`); 
+    }
+}
+
+// ==========================================
+// ⚙️ LOGIQUE DU MODULE NAKIOS
+// ==========================================
+
+function slugify(text) {
+    return text.toString().toLowerCase()
+        .normalize("NFKD").replace(/[\u0300-\u036f]/g, "") // Enlève les accents
+        .replace(/[^a-z0-9 -]/g, "") // Garde juste les lettres et chiffres
+        .replace(/\s+/g, '-') // Remplace les espaces par des tirets
+        .replace(/-+/g, '-').trim();
+}
+
+async function initUrls() {
+    if (BASE_URL !== "") return;
+
+    try {
+        console.log("[Nakios] Recherche de la nouvelle adresse officielle sur nakios.online...");
+        
+        const response = await soraFetch("https://nakios.online/");
+        let text = await response.text();
+        let match = null;
+
+        match = text.match(/href="([^"]+)"[^>]*>.*?Visiter/i) || text.match(/(https:\/\/nakios\.[a-z]+)/i);
+
+        if (!match) {
+            console.log("[Nakios] Site dynamique détecté, analyse du fichier JavaScript...");
+            const jsFileMatch = text.match(/src="(\/assets\/[^"]+\.js)"/i) || text.match(/src="([^"]+\.js)"/i);
+            
+            if (jsFileMatch && jsFileMatch[1]) {
+                const jsUrl = `https://nakios.online${jsFileMatch[1]}`;
+                const jsResponse = await soraFetch(jsUrl);
+                const jsText = await jsResponse.text();
+                match = jsText.match(/(https:\/\/nakios\.[a-z]+)/i);
+            }
+        }
+
+        if (match && match[1] && !match[1].includes("nakios.online")) {
+            BASE_URL = match[1];
+            if (BASE_URL.endsWith('/')) BASE_URL = BASE_URL.slice(0, -1);
+            console.log(`[Nakios] Nouvelle URL trouvée : ${BASE_URL}`);
+        } else {
+            throw new Error("Aucun lien trouvé ni dans le HTML ni dans le JS.");
+        }
+
+    } catch (e) {
+        console.log(`[Nakios] Échec de la recherche : ${e.message}. Utilisation du secours.`);
+        BASE_URL = "https://nakios.fit";
+    }
+
+    try {
+        HOSTNAME = BASE_URL.replace(/^https?:\/\//, ''); 
+        API_URL = `https://api.${HOSTNAME}`;
+    } catch(e) {
+        HOSTNAME = "nakios.fit";
+        API_URL = "https://api.nakios.fit";
+    }
+}
+
+// --- 1. RECHERCHE ---
+async function searchResults(keyword) {
+    try {
+        await initUrls();
+
+        const encodedKeyword = encodeURIComponent(keyword);
+        const searchUrl = `${API_URL}/api/search/multi?query=${encodedKeyword}&page=1`;
+        
+        const responseText = await soraFetch(searchUrl, {
+            headers: { "Origin": BASE_URL, "Referer": `${BASE_URL}/` }
+        });
+        
+        const data = await responseText.json();
+        const items = data.results || data.data || data.items || data; 
+
+        if (!Array.isArray(items)) return JSON.stringify([]);
+
+        const transformedResults = items.map(result => {
+            let type = result.media_type || (result.name ? "tv" : "movie");
+            if (type === "tv") type = "series"; 
+
+            let title = result.title || result.name || result.original_title;
+            let id = result.id || result.tmdb_id;
+            
+            let image = "https://via.placeholder.com/500x750?text=Pas+d'image";
+            if (result.poster_path) {
+                image = result.poster_path.startsWith('http') 
+                    ? result.poster_path 
+                    : `https://image.tmdb.org/t/p/w500${result.poster_path}`;
+            }
+
+            if (title && id) {
+                return {
+                    title: title,
+                    image: image,
+                    href: `${BASE_URL}/${type}/${id}-${slugify(title)}` // 🌟 NOUVEAU : Slugify
+                };
+            }
+        }).filter(Boolean);
+
+        sendSupabaseLog("Nakios", "SEARCH", { 
+            keyword: keyword, 
+            results_count: transformedResults.length,
+            top_results: transformedResults.slice(0, 3).map(r => r.title)
+        });
+
+        return JSON.stringify(transformedResults);
+    } catch (error) {
+        return JSON.stringify([]);
+    }
+}
+
+// --- 2. DÉTAILS ---
+async function extractDetails(url) {
+    sendSupabaseLog("Nakios", "DETAILS", { media_url: url }); // 🌟 Standardisé
+
+    try {
+        await initUrls();
+        
+        const isMovie = url.includes('movie');
+        // 🌟 Regex mis à jour pour accepter les IDs avec du texte
+        const match = url.match(/(?:movie|series|tv)\/([a-z0-9-]+)/i);
+        if (!match) throw new Error("Invalid URL format");
+
+        const fullId = match[1];
+        const id = fullId.split('-')[0]; // On extrait juste l'ID numérique
+        
+        const tmdbUrl = isMovie 
+            ? `https://api.themoviedb.org/3/movie/${id}?api_key=${TMDB_API_KEY}&language=fr-FR`
+            : `https://api.themoviedb.org/3/tv/${id}?api_key=${TMDB_API_KEY}&language=fr-FR`;
+            
+        let responseText = await soraFetch(tmdbUrl);
+        let data = await responseText.json();
+        
+        if (data.success === false || !data.id) {
+            const nakiosUrl = isMovie ? `${API_URL}/api/movie/${id}` : `${API_URL}/api/series/${id}`;
+            responseText = await soraFetch(nakiosUrl, { headers: { "Origin": BASE_URL, "Referer": `${BASE_URL}/` } });
+            data = await responseText.json();
+            data = data.data || data; 
+        }
+
+        let duration = 'Inconnue';
+        if (data.runtime) {
+            duration = data.runtime; 
+        } else if (data.episode_run_time && data.episode_run_time.length > 0) {
+            duration = data.episode_run_time[0]; 
+        } else if (data.episodes && data.episodes.length > 0 && data.episodes[0].runtime) {
+            duration = data.episodes[0].runtime; 
+        }
+
+        let releaseDate = data.release_date || data.first_air_date || data.air_date || 'Inconnue';
+        let overview = data.overview || data.description || 'Aucune description disponible.';
+
+        return JSON.stringify([{
+            description: overview,
+            aliases: `Durée : ${duration !== 'Inconnue' ? duration + ' minutes' : 'Inconnue'}`,
+            airdate: `Date de sortie : ${releaseDate}`
+        }]);
+        
+    } catch (error) {
+        return JSON.stringify([{
+            description: 'Erreur lors du chargement de la description',
+            aliases: 'Durée : Inconnue',
+            airdate: 'Date : Inconnue'
+        }]);
+    }
+}
+
+// --- 3. ÉPISODES ---
+async function extractEpisodes(url) {
+    try {
+        await initUrls();
+        
+        const isMovie = url.includes('movie');
+        // 🌟 Regex mis à jour pour récupérer le titre
+        const match = url.match(/(?:movie|series|tv)\/([a-z0-9-]+)/i);
+        if (!match) throw new Error("Invalid URL format");
+        
+        const fullId = match[1]; // Ex: "123-le-film"
+        const id = fullId.split('-')[0];
+
+        if (isMovie) {
+            // 🌟 On fait passer le nom complet au lecteur
+            return JSON.stringify([{ href: `${fullId}/movie`, number: 1, title: "Film Complet" }]);
+        } else {
+            const seriesUrl = `${API_URL}/api/series/${id}`;
+            const responseText = await soraFetch(seriesUrl, {
+                headers: { "Origin": BASE_URL, "Referer": `${BASE_URL}/` }
+            });
+            const data = await responseText.json();
+            const info = data.data || data;
+            
+            let allEpisodes = [];
+            
+            if (info.seasons && Array.isArray(info.seasons)) {
+                for (const season of info.seasons) {
+                    const seasonNumber = season.season_number;
+                    if(seasonNumber === 0) continue; 
+                    
+                    const seasonUrl = `${API_URL}/api/series/${id}/season/${seasonNumber}`;
+                    const seasonResponse = await soraFetch(seasonUrl, {
+                        headers: { "Origin": BASE_URL, "Referer": `${BASE_URL}/` }
+                    });
+                    const seasonData = await seasonResponse.json();
+                    
+                    const sInfo = seasonData.data || seasonData;
+                    const episodesList = sInfo.episodes || (Array.isArray(sInfo) ? sInfo : []);
+                    
+                    if (episodesList && episodesList.length) {
+                        const episodes = episodesList.map(episode => ({
+                            href: `${fullId}/${seasonNumber}/${episode.episode_number}`, // 🌟 On fait passer le nom complet !
+                            number: episode.episode_number,
+                            title: episode.name || `Épisode ${episode.episode_number}`
+                        }));
+                        allEpisodes = allEpisodes.concat(episodes);
+                    }
+                }
+            }
+            return JSON.stringify(allEpisodes);
+        }
+    } catch (error) {
+        return JSON.stringify([]);
+    }   
+}
+
+// --- 4. EXTRACTION VIDÉO (L'Ultime Version : Proxy + Anti-CORS + Subs + Tracker Pro) ---
+async function extractStreamUrl(url) {
+    let finalMediaUrl = url; 
+
+    try {
+        const startTime = Date.now();
+        await initUrls();
+
+        let streams = [];
+        let failedLinks = [];
+        let subtitleUrl = ""; // 🌟 PRÉPARATION DE LA VARIABLE SOUS-TITRES
+        let seasonNumber = "1";
+        let episodeNumber = "1";
+        let isMovie = url.includes('movie');
+
+        const parts = url.split('/');
+        const fullId = parts[0]; 
+        const showId = fullId.split('-')[0]; 
+
+        let mediaTitle = showId;
+        if (fullId.includes('-')) {
+            let cleanStr = fullId.substring(fullId.indexOf('-') + 1).replace(/-/g, ' ');
+            mediaTitle = cleanStr.replace(/\b\w/g, c => c.toUpperCase()); 
+        }
+
+        if (!isMovie) {
+            seasonNumber = parts[1] || "1";   
+            episodeNumber = parts[2] || "1";  
+        } else {
+            episodeNumber = "movie";
+        }
+
+        let typePath = isMovie ? "movie" : "series";
+        finalMediaUrl = `${BASE_URL}/${typePath}/${fullId}`;
+
+        let apiUrl = isMovie 
+            ? `${API_URL}/api/sources/movie/${showId}` 
+            : `${API_URL}/api/sources/tv/${showId}/${seasonNumber}/${episodeNumber}`;
+
+        const response = await soraFetch(apiUrl, {
+            headers: { "Origin": BASE_URL, "Referer": `${BASE_URL}/` }
+        });
+        
+        let data = {};
+        try {
+            data = await response.json();
+            
+            // 🌟 1. Vérification si Nakios fournit les sous-titres directement dans le JSON
+            if (data.subtitles && Array.isArray(data.subtitles)) {
+                for (let sub of data.subtitles) {
+                    if (sub.url) {
+                        let lang = (sub.lang || sub.language || "").toLowerCase();
+                        if (subtitleUrl === "" || lang.includes("fr") || lang.includes("fre")) {
+                            subtitleUrl = sub.url.startsWith('/') ? BASE_URL + sub.url : sub.url;
+                        }
+                    }
+                }
+            }
+        } catch(e) {
+            failedLinks.push({ server_name: "API Nakios (Crash)", url: apiUrl });
+        }
+        
+        let rawStreams = [];
+        
+        function findStreams(obj, currentName = "Serveur Nakios") {
+            if (obj === null || typeof obj !== 'object') return;
+            
+            if (Array.isArray(obj)) {
+                obj.forEach(item => findStreams(item, currentName));
+                return;
+            }
+            
+            let name = obj.name || obj.title || obj.server || obj.language || obj.lang || currentName;
+            
+            for (const [key, value] of Object.entries(obj)) {
+                let passName = name;
+
+                if (["VF", "VOSTFR", "VFF", "VFQ", "FRENCH", "ENGLISH"].includes(key.toUpperCase())) {
+                    passName = key.toUpperCase();
+                }
+                
+                if (typeof value === 'string') {
+                    let isVideoUrl = value.includes('.m3u8') || value.includes('.mp4') || value.includes('fsvid.lol') || value.includes('vidzy.org');
+                    let isProxyUrl = value.includes('/api/sources/proxy');
+                    let isApiUrl = (value.startsWith('http') || value.startsWith('/')) && ['url', 'link', 'file', 'src'].includes(key.toLowerCase());
+                    
+                    if (isVideoUrl || isProxyUrl || isApiUrl) {
+                        let finalName = passName;
+                        if (obj.quality && !finalName.includes(obj.quality)) {
+                            finalName += ` - ${obj.quality}`;
+                        }
+                        rawStreams.push({ url: value, name: finalName });
+                    }
+                } else if (typeof value === 'object') {
+                    findStreams(value, passName);
+                }
+            }
+        }
+
+        findStreams(data);
+
+        let uniqueStreams = [];
+        let seenUrls = new Set();
+        for (let item of rawStreams) {
+            if (!seenUrls.has(item.url)) {
+                seenUrls.add(item.url);
+                uniqueStreams.push(item);
+            }
+        }
+        
+        for (let item of uniqueStreams) {
+            let finalUrl = item.url;
+            
+            if (finalUrl.includes('/proxy?url=')) {
+                try {
+                    const matchProxy = finalUrl.match(/[?&]url=([^&]+)/);
+                    if (matchProxy && matchProxy[1]) {
+                        finalUrl = decodeURIComponent(matchProxy[1]);
+                    }
+                } catch(e) {}
+            } 
+            else if (finalUrl.startsWith('/')) {
+                finalUrl = `${API_URL}${finalUrl}`;
+            }
+
+            let streamHeaders = {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
+                "Origin": BASE_URL,
+                "Referer": `${BASE_URL}/`
+            };
+
+            let valLower = finalUrl.toLowerCase();
+
+            if (valLower.includes('xalaflix')) {
+                streamHeaders["Origin"] = "https://purstream.art";
+                streamHeaders["Referer"] = "https://purstream.art/";
+            }
+            else if (valLower.includes('fsvid') || valLower.includes('vidzy') || valLower.includes('darkibox') || valLower.includes('fastflux')) {
+                try {
+                    const urlObj = new URL(finalUrl);
+                    streamHeaders["Origin"] = urlObj.origin;
+                    streamHeaders["Referer"] = urlObj.origin + "/";
+                } catch(e) {}
+            }
+
+            streams.push({
+                title: item.name, 
+                streamUrl: finalUrl,
+                headers: streamHeaders
+            });
+
+            // 🛑 2. EXTRACTION DES SOUS-TITRES DEPUIS LES FICHIERS .M3U8 🛑
+            if (subtitleUrl === "" && finalUrl.includes('.m3u8')) {
+                try {
+                    const m3u8Res = await soraFetch(finalUrl, { headers: streamHeaders });
+                    const m3u8Text = await m3u8Res.text();
+
+                    const baseUrl = finalUrl.substring(0, finalUrl.lastIndexOf('/') + 1);
+                    const lines = m3u8Text.split('\n');
+
+                    for (const line of lines) {
+                        if (line.includes('TYPE=SUBTITLES')) {
+                            const uriMatch = line.match(/URI="([^"]+)"/);
+                            const nameMatch = line.match(/NAME="([^"]+)"/);
+                            const langMatch = line.match(/LANGUAGE="([^"]+)"/i);
+
+                            if (uriMatch) {
+                                let uri = uriMatch[1];
+                                let vttUrl = uri.startsWith('http') ? uri : `${baseUrl}${uri}`;
+                                
+                                // Astuce pour les dossiers de type Xalaflix/Purstream
+                                if (!uri.includes('.') && !uri.startsWith('http')) {
+                                    vttUrl = `${baseUrl}${uri.replace(/\/$/, '')}/subtitle.vtt`;
+                                }
+
+                                let langName = nameMatch ? nameMatch[1] : (langMatch ? langMatch[1] : "Inconnu");
+                                let isFrench = langName.toLowerCase().includes("fra") || langName.toLowerCase().includes("fre") || langName.toLowerCase().includes("vf");
+                                let isForced = langName.toLowerCase().includes("forced");
+
+                                if (subtitleUrl === "") {
+                                    subtitleUrl = vttUrl; 
+                                } else if (isFrench && !isForced) {
+                                    subtitleUrl = vttUrl;
+                                }
+                            }
+                        }
+                    }
+                } catch (e) { }
+            }
+        }
+
+        if (streams.length === 0 && failedLinks.length === 0) {
+            failedLinks.push({ server_name: "API Nakios (Vide)", url: apiUrl });
+        }
+
+        // 📡 Log Supabase 
+        sendSupabaseLog("Nakios", "PLAYER", { 
+            media_title: mediaTitle, 
+            media_url: finalMediaUrl, 
+            type: isMovie ? "FILM" : "SERIE",
+            season_number: isMovie ? "N/A" : seasonNumber,
+            ep_number: episodeNumber,
+            streams_found: streams.length,
+            subtitles_found: subtitleUrl !== "", // 🌟 STATISTIQUE SOUS-TITRES AJOUTÉE
+            execution_time_ms: Date.now() - startTime,
+            servers: streams.map(s => ({ nom: s.title, lien: s.streamUrl }))
+        });
+
+        if (failedLinks.length > 0) {
+            sendSupabaseLog("Nakios", "UNSUPPORTED_HOSTS", {
+                media_title: mediaTitle,
+                media_url: finalMediaUrl,
+                type: isMovie ? "FILM" : "SERIE",
+                season_number: isMovie ? "N/A" : seasonNumber,
+                ep_number: episodeNumber,
+                failed_count: failedLinks.length,
+                failed_links: failedLinks
+            });
+        }
+
+        // 🌟 RETOUR AVEC LES SOUS-TITRES
+        return JSON.stringify({ streams, subtitles: subtitleUrl });
+
+    } catch (error) {
+        sendSupabaseLog("Nakios", "ERROR", { media_url: finalMediaUrl, error_message: String(error) });
+        return JSON.stringify({ streams: [], subtitles: "" });
+    }
+}
+
+async function soraFetch(url, options = { headers: {}, method: 'GET', body: null, encoding: 'utf-8' }) {
+    try {
+        if (typeof fetchv2 !== 'undefined') {
+            return await fetchv2(
+                url,
+                options.headers ?? {},
+                options.method ?? 'GET',
+                options.body ?? null,
+                true,
+                options.encoding ?? 'utf-8'
+            );
+        } else {
+            return await fetch(url, options);
+        }
     } catch(e) {
         try {
             return await fetch(url, options);
