@@ -1,331 +1,654 @@
-function cleanTitle(title) {
-    return title
-        .replace(/&#8217;/g, "'")  
-        .replace(/&#8211;/g, "-")  
-        .replace(/&#[0-9]+;/g, ""); 
+class Anilist {
+    static async search(keyword, filters = {}) {
+        const query = `query (
+                $search: String,
+                $page: Int,
+                $perPage: Int,
+                $sort: [MediaSort],
+                $genre_in: [String],
+                $tag_in: [String],
+                $type: MediaType,
+                $format: MediaFormat,
+                $status: MediaStatus,
+                $countryOfOrigin: CountryCode,
+                $isAdult: Boolean,
+                $season: MediaSeason,
+                $startDate_like: String,
+                $source: MediaSource,
+                $averageScore_greater: Int,
+                $averageScore_lesser: Int
+            ) {
+                Page(page: $page, perPage: $perPage) {
+                media(
+                    search: $search,
+                    type: $type,
+                    sort: $sort,
+                    genre_in: $genre_in,
+                    tag_in: $tag_in,
+                    format: $format,
+                    status: $status,
+                    countryOfOrigin: $countryOfOrigin,
+                    isAdult: $isAdult,
+                    season: $season,
+                    startDate_like: $startDate_like,
+                    source: $source,
+                    averageScore_greater: $averageScore_greater,
+                    averageScore_lesser: $averageScore_lesser
+                ) {
+                    id
+                    idMal
+                    averageScore
+                    title {
+                        romaji
+                        english
+                        native
+                    }
+                    episodes
+                    nextAiringEpisode {
+                        airingAt
+                        timeUntilAiring
+                        episode
+                    }
+                    status
+                    genres
+                    format
+                    description
+                    startDate {
+                        year
+                        month
+                        day
+                    }
+                    endDate {
+                        year
+                        month
+                        day
+                    }
+                    popularity
+                    coverImage {
+                        color
+                        large
+                        extraLarge
+                    }
+                }
+            }
+        }`;
+
+        const variables = {
+            "page": 1,
+            "perPage": 50,
+            "sort": [
+                "SEARCH_MATCH",
+                "TITLE_ENGLISH_DESC",
+                "TITLE_ROMAJI_DESC"
+            ],
+            "search": keyword,
+            "type": "ANIME",
+            ...filters
+        }
+
+        // console.log(filters, variables);
+
+        return Anilist.anilistFetch(query, variables);
+    }
+
+    static async lookup(filters) {
+        const query = `query (
+                $id: Int,
+                $idMal: Int
+            ) {
+                Page(page: 1, perPage: 1) {
+                media(
+                    id: $id,
+                    idMal: $idMal
+                ) {
+                    id
+                    idMal
+                    averageScore
+                    title {
+                        romaji
+                        english
+                        native
+                    }
+                    episodes
+                    nextAiringEpisode {
+                        airingAt
+                        timeUntilAiring
+                        episode
+                    }
+                    status
+                    genres
+                    format
+                    description
+                    startDate {
+                        year
+                        month
+                        day
+                    }
+                    endDate {
+                        year
+                        month
+                        day
+                    }
+                    popularity
+                    coverImage {
+                        color
+                        large
+                        extraLarge
+                    }
+                }
+            }
+        }`;
+
+        const variables = {
+            "type": "ANIME",
+            ...filters
+        }
+
+        return Anilist.anilistFetch(query, variables);
+    }
+
+    static async getLatest(filters) {
+        let page = 0;
+        let hasNextPage = true;
+        const perPage = 50;
+        const currentDate = new Date();
+
+        filters.seasonYear = currentDate.getFullYear();
+        filters.season = Anilist.monthToSeason(currentDate.getMonth());
+
+        const results = [];
+
+        do {
+            page++;
+
+            const query = `query (
+                $page: Int,
+                $perPage: Int,
+                $sort: [MediaSort],
+                $type: MediaType,
+                $status: MediaStatus,
+                $isAdult: Boolean,
+                $seasonYear: Int,
+                $season: MediaSeason
+            ) {
+                Page(page: $page, perPage: $perPage) {
+                    media(
+                        type: $type,
+                        sort: $sort,
+                        status: $status,
+                        isAdult: $isAdult,
+                        seasonYear: $seasonYear,
+                        season: $season
+                    ) {
+                        id
+                        idMal
+                        averageScore
+                        title {
+                            romaji
+                            english
+                            native
+                        }
+                        episodes
+                        nextAiringEpisode {
+                            airingAt
+                            timeUntilAiring
+                            episode
+                        }
+                        status
+                        genres
+                        format
+                        description
+                        startDate {
+                            year
+                            month
+                            day
+                        }
+                        endDate {
+                            year
+                            month
+                            day
+                        }
+                        popularity
+                        coverImage {
+                            color
+                            large
+                            extraLarge
+                        }
+                    }
+                    pageInfo {
+                        hasNextPage
+                    }
+                }
+            }`;
+
+            const variables = {
+                "page": page,
+                "perPage": perPage,
+                "sort": [
+                    "POPULARITY_DESC"
+                ],
+                "type": "ANIME",
+                "status": "RELEASING",
+                ...filters
+            }
+
+            const fetchResults = await Anilist.anilistFetch(query, variables);
+            results.push(fetchResults);
+
+            if(fetchResults?.Page?.pageInfo?.hasNextPage !== true) {
+                hasNextPage = false;
+            }
+
+        } while(hasNextPage);
+
+        const mergedObject = { Page: { media: []}};
+
+        for(let page of results) {
+            mergedObject.Page.media = mergedObject.Page.media.concat(page.Page.media);
+        }
+
+        return mergedObject;
+    }
+
+    static async anilistFetch(query, variables) {
+        const url = 'https://graphql.anilist.co/';
+        const extraTimeoutMs = 250;
+
+        try {
+            const response = await soraFetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({
+                    query: query,
+                    variables: variables
+                })
+            });
+
+            if (response.status !== 200) {
+                if (response.status === 429) {
+                    console.info('=== RATE LIMIT EXCEEDED, SLEEPING AND RETRYING ===');
+                    const retryTimeout = response.headers.get('Retry-After');
+                    const timeout = Math.ceil((parseInt(retryTimeout))) * 1000 + extraTimeoutMs;
+                    await sleep(timeout);
+                    return await AnilistFetch(query, variables);
+
+                }
+
+                console.error('Error fetching Anilist data:', response.statusText);
+                return null;
+            }
+
+            const json = await response.json();
+            if (json?.errors) {
+                console.error('Error fetching Anilist data:', json.errors);
+            }
+
+            return json?.data;
+
+        } catch (error) {
+            console.error('Error fetching Anilist data:', error);
+            return null;
+        }
+    }
+
+    static convertAnilistDateToDateStr(dateObject) {
+        if (dateObject.year == null) {
+            return null;
+        }
+        if (dateObject.month == null || parseInt(dateObject.month) < 1) {
+            dateObject.month = 1;
+        }
+        if (dateObject.day == null || parseInt(dateObject.day) < 1) {
+            dateObject.day = 1;
+        }
+        return dateObject.year + "-" + (dateObject.month).toString().padStart(2, '0') + "-" + (dateObject.day).toString().padStart(2, '0');
+    }
+
+
+    // Yes it's stupid, but I kinda love it which is why I'm not optimizing this
+    static nextAnilistAirDateToCountdown(timestamp) {
+        if (timestamp == null) return null;
+
+        const airDate = new Date((timestamp * 1000));
+        const now = new Date();
+
+        if (now > airDate) return null;
+
+        let [days, hourRemainder] = (((airDate - now) / 1000) / 60 / 60 / 24).toString().split('.');
+        let [hours, minRemainder] = (parseFloat("0." + hourRemainder) * 24).toString().split('.');
+        let minutes = Math.ceil((parseFloat("0." + minRemainder) * 60));
+
+        return `Next episode will air in ${days} days, ${hours} hours and ${minutes} minutes at ${airDate.getFullYear()}-${(airDate.getMonth() + 1).toString().padStart(2, '0')}-${(airDate.getDate()).toString().padStart(2, '0')} ${airDate.getHours()}:${airDate.getMinutes()}`;
+    }
+
+    static monthToSeason(month) {
+        // Month is 0 indexed
+        const seasons = ['WINTER', 'SPRING', 'SUMMER', 'FALL'];
+        if(month == 11) return seasons[0];
+        if(month <= 1) return seasons[0];
+        if(month <= 4) return seasons[1];
+        if(month <= 7) return seasons[2];
+        return seasons[3];
+    }
+}
+
+function sleep(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 async function searchResults(keyword) {
-  const results = [];
-  try {
-    const response = await fetchv2("https://animenana.com/search/?key=" + keyword);
-    const html = await response.text();
-    
-    const cardMatches = html.match(/<div class="card component-latest">[\s\S]*?<\/div>\s*<\/div>\s*<\/a>/g);
-    
-    if (cardMatches) {
-      for (const cardHtml of cardMatches) {
-        const hrefMatch = cardHtml.match(/<a href="([^"]+)"/);
-        
-        const imgMatch = cardHtml.match(/<img[^>]+(?:data-src|src)="([^"]+)"/);
-        
-        const titleMatch = cardHtml.match(/<h5 class="animename"[^>]*>(.*?)<\/h5>/);
-        
-        if (hrefMatch && imgMatch && titleMatch) {
-          results.push({
-            href: "https://animenana.com" + hrefMatch[1].trim(),
-            image: "https://animenana.com" + imgMatch[1].trim(),
-            title: cleanTitle(titleMatch[1].trim())
-          });
+    try {
+        let aniData = null;
+
+        // --- AniList Search ---
+        if (keyword.startsWith('!anime') || keyword.startsWith('!a') || keyword.startsWith('!')) {
+            aniData = await Anilist.getLatest({ isAdult: false });
+        } else {
+            aniData = await Anilist.search(keyword, { isAdult: false });
         }
-      }
-    }
-    
-    if (results.length === 0) {
-      const colMatches = html.match(/<div class="col-md-4">[\s\S]*?<\/div>\s*<\/div>\s*<\/div>\s*<\/a>\s*<\/div>/g);
-      
-      if (colMatches) {
-        for (const colHtml of colMatches) {
-          const hrefMatch = colHtml.match(/<a href="([^"]+)"/);
-          const imgMatch = colHtml.match(/<img[^>]+(?:data-src|src)="([^"]+)"/);
-          const titleMatch = colHtml.match(/<h5 class="animename"[^>]*>(.*?)<\/h5>/);
-          
-          if (hrefMatch && imgMatch && titleMatch) {
-            results.push({
-              href: "https://animenana.com" + hrefMatch[1].trim(),
-              image: "https://animenana.com" + imgMatch[1].trim(), 
-              title: cleanTitle(titleMatch[1].trim())
-            });
-          }
+
+        let transformedResults = [];
+
+        if (aniData?.Page?.media?.length > 0) {
+            transformedResults = aniData.Page.media.map(result => ({
+                title:
+                    result.title.english ||
+                    result.title.romaji ||
+                    result.title.native ||
+                    "Untitled",
+                image:
+                    result.coverImage.extraLarge ||
+                    result.coverImage.large ||
+                    result.coverImage.medium ||
+                    "",
+                href: `anime/${result.id}`,
+            }));
         }
-      }
+
+        console.log("Transformed Results: " + JSON.stringify(transformedResults));
+        return JSON.stringify(transformedResults);
+    } catch (error) {
+        console.log("Fetch error in searchResults: " + error);
+        return JSON.stringify([{ title: "Error", image: "", href: "" }]);
     }
-    
-    if (results.length === 0) {
-      const regex = /<a href="([^"]+)"[\s\S]*?<img[^>]+(?:data-src|src)="([^"]+)"[\s\S]*?<h5 class="animename"[^>]*>(.*?)<\/h5>/g;
-      let match;
-      while ((match = regex.exec(html)) !== null) {
-        results.push({
-          href: "https://animenana.com" + match[1].trim(),
-          image: "https://animenana.com" + match[2].trim(),
-          title: cleanTitle(match[3].trim())
-        });
-      }
-    }
-    
-    return JSON.stringify(results);
-  } catch (err) {
-    return JSON.stringify([{
-      title: "Error",
-      image: "Error", 
-      href: "Error"
-    }]);
-  }
 }
 
 async function extractDetails(url) {
     try {
-        const response = await fetchv2(url);
-        const html = await response.text();
+        if (url.includes('anime')) {
+            const match = url.match(/anime\/([^\/]+)/);
+            if (!match) throw new Error("Invalid URL format");
 
-        const regex = /<p><b>Description:\s*<\/b><\/p>([\s\S]*?)<br\s*\/?>/i;
-        const match = regex.exec(html);
+            const animeId = parseInt(match[1]);
 
-        let description = match ? match[1].trim() : "N/A";
+            const aniData = await Anilist.lookup({ id: animeId });
+            const anime = aniData.Page.media[0];
 
-        description = description.replace(/<[^>]+>/g, "").trim();
+            const cleanDescription = anime.description
+                ? anime.description.replace(/<[^>]+>/g, '').trim()
+                : 'No description available';
 
+            const transformedResults = [{
+                description: cleanDescription,
+                aliases: `Duration: ${anime.episodes ? 24 + " minutes" : 'Unknown'}`, // default 24 mins per episode
+                airdate: `Aired: ${anime.startDate.year ? Anilist.convertAnilistDateToDateStr(anime.startDate) : 'Unknown'}`
+            }];
+
+            console.log(JSON.stringify(transformedResults));
+            return JSON.stringify(transformedResults);
+        } else {
+            throw new Error("Invalid URL format");
+        }
+    } catch (error) {
+        console.log('Details error: ' + error);
         return JSON.stringify([{
-            description: description,
-            aliases: "N/A",
-            airdate: "N/A"
-        }]);
-    } catch (err) {
-        return JSON.stringify([{
-            description: "Error",
-            aliases: "Error",
-            airdate: "Error"
+            description: 'Error loading description',
+            aliases: 'Duration: Unknown',
+            airdate: 'Aired/Released: Unknown'
         }]);
     }
 }
 
 async function extractEpisodes(url) {
-  const results = [];
-  try {
-    const response = await fetchv2(url);
-    const html = await response.text();
-    
-    // More flexible regex to handle the actual HTML structure
-    const epRegex = /<a href="([^"]+)"[^>]*title="[^"]*Episode\s*(\d+)">/g;
-    let match;
-    while ((match = epRegex.exec(html)) !== null) {
-      results.push({
-        href: "https://animenana.com" + match[1].trim(),
-        number: parseInt(match[2], 10)
-      });
-    }
-    
-    const specialRegex = /<span class="badge[^"]*"[^>]*>([^<]+)<\/span>[\s\S]*?<a href="([^"]+)"[^>]*>[\s\S]*?<h5 class="animename">([^<]+)<\/h5>/g;
-    while ((match = specialRegex.exec(html)) !== null) {
-      results.push({
-        href: "https://animenana.com" + match[2].trim(),
-        number: 1
-      });
-    }
-    
-    if (results.length >= 2 && results[0].number > results[1].number) {
-      results.reverse();
-      results.forEach((item, index) => {
-        item.number = index + 1;
-      });
-    }
-    
-    if (results.length === 0) {
-      results.push({
-        href: url,
-        number: 1
-      });
-    }
-    
-    return JSON.stringify(results);
-  } catch (err) {
-    return JSON.stringify([{
-      href: "Error",
-      number: "Error",
-      type: "Error"
-    }]);
-  }
-}
+    try {
+        if(url.includes('anime')) {
+            const match = url.match(/anime\/([^\/]+)/);
+            if (!match) throw new Error("Invalid URL format");
 
-async function extractStreamUrl(url) {
-  try {
-    const response = await fetchv2(url);
-    const html = await response.text();
-    const fmRegex = /function\s+fm\(\)\s*\{[^}]*document\.getElementById\("videowrapper"\)\.innerHTML\s*=\s*['"]<iframe\s+src=['"]([^'"]+)['"]/;
-    const match = fmRegex.exec(html);
+            const animeId = parseInt(match[1]);
+            const aniData = await Anilist.lookup({ id: animeId });
+            const anime = aniData.Page.media[0];
 
-    
-    let streamUrl = "https://files.catbox.moe/avolvc.mp4";
-    
-    if (match && match[1]) {
-      const iframeSrc = match[1];
-      
-      if (iframeSrc.startsWith("https://")) {
-        streamUrl = iframeSrc;
-      } else {
-        streamUrl = "https://animenana.com" + iframeSrc;
-      }
-    }
-    
-    const finalUrl = streamUrl;
+            console.log(anime);
 
-    console.log(finalUrl);
+            if (!anime) return JSON.stringify([]);
 
-    const diejfioe = await fetchv2(finalUrl);
-    const jdi83rjf = await diejfioe.text();
-
-    const kvrokofrmfrklefmklrd = jdi83rjf.match(/<iframe[^>]+src="([^"]+)"/);
-    if (kvrokofrmfrklefmklrd) {
-        const iframeUrl = kvrokofrmfrklefmklrd[1];
-        console.log("Iframe URL:"+ iframeUrl);
-
-        const headers = {
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3",
-                "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-                "Referer": "https://animenana.com" + url,
-        };
-
-        const i9jfrhtiee = await fetchv2(iframeUrl, headers);
-        const kopefjir4o0 = await i9jfrhtiee.text();
-
-        const obfuscatedScript = kopefjir4o0.match(/<script[^>]*>\s*(eval\(function\(p,a,c,k,e,d.*?\)[\s\S]*?)<\/script>/);
-        const unpackedScript = unpack(obfuscatedScript[1]);
-        //console.log(unpackedScript);
-
-        const hlsMatch = unpackedScript.match(/file:"(https?:\/\/.*?\.m3u8.*?)"/);
-        const hlsUrl = hlsMatch ? hlsMatch[1] : null;
-        console.log("HLS URL:"+hlsUrl);
-        return hlsUrl;
-    } else {
-        console.log("No iframe found");
-    }
-
-
-    return finalUrl;
-  } catch (err) {
-    console.log(err);
-    return streamUrl || url;
-  }
-}
-
-
-
-/***********************************************************
- * UNPACKER MODULE
- * Credit to GitHub user "mnsrulz" for Unpacker Node library
- * https://github.com/mnsrulz/unpacker
- ***********************************************************/
-class Unbaser {
-    constructor(base) {
-        /* Functor for a given base. Will efficiently convert
-          strings to natural numbers. */
-        this.ALPHABET = {
-            62: "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
-            95: "' !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~'",
-        };
-        this.dictionary = {};
-        this.base = base;
-        // fill elements 37...61, if necessary
-        if (36 < base && base < 62) {
-            this.ALPHABET[base] = this.ALPHABET[base] ||
-                this.ALPHABET[62].substr(0, base);
-        }
-        // If base can be handled by int() builtin, let it do it for us
-        if (2 <= base && base <= 36) {
-            this.unbase = (value) => parseInt(value, base);
-        }
-        else {
-            // Build conversion dictionary cache
-            try {
-                [...this.ALPHABET[base]].forEach((cipher, index) => {
-                    this.dictionary[cipher] = index;
+            const episodesCount = anime.episodes || (anime.nextAiringEpisode.episode - 1) || 1;
+            const episodesArray = [];
+            for (let i = 1; i <= episodesCount; i++) {
+                episodesArray.push({
+                    href: `anime/${animeId}/${i}`,
+                    number: i,
+                    title: `Episode ${i}`
                 });
             }
-            catch (er) {
-                throw Error("Unsupported base encoding.");
-            }
-            this.unbase = this._dictunbaser;
+
+            console.log(episodesArray);
+            return JSON.stringify(episodesArray);
+        } else {
+            throw new Error("Invalid URL format");
         }
-    }
-    _dictunbaser(value) {
-        /* Decodes a value to an integer. */
-        let ret = 0;
-        [...value].reverse().forEach((cipher, index) => {
-            ret = ret + ((Math.pow(this.base, index)) * this.dictionary[cipher]);
-        });
-        return ret;
-    }
+    } catch (error) {
+        console.log('Fetch error in extractEpisodes: ' + error);
+        return JSON.stringify([]);
+    }    
 }
 
-function detect(source) {
-    /* Detects whether `source` is P.A.C.K.E.R. coded. */
-    return source.replace(" ", "").startsWith("eval(function(p,a,c,k,e,");
-}
+// searchResults("!trending");
 
-function unpack(source) {
-    /* Unpacks P.A.C.K.E.R. packed js code. */
-    let { payload, symtab, radix, count } = _filterargs(source);
-    if (count != symtab.length) {
-        throw Error("Malformed p.a.c.k.e.r. symtab.");
-    }
-    let unbase;
+// searchResults("clannad");
+// extractDetails("tv/24835/1/1");
+// extractEpisodes("tv/24835/1/1");
+// extractStreamUrl("tv/24835/1/1");
+
+// extractDetails("anime/2167");
+// extractEpisodes("anime/2167");
+// extractStreamUrl("anime/130003/1");
+
+// searchResults("One piece");
+// extractEpisodes("anime/21");
+// extractStreamUrl("anime/21/1");
+
+async function extractStreamUrl(url) {
     try {
-        unbase = new Unbaser(radix);
-    }
-    catch (e) {
-        throw Error("Unknown p.a.c.k.e.r. encoding.");
-    }
-    function lookup(match) {
-        /* Look up symbols in the synthetic symtab. */
-        const word = match;
-        let word2;
-        if (radix == 1) {
-            //throw Error("symtab unknown");
-            word2 = symtab[parseInt(word)];
-        }
-        else {
-            word2 = symtab[unbase.unbase(word)];
-        }
-        return word2 || word;
-    }
-    source = payload.replace(/\b\w+\b/g, lookup);
-    return _replacestrings(source);
-    function _filterargs(source) {
-        /* Juice from a source file the four args needed by decoder. */
-        const juicers = [
-            /}\('(.*)', *(\d+|\[\]), *(\d+), *'(.*)'\.split\('\|'\), *(\d+), *(.*)\)\)/,
-            /}\('(.*)', *(\d+|\[\]), *(\d+), *'(.*)'\.split\('\|'\)/,
+        const match = url.match(/(anime)\/(.+)/);
+        if (!match) throw new Error('Invalid URL format');
+        const [, type, path] = match;
+        const [anilistId, episodeNumber] = path.split('/');
+
+        const providers = [
+            "animepahe", "anikoto", "reanime", "animix", "allani", "senshi"
         ];
-        for (const juicer of juicers) {
-            //const args = re.search(juicer, source, re.DOTALL);
-            const args = juicer.exec(source);
-            if (args) {
-                let a = args;
-                if (a[2] == "[]") {
-                    //don't know what it is
-                    // a = list(a);
-                    // a[1] = 62;
-                    // a = tuple(a);
+
+        const allStreams = [];
+        let allSubtitles = [];
+        let primarySubtitle = "";
+        let primaryHeaders = {};
+
+        const fetchProvider = async (provider) => {
+            const apiUrl = `https://anikuro.ru/api/getsources/?id=${anilistId}&lol=${provider}&ep=${episodeNumber}`;
+            console.log("[Anikuro] Fetching: " + apiUrl);
+
+            const resp = await soraFetch(apiUrl, {
+                headers: {
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
+                    "Accept": "application/json, text/plain, */*"
                 }
-                try {
-                    return {
-                        payload: a[1],
-                        symtab: a[4].split("|"),
-                        radix: parseInt(a[2]),
-                        count: parseInt(a[3]),
-                    };
+            });
+
+            if (!resp || resp.status !== 200) {
+                console.warn(`[Anikuro] ${provider} failed with status: ${resp ? resp.status : "null"}`);
+                return null;
+            }
+
+            let json;
+            try {
+                if (typeof resp.json === "function") {
+                    json = await resp.json();
+                } else {
+                    const text = await resp.text();
+                    json = JSON.parse(text);
                 }
-                catch (ValueError) {
-                    throw Error("Corrupted p.a.c.k.e.r. data.");
+            } catch (e) {
+                console.error(`[Anikuro] ${provider} JSON parse error:`, e);
+                return null;
+            }
+
+            const data = json?.data || json;
+            if (!data) {
+                console.warn(`[Anikuro] ${provider} returned empty data`);
+                return null;
+            }
+
+            return data;
+        };
+
+        const results = await Promise.allSettled(providers.map(p => fetchProvider(p)));
+
+        results.forEach((result, idx) => {
+            if (result.status !== "fulfilled" || !result.value) return;
+            const data = result.value;
+            const providerName = providers[idx];
+
+            // Try to get variants from providerResult (most providers use this)
+            let variants = data?.providerResult?.variants || [];
+
+            // If no variants, construct from top-level sub/dub manually
+            if (variants.length === 0) {
+                if (data.sub) {
+                    variants.push({
+                        variant: "sub",
+                        sources: data.sub.sources || [],
+                        subtitles: data.sub.subtitles || [],
+                        headers: data.sub.headers || {}
+                    });
+                }
+                if (data.dub) {
+                    variants.push({
+                        variant: "dub",
+                        sources: data.dub.sources || [],
+                        subtitles: data.dub.subtitles || [],
+                        headers: data.dub.headers || {}
+                    });
                 }
             }
+
+            variants.forEach((variant) => {
+                const varType = variant.variant || "sub";
+                const headers = variant.headers || {};
+                const sources = variant.sources || [];
+
+                sources.forEach((source) => {
+                    if (source.quality === "Yt-mp4") return;
+
+                    const quality = source.quality || "default";
+                    // Use original URL if available, otherwise fall back to proxy
+                    let streamUrl = source.originalUrl || source.url;
+
+                    // Animepahe URL transformation (still applies to originalUrl)
+                    if (providerName === "animepahe" && streamUrl) {
+                        streamUrl = streamUrl
+                            .replace("/stream/", "/hls/")
+                            .replace("uwu.m3u8", "owo.m3u8");
+                    }
+
+                    // Build headers: use upstreamReferer as Referer if present
+                    const streamHeaders = { ...(source.headers || headers) };
+                    if (source.upstreamReferer) {
+                        streamHeaders["Referer"] = source.upstreamReferer;
+                    }
+
+                    allStreams.push({
+                        title: `${providerName} - ${varType.toUpperCase()} (${quality})`,
+                        streamUrl: streamUrl,
+                        headers: streamHeaders,
+                    });
+                });
+
+                // Collect subtitles (unchanged)
+                const subtitles = variant.subtitles || [];
+                subtitles.forEach((sub) => {
+                    allSubtitles.push({
+                        url: sub.url,
+                        label: sub.label || "Unknown",
+                        kind: "captions",
+                        headers: {}
+                    });
+                    if (!primarySubtitle && sub.label && sub.label.toLowerCase().includes("english") && sub.default) {
+                        primarySubtitle = sub.url;
+                        primaryHeaders = headers;
+                    }
+                });
+            });
+        });
+
+        // Sort: SUB first, then DUB
+        allStreams.sort((a, b) => {
+            const aIsSub = a.title.toLowerCase().includes("sub") ? 0 : 1;
+            const bIsSub = b.title.toLowerCase().includes("sub") ? 0 : 1;
+            if (aIsSub !== bIsSub) return aIsSub - bIsSub;
+            return a.title.localeCompare(b.title);
+        });
+
+        // Deduplicate subtitles
+        const seenUrls = new Set();
+        allSubtitles = allSubtitles.filter(sub => {
+            if (seenUrls.has(sub.url)) return false;
+            seenUrls.add(sub.url);
+            return true;
+        });
+
+        // Fallback primary subtitle
+        if (!primarySubtitle && allSubtitles.length > 0) {
+            const engSub = allSubtitles.find(s => s.label && s.label.toLowerCase().includes("english"));
+            primarySubtitle = engSub ? engSub.url : allSubtitles[0].url;
+            primaryHeaders = {};
         }
-        throw Error("Could not make sense of p.a.c.k.e.r data (unexpected code structure)");
-    }
-    function _replacestrings(source) {
-        /* Strip string lookup table (list) and replace values in source. */
-        /* Need to work on this. */
-        return source;
+
+        const result = {
+            streams: allStreams,
+            subtitles: primarySubtitle,
+            subtitlesHeaders: primaryHeaders,
+            allSubtitles: allSubtitles
+        };
+
+        console.log('Result: ' + JSON.stringify(result).substring(0, 500));
+        return JSON.stringify(result);
+
+    } catch (error) {
+        console.log('Fetch error in extractStreamUrl: ' + error);
+        return JSON.stringify({ streams: [], subtitles: "", subtitlesHeaders: {}, allSubtitles: [] });
     }
 }
 
+async function soraFetch(url, options = { headers: {}, method: 'GET', body: null, encoding: 'utf-8' }) {
+    try {
+        return await fetchv2(
+            url,
+            options.headers ?? {},
+            options.method ?? 'GET',
+            options.body ?? null,
+            true,
+            options.encoding ?? 'utf-8'
+        );
+    } catch(e) {
+        try {
+            return await fetch(url, options);
+        } catch(error) {
+            return null;
+        }
+    }
+}
