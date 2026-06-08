@@ -1,47 +1,22 @@
 {
-  "generatedAt": "2026-06-07T08:46:40.846Z",
-  "currentCatalogModules": 51,
+  "generatedAt": "2026-06-08T09:20:05.082Z",
+  "currentCatalogModules": 39,
   "upstreamDiscovered": 0,
   "extraModules": 1,
   "extraModulesDir": "/tmp/sora-daily/mangayomi-import/Working",
-  "candidates": 52,
-  "groups": 52,
-  "exported": 39,
-  "rejectedGroups": 12,
-  "previousRemoved": 13,
+  "candidates": 40,
+  "groups": 39,
+  "exported": 38,
+  "rejectedGroups": 1,
+  "previousRemoved": 1,
   "finalValidationRounds": [
     {
-      "files": 40,
-      "errors": [
-        "/tmp/sora-daily/catalog/Sources/French/001/manifest.json: final retest failed: search: searchResults timed out"
-      ],
-      "failures": [
-        {
-          "manifestPath": "/tmp/sora-daily/catalog/Sources/French/001/manifest.json",
-          "catalogPath": "Sources/French/001",
-          "error": "final retest failed: search: searchResults timed out",
-          "status": "needs_fix",
-          "failureKind": "module_runtime_failure",
-          "errors": [
-            "search: searchResults timed out"
-          ]
-        }
-      ]
-    },
-    {
-      "files": 39,
+      "files": 38,
       "errors": [],
       "failures": []
     }
   ],
-  "finalValidationRejected": [
-    {
-      "sourceName": "Purstream",
-      "language": "French",
-      "catalogPath": "Sources/French/001",
-      "reason": "final retest failed: search: searchResults timed out"
-    }
-  ],
+  "finalValidationRejected": [],
   "output": {
     "sourcesDir": "/tmp/sora-daily/catalog/Sources",
     "statusOut": "/tmp/sora-daily/catalog/module-status.json"
@@ -60,25 +35,25 @@
       "origin": "mangayomi",
       "manifestUrl": "https://raw.githubusercontent.com/Mallyd11/mangayomi-anime-extensions/refs/heads/main/javascript/anime/src/en/animeheaven.js",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/001/source.js",
-      "durationMs": 338
+      "durationMs": 199
     },
     {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/006/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/006/source.js:mod_1443824015:initial",
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/016/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/016/source.js:mod_933289838:initial",
       "catalogPath": "Sources/English/002",
       "manifestPath": "/tmp/sora-daily/catalog/Sources/English/002/manifest.json",
       "language": "English",
       "rank": 2,
       "folder": "002",
-      "sourceName": "OneTouch TV",
-      "id": "BmnXo",
+      "sourceName": "Anikuro",
+      "id": "jLYn4",
       "registry": "content-manifest",
       "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/006/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/016/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/002/source.js",
-      "durationMs": 569
+      "durationMs": 423
     },
     {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/008/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/008/source.js:mod_163960337:initial",
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/003/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/003/source.js:mod_1216135884:initial",
       "catalogPath": "Sources/English/003",
       "manifestPath": "/tmp/sora-daily/catalog/Sources/English/003/manifest.json",
       "language": "English",
@@ -88,27 +63,27 @@
       "id": "BvIyX",
       "registry": "content-manifest",
       "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/008/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/003/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/003/source.js",
-      "durationMs": 591
+      "durationMs": 689
     },
     {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/021/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/021/source.js:mod_1474931208:initial",
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/002/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/002/source.js:mod_291415925:initial",
       "catalogPath": "Sources/English/004",
       "manifestPath": "/tmp/sora-daily/catalog/Sources/English/004/manifest.json",
       "language": "English",
       "rank": 4,
       "folder": "004",
-      "sourceName": "AnimeLand",
-      "id": "mod_163960337",
+      "sourceName": "OneTouch TV",
+      "id": "BmnXo",
       "registry": "content-manifest",
       "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/021/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/002/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/004/source.js",
-      "durationMs": 1202
+      "durationMs": 796
     },
     {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/011/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/011/source.js:mod_1985465385:initial",
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/005/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/005/source.js:mod_63727794:initial",
       "catalogPath": "Sources/English/005",
       "manifestPath": "/tmp/sora-daily/catalog/Sources/English/005/manifest.json",
       "language": "English",
@@ -118,12 +93,12 @@
       "id": "jhWaO",
       "registry": "content-manifest",
       "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/011/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/005/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/005/source.js",
-      "durationMs": 1203
+      "durationMs": 1127
     },
     {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/004/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/004/source.js:mod_1571279603:initial",
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/006/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/006/source.js:mod_1443824015:initial",
       "catalogPath": "Sources/English/006",
       "manifestPath": "/tmp/sora-daily/catalog/Sources/English/006/manifest.json",
       "language": "English",
@@ -133,69 +108,69 @@
       "id": "jpL6F",
       "registry": "content-manifest",
       "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/004/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/006/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/006/source.js",
-      "durationMs": 1313
+      "durationMs": 1369
     },
     {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/002/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/002/source.js:mod_291415925:initial",
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/023/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/023/source.js:mod_195067530:initial",
       "catalogPath": "Sources/English/007",
       "manifestPath": "/tmp/sora-daily/catalog/Sources/English/007/manifest.json",
       "language": "English",
       "rank": 7,
       "folder": "007",
-      "sourceName": "Animetsu",
-      "id": "G7jX",
+      "sourceName": "VidFast",
+      "id": "B0b0R",
       "registry": "content-manifest",
       "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/002/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/023/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/007/source.js",
-      "durationMs": 1372
+      "durationMs": 1485
     },
     {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/016/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/016/source.js:mod_933289838:initial",
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/009/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/009/source.js:mod_1671512146:initial",
       "catalogPath": "Sources/English/008",
       "manifestPath": "/tmp/sora-daily/catalog/Sources/English/008/manifest.json",
       "language": "English",
       "rank": 8,
       "folder": "008",
-      "sourceName": "AnimeNana",
-      "id": "BRHoq",
-      "registry": "content-manifest",
-      "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/016/manifest.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/008/source.js",
-      "durationMs": 1582
-    },
-    {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/009/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/009/source.js:mod_1671512146:initial",
-      "catalogPath": "Sources/English/009",
-      "manifestPath": "/tmp/sora-daily/catalog/Sources/English/009/manifest.json",
-      "language": "English",
-      "rank": 9,
-      "folder": "009",
       "sourceName": "123Anime",
       "id": "jCtAp",
       "registry": "content-manifest",
       "origin": "current",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/009/manifest.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/009/source.js",
-      "durationMs": 1984
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/008/source.js",
+      "durationMs": 1966
     },
     {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/014/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/014/source.js:mod_2081813780:initial",
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/008/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/008/source.js:mod_163960337:initial",
+      "catalogPath": "Sources/English/009",
+      "manifestPath": "/tmp/sora-daily/catalog/Sources/English/009/manifest.json",
+      "language": "English",
+      "rank": 9,
+      "folder": "009",
+      "sourceName": "AnimeNana",
+      "id": "BRHoq",
+      "registry": "content-manifest",
+      "origin": "current",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/008/manifest.json",
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/009/source.js",
+      "durationMs": 1969
+    },
+    {
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/007/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/007/source.js:mod_1343591472:initial",
       "catalogPath": "Sources/English/010",
       "manifestPath": "/tmp/sora-daily/catalog/Sources/English/010/manifest.json",
       "language": "English",
       "rank": 10,
       "folder": "010",
-      "sourceName": "Otaku-Streamers",
-      "id": "jWwhj",
+      "sourceName": "Animetsu",
+      "id": "G7jX",
       "registry": "content-manifest",
       "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/014/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/007/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/010/source.js",
-      "durationMs": 2234
+      "durationMs": 2138
     },
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/010/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/010/source.js:mod_477913576:initial",
@@ -204,136 +179,136 @@
       "language": "English",
       "rank": 11,
       "folder": "011",
-      "sourceName": "AniNeko",
-      "id": "jWih3",
+      "sourceName": "Otaku-Streamers",
+      "id": "jWwhj",
       "registry": "content-manifest",
       "origin": "current",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/010/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/011/source.js",
-      "durationMs": 2340
+      "durationMs": 2786
     },
     {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/012/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/012/source.js:mod_801950102:initial",
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/011/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/011/source.js:mod_1985465385:initial",
       "catalogPath": "Sources/English/012",
       "manifestPath": "/tmp/sora-daily/catalog/Sources/English/012/manifest.json",
       "language": "English",
       "rank": 12,
       "folder": "012",
-      "sourceName": "Miruro",
-      "id": "jFDMr",
+      "sourceName": "AniNeko",
+      "id": "jWih3",
       "registry": "content-manifest",
       "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/012/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/011/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/012/source.js",
-      "durationMs": 3070
+      "durationMs": 3140
     },
     {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/007/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/007/source.js:mod_1343591472:initial",
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/012/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/012/source.js:mod_801950102:initial",
       "catalogPath": "Sources/English/013",
       "manifestPath": "/tmp/sora-daily/catalog/Sources/English/013/manifest.json",
       "language": "English",
       "rank": 13,
       "folder": "013",
-      "sourceName": "Bingebox",
-      "id": "jWuL6",
+      "sourceName": "Miruro",
+      "id": "jFDMr",
       "registry": "content-manifest",
       "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/007/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/012/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/013/source.js",
-      "durationMs": 3628
+      "durationMs": 3353
     },
     {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/015/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/015/source.js:mod_574261971:initial",
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/017/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/017/source.js:mod_1854125649:initial",
       "catalogPath": "Sources/English/014",
       "manifestPath": "/tmp/sora-daily/catalog/Sources/English/014/manifest.json",
       "language": "English",
       "rank": 14,
       "folder": "014",
-      "sourceName": "AniWorld (ENG SUB)",
-      "id": "mod_530574073",
-      "registry": "content-manifest",
-      "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/015/manifest.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/014/source.js",
-      "durationMs": 3928
-    },
-    {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/020/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/020/source.js:mod_32620601:initial",
-      "catalogPath": "Sources/English/015",
-      "manifestPath": "/tmp/sora-daily/catalog/Sources/English/015/manifest.json",
-      "language": "English",
-      "rank": 15,
-      "folder": "015",
-      "sourceName": "Aniwave",
-      "id": "zc8g",
-      "registry": "content-manifest",
-      "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/020/manifest.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/015/source.js",
-      "durationMs": 4915
-    },
-    {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/005/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/005/source.js:mod_63727794:initial",
-      "catalogPath": "Sources/English/016",
-      "manifestPath": "/tmp/sora-daily/catalog/Sources/English/016/manifest.json",
-      "language": "English",
-      "rank": 16,
-      "folder": "016",
-      "sourceName": "Anikuro",
-      "id": "jLYn4",
-      "registry": "content-manifest",
-      "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/005/manifest.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/016/source.js",
-      "durationMs": 6465
-    },
-    {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/017/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/017/source.js:mod_1854125649:initial",
-      "catalogPath": "Sources/English/017",
-      "manifestPath": "/tmp/sora-daily/catalog/Sources/English/017/manifest.json",
-      "language": "English",
-      "rank": 17,
-      "folder": "017",
       "sourceName": "AnimeNoSub",
       "id": "wM61",
       "registry": "content-manifest",
       "origin": "current",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/017/manifest.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/017/source.js",
-      "durationMs": 7071
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/014/source.js",
+      "durationMs": 3733
     },
     {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/024/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/024/source.js:mod_1702619339:initial",
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/014/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/014/source.js:mod_2081813780:initial",
+      "catalogPath": "Sources/English/015",
+      "manifestPath": "/tmp/sora-daily/catalog/Sources/English/015/manifest.json",
+      "language": "English",
+      "rank": 15,
+      "folder": "015",
+      "sourceName": "AniWorld (ENG SUB)",
+      "id": "mod_530574073",
+      "registry": "content-manifest",
+      "origin": "current",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/014/manifest.json",
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/015/source.js",
+      "durationMs": 4663
+    },
+    {
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/015/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/015/source.js:mod_574261971:initial",
+      "catalogPath": "Sources/English/016",
+      "manifestPath": "/tmp/sora-daily/catalog/Sources/English/016/manifest.json",
+      "language": "English",
+      "rank": 16,
+      "folder": "016",
+      "sourceName": "Aniwave",
+      "id": "zc8g",
+      "registry": "content-manifest",
+      "origin": "current",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/015/manifest.json",
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/016/source.js",
+      "durationMs": 4909
+    },
+    {
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/004/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/004/source.js:mod_1571279603:initial",
+      "catalogPath": "Sources/English/017",
+      "manifestPath": "/tmp/sora-daily/catalog/Sources/English/017/manifest.json",
+      "language": "English",
+      "rank": 17,
+      "folder": "017",
+      "sourceName": "AnimeLand",
+      "id": "mod_163960337",
+      "registry": "content-manifest",
+      "origin": "current",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/004/manifest.json",
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/017/source.js",
+      "durationMs": 6777
+    },
+    {
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/021/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/021/source.js:mod_1474931208:initial",
       "catalogPath": "Sources/English/018",
       "manifestPath": "/tmp/sora-daily/catalog/Sources/English/018/manifest.json",
       "language": "English",
       "rank": 18,
       "folder": "018",
-      "sourceName": "AnimePahe",
-      "id": "jLCx0",
+      "sourceName": "Anikoto",
+      "id": "jF12G",
       "registry": "content-manifest",
       "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/024/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/021/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/018/source.js",
-      "durationMs": 10056
+      "durationMs": 10427
     },
     {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/025/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/025/source.js:mod_1084796148:initial",
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/018/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/018/source.js:mod_346573840:initial",
       "catalogPath": "Sources/English/019",
       "manifestPath": "/tmp/sora-daily/catalog/Sources/English/019/manifest.json",
       "language": "English",
       "rank": 19,
       "folder": "019",
-      "sourceName": "Animepahe (SUB)",
-      "id": "BMF8K",
+      "sourceName": "AnimePahe",
+      "id": "jLCx0",
       "registry": "content-manifest",
       "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/025/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/018/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/019/source.js",
-      "durationMs": 10373
+      "durationMs": 10815
     },
     {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/022/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/022/source.js:mod_1312484279:initial",
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/020/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/020/source.js:mod_32620601:initial",
       "catalogPath": "Sources/English/020",
       "manifestPath": "/tmp/sora-daily/catalog/Sources/English/020/manifest.json",
       "language": "English",
@@ -343,54 +318,39 @@
       "id": "j2ecl",
       "registry": "content-manifest",
       "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/022/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/020/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/020/source.js",
-      "durationMs": 10571
+      "durationMs": 10835
     },
     {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/023/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/023/source.js:mod_195067530:initial",
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/019/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/019/source.js:mod_1160977969:initial",
       "catalogPath": "Sources/English/021",
       "manifestPath": "/tmp/sora-daily/catalog/Sources/English/021/manifest.json",
       "language": "English",
       "rank": 21,
       "folder": "021",
-      "sourceName": "Anikoto",
-      "id": "jF12G",
+      "sourceName": "Animepahe (SUB)",
+      "id": "BMF8K",
       "registry": "content-manifest",
       "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/023/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/019/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/021/source.js",
-      "durationMs": 11182
+      "durationMs": 10872
     },
     {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/026/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/026/source.js:mod_422755661:initial",
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/013/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/013/source.js:mod_705601707:initial",
       "catalogPath": "Sources/English/022",
       "manifestPath": "/tmp/sora-daily/catalog/Sources/English/022/manifest.json",
       "language": "English",
       "rank": 22,
       "folder": "022",
-      "sourceName": "Animex (DUB)",
-      "id": "jnNiS",
+      "sourceName": "Bingebox",
+      "id": "jWuL6",
       "registry": "content-manifest",
       "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/026/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/013/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/022/source.js",
-      "durationMs": 24159
-    },
-    {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/018/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/018/source.js:mod_346573840:initial",
-      "catalogPath": "Sources/English/023",
-      "manifestPath": "/tmp/sora-daily/catalog/Sources/English/023/manifest.json",
-      "language": "English",
-      "rank": 23,
-      "folder": "023",
-      "sourceName": "VidFast",
-      "id": "B0b0R",
-      "registry": "content-manifest",
-      "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/018/manifest.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/023/source.js",
-      "durationMs": 162464
+      "durationMs": 11535
     },
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/001/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/001/source.js:mod_749386356:initial",
@@ -405,10 +365,10 @@
       "origin": "current",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/001/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/001/source.js",
-      "durationMs": 7776
+      "durationMs": 3728
     },
     {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/003/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/003/source.js:mod_530477322:initial",
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/002/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/002/source.js:mod_2038029131:initial",
       "catalogPath": "Sources/French/002",
       "manifestPath": "/tmp/sora-daily/catalog/Sources/French/002/manifest.json",
       "language": "French",
@@ -418,39 +378,39 @@
       "id": "j5jy1",
       "registry": "content-manifest",
       "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/003/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/002/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/002/source.js",
-      "durationMs": 8253
+      "durationMs": 6304
     },
     {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/001/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/001/source.js:mod_789816160:initial",
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/002/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/002/source.js:mod_1997599327:initial",
       "catalogPath": "Sources/German/001",
       "manifestPath": "/tmp/sora-daily/catalog/Sources/German/001/manifest.json",
       "language": "German",
       "rank": 1,
       "folder": "001",
-      "sourceName": "AniWorld (GER DUB)",
-      "id": "mod_74220962",
-      "registry": "content-manifest",
-      "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/001/manifest.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/001/source.js",
-      "durationMs": 3938
-    },
-    {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/002/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/002/source.js:mod_1997599327:initial",
-      "catalogPath": "Sources/German/002",
-      "manifestPath": "/tmp/sora-daily/catalog/Sources/German/002/manifest.json",
-      "language": "German",
-      "rank": 2,
-      "folder": "002",
       "sourceName": "AniWorld (GER SUB)",
       "id": "LmuM",
       "registry": "content-manifest",
       "origin": "current",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/002/manifest.json",
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/001/source.js",
+      "durationMs": 4692
+    },
+    {
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/001/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/001/source.js:mod_789816160:initial",
+      "catalogPath": "Sources/German/002",
+      "manifestPath": "/tmp/sora-daily/catalog/Sources/German/002/manifest.json",
+      "language": "German",
+      "rank": 2,
+      "folder": "002",
+      "sourceName": "AniWorld (GER DUB)",
+      "id": "mod_74220962",
+      "registry": "content-manifest",
+      "origin": "current",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/001/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/002/source.js",
-      "durationMs": 4474
+      "durationMs": 4700
     },
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Greek/001/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Greek/001/source.js:mod_1370902822:initial",
@@ -465,7 +425,7 @@
       "origin": "current",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Greek/001/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Greek/001/source.js",
-      "durationMs": 9422
+      "durationMs": 10104
     },
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Indonesian/001/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Indonesian/001/source.js:mod_1034771324:initial",
@@ -480,10 +440,10 @@
       "origin": "current",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Indonesian/001/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Indonesian/001/source.js",
-      "durationMs": 2444
+      "durationMs": 2742
     },
     {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Italian/002/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Italian/002/source.js:mod_1293973989:initial",
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Italian/001/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Italian/001/source.js:mod_1493441498:initial",
       "catalogPath": "Sources/Italian/001",
       "manifestPath": "/tmp/sora-daily/catalog/Sources/Italian/001/manifest.json",
       "language": "Italian",
@@ -493,9 +453,9 @@
       "id": "thn9",
       "registry": "content-manifest",
       "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Italian/002/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Italian/001/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Italian/001/source.js",
-      "durationMs": 1817
+      "durationMs": 2064
     },
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Multi-Language/001/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Multi-Language/001/source.js:mod_692305382:initial",
@@ -510,40 +470,40 @@
       "origin": "current",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Multi-Language/001/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Multi-Language/001/source.js",
-      "durationMs": 9444
+      "durationMs": 9656
     },
     {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Portuguese/001/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Portuguese/001/source.js:mod_1582804401:initial",
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Portuguese/002/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Portuguese/002/source.js:mod_75252592:initial",
       "catalogPath": "Sources/Portuguese/001",
       "manifestPath": "/tmp/sora-daily/catalog/Sources/Portuguese/001/manifest.json",
       "language": "Portuguese",
       "rank": 1,
       "folder": "001",
-      "sourceName": "AnimesDigital",
-      "id": "BQgz4",
-      "registry": "content-manifest",
-      "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Portuguese/001/manifest.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Portuguese/001/source.js",
-      "durationMs": 1588
-    },
-    {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Portuguese/002/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Portuguese/002/source.js:mod_75252592:initial",
-      "catalogPath": "Sources/Portuguese/002",
-      "manifestPath": "/tmp/sora-daily/catalog/Sources/Portuguese/002/manifest.json",
-      "language": "Portuguese",
-      "rank": 2,
-      "folder": "002",
       "sourceName": "AniTube",
       "id": "BdWxr",
       "registry": "content-manifest",
       "origin": "current",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Portuguese/002/manifest.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Portuguese/002/source.js",
-      "durationMs": 1650
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Portuguese/001/source.js",
+      "durationMs": 2062
     },
     {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Russian/002/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Russian/002/source.js:mod_968403694:initial",
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Portuguese/001/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Portuguese/001/source.js:mod_1582804401:initial",
+      "catalogPath": "Sources/Portuguese/002",
+      "manifestPath": "/tmp/sora-daily/catalog/Sources/Portuguese/002/manifest.json",
+      "language": "Portuguese",
+      "rank": 2,
+      "folder": "002",
+      "sourceName": "AnimesDigital",
+      "id": "BQgz4",
+      "registry": "content-manifest",
+      "origin": "current",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Portuguese/001/manifest.json",
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Portuguese/002/source.js",
+      "durationMs": 2503
+    },
+    {
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Russian/001/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Russian/001/source.js:mod_539148115:initial",
       "catalogPath": "Sources/Russian/001",
       "manifestPath": "/tmp/sora-daily/catalog/Sources/Russian/001/manifest.json",
       "language": "Russian",
@@ -553,12 +513,12 @@
       "id": "BVuJ9",
       "registry": "content-manifest",
       "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Russian/002/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Russian/001/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Russian/001/source.js",
-      "durationMs": 8224
+      "durationMs": 7781
     },
     {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/002/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/002/source.js:mod_1898613263:initial",
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/001/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/001/source.js:mod_391061454:initial",
       "catalogPath": "Sources/Spanish/001",
       "manifestPath": "/tmp/sora-daily/catalog/Sources/Spanish/001/manifest.json",
       "language": "Spanish",
@@ -568,12 +528,12 @@
       "id": "3LZT",
       "registry": "content-manifest",
       "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/002/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/001/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/001/source.js",
-      "durationMs": 933
+      "durationMs": 1146
     },
     {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/001/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/001/source.js:mod_391061454:initial",
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/002/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/002/source.js:mod_1898613263:initial",
       "catalogPath": "Sources/Spanish/002",
       "manifestPath": "/tmp/sora-daily/catalog/Sources/Spanish/002/manifest.json",
       "language": "Spanish",
@@ -583,12 +543,12 @@
       "id": "mod_1898613263",
       "registry": "content-manifest",
       "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/001/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/002/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/002/source.js",
-      "durationMs": 1071
+      "durationMs": 1292
     },
     {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/004/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/004/source.js:mod_618749585:initial",
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/003/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/003/source.js:mod_888802224:initial",
       "catalogPath": "Sources/Spanish/003",
       "manifestPath": "/tmp/sora-daily/catalog/Sources/Spanish/003/manifest.json",
       "language": "Spanish",
@@ -598,12 +558,12 @@
       "id": "BekDB",
       "registry": "content-manifest",
       "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/004/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/003/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/003/source.js",
-      "durationMs": 1644
+      "durationMs": 1431
     },
     {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/003/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/003/source.js:mod_888802224:initial",
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/004/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/004/source.js:mod_618749585:initial",
       "catalogPath": "Sources/Spanish/004",
       "manifestPath": "/tmp/sora-daily/catalog/Sources/Spanish/004/manifest.json",
       "language": "Spanish",
@@ -613,9 +573,9 @@
       "id": "B4Jzm",
       "registry": "content-manifest",
       "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/003/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/004/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/004/source.js",
-      "durationMs": 4456
+      "durationMs": 5197
     },
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/005/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/005/source.js:mod_2126301394:initial",
@@ -630,671 +590,28 @@
       "origin": "current",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/005/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/005/source.js",
-      "durationMs": 7737
+      "durationMs": 7632
     }
   ],
   "rejected": [
     {
-      "key": "anibunker:portuguese",
-      "sourceName": "AniBunker",
-      "language": "Portuguese",
-      "candidates": [
-        {
-          "id": "mod_1432299217",
-          "sourceName": "AniBunker",
-          "language": "Portuguese",
-          "registry": "content-manifest",
-          "origin": "current",
-          "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Portuguese/003/manifest.json",
-          "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Portuguese/003/source.js",
-          "repair": null,
-          "label": "initial",
-          "status": "needs_fix",
-          "failureKind": "module_runtime_failure",
-          "durationMs": 84,
-          "errors": [
-            "search: searchResults returned an unusable result"
-          ],
-          "attempts": [
-            {
-              "name": "url_health",
-              "status": "skipped_dead_or_empty",
-              "health": {
-                "base": {
-                  "url": "https://anibunker.com/",
-                  "status": 403,
-                  "ok": false,
-                  "contentType": "text/html; charset=UTF-8",
-                  "bytes": 5660,
-                  "hasData": false,
-                  "reason": "http_403"
-                },
-                "endpoints": [
-                  {
-                    "url": "https://anibunker.com/search?q=${encodedKeyword}",
-                    "status": 403,
-                    "ok": false,
-                    "contentType": "text/html; charset=UTF-8",
-                    "bytes": 5792,
-                    "hasData": false,
-                    "reason": "http_403"
-                  },
-                  {
-                    "url": "https://anibunker.com/anime/one-piece-gyojin-tou-hen",
-                    "status": 403,
-                    "ok": false,
-                    "contentType": "text/html; charset=UTF-8",
-                    "bytes": 5793,
-                    "hasData": false,
-                    "reason": "http_403"
-                  },
-                  {
-                    "url": "https://anibunker.com/anime/one-piece-gyojin-tou-hen-episodio-1-legendado",
-                    "status": 403,
-                    "ok": false,
-                    "contentType": "text/html; charset=UTF-8",
-                    "bytes": 5877,
-                    "hasData": false,
-                    "reason": "http_403"
-                  },
-                  {
-                    "url": "https://anibunker.com/anime/one-piece",
-                    "status": 403,
-                    "ok": false,
-                    "contentType": "text/html; charset=UTF-8",
-                    "bytes": 5726,
-                    "hasData": false,
-                    "reason": "http_403"
-                  }
-                ]
-              }
-            }
-          ],
-          "health": {
-            "base": {
-              "url": "https://anibunker.com/",
-              "status": 403,
-              "ok": false,
-              "contentType": "text/html; charset=UTF-8",
-              "bytes": 5660,
-              "hasData": false,
-              "reason": "http_403"
-            },
-            "endpoints": [
-              {
-                "url": "https://anibunker.com/search?q=${encodedKeyword}",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 5792,
-                "hasData": false,
-                "reason": "http_403"
-              },
-              {
-                "url": "https://anibunker.com/anime/one-piece-gyojin-tou-hen",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 5793,
-                "hasData": false,
-                "reason": "http_403"
-              },
-              {
-                "url": "https://anibunker.com/anime/one-piece-gyojin-tou-hen-episodio-1-legendado",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 5877,
-                "hasData": false,
-                "reason": "http_403"
-              },
-              {
-                "url": "https://anibunker.com/anime/one-piece",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 5726,
-                "hasData": false,
-                "reason": "http_403"
-              }
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "key": "anihq:english",
-      "sourceName": "AniHQ",
+      "key": "animexdub:english",
+      "sourceName": "Animex (DUB)",
       "language": "English",
       "candidates": [
         {
-          "id": "mod_1160977969",
-          "sourceName": "AniHQ",
+          "id": "mod_1312484279",
+          "sourceName": "Animex (DUB)",
           "language": "English",
           "registry": "content-manifest",
           "origin": "current",
-          "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/019/manifest.json",
-          "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/019/source.js",
-          "repair": null,
-          "label": "initial",
-          "status": "needs_fix",
-          "failureKind": "module_runtime_failure",
-          "durationMs": 84,
-          "errors": [
-            "search: searchResults returned an unusable result"
-          ],
-          "attempts": [],
-          "health": {
-            "base": {
-              "url": "https://anihq.strp2p.com/",
-              "status": 200,
-              "ok": true,
-              "contentType": "text/html; charset=UTF-8",
-              "bytes": 1795,
-              "hasData": true,
-              "reason": "ok"
-            },
-            "endpoints": [
-              {
-                "url": "https://anihq.org/wp-admin/admin-ajax.php",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 5746,
-                "hasData": false,
-                "reason": "http_403"
-              }
-            ]
-          }
-        },
-        {
-          "id": "mod_1160977969",
-          "sourceName": "AniHQ",
-          "language": "English",
-          "registry": "content-manifest",
-          "origin": "current",
-          "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/019/manifest.json",
-          "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/019/source.js",
-          "repair": {
-            "name": "patch_known_source_issues",
-            "notes": [
-              "Updated AniHQ stream extraction for the current anihq.org iframe embeds and removed dependency on the dead enc-dec.app decoder."
-            ],
-            "baseUrl": "https://anihq.org"
-          },
-          "label": "repair_patch_known_source_issues",
-          "status": "needs_fix",
-          "failureKind": "module_runtime_failure",
-          "durationMs": 23,
-          "errors": [
-            "search: searchResults returned an unusable result"
-          ],
-          "attempts": [
-            {
-              "name": "patch_known_source_issues",
-              "notes": [
-                "Updated AniHQ stream extraction for the current anihq.org iframe embeds and removed dependency on the dead enc-dec.app decoder."
-              ]
-            }
-          ],
-          "health": {
-            "base": {
-              "url": "https://anihq.strp2p.com/",
-              "status": 200,
-              "ok": true,
-              "contentType": "text/html; charset=UTF-8",
-              "bytes": 1795,
-              "hasData": true,
-              "reason": "ok"
-            },
-            "endpoints": [
-              {
-                "url": "https://anihq.org/wp-admin/admin-ajax.php",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 5746,
-                "hasData": false,
-                "reason": "http_403"
-              }
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "key": "animeultra:french",
-      "sourceName": "anime ultra",
-      "language": "French",
-      "candidates": [
-        {
-          "id": "mod_2038029131",
-          "sourceName": "anime ultra",
-          "language": "French",
-          "registry": "content-manifest",
-          "origin": "current",
-          "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/002/manifest.json",
-          "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/002/source.js",
-          "repair": null,
-          "label": "initial",
-          "status": "needs_fix",
-          "failureKind": "module_runtime_failure",
-          "durationMs": 268,
-          "errors": [
-            "search: searchResults returned an unusable result"
-          ],
-          "attempts": [],
-          "health": {
-            "base": {
-              "url": "https://ww.animesultra.org/",
-              "status": 403,
-              "ok": false,
-              "contentType": "text/html; charset=UTF-8",
-              "bytes": 5665,
-              "hasData": false,
-              "reason": "http_403"
-            },
-            "endpoints": [
-              {
-                "url": "https://ww.animesultra.org",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 5665,
-                "hasData": false,
-                "reason": "http_403"
-              },
-              {
-                "url": "https://lb.daisukianime.xyz/dist/embedm.html?id=${videoUrl}",
-                "status": 200,
-                "ok": true,
-                "contentType": "text/html; charset=utf-8",
-                "bytes": 9086,
-                "hasData": true,
-                "reason": "ok"
-              },
-              {
-                "url": "https://cdn2.daisukianime.xyz/sib/${videoId}?epid=null",
-                "status": 522,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 7274,
-                "hasData": false,
-                "reason": "http_522"
-              }
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "key": "animesama:french",
-      "sourceName": "Anime-Sama",
-      "language": "French",
-      "candidates": [
-        {
-          "id": "mod_302789191",
-          "sourceName": "Anime-Sama",
-          "language": "French",
-          "registry": "content-manifest",
-          "origin": "current",
-          "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/006/manifest.json",
-          "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/006/source.js",
+          "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/022/manifest.json",
+          "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/022/source.js",
           "repair": null,
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "stream_resolution_failed_in_test_harness",
-          "durationMs": 159274,
-          "errors": [
-            "stream: extractStreamUrl timed out",
-            "stream: extractStreamUrl timed out",
-            "stream: extractStreamUrl timed out",
-            "stream: extractStreamUrl timed out",
-            "stream: extractStreamUrl timed out"
-          ],
-          "attempts": [],
-          "health": {
-            "base": {
-              "url": "https://anime-sama.to/",
-              "status": 200,
-              "ok": true,
-              "contentType": "text/html; charset=UTF-8",
-              "bytes": 1009042,
-              "hasData": true,
-              "reason": "ok"
-            },
-            "endpoints": [
-              {
-                "url": "https://anime-sama.pw/",
-                "status": 200,
-                "ok": true,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 15110,
-                "hasData": true,
-                "reason": "ok"
-              },
-              {
-                "url": "https://anime-sama.pw/?check=${currentDomain}",
-                "status": 200,
-                "ok": true,
-                "contentType": "application/json; charset=utf-8",
-                "bytes": 29,
-                "hasData": false,
-                "reason": "no_hosted_data_detected"
-              }
-            ]
-          }
-        },
-        {
-          "id": "mod_302789191",
-          "sourceName": "Anime-Sama",
-          "language": "French",
-          "registry": "content-manifest",
-          "origin": "current",
-          "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/006/manifest.json",
-          "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/006/source.js",
-          "repair": {
-            "name": "mangayomi_dart_url_refresh_1",
-            "notes": [
-              "Used MangaYomi Dart reference Anime-Sama to test current URL https://anime-sama.tv.",
-              "Reference source: https://raw.githubusercontent.com/m2k3a/mangayomi-extensions/main/dart/anime/src/fr/animesama/animesama.dart",
-              "Replaced current base https://anime-sama.to with https://anime-sama.tv."
-            ],
-            "baseUrl": "https://anime-sama.tv"
-          },
-          "label": "repair_mangayomi_dart_url_refresh_1",
-          "status": "needs_fix",
-          "failureKind": "stream_resolution_failed_in_test_harness",
-          "durationMs": 151594,
-          "errors": [
-            "stream: extractStreamUrl timed out",
-            "stream: extractStreamUrl timed out",
-            "stream: extractStreamUrl timed out",
-            "stream: extractStreamUrl timed out",
-            "stream: extractStreamUrl timed out"
-          ],
-          "attempts": [
-            {
-              "name": "mangayomi_dart_url_refresh_1",
-              "notes": [
-                "Used MangaYomi Dart reference Anime-Sama to test current URL https://anime-sama.tv.",
-                "Reference source: https://raw.githubusercontent.com/m2k3a/mangayomi-extensions/main/dart/anime/src/fr/animesama/animesama.dart",
-                "Replaced current base https://anime-sama.to with https://anime-sama.tv."
-              ]
-            }
-          ],
-          "health": {
-            "base": {
-              "url": "https://anime-sama.to/",
-              "status": 200,
-              "ok": true,
-              "contentType": "text/html; charset=UTF-8",
-              "bytes": 1009042,
-              "hasData": true,
-              "reason": "ok"
-            },
-            "endpoints": [
-              {
-                "url": "https://anime-sama.pw/",
-                "status": 200,
-                "ok": true,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 15110,
-                "hasData": true,
-                "reason": "ok"
-              },
-              {
-                "url": "https://anime-sama.pw/?check=${currentDomain}",
-                "status": 200,
-                "ok": true,
-                "contentType": "application/json; charset=utf-8",
-                "bytes": 29,
-                "hasData": false,
-                "reason": "no_hosted_data_detected"
-              }
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "key": "animesrbija:serbian",
-      "sourceName": "AnimeSRBIJA",
-      "language": "Serbian",
-      "candidates": [
-        {
-          "id": "mod_1793171950",
-          "sourceName": "AnimeSRBIJA",
-          "language": "Serbian",
-          "registry": "content-manifest",
-          "origin": "current",
-          "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Serbian/001/manifest.json",
-          "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Serbian/001/source.js",
-          "repair": null,
-          "label": "initial",
-          "status": "needs_fix",
-          "failureKind": "module_runtime_failure",
-          "durationMs": 160,
-          "errors": [
-            "search: searchResults returned an unusable result"
-          ],
-          "attempts": [
-            {
-              "name": "url_health",
-              "status": "skipped_dead_or_empty",
-              "health": {
-                "base": {
-                  "url": "https://www.animesrbija.com/",
-                  "status": 403,
-                  "ok": false,
-                  "contentType": "text/html; charset=UTF-8",
-                  "bytes": 5666,
-                  "hasData": false,
-                  "reason": "http_403"
-                },
-                "endpoints": [
-                  {
-                    "url": "https://www.animesrbija.com",
-                    "status": 403,
-                    "ok": false,
-                    "contentType": "text/html; charset=UTF-8",
-                    "bytes": 5687,
-                    "hasData": false,
-                    "reason": "http_403"
-                  },
-                  {
-                    "url": "https://www.animesrbija.com/filter?search=",
-                    "status": 403,
-                    "ok": false,
-                    "contentType": "text/html; charset=UTF-8",
-                    "bytes": 5765,
-                    "hasData": false,
-                    "reason": "http_403"
-                  }
-                ]
-              }
-            }
-          ],
-          "health": {
-            "base": {
-              "url": "https://www.animesrbija.com/",
-              "status": 403,
-              "ok": false,
-              "contentType": "text/html; charset=UTF-8",
-              "bytes": 5666,
-              "hasData": false,
-              "reason": "http_403"
-            },
-            "endpoints": [
-              {
-                "url": "https://www.animesrbija.com",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 5687,
-                "hasData": false,
-                "reason": "http_403"
-              },
-              {
-                "url": "https://www.animesrbija.com/filter?search=",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 5765,
-                "hasData": false,
-                "reason": "http_403"
-              }
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "key": "animeunity:italian",
-      "sourceName": "AnimeUnity",
-      "language": "Italian",
-      "candidates": [
-        {
-          "id": "mod_1493441498",
-          "sourceName": "AnimeUnity",
-          "language": "Italian",
-          "registry": "content-manifest",
-          "origin": "current",
-          "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Italian/001/manifest.json",
-          "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Italian/001/source.js",
-          "repair": null,
-          "label": "initial",
-          "status": "needs_fix",
-          "failureKind": "module_runtime_failure",
-          "durationMs": 88,
-          "errors": [
-            "search: searchResults returned an unusable result"
-          ],
-          "attempts": [
-            {
-              "name": "url_health",
-              "status": "skipped_dead_or_empty",
-              "health": {
-                "base": {
-                  "url": "https://animeunity.so",
-                  "status": 403,
-                  "ok": false,
-                  "contentType": "text/html; charset=UTF-8",
-                  "bytes": 8131,
-                  "hasData": false,
-                  "reason": "http_403"
-                },
-                "endpoints": [
-                  {
-                    "url": "https://www.animeunity.so/archivio?title=${keyword}",
-                    "status": 403,
-                    "ok": false,
-                    "contentType": "text/html; charset=UTF-8",
-                    "bytes": 8143,
-                    "hasData": false,
-                    "reason": "http_403"
-                  },
-                  {
-                    "url": "https://www.animeunity.so/info_api/${item.id}",
-                    "status": 403,
-                    "ok": false,
-                    "contentType": "text/html; charset=UTF-8",
-                    "bytes": 8143,
-                    "hasData": false,
-                    "reason": "http_403"
-                  },
-                  {
-                    "url": "https://www.animeunity.so/anime/${idAnime}-${slug}",
-                    "status": 403,
-                    "ok": false,
-                    "contentType": "text/html; charset=UTF-8",
-                    "bytes": 8143,
-                    "hasData": false,
-                    "reason": "http_403"
-                  },
-                  {
-                    "url": "https://animeunity.so/anime/${idAnime}-${slug}/${episode.id}",
-                    "status": 403,
-                    "ok": false,
-                    "contentType": "text/html; charset=UTF-8",
-                    "bytes": 8131,
-                    "hasData": false,
-                    "reason": "http_403"
-                  }
-                ]
-              }
-            }
-          ],
-          "health": {
-            "base": {
-              "url": "https://animeunity.so",
-              "status": 403,
-              "ok": false,
-              "contentType": "text/html; charset=UTF-8",
-              "bytes": 8131,
-              "hasData": false,
-              "reason": "http_403"
-            },
-            "endpoints": [
-              {
-                "url": "https://www.animeunity.so/archivio?title=${keyword}",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 8143,
-                "hasData": false,
-                "reason": "http_403"
-              },
-              {
-                "url": "https://www.animeunity.so/info_api/${item.id}",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 8143,
-                "hasData": false,
-                "reason": "http_403"
-              },
-              {
-                "url": "https://www.animeunity.so/anime/${idAnime}-${slug}",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 8143,
-                "hasData": false,
-                "reason": "http_403"
-              },
-              {
-                "url": "https://animeunity.so/anime/${idAnime}-${slug}/${episode.id}",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 8131,
-                "hasData": false,
-                "reason": "http_403"
-              }
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "key": "animexsub:english",
-      "sourceName": "Animex (SUB)",
-      "language": "English",
-      "candidates": [
-        {
-          "id": "mod_1930307470",
-          "sourceName": "Animex (SUB)",
-          "language": "English",
-          "registry": "content-manifest",
-          "origin": "current",
-          "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/027/manifest.json",
-          "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/027/source.js",
-          "repair": null,
-          "label": "initial",
-          "status": "needs_fix",
-          "failureKind": "stream_resolution_failed_in_test_harness",
-          "durationMs": 90167,
+          "durationMs": 75759,
           "errors": [
             "stream: extractStreamUrl returned an unusable result",
             "stream: extractStreamUrl returned an unusable result",
@@ -1309,7 +626,7 @@
               "status": 200,
               "ok": true,
               "contentType": "text/html;charset=utf-8",
-              "bytes": 68927,
+              "bytes": 71806,
               "hasData": true,
               "reason": "ok"
             },
@@ -1347,616 +664,6 @@
                 "ok": false,
                 "contentType": "application/json",
                 "bytes": 37,
-                "hasData": false,
-                "reason": "http_403"
-              }
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "key": "dessinanime:french",
-      "sourceName": "dessin-anime",
-      "language": "French",
-      "candidates": [
-        {
-          "id": "mod_1810341000",
-          "sourceName": "dessin-anime",
-          "language": "French",
-          "registry": "content-manifest",
-          "origin": "current",
-          "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/005/manifest.json",
-          "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/005/source.js",
-          "repair": null,
-          "label": "initial",
-          "status": "needs_fix",
-          "failureKind": "module_runtime_failure",
-          "durationMs": 130,
-          "errors": [
-            "search: searchResults returned an unusable result"
-          ],
-          "attempts": [
-            {
-              "name": "url_health",
-              "status": "skipped_dead_or_empty",
-              "health": {
-                "base": {
-                  "url": "https://dessinanime.cc/",
-                  "status": 403,
-                  "ok": false,
-                  "contentType": "text/html; charset=UTF-8",
-                  "bytes": 5661,
-                  "hasData": false,
-                  "reason": "http_403"
-                },
-                "endpoints": [
-                  {
-                    "url": "https://dessinanime.cc",
-                    "status": 403,
-                    "ok": false,
-                    "contentType": "text/html; charset=UTF-8",
-                    "bytes": 5661,
-                    "hasData": false,
-                    "reason": "http_403"
-                  },
-                  {
-                    "url": "https://dessinanime.4meplayer.com/api/v1/video?id=${videoId}&w=1920&h=1080&r=",
-                    "status": 404,
-                    "ok": false,
-                    "contentType": "application/octet-stream",
-                    "bytes": 42,
-                    "hasData": false,
-                    "reason": "http_404"
-                  }
-                ]
-              }
-            }
-          ],
-          "health": {
-            "base": {
-              "url": "https://dessinanime.cc/",
-              "status": 403,
-              "ok": false,
-              "contentType": "text/html; charset=UTF-8",
-              "bytes": 5661,
-              "hasData": false,
-              "reason": "http_403"
-            },
-            "endpoints": [
-              {
-                "url": "https://dessinanime.cc",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 5661,
-                "hasData": false,
-                "reason": "http_403"
-              },
-              {
-                "url": "https://dessinanime.4meplayer.com/api/v1/video?id=${videoId}&w=1920&h=1080&r=",
-                "status": 404,
-                "ok": false,
-                "contentType": "application/octet-stream",
-                "bytes": 42,
-                "hasData": false,
-                "reason": "http_404"
-              }
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "key": "hdrezka:russian",
-      "sourceName": "HDRezka",
-      "language": "Russian",
-      "candidates": [
-        {
-          "id": "mod_539148115",
-          "sourceName": "HDRezka",
-          "language": "Russian",
-          "registry": "content-manifest",
-          "origin": "current",
-          "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Russian/001/manifest.json",
-          "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Russian/001/source.js",
-          "repair": null,
-          "label": "initial",
-          "status": "needs_fix",
-          "failureKind": "module_runtime_failure",
-          "durationMs": 880,
-          "errors": [
-            "search: searchResults returned an unusable result"
-          ],
-          "attempts": [
-            {
-              "name": "url_health",
-              "status": "skipped_dead_or_empty",
-              "health": {
-                "base": {
-                  "url": "https://rezka.ag",
-                  "status": 403,
-                  "ok": false,
-                  "contentType": "text/html; charset=utf-8",
-                  "bytes": 26584,
-                  "hasData": false,
-                  "reason": "http_403"
-                },
-                "endpoints": [
-                  {
-                    "url": "https://rezka.ag/search/?do=search&subaction=search&q=${encodeURIComponent(keyword",
-                    "status": 403,
-                    "ok": false,
-                    "contentType": "text/html; charset=utf-8",
-                    "bytes": 26584,
-                    "hasData": false,
-                    "reason": "http_403"
-                  }
-                ]
-              }
-            }
-          ],
-          "health": {
-            "base": {
-              "url": "https://rezka.ag",
-              "status": 403,
-              "ok": false,
-              "contentType": "text/html; charset=utf-8",
-              "bytes": 26584,
-              "hasData": false,
-              "reason": "http_403"
-            },
-            "endpoints": [
-              {
-                "url": "https://rezka.ag/search/?do=search&subaction=search&q=${encodeURIComponent(keyword",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=utf-8",
-                "bytes": 26584,
-                "hasData": false,
-                "reason": "http_403"
-              }
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "key": "justanime:english",
-      "sourceName": "JustAnime",
-      "language": "English",
-      "candidates": [
-        {
-          "id": "mod_1798967734",
-          "sourceName": "JustAnime",
-          "language": "English",
-          "registry": "content-manifest",
-          "origin": "current",
-          "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/001/manifest.json",
-          "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/001/source.js",
-          "repair": null,
-          "label": "initial",
-          "status": "needs_fix",
-          "failureKind": "module_runtime_failure",
-          "durationMs": 94,
-          "errors": [
-            "search: searchResults returned an unusable result"
-          ],
-          "attempts": [],
-          "health": {
-            "base": {
-              "url": "https://justanime.to",
-              "status": 403,
-              "ok": false,
-              "contentType": "text/html; charset=UTF-8",
-              "bytes": 5659,
-              "hasData": false,
-              "reason": "http_403"
-            },
-            "endpoints": [
-              {
-                "url": "https://core.justanime.to/api",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 5673,
-                "hasData": false,
-                "reason": "http_403"
-              },
-              {
-                "url": "https://www.google.com/s2/favicons?sz=256&domain=https://justanime.to",
-                "status": 200,
-                "ok": true,
-                "contentType": "image/png",
-                "bytes": 2016,
-                "hasData": true,
-                "reason": "ok"
-              },
-              {
-                "url": "https://raw.githubusercontent.com/Mallyd11/mangayomi-anime-extensions/refs/heads/main/javascript/anime/src/en/justanime.js",
-                "status": 200,
-                "ok": true,
-                "contentType": "text/plain; charset=utf-8",
-                "bytes": 7891,
-                "hasData": true,
-                "reason": "ok"
-              },
-              {
-                "url": "https://justanime.to/",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 5659,
-                "hasData": false,
-                "reason": "http_403"
-              }
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "key": "kisskh:english",
-      "sourceName": "Kisskh",
-      "language": "English",
-      "candidates": [
-        {
-          "id": "mod_705601707",
-          "sourceName": "Kisskh",
-          "language": "English",
-          "registry": "content-manifest",
-          "origin": "current",
-          "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/013/manifest.json",
-          "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/013/source.js",
-          "repair": null,
-          "label": "initial",
-          "status": "needs_fix",
-          "failureKind": "module_runtime_failure",
-          "durationMs": 84,
-          "errors": [
-            "search: searchResults returned an unusable result"
-          ],
-          "attempts": [],
-          "health": {
-            "base": {
-              "url": "https://kisskh.co/",
-              "status": 403,
-              "ok": false,
-              "contentType": "text/html; charset=UTF-8",
-              "bytes": 5635,
-              "hasData": false,
-              "reason": "http_403"
-            },
-            "endpoints": [
-              {
-                "url": "https://kisskh.co/api/DramaList/Search?q=${encodedKeyword}&type=0",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 5888,
-                "hasData": false,
-                "reason": "http_403"
-              },
-              {
-                "url": "https://kisskh.co/api/DramaList/Drama/${showId}?isq=false",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 5843,
-                "hasData": false,
-                "reason": "http_403"
-              },
-              {
-                "url": "https://kisskh.co/Drama/${showTitle}/Episode-${episode.number}?id=${showId}&ep=${episode.id}",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 6075,
-                "hasData": false,
-                "reason": "http_403"
-              },
-              {
-                "url": "https://enc-dec.app/api/enc-kisskh?text=${episodeID}&type=vid",
-                "status": 200,
-                "ok": true,
-                "contentType": "application/json; charset=utf-8",
-                "bytes": 314,
-                "hasData": true,
-                "reason": "ok"
-              }
-            ]
-          }
-        },
-        {
-          "id": "mod_705601707",
-          "sourceName": "Kisskh",
-          "language": "English",
-          "registry": "content-manifest",
-          "origin": "current",
-          "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/013/manifest.json",
-          "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/013/source.js",
-          "repair": {
-            "name": "mangayomi_dart_url_refresh_1",
-            "notes": [
-              "Used MangaYomi Dart reference KissKH to test current URL https://kisskh.me.",
-              "Reference source: https://raw.githubusercontent.com/m2k3a/mangayomi-extensions/main/dart/anime/src/en/kisskh/kisskh.dart",
-              "Replaced current base https://kisskh.co with https://kisskh.me."
-            ],
-            "baseUrl": "https://kisskh.me"
-          },
-          "label": "repair_mangayomi_dart_url_refresh_1",
-          "status": "needs_fix",
-          "failureKind": "module_runtime_failure",
-          "durationMs": 12327,
-          "errors": [
-            "search: searchResults returned an unusable result"
-          ],
-          "attempts": [
-            {
-              "name": "mangayomi_dart_url_refresh_1",
-              "notes": [
-                "Used MangaYomi Dart reference KissKH to test current URL https://kisskh.me.",
-                "Reference source: https://raw.githubusercontent.com/m2k3a/mangayomi-extensions/main/dart/anime/src/en/kisskh/kisskh.dart",
-                "Replaced current base https://kisskh.co with https://kisskh.me."
-              ]
-            }
-          ],
-          "health": {
-            "base": {
-              "url": "https://kisskh.co/",
-              "status": 403,
-              "ok": false,
-              "contentType": "text/html; charset=UTF-8",
-              "bytes": 5635,
-              "hasData": false,
-              "reason": "http_403"
-            },
-            "endpoints": [
-              {
-                "url": "https://kisskh.co/api/DramaList/Search?q=${encodedKeyword}&type=0",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 5888,
-                "hasData": false,
-                "reason": "http_403"
-              },
-              {
-                "url": "https://kisskh.co/api/DramaList/Drama/${showId}?isq=false",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 5843,
-                "hasData": false,
-                "reason": "http_403"
-              },
-              {
-                "url": "https://kisskh.co/Drama/${showTitle}/Episode-${episode.number}?id=${showId}&ep=${episode.id}",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 6075,
-                "hasData": false,
-                "reason": "http_403"
-              },
-              {
-                "url": "https://enc-dec.app/api/enc-kisskh?text=${episodeID}&type=vid",
-                "status": 200,
-                "ok": true,
-                "contentType": "application/json; charset=utf-8",
-                "bytes": 314,
-                "hasData": true,
-                "reason": "ok"
-              }
-            ]
-          }
-        },
-        {
-          "id": "mod_705601707",
-          "sourceName": "Kisskh",
-          "language": "English",
-          "registry": "content-manifest",
-          "origin": "current",
-          "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/013/manifest.json",
-          "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/013/source.js",
-          "repair": {
-            "name": "mangayomi_dart_url_refresh_2",
-            "notes": [
-              "Used MangaYomi Dart reference KissKH to test current URL https://kisskh.me.",
-              "Reference source: https://raw.githubusercontent.com/m2k3a/mangayomi-extensions/main/dart/anime/src/en/kisskh/kisskh.dart",
-              "Replaced current base https://kisskh.co with https://kisskh.me."
-            ],
-            "baseUrl": "https://kisskh.me"
-          },
-          "label": "repair_mangayomi_dart_url_refresh_2",
-          "status": "needs_fix",
-          "failureKind": "module_runtime_failure",
-          "durationMs": 16616,
-          "errors": [
-            "search: searchResults returned an unusable result"
-          ],
-          "attempts": [
-            {
-              "name": "mangayomi_dart_url_refresh_2",
-              "notes": [
-                "Used MangaYomi Dart reference KissKH to test current URL https://kisskh.me.",
-                "Reference source: https://raw.githubusercontent.com/m2k3a/mangayomi-extensions/main/dart/anime/src/en/kisskh/kisskh.dart",
-                "Replaced current base https://kisskh.co with https://kisskh.me."
-              ]
-            }
-          ],
-          "health": {
-            "base": {
-              "url": "https://kisskh.co/",
-              "status": 403,
-              "ok": false,
-              "contentType": "text/html; charset=UTF-8",
-              "bytes": 5635,
-              "hasData": false,
-              "reason": "http_403"
-            },
-            "endpoints": [
-              {
-                "url": "https://kisskh.co/api/DramaList/Search?q=${encodedKeyword}&type=0",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 5888,
-                "hasData": false,
-                "reason": "http_403"
-              },
-              {
-                "url": "https://kisskh.co/api/DramaList/Drama/${showId}?isq=false",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 5843,
-                "hasData": false,
-                "reason": "http_403"
-              },
-              {
-                "url": "https://kisskh.co/Drama/${showTitle}/Episode-${episode.number}?id=${showId}&ep=${episode.id}",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 6075,
-                "hasData": false,
-                "reason": "http_403"
-              },
-              {
-                "url": "https://enc-dec.app/api/enc-kisskh?text=${episodeID}&type=vid",
-                "status": 200,
-                "ok": true,
-                "contentType": "application/json; charset=utf-8",
-                "bytes": 314,
-                "hasData": true,
-                "reason": "ok"
-              }
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "key": "senshi:english",
-      "sourceName": "Senshi",
-      "language": "English",
-      "candidates": [
-        {
-          "id": "mod_1216135884",
-          "sourceName": "Senshi",
-          "language": "English",
-          "registry": "content-manifest",
-          "origin": "current",
-          "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/003/manifest.json",
-          "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/003/source.js",
-          "repair": null,
-          "label": "initial",
-          "status": "needs_fix",
-          "failureKind": "module_runtime_failure",
-          "durationMs": 86,
-          "errors": [
-            "search: searchResults returned an unusable result"
-          ],
-          "attempts": [
-            {
-              "name": "url_health",
-              "status": "skipped_dead_or_empty",
-              "health": {
-                "base": {
-                  "url": "https://senshi.live/",
-                  "status": 403,
-                  "ok": false,
-                  "contentType": "text/html; charset=UTF-8",
-                  "bytes": 5658,
-                  "hasData": false,
-                  "reason": "http_403"
-                },
-                "endpoints": [
-                  {
-                    "url": "https://senshi.live/anime/filter",
-                    "status": 403,
-                    "ok": false,
-                    "contentType": "text/html; charset=UTF-8",
-                    "bytes": 5694,
-                    "hasData": false,
-                    "reason": "http_403"
-                  },
-                  {
-                    "url": "https://senshi.live/anime/",
-                    "status": 403,
-                    "ok": false,
-                    "contentType": "text/html; charset=UTF-8",
-                    "bytes": 5676,
-                    "hasData": false,
-                    "reason": "http_403"
-                  },
-                  {
-                    "url": "https://senshi.live/episodes/",
-                    "status": 403,
-                    "ok": false,
-                    "contentType": "text/html; charset=UTF-8",
-                    "bytes": 5685,
-                    "hasData": false,
-                    "reason": "http_403"
-                  },
-                  {
-                    "url": "https://senshi.live/episode-embeds/",
-                    "status": 403,
-                    "ok": false,
-                    "contentType": "text/html; charset=UTF-8",
-                    "bytes": 5724,
-                    "hasData": false,
-                    "reason": "http_403"
-                  }
-                ]
-              }
-            }
-          ],
-          "health": {
-            "base": {
-              "url": "https://senshi.live/",
-              "status": 403,
-              "ok": false,
-              "contentType": "text/html; charset=UTF-8",
-              "bytes": 5658,
-              "hasData": false,
-              "reason": "http_403"
-            },
-            "endpoints": [
-              {
-                "url": "https://senshi.live/anime/filter",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 5694,
-                "hasData": false,
-                "reason": "http_403"
-              },
-              {
-                "url": "https://senshi.live/anime/",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 5676,
-                "hasData": false,
-                "reason": "http_403"
-              },
-              {
-                "url": "https://senshi.live/episodes/",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 5685,
-                "hasData": false,
-                "reason": "http_403"
-              },
-              {
-                "url": "https://senshi.live/episode-embeds/",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 5724,
                 "hasData": false,
                 "reason": "http_403"
               }
@@ -1968,673 +675,24 @@
   ],
   "removals": [
     {
-      "sourceName": "AniBunker",
-      "id": "mod_1432299217",
-      "language": "Portuguese",
-      "confirmed": true,
-      "reason": [
-        {
-          "id": "mod_1432299217",
-          "sourceName": "AniBunker",
-          "language": "Portuguese",
-          "registry": "content-manifest",
-          "origin": "current",
-          "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Portuguese/003/manifest.json",
-          "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Portuguese/003/source.js",
-          "repair": null,
-          "label": "initial",
-          "status": "needs_fix",
-          "failureKind": "module_runtime_failure",
-          "durationMs": 84,
-          "errors": [
-            "search: searchResults returned an unusable result"
-          ],
-          "attempts": [
-            {
-              "name": "url_health",
-              "status": "skipped_dead_or_empty",
-              "health": {
-                "base": {
-                  "url": "https://anibunker.com/",
-                  "status": 403,
-                  "ok": false,
-                  "contentType": "text/html; charset=UTF-8",
-                  "bytes": 5660,
-                  "hasData": false,
-                  "reason": "http_403"
-                },
-                "endpoints": [
-                  {
-                    "url": "https://anibunker.com/search?q=${encodedKeyword}",
-                    "status": 403,
-                    "ok": false,
-                    "contentType": "text/html; charset=UTF-8",
-                    "bytes": 5792,
-                    "hasData": false,
-                    "reason": "http_403"
-                  },
-                  {
-                    "url": "https://anibunker.com/anime/one-piece-gyojin-tou-hen",
-                    "status": 403,
-                    "ok": false,
-                    "contentType": "text/html; charset=UTF-8",
-                    "bytes": 5793,
-                    "hasData": false,
-                    "reason": "http_403"
-                  },
-                  {
-                    "url": "https://anibunker.com/anime/one-piece-gyojin-tou-hen-episodio-1-legendado",
-                    "status": 403,
-                    "ok": false,
-                    "contentType": "text/html; charset=UTF-8",
-                    "bytes": 5877,
-                    "hasData": false,
-                    "reason": "http_403"
-                  },
-                  {
-                    "url": "https://anibunker.com/anime/one-piece",
-                    "status": 403,
-                    "ok": false,
-                    "contentType": "text/html; charset=UTF-8",
-                    "bytes": 5726,
-                    "hasData": false,
-                    "reason": "http_403"
-                  }
-                ]
-              }
-            }
-          ],
-          "health": {
-            "base": {
-              "url": "https://anibunker.com/",
-              "status": 403,
-              "ok": false,
-              "contentType": "text/html; charset=UTF-8",
-              "bytes": 5660,
-              "hasData": false,
-              "reason": "http_403"
-            },
-            "endpoints": [
-              {
-                "url": "https://anibunker.com/search?q=${encodedKeyword}",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 5792,
-                "hasData": false,
-                "reason": "http_403"
-              },
-              {
-                "url": "https://anibunker.com/anime/one-piece-gyojin-tou-hen",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 5793,
-                "hasData": false,
-                "reason": "http_403"
-              },
-              {
-                "url": "https://anibunker.com/anime/one-piece-gyojin-tou-hen-episodio-1-legendado",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 5877,
-                "hasData": false,
-                "reason": "http_403"
-              },
-              {
-                "url": "https://anibunker.com/anime/one-piece",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 5726,
-                "hasData": false,
-                "reason": "http_403"
-              }
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "sourceName": "AniHQ",
-      "id": "mod_1160977969",
+      "sourceName": "Animex (DUB)",
+      "id": "mod_1312484279",
       "language": "English",
       "confirmed": true,
       "reason": [
         {
-          "id": "mod_1160977969",
-          "sourceName": "AniHQ",
+          "id": "mod_1312484279",
+          "sourceName": "Animex (DUB)",
           "language": "English",
           "registry": "content-manifest",
           "origin": "current",
-          "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/019/manifest.json",
-          "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/019/source.js",
-          "repair": null,
-          "label": "initial",
-          "status": "needs_fix",
-          "failureKind": "module_runtime_failure",
-          "durationMs": 84,
-          "errors": [
-            "search: searchResults returned an unusable result"
-          ],
-          "attempts": [],
-          "health": {
-            "base": {
-              "url": "https://anihq.strp2p.com/",
-              "status": 200,
-              "ok": true,
-              "contentType": "text/html; charset=UTF-8",
-              "bytes": 1795,
-              "hasData": true,
-              "reason": "ok"
-            },
-            "endpoints": [
-              {
-                "url": "https://anihq.org/wp-admin/admin-ajax.php",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 5746,
-                "hasData": false,
-                "reason": "http_403"
-              }
-            ]
-          }
-        },
-        {
-          "id": "mod_1160977969",
-          "sourceName": "AniHQ",
-          "language": "English",
-          "registry": "content-manifest",
-          "origin": "current",
-          "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/019/manifest.json",
-          "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/019/source.js",
-          "repair": {
-            "name": "patch_known_source_issues",
-            "notes": [
-              "Updated AniHQ stream extraction for the current anihq.org iframe embeds and removed dependency on the dead enc-dec.app decoder."
-            ],
-            "baseUrl": "https://anihq.org"
-          },
-          "label": "repair_patch_known_source_issues",
-          "status": "needs_fix",
-          "failureKind": "module_runtime_failure",
-          "durationMs": 23,
-          "errors": [
-            "search: searchResults returned an unusable result"
-          ],
-          "attempts": [
-            {
-              "name": "patch_known_source_issues",
-              "notes": [
-                "Updated AniHQ stream extraction for the current anihq.org iframe embeds and removed dependency on the dead enc-dec.app decoder."
-              ]
-            }
-          ],
-          "health": {
-            "base": {
-              "url": "https://anihq.strp2p.com/",
-              "status": 200,
-              "ok": true,
-              "contentType": "text/html; charset=UTF-8",
-              "bytes": 1795,
-              "hasData": true,
-              "reason": "ok"
-            },
-            "endpoints": [
-              {
-                "url": "https://anihq.org/wp-admin/admin-ajax.php",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 5746,
-                "hasData": false,
-                "reason": "http_403"
-              }
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "sourceName": "anime ultra",
-      "id": "mod_2038029131",
-      "language": "French",
-      "confirmed": true,
-      "reason": [
-        {
-          "id": "mod_2038029131",
-          "sourceName": "anime ultra",
-          "language": "French",
-          "registry": "content-manifest",
-          "origin": "current",
-          "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/002/manifest.json",
-          "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/002/source.js",
-          "repair": null,
-          "label": "initial",
-          "status": "needs_fix",
-          "failureKind": "module_runtime_failure",
-          "durationMs": 268,
-          "errors": [
-            "search: searchResults returned an unusable result"
-          ],
-          "attempts": [],
-          "health": {
-            "base": {
-              "url": "https://ww.animesultra.org/",
-              "status": 403,
-              "ok": false,
-              "contentType": "text/html; charset=UTF-8",
-              "bytes": 5665,
-              "hasData": false,
-              "reason": "http_403"
-            },
-            "endpoints": [
-              {
-                "url": "https://ww.animesultra.org",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 5665,
-                "hasData": false,
-                "reason": "http_403"
-              },
-              {
-                "url": "https://lb.daisukianime.xyz/dist/embedm.html?id=${videoUrl}",
-                "status": 200,
-                "ok": true,
-                "contentType": "text/html; charset=utf-8",
-                "bytes": 9086,
-                "hasData": true,
-                "reason": "ok"
-              },
-              {
-                "url": "https://cdn2.daisukianime.xyz/sib/${videoId}?epid=null",
-                "status": 522,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 7274,
-                "hasData": false,
-                "reason": "http_522"
-              }
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "sourceName": "Anime-Sama",
-      "id": "mod_302789191",
-      "language": "French",
-      "confirmed": true,
-      "reason": [
-        {
-          "id": "mod_302789191",
-          "sourceName": "Anime-Sama",
-          "language": "French",
-          "registry": "content-manifest",
-          "origin": "current",
-          "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/006/manifest.json",
-          "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/006/source.js",
+          "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/022/manifest.json",
+          "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/022/source.js",
           "repair": null,
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "stream_resolution_failed_in_test_harness",
-          "durationMs": 159274,
-          "errors": [
-            "stream: extractStreamUrl timed out",
-            "stream: extractStreamUrl timed out",
-            "stream: extractStreamUrl timed out",
-            "stream: extractStreamUrl timed out",
-            "stream: extractStreamUrl timed out"
-          ],
-          "attempts": [],
-          "health": {
-            "base": {
-              "url": "https://anime-sama.to/",
-              "status": 200,
-              "ok": true,
-              "contentType": "text/html; charset=UTF-8",
-              "bytes": 1009042,
-              "hasData": true,
-              "reason": "ok"
-            },
-            "endpoints": [
-              {
-                "url": "https://anime-sama.pw/",
-                "status": 200,
-                "ok": true,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 15110,
-                "hasData": true,
-                "reason": "ok"
-              },
-              {
-                "url": "https://anime-sama.pw/?check=${currentDomain}",
-                "status": 200,
-                "ok": true,
-                "contentType": "application/json; charset=utf-8",
-                "bytes": 29,
-                "hasData": false,
-                "reason": "no_hosted_data_detected"
-              }
-            ]
-          }
-        },
-        {
-          "id": "mod_302789191",
-          "sourceName": "Anime-Sama",
-          "language": "French",
-          "registry": "content-manifest",
-          "origin": "current",
-          "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/006/manifest.json",
-          "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/006/source.js",
-          "repair": {
-            "name": "mangayomi_dart_url_refresh_1",
-            "notes": [
-              "Used MangaYomi Dart reference Anime-Sama to test current URL https://anime-sama.tv.",
-              "Reference source: https://raw.githubusercontent.com/m2k3a/mangayomi-extensions/main/dart/anime/src/fr/animesama/animesama.dart",
-              "Replaced current base https://anime-sama.to with https://anime-sama.tv."
-            ],
-            "baseUrl": "https://anime-sama.tv"
-          },
-          "label": "repair_mangayomi_dart_url_refresh_1",
-          "status": "needs_fix",
-          "failureKind": "stream_resolution_failed_in_test_harness",
-          "durationMs": 151594,
-          "errors": [
-            "stream: extractStreamUrl timed out",
-            "stream: extractStreamUrl timed out",
-            "stream: extractStreamUrl timed out",
-            "stream: extractStreamUrl timed out",
-            "stream: extractStreamUrl timed out"
-          ],
-          "attempts": [
-            {
-              "name": "mangayomi_dart_url_refresh_1",
-              "notes": [
-                "Used MangaYomi Dart reference Anime-Sama to test current URL https://anime-sama.tv.",
-                "Reference source: https://raw.githubusercontent.com/m2k3a/mangayomi-extensions/main/dart/anime/src/fr/animesama/animesama.dart",
-                "Replaced current base https://anime-sama.to with https://anime-sama.tv."
-              ]
-            }
-          ],
-          "health": {
-            "base": {
-              "url": "https://anime-sama.to/",
-              "status": 200,
-              "ok": true,
-              "contentType": "text/html; charset=UTF-8",
-              "bytes": 1009042,
-              "hasData": true,
-              "reason": "ok"
-            },
-            "endpoints": [
-              {
-                "url": "https://anime-sama.pw/",
-                "status": 200,
-                "ok": true,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 15110,
-                "hasData": true,
-                "reason": "ok"
-              },
-              {
-                "url": "https://anime-sama.pw/?check=${currentDomain}",
-                "status": 200,
-                "ok": true,
-                "contentType": "application/json; charset=utf-8",
-                "bytes": 29,
-                "hasData": false,
-                "reason": "no_hosted_data_detected"
-              }
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "sourceName": "AnimeSRBIJA",
-      "id": "mod_1793171950",
-      "language": "Serbian",
-      "confirmed": true,
-      "reason": [
-        {
-          "id": "mod_1793171950",
-          "sourceName": "AnimeSRBIJA",
-          "language": "Serbian",
-          "registry": "content-manifest",
-          "origin": "current",
-          "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Serbian/001/manifest.json",
-          "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Serbian/001/source.js",
-          "repair": null,
-          "label": "initial",
-          "status": "needs_fix",
-          "failureKind": "module_runtime_failure",
-          "durationMs": 160,
-          "errors": [
-            "search: searchResults returned an unusable result"
-          ],
-          "attempts": [
-            {
-              "name": "url_health",
-              "status": "skipped_dead_or_empty",
-              "health": {
-                "base": {
-                  "url": "https://www.animesrbija.com/",
-                  "status": 403,
-                  "ok": false,
-                  "contentType": "text/html; charset=UTF-8",
-                  "bytes": 5666,
-                  "hasData": false,
-                  "reason": "http_403"
-                },
-                "endpoints": [
-                  {
-                    "url": "https://www.animesrbija.com",
-                    "status": 403,
-                    "ok": false,
-                    "contentType": "text/html; charset=UTF-8",
-                    "bytes": 5687,
-                    "hasData": false,
-                    "reason": "http_403"
-                  },
-                  {
-                    "url": "https://www.animesrbija.com/filter?search=",
-                    "status": 403,
-                    "ok": false,
-                    "contentType": "text/html; charset=UTF-8",
-                    "bytes": 5765,
-                    "hasData": false,
-                    "reason": "http_403"
-                  }
-                ]
-              }
-            }
-          ],
-          "health": {
-            "base": {
-              "url": "https://www.animesrbija.com/",
-              "status": 403,
-              "ok": false,
-              "contentType": "text/html; charset=UTF-8",
-              "bytes": 5666,
-              "hasData": false,
-              "reason": "http_403"
-            },
-            "endpoints": [
-              {
-                "url": "https://www.animesrbija.com",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 5687,
-                "hasData": false,
-                "reason": "http_403"
-              },
-              {
-                "url": "https://www.animesrbija.com/filter?search=",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 5765,
-                "hasData": false,
-                "reason": "http_403"
-              }
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "sourceName": "AnimeUnity",
-      "id": "mod_1493441498",
-      "language": "Italian",
-      "confirmed": true,
-      "reason": [
-        {
-          "id": "mod_1493441498",
-          "sourceName": "AnimeUnity",
-          "language": "Italian",
-          "registry": "content-manifest",
-          "origin": "current",
-          "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Italian/001/manifest.json",
-          "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Italian/001/source.js",
-          "repair": null,
-          "label": "initial",
-          "status": "needs_fix",
-          "failureKind": "module_runtime_failure",
-          "durationMs": 88,
-          "errors": [
-            "search: searchResults returned an unusable result"
-          ],
-          "attempts": [
-            {
-              "name": "url_health",
-              "status": "skipped_dead_or_empty",
-              "health": {
-                "base": {
-                  "url": "https://animeunity.so",
-                  "status": 403,
-                  "ok": false,
-                  "contentType": "text/html; charset=UTF-8",
-                  "bytes": 8131,
-                  "hasData": false,
-                  "reason": "http_403"
-                },
-                "endpoints": [
-                  {
-                    "url": "https://www.animeunity.so/archivio?title=${keyword}",
-                    "status": 403,
-                    "ok": false,
-                    "contentType": "text/html; charset=UTF-8",
-                    "bytes": 8143,
-                    "hasData": false,
-                    "reason": "http_403"
-                  },
-                  {
-                    "url": "https://www.animeunity.so/info_api/${item.id}",
-                    "status": 403,
-                    "ok": false,
-                    "contentType": "text/html; charset=UTF-8",
-                    "bytes": 8143,
-                    "hasData": false,
-                    "reason": "http_403"
-                  },
-                  {
-                    "url": "https://www.animeunity.so/anime/${idAnime}-${slug}",
-                    "status": 403,
-                    "ok": false,
-                    "contentType": "text/html; charset=UTF-8",
-                    "bytes": 8143,
-                    "hasData": false,
-                    "reason": "http_403"
-                  },
-                  {
-                    "url": "https://animeunity.so/anime/${idAnime}-${slug}/${episode.id}",
-                    "status": 403,
-                    "ok": false,
-                    "contentType": "text/html; charset=UTF-8",
-                    "bytes": 8131,
-                    "hasData": false,
-                    "reason": "http_403"
-                  }
-                ]
-              }
-            }
-          ],
-          "health": {
-            "base": {
-              "url": "https://animeunity.so",
-              "status": 403,
-              "ok": false,
-              "contentType": "text/html; charset=UTF-8",
-              "bytes": 8131,
-              "hasData": false,
-              "reason": "http_403"
-            },
-            "endpoints": [
-              {
-                "url": "https://www.animeunity.so/archivio?title=${keyword}",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 8143,
-                "hasData": false,
-                "reason": "http_403"
-              },
-              {
-                "url": "https://www.animeunity.so/info_api/${item.id}",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 8143,
-                "hasData": false,
-                "reason": "http_403"
-              },
-              {
-                "url": "https://www.animeunity.so/anime/${idAnime}-${slug}",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 8143,
-                "hasData": false,
-                "reason": "http_403"
-              },
-              {
-                "url": "https://animeunity.so/anime/${idAnime}-${slug}/${episode.id}",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 8131,
-                "hasData": false,
-                "reason": "http_403"
-              }
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "sourceName": "Animex (SUB)",
-      "id": "mod_1930307470",
-      "language": "English",
-      "confirmed": true,
-      "reason": [
-        {
-          "id": "mod_1930307470",
-          "sourceName": "Animex (SUB)",
-          "language": "English",
-          "registry": "content-manifest",
-          "origin": "current",
-          "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/027/manifest.json",
-          "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/027/source.js",
-          "repair": null,
-          "label": "initial",
-          "status": "needs_fix",
-          "failureKind": "stream_resolution_failed_in_test_harness",
-          "durationMs": 90167,
+          "durationMs": 75759,
           "errors": [
             "stream: extractStreamUrl returned an unusable result",
             "stream: extractStreamUrl returned an unusable result",
@@ -2649,7 +707,7 @@
               "status": 200,
               "ok": true,
               "contentType": "text/html;charset=utf-8",
-              "bytes": 68927,
+              "bytes": 71806,
               "hasData": true,
               "reason": "ok"
             },
@@ -2687,644 +745,6 @@
                 "ok": false,
                 "contentType": "application/json",
                 "bytes": 37,
-                "hasData": false,
-                "reason": "http_403"
-              }
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "sourceName": "dessin-anime",
-      "id": "mod_1810341000",
-      "language": "French",
-      "confirmed": true,
-      "reason": [
-        {
-          "id": "mod_1810341000",
-          "sourceName": "dessin-anime",
-          "language": "French",
-          "registry": "content-manifest",
-          "origin": "current",
-          "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/005/manifest.json",
-          "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/005/source.js",
-          "repair": null,
-          "label": "initial",
-          "status": "needs_fix",
-          "failureKind": "module_runtime_failure",
-          "durationMs": 130,
-          "errors": [
-            "search: searchResults returned an unusable result"
-          ],
-          "attempts": [
-            {
-              "name": "url_health",
-              "status": "skipped_dead_or_empty",
-              "health": {
-                "base": {
-                  "url": "https://dessinanime.cc/",
-                  "status": 403,
-                  "ok": false,
-                  "contentType": "text/html; charset=UTF-8",
-                  "bytes": 5661,
-                  "hasData": false,
-                  "reason": "http_403"
-                },
-                "endpoints": [
-                  {
-                    "url": "https://dessinanime.cc",
-                    "status": 403,
-                    "ok": false,
-                    "contentType": "text/html; charset=UTF-8",
-                    "bytes": 5661,
-                    "hasData": false,
-                    "reason": "http_403"
-                  },
-                  {
-                    "url": "https://dessinanime.4meplayer.com/api/v1/video?id=${videoId}&w=1920&h=1080&r=",
-                    "status": 404,
-                    "ok": false,
-                    "contentType": "application/octet-stream",
-                    "bytes": 42,
-                    "hasData": false,
-                    "reason": "http_404"
-                  }
-                ]
-              }
-            }
-          ],
-          "health": {
-            "base": {
-              "url": "https://dessinanime.cc/",
-              "status": 403,
-              "ok": false,
-              "contentType": "text/html; charset=UTF-8",
-              "bytes": 5661,
-              "hasData": false,
-              "reason": "http_403"
-            },
-            "endpoints": [
-              {
-                "url": "https://dessinanime.cc",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 5661,
-                "hasData": false,
-                "reason": "http_403"
-              },
-              {
-                "url": "https://dessinanime.4meplayer.com/api/v1/video?id=${videoId}&w=1920&h=1080&r=",
-                "status": 404,
-                "ok": false,
-                "contentType": "application/octet-stream",
-                "bytes": 42,
-                "hasData": false,
-                "reason": "http_404"
-              }
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "sourceName": "HDRezka",
-      "id": "mod_539148115",
-      "language": "Russian",
-      "confirmed": true,
-      "reason": [
-        {
-          "id": "mod_539148115",
-          "sourceName": "HDRezka",
-          "language": "Russian",
-          "registry": "content-manifest",
-          "origin": "current",
-          "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Russian/001/manifest.json",
-          "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Russian/001/source.js",
-          "repair": null,
-          "label": "initial",
-          "status": "needs_fix",
-          "failureKind": "module_runtime_failure",
-          "durationMs": 880,
-          "errors": [
-            "search: searchResults returned an unusable result"
-          ],
-          "attempts": [
-            {
-              "name": "url_health",
-              "status": "skipped_dead_or_empty",
-              "health": {
-                "base": {
-                  "url": "https://rezka.ag",
-                  "status": 403,
-                  "ok": false,
-                  "contentType": "text/html; charset=utf-8",
-                  "bytes": 26584,
-                  "hasData": false,
-                  "reason": "http_403"
-                },
-                "endpoints": [
-                  {
-                    "url": "https://rezka.ag/search/?do=search&subaction=search&q=${encodeURIComponent(keyword",
-                    "status": 403,
-                    "ok": false,
-                    "contentType": "text/html; charset=utf-8",
-                    "bytes": 26584,
-                    "hasData": false,
-                    "reason": "http_403"
-                  }
-                ]
-              }
-            }
-          ],
-          "health": {
-            "base": {
-              "url": "https://rezka.ag",
-              "status": 403,
-              "ok": false,
-              "contentType": "text/html; charset=utf-8",
-              "bytes": 26584,
-              "hasData": false,
-              "reason": "http_403"
-            },
-            "endpoints": [
-              {
-                "url": "https://rezka.ag/search/?do=search&subaction=search&q=${encodeURIComponent(keyword",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=utf-8",
-                "bytes": 26584,
-                "hasData": false,
-                "reason": "http_403"
-              }
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "sourceName": "JustAnime",
-      "id": "mod_1798967734",
-      "language": "English",
-      "confirmed": true,
-      "reason": [
-        {
-          "id": "mod_1798967734",
-          "sourceName": "JustAnime",
-          "language": "English",
-          "registry": "content-manifest",
-          "origin": "current",
-          "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/001/manifest.json",
-          "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/001/source.js",
-          "repair": null,
-          "label": "initial",
-          "status": "needs_fix",
-          "failureKind": "module_runtime_failure",
-          "durationMs": 94,
-          "errors": [
-            "search: searchResults returned an unusable result"
-          ],
-          "attempts": [],
-          "health": {
-            "base": {
-              "url": "https://justanime.to",
-              "status": 403,
-              "ok": false,
-              "contentType": "text/html; charset=UTF-8",
-              "bytes": 5659,
-              "hasData": false,
-              "reason": "http_403"
-            },
-            "endpoints": [
-              {
-                "url": "https://core.justanime.to/api",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 5673,
-                "hasData": false,
-                "reason": "http_403"
-              },
-              {
-                "url": "https://www.google.com/s2/favicons?sz=256&domain=https://justanime.to",
-                "status": 200,
-                "ok": true,
-                "contentType": "image/png",
-                "bytes": 2016,
-                "hasData": true,
-                "reason": "ok"
-              },
-              {
-                "url": "https://raw.githubusercontent.com/Mallyd11/mangayomi-anime-extensions/refs/heads/main/javascript/anime/src/en/justanime.js",
-                "status": 200,
-                "ok": true,
-                "contentType": "text/plain; charset=utf-8",
-                "bytes": 7891,
-                "hasData": true,
-                "reason": "ok"
-              },
-              {
-                "url": "https://justanime.to/",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 5659,
-                "hasData": false,
-                "reason": "http_403"
-              }
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "sourceName": "Kisskh",
-      "id": "mod_705601707",
-      "language": "English",
-      "confirmed": true,
-      "reason": [
-        {
-          "id": "mod_705601707",
-          "sourceName": "Kisskh",
-          "language": "English",
-          "registry": "content-manifest",
-          "origin": "current",
-          "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/013/manifest.json",
-          "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/013/source.js",
-          "repair": null,
-          "label": "initial",
-          "status": "needs_fix",
-          "failureKind": "module_runtime_failure",
-          "durationMs": 84,
-          "errors": [
-            "search: searchResults returned an unusable result"
-          ],
-          "attempts": [],
-          "health": {
-            "base": {
-              "url": "https://kisskh.co/",
-              "status": 403,
-              "ok": false,
-              "contentType": "text/html; charset=UTF-8",
-              "bytes": 5635,
-              "hasData": false,
-              "reason": "http_403"
-            },
-            "endpoints": [
-              {
-                "url": "https://kisskh.co/api/DramaList/Search?q=${encodedKeyword}&type=0",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 5888,
-                "hasData": false,
-                "reason": "http_403"
-              },
-              {
-                "url": "https://kisskh.co/api/DramaList/Drama/${showId}?isq=false",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 5843,
-                "hasData": false,
-                "reason": "http_403"
-              },
-              {
-                "url": "https://kisskh.co/Drama/${showTitle}/Episode-${episode.number}?id=${showId}&ep=${episode.id}",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 6075,
-                "hasData": false,
-                "reason": "http_403"
-              },
-              {
-                "url": "https://enc-dec.app/api/enc-kisskh?text=${episodeID}&type=vid",
-                "status": 200,
-                "ok": true,
-                "contentType": "application/json; charset=utf-8",
-                "bytes": 314,
-                "hasData": true,
-                "reason": "ok"
-              }
-            ]
-          }
-        },
-        {
-          "id": "mod_705601707",
-          "sourceName": "Kisskh",
-          "language": "English",
-          "registry": "content-manifest",
-          "origin": "current",
-          "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/013/manifest.json",
-          "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/013/source.js",
-          "repair": {
-            "name": "mangayomi_dart_url_refresh_1",
-            "notes": [
-              "Used MangaYomi Dart reference KissKH to test current URL https://kisskh.me.",
-              "Reference source: https://raw.githubusercontent.com/m2k3a/mangayomi-extensions/main/dart/anime/src/en/kisskh/kisskh.dart",
-              "Replaced current base https://kisskh.co with https://kisskh.me."
-            ],
-            "baseUrl": "https://kisskh.me"
-          },
-          "label": "repair_mangayomi_dart_url_refresh_1",
-          "status": "needs_fix",
-          "failureKind": "module_runtime_failure",
-          "durationMs": 12327,
-          "errors": [
-            "search: searchResults returned an unusable result"
-          ],
-          "attempts": [
-            {
-              "name": "mangayomi_dart_url_refresh_1",
-              "notes": [
-                "Used MangaYomi Dart reference KissKH to test current URL https://kisskh.me.",
-                "Reference source: https://raw.githubusercontent.com/m2k3a/mangayomi-extensions/main/dart/anime/src/en/kisskh/kisskh.dart",
-                "Replaced current base https://kisskh.co with https://kisskh.me."
-              ]
-            }
-          ],
-          "health": {
-            "base": {
-              "url": "https://kisskh.co/",
-              "status": 403,
-              "ok": false,
-              "contentType": "text/html; charset=UTF-8",
-              "bytes": 5635,
-              "hasData": false,
-              "reason": "http_403"
-            },
-            "endpoints": [
-              {
-                "url": "https://kisskh.co/api/DramaList/Search?q=${encodedKeyword}&type=0",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 5888,
-                "hasData": false,
-                "reason": "http_403"
-              },
-              {
-                "url": "https://kisskh.co/api/DramaList/Drama/${showId}?isq=false",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 5843,
-                "hasData": false,
-                "reason": "http_403"
-              },
-              {
-                "url": "https://kisskh.co/Drama/${showTitle}/Episode-${episode.number}?id=${showId}&ep=${episode.id}",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 6075,
-                "hasData": false,
-                "reason": "http_403"
-              },
-              {
-                "url": "https://enc-dec.app/api/enc-kisskh?text=${episodeID}&type=vid",
-                "status": 200,
-                "ok": true,
-                "contentType": "application/json; charset=utf-8",
-                "bytes": 314,
-                "hasData": true,
-                "reason": "ok"
-              }
-            ]
-          }
-        },
-        {
-          "id": "mod_705601707",
-          "sourceName": "Kisskh",
-          "language": "English",
-          "registry": "content-manifest",
-          "origin": "current",
-          "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/013/manifest.json",
-          "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/013/source.js",
-          "repair": {
-            "name": "mangayomi_dart_url_refresh_2",
-            "notes": [
-              "Used MangaYomi Dart reference KissKH to test current URL https://kisskh.me.",
-              "Reference source: https://raw.githubusercontent.com/m2k3a/mangayomi-extensions/main/dart/anime/src/en/kisskh/kisskh.dart",
-              "Replaced current base https://kisskh.co with https://kisskh.me."
-            ],
-            "baseUrl": "https://kisskh.me"
-          },
-          "label": "repair_mangayomi_dart_url_refresh_2",
-          "status": "needs_fix",
-          "failureKind": "module_runtime_failure",
-          "durationMs": 16616,
-          "errors": [
-            "search: searchResults returned an unusable result"
-          ],
-          "attempts": [
-            {
-              "name": "mangayomi_dart_url_refresh_2",
-              "notes": [
-                "Used MangaYomi Dart reference KissKH to test current URL https://kisskh.me.",
-                "Reference source: https://raw.githubusercontent.com/m2k3a/mangayomi-extensions/main/dart/anime/src/en/kisskh/kisskh.dart",
-                "Replaced current base https://kisskh.co with https://kisskh.me."
-              ]
-            }
-          ],
-          "health": {
-            "base": {
-              "url": "https://kisskh.co/",
-              "status": 403,
-              "ok": false,
-              "contentType": "text/html; charset=UTF-8",
-              "bytes": 5635,
-              "hasData": false,
-              "reason": "http_403"
-            },
-            "endpoints": [
-              {
-                "url": "https://kisskh.co/api/DramaList/Search?q=${encodedKeyword}&type=0",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 5888,
-                "hasData": false,
-                "reason": "http_403"
-              },
-              {
-                "url": "https://kisskh.co/api/DramaList/Drama/${showId}?isq=false",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 5843,
-                "hasData": false,
-                "reason": "http_403"
-              },
-              {
-                "url": "https://kisskh.co/Drama/${showTitle}/Episode-${episode.number}?id=${showId}&ep=${episode.id}",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 6075,
-                "hasData": false,
-                "reason": "http_403"
-              },
-              {
-                "url": "https://enc-dec.app/api/enc-kisskh?text=${episodeID}&type=vid",
-                "status": 200,
-                "ok": true,
-                "contentType": "application/json; charset=utf-8",
-                "bytes": 314,
-                "hasData": true,
-                "reason": "ok"
-              }
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "sourceName": "Purstream",
-      "id": "mod_977074487",
-      "language": "French",
-      "confirmed": true,
-      "reason": [
-        {
-          "id": "mod_977074487",
-          "sourceName": "Purstream",
-          "language": "French",
-          "registry": "content-manifest",
-          "origin": "current",
-          "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/004/manifest.json",
-          "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/004/source.js",
-          "repair": null,
-          "label": "initial",
-          "status": "working",
-          "durationMs": 6482,
-          "errors": [],
-          "attempts": []
-        }
-      ]
-    },
-    {
-      "sourceName": "Senshi",
-      "id": "mod_1216135884",
-      "language": "English",
-      "confirmed": true,
-      "reason": [
-        {
-          "id": "mod_1216135884",
-          "sourceName": "Senshi",
-          "language": "English",
-          "registry": "content-manifest",
-          "origin": "current",
-          "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/003/manifest.json",
-          "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/003/source.js",
-          "repair": null,
-          "label": "initial",
-          "status": "needs_fix",
-          "failureKind": "module_runtime_failure",
-          "durationMs": 86,
-          "errors": [
-            "search: searchResults returned an unusable result"
-          ],
-          "attempts": [
-            {
-              "name": "url_health",
-              "status": "skipped_dead_or_empty",
-              "health": {
-                "base": {
-                  "url": "https://senshi.live/",
-                  "status": 403,
-                  "ok": false,
-                  "contentType": "text/html; charset=UTF-8",
-                  "bytes": 5658,
-                  "hasData": false,
-                  "reason": "http_403"
-                },
-                "endpoints": [
-                  {
-                    "url": "https://senshi.live/anime/filter",
-                    "status": 403,
-                    "ok": false,
-                    "contentType": "text/html; charset=UTF-8",
-                    "bytes": 5694,
-                    "hasData": false,
-                    "reason": "http_403"
-                  },
-                  {
-                    "url": "https://senshi.live/anime/",
-                    "status": 403,
-                    "ok": false,
-                    "contentType": "text/html; charset=UTF-8",
-                    "bytes": 5676,
-                    "hasData": false,
-                    "reason": "http_403"
-                  },
-                  {
-                    "url": "https://senshi.live/episodes/",
-                    "status": 403,
-                    "ok": false,
-                    "contentType": "text/html; charset=UTF-8",
-                    "bytes": 5685,
-                    "hasData": false,
-                    "reason": "http_403"
-                  },
-                  {
-                    "url": "https://senshi.live/episode-embeds/",
-                    "status": 403,
-                    "ok": false,
-                    "contentType": "text/html; charset=UTF-8",
-                    "bytes": 5724,
-                    "hasData": false,
-                    "reason": "http_403"
-                  }
-                ]
-              }
-            }
-          ],
-          "health": {
-            "base": {
-              "url": "https://senshi.live/",
-              "status": 403,
-              "ok": false,
-              "contentType": "text/html; charset=UTF-8",
-              "bytes": 5658,
-              "hasData": false,
-              "reason": "http_403"
-            },
-            "endpoints": [
-              {
-                "url": "https://senshi.live/anime/filter",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 5694,
-                "hasData": false,
-                "reason": "http_403"
-              },
-              {
-                "url": "https://senshi.live/anime/",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 5676,
-                "hasData": false,
-                "reason": "http_403"
-              },
-              {
-                "url": "https://senshi.live/episodes/",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 5685,
-                "hasData": false,
-                "reason": "http_403"
-              },
-              {
-                "url": "https://senshi.live/episode-embeds/",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 5724,
                 "hasData": false,
                 "reason": "http_403"
               }
