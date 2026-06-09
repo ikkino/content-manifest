@@ -1,199 +1,119 @@
+const BASE_URL = "https://123animes.ru";
+
+function absoluteUrl(value) {
+  if (!value) return "";
+  if (/^https?:\/\//i.test(value)) return value;
+  return BASE_URL + (value.startsWith("/") ? value : "/" + value);
+}
+
+function animeSlug(url) {
+  return String(url || "").split("/anime/").pop().split("/")[0].split("?")[0];
+}
+
+function cleanText(value) {
+  return String(value || "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+}
+
+function normalizeTitle(value) {
+  return String(value || "").toLowerCase().replace(/\([^)]*\)/g, "").replace(/[^a-z0-9]+/g, "");
+}
+
+async function fetchText(url, options = {}) {
+  const response = await fetchv2(url, {
+    "Accept": "text/html,application/json,*/*",
+    "Referer": BASE_URL + "/",
+    ...(options.headers || {})
+  }, options.method, options.body);
+  if (!response.ok) throw new Error("HTTP " + response.status);
+  return response.text();
+}
+
 async function searchResults(keyword) {
-    const results = [];
-    const headers = {
-        'Referer': 'https://animetsu.live/',
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-    };
+  const html = await fetchText(BASE_URL + "/search?keyword=" + encodeURIComponent(keyword));
+  const blocks = html.match(/<div class="item">[\s\S]*?(?=<div class="item">|<div class="clearfix"><\/div>)/g) || [];
+  const wanted = normalizeTitle(keyword);
+  const results = [];
 
-    const encodedKeyword = encodeURIComponent(keyword);
-    const response = await fetchv2(`https://animetsu.live/v2/api/anime/search/?query=${encodedKeyword}`, headers);
-    const json = await response.json();
+  for (const block of blocks) {
+    const href = block.match(/<a href="([^"]+)"[^>]*class="(?:thumb|poster)[^"]*"/)?.[1]
+      || block.match(/<a href="([^"]+)"/)?.[1];
+    const title = block.match(/<a[^>]*class="name"[^>]*>([\s\S]*?)<\/a>/)?.[1]
+      || block.match(/<img[^>]*alt="([^"]+)"/)?.[1];
+    const image = block.match(/\sdata-src="([^"]+)"/)?.[1]
+      || block.match(/\ssrc="([^"]+)"/)?.[1]
+      || "";
 
-    json.results.forEach(anime => {
-        const title = anime.title.english || anime.title.romaji || anime.title.native || "Unknown Title";
-        const image = anime.cover_image.large;
-        const href = `${anime.id}`;
-
-        if (title && href && image) {
-            results.push({
-                title: title,
-                image: image,
-                href: href
-            });
-        } else {
-            console.error("Missing or invalid data in search result item:", {
-                title,
-                href,
-                image
-            });
-        }
-    });
-
-    return JSON.stringify(results);
-}
-
-async function extractDetails(id) {
-    const results = [];
-    const headers = {
-        'Referer': 'https://animetsu.live/',
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-    };
-
-    const response = await fetchv2(`https://animetsu.live/v2/api/anime/info/${id}`, headers);
-    const json = await response.json();
-
-    const description = cleanHtmlSymbols(json.description) || "No description available"; 
-
+    if (!href || !title) continue;
     results.push({
-        description: description.replace(/<br>/g, ''),
-        aliases: json.synonyms ? json.synonyms.join(', ') : 'N/A',
-        airdate: json.start_date || 'N/A'
+      title: cleanText(title),
+      image: absoluteUrl(image),
+      href: absoluteUrl(href)
     });
+  }
 
-    return JSON.stringify(results);
+  results.sort((a, b) => {
+    const aTitle = normalizeTitle(a.title);
+    const bTitle = normalizeTitle(b.title);
+    const aExact = aTitle === wanted ? 0 : 1;
+    const bExact = bTitle === wanted ? 0 : 1;
+    return aExact - bExact || a.title.length - b.title.length;
+  });
+
+  return JSON.stringify(results);
 }
 
-async function extractEpisodes(id) {
-    const results = [];
-    const headers = {
-        'Referer': 'https://animetsu.live/',
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-    };
+async function extractDetails(url) {
+  const html = await fetchText(url);
+  const description = cleanText(html.match(/<div class="desc">([\s\S]*?)<\/div>/)?.[1]) || "N/A";
+  const aliases = cleanText(html.match(/<p class="alias">([\s\S]*?)<\/p>/)?.[1]) || "N/A";
+  const airdate = cleanText(html.match(/<dt>Released:<\/dt>\s*<dd>\s*<a[^>]*>([\s\S]*?)<\/a>/)?.[1]) || "N/A";
 
-    const response = await fetchv2(`https://animetsu.live/v2/api/anime/eps/${id}`, headers);
-    const json = await response.json();
-
-    for (const ep of json) {
-        results.push({
-            number: ep.ep_num,
-            href: `&id=${id}&num=${ep.ep_num}`
-        });
-    }
-
-    return JSON.stringify(results);
+  return JSON.stringify([{ description, aliases, airdate }]);
 }
 
-async function extractStreamUrl(slug) {
-    const headers = {
-        'Referer': 'https://animetsu.live/',
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-    };
+async function extractEpisodes(url) {
+  const slug = animeSlug(url);
+  if (!slug) return JSON.stringify([]);
 
-    const id = (slug.match(/[?&]id=([^&]+)/) || [])[1];
-    const num = (slug.match(/[?&]num=([^&]+)/) || [])[1];
+  const responseText = await fetchText(BASE_URL + "/ajax/film/sv?id=" + encodeURIComponent(slug));
+  let html = responseText;
+  try {
+    html = JSON.parse(responseText).html || "";
+  } catch {
+    html = responseText;
+  }
 
-    const streams = [];
+  const server = html.match(/<div class="server[^"]*"[^>]*data-name="([^"]+)"/)?.[1]
+    || html.match(/<div class="server[^"]*"[^>]*data-id="([^"]+)"/)?.[1]
+    || "vidstreaming.io";
+  const episodes = [];
+  const seen = new Set();
+  const anchorRegex = /<a\b[^>]*data-id="([^"]+)"[^>]*data-base="([^"]+)"[^>]*href="([^"]+)"/g;
+  let match;
 
-    try {
-        const serverListRes = await fetchv2(`https://animetsu.live/v2/api/anime/servers/${id}/${num}`, headers);
-        const serverList = await serverListRes.json();
-
-        const promises = [];
-        for (const server of serverList) {
-            for (const subType of ['sub', 'dub']) {
-                promises.push((async () => {
-                    try {
-                        const url = `https://animetsu.live/v2/api/anime/oppai/${id}/${num}?server=${server.id}&source_type=${subType}`;
-                        const res = await fetchv2(url, headers);
-                        const data = await res.json();
-
-                        if (data?.sources?.length) {
-                            for (const source of data.sources) {
-                                let streamUrl = `https://swiftstream.top/proxy${source.url}`;
-                                let quality = source.quality;
-
-                                if (server.id === 'kite') {
-                                    try {
-                                        const m3u8Res = await fetchv2(streamUrl, headers);
-                                        const m3u8Content = await m3u8Res.text();
-                                        const lines = m3u8Content.split('\n').filter(line => line.trim() !== '');
-                                        const targetLine = lines.find(line => !line.startsWith('#'));
-                                        if (targetLine) {
-                                            streamUrl = `https://swiftstream.top/proxy/oppai/kite/${targetLine.trim()}`;
-                                        }
-                                        if (quality.toLowerCase() === 'master') {
-                                            quality = '1080p';
-                                        }
-                                    } catch (e) {
-                                        console.error("Error rewriting kite URL:", e);
-                                    }
-                                }
-
-                                streams.push({
-                                    title: `${server.id} - ${quality} - ${subType.toUpperCase()}`,
-                                    streamUrl: streamUrl,
-                                    headers: headers
-                                });
-                            }
-                        }
-                    } catch (e) {
-                        console.error(`Error fetching streams for server ${server.id} (${subType}):`, e);
-                    }
-                })());
-            }
-        }
-
-        await Promise.all(promises);
-    } catch (e) {
-        console.error("Error fetching server list:", e);
-    }
-
-    const serverOrder = { 'pahe': 1, 'meg': 2, 'kite': 3 };
-    const qualityOrder = (q) => {
-        if (q.includes('1080')) return 1;
-        if (q.includes('720')) return 2;
-        if (q.includes('480')) return 3;
-        if (q.includes('360')) return 4;
-        if (q.includes('master')) return 5;
-        return 6;
-    };
-
-    streams.sort((a, b) => {
-        const partsA = a.title.split(' - ');
-        const partsB = b.title.split(' - ');
-        
-        const sA = partsA[0].toLowerCase();
-        const sB = partsB[0].toLowerCase();
-        const qA = partsA[1].toLowerCase();
-        const qB = partsB[1].toLowerCase();
-
-        const qOrderA = qualityOrder(qA);
-        const qOrderB = qualityOrder(qB);
-
-        if (qOrderA !== qOrderB) return qOrderA - qOrderB;
-        
-        const sOrderA = serverOrder[sA] || 99;
-        const sOrderB = serverOrder[sB] || 99;
-        return sOrderA - sOrderB;
+  while ((match = anchorRegex.exec(html)) !== null) {
+    const episodeId = match[1];
+    const number = Number.parseFloat(match[2]);
+    if (!episodeId || seen.has(episodeId)) continue;
+    seen.add(episodeId);
+    episodes.push({
+      href: episodeId + "/" + server,
+      number: Number.isFinite(number) ? number : episodes.length + 1
     });
+  }
 
-    const finalStreams = streams.map((s, index) => ({
-        ...s,
-        title: `[Server ${index + 1}] ${s.title}`
-    }));
-
-    const final = {
-        streams: finalStreams,
-        subtitle: ""
-    };
-
-    return JSON.stringify(final);
+  episodes.sort((a, b) => a.number - b.number);
+  return JSON.stringify(episodes);
 }
 
+async function extractStreamUrl(id) {
+  const data = JSON.parse(await fetchText(BASE_URL + "/ajax/episode/info?epr=" + encodeURIComponent(id)));
+  if (!data.target || !/^https?:\/\//i.test(data.target)) return JSON.stringify({ streams: [] });
 
-
-
-function cleanHtmlSymbols(string) {
-    if (!string) return "";
-
-    return string
-        .replace(/&#8217;/g, "'")
-        .replace(/&#8211;/g, "-")
-        .replace(/&#[0-9]+;/g, "")
-        .replace(/\r?\n|\r/g, " ")  
-        .replace(/\s+/g, " ")       
-        .replace(/<i[^>]*>(.*?)<\/i>/g, "$1")
-        .replace(/<b[^>]*>(.*?)<\/b>/g, "$1") 
-        .replace(/<[^>]+>/g, "")
-        .trim();                 
+  return JSON.stringify({
+    streams: [{
+      title: data.name || "123Anime",
+      streamUrl: data.target
+    }]
+  });
 }

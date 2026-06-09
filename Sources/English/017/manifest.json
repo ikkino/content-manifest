@@ -1,27 +1,21 @@
 {
-  "sourceName": "AnimeLand",
-  "iconUrl": "https://w7.animeland.tv/wp-content/themes/twentytwelve/SAO2.ico",
+  "sourceName": "Animepahe (SUB)",
+  "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/animepahe/icon.png",
   "author": {
-    "name": "50/50",
-    "icon": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ3122kQwublLkZ6rf1fEpUP79BxZOFmH9BSA&s"
+    "name": "ibro",
+    "icon": "https://git.luna-app.eu/ibro/services/raw/branch/main/profile.jpg",
+    "url": "https://github.com/xibrox"
   },
-  "version": "1.0.0",
+  "version": "1.2.7",
   "language": "English",
-  "streamType": "mp4",
+  "streamType": "HLS",
   "quality": "1080p",
-  "baseUrl": "https://w7.animeland.tv/",
-  "searchBaseUrl": "https://w7.animeland.tv/",
+  "baseUrl": "https://animepahetv.to/",
+  "searchBaseUrl": "https://animepahetv.to/search?q=%s",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/017/source.js",
   "type": "anime",
-  "asyncJS": true,
-  "softsub": false,
   "downloadSupport": true,
-  "supportsMojuru": true,
-  "supportsDartotsu": true,
-  "supportsSora": true,
-  "supportsLuna": true,
-  "supportsAnymex": true,
-  "supportsTsumi": true,
-  "supportsHiyoku": true,
-  "id": "mod_163960337"
+  "asyncJS": true,
+  "softsub": true,
+  "id": "BMF8K"
 }
