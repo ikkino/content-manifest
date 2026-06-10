@@ -1,24 +1,24 @@
 {
-  "sourceName": "VoirAnime",
-  "iconUrl": "https://gitlab.com/mxfia19-group/module-sora/-/raw/main/voir-anime/IMG_9709.jpg",
+  "sourceName": "Movix",
+  "iconUrl": "https://movix.online/movix.png",
   "author": {
     "name": "MXFia19",
     "icon": "https://i.pinimg.com/1200x/89/78/33/89783349d3270e4ab071db9a038db8ea.jpg",
     "url": "https://github.com/MXFia19"
   },
-  "version": "1.0.4",
+  "version": "2.0.3",
   "language": "French",
-  "streamType": "MP4",
+  "streamType": "HLS/MP4",
   "quality": "1080p",
-  "baseUrl": "https://voir-anime.to",
-  "searchBaseUrl": "https://voir-anime.to/?s=",
+  "baseUrl": "https://movix.cloud/",
+  "searchBaseUrl": "https://api.themoviedb.org/3/search/",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/001/source.js",
-  "type": "anime",
+  "type": "anime/shows/movies",
   "downloadSupport": true,
   "asyncJS": true,
   "softsub": false,
-  "changelog": "fix voe",
   "supportsSora": true,
   "supportsLuna": true,
-  "id": "j5jy1"
+  "changelog": "fix extract",
+  "id": "jF2Hq"
 }
