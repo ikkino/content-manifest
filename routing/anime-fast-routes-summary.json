@@ -1,38 +1,28 @@
 {
-  "generatedAt": "2026-06-12T07:03:57.873Z",
-  "mediaRequested": 3,
+  "generatedAt": "2026-06-12T07:05:50.390Z",
+  "mediaRequested": 8,
   "categories": {
     "trendingNow": {
-      "requested": 3,
-      "mediaChecked": 3,
-      "animeWithRoutes": 3
+      "requested": 8,
+      "mediaChecked": 7,
+      "animeWithRoutes": 6
     },
     "popularThisSeason": {
-      "requested": 3,
-      "mediaChecked": 3,
-      "animeWithRoutes": 3
+      "requested": 8,
+      "mediaChecked": 8,
+      "animeWithRoutes": 8
     },
     "popularAllTime": {
-      "requested": 3,
-      "mediaChecked": 3,
-      "animeWithRoutes": 3
+      "requested": 8,
+      "mediaChecked": 8,
+      "animeWithRoutes": 8
     }
   },
-  "mediaChecked": 9,
-  "modulesChecked": 4,
-  "animeWithRoutes": 9,
-  "routeCount": 16,
+  "mediaChecked": 19,
+  "modulesChecked": 6,
+  "animeWithRoutes": 18,
+  "routeCount": 42,
   "failures": [
-    {
-      "aniListId": 186497,
-      "title": "The Ramparts of Ice",
-      "moduleId": "mod_163960337",
-      "catalogPath": "Sources/English/014",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
     {
       "aniListId": 21,
       "title": "ONE PIECE",
@@ -44,13 +34,33 @@
       ]
     },
     {
-      "aniListId": 147105,
-      "title": "Witch Hat Atelier",
-      "moduleId": "mod_163960337",
-      "catalogPath": "Sources/English/014",
-      "sourceName": "AnimeLand",
+      "aniListId": 21,
+      "title": "ONE PIECE",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/002",
+      "sourceName": "OneTouch TV",
       "errors": [
-        "search: searchResults returned an unusable result"
+        "implausible episode match: verified=8 available=8 expected<=1165"
+      ]
+    },
+    {
+      "aniListId": 21,
+      "title": "ONE PIECE",
+      "moduleId": "BvIyX",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "VidLink",
+      "errors": [
+        "implausible episode match: verified=8 available=17 expected<=1165"
+      ]
+    },
+    {
+      "aniListId": 199221,
+      "title": "Dr. STONE SCIENCE FUTURE Cour 3",
+      "moduleId": "G7jX",
+      "catalogPath": "Sources/English/011",
+      "sourceName": "Animetsu",
+      "errors": [
+        "stream: extractStreamUrl timed out"
       ]
     },
     {
@@ -74,6 +84,76 @@
       ]
     },
     {
+      "aniListId": 199221,
+      "title": "Dr. STONE SCIENCE FUTURE Cour 3",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/002",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 199221,
+      "title": "Dr. STONE SCIENCE FUTURE Cour 3",
+      "moduleId": "BvIyX",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "VidLink",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 186497,
+      "title": "The Ramparts of Ice",
+      "moduleId": "G7jX",
+      "catalogPath": "Sources/English/011",
+      "sourceName": "Animetsu",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 186497,
+      "title": "The Ramparts of Ice",
+      "moduleId": "mod_163960337",
+      "catalogPath": "Sources/English/014",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 199221,
+      "title": "Dr. STONE SCIENCE FUTURE Cour 3",
+      "moduleId": "BRHoq",
+      "catalogPath": "Sources/English/006",
+      "sourceName": "AnimeNana",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 186497,
+      "title": "The Ramparts of Ice",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/002",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 186497,
+      "title": "The Ramparts of Ice",
+      "moduleId": "BvIyX",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "VidLink",
+      "errors": [
+        "stream: Unexpected end of JSON input"
+      ]
+    },
+    {
       "aniListId": 189046,
       "title": "Re:ZERO -Starting Life in Another World- Season 4",
       "moduleId": "G7jX",
@@ -94,8 +174,8 @@
       ]
     },
     {
-      "aniListId": 199221,
-      "title": "Dr. STONE SCIENCE FUTURE Cour 3",
+      "aniListId": 189046,
+      "title": "Re:ZERO -Starting Life in Another World- Season 4",
       "moduleId": "BmnXo",
       "catalogPath": "Sources/English/002",
       "sourceName": "OneTouch TV",
@@ -106,9 +186,129 @@
     {
       "aniListId": 189046,
       "title": "Re:ZERO -Starting Life in Another World- Season 4",
+      "moduleId": "BvIyX",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "VidLink",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 147105,
+      "title": "Witch Hat Atelier",
+      "moduleId": "mod_163960337",
+      "catalogPath": "Sources/English/014",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 147105,
+      "title": "Witch Hat Atelier",
       "moduleId": "BmnXo",
       "catalogPath": "Sources/English/002",
       "sourceName": "OneTouch TV",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 147105,
+      "title": "Witch Hat Atelier",
+      "moduleId": "BvIyX",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "VidLink",
+      "errors": [
+        "stream: Unexpected end of JSON input"
+      ]
+    },
+    {
+      "aniListId": 180745,
+      "title": "Classroom of the Elite 4th Season: Second Year, First Semester",
+      "moduleId": "G7jX",
+      "catalogPath": "Sources/English/011",
+      "sourceName": "Animetsu",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 180745,
+      "title": "Classroom of the Elite 4th Season: Second Year, First Semester",
+      "moduleId": "mod_163960337",
+      "catalogPath": "Sources/English/014",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 180745,
+      "title": "Classroom of the Elite 4th Season: Second Year, First Semester",
+      "moduleId": "mangayomi_1744325818",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "AnimeHeaven",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 180745,
+      "title": "Classroom of the Elite 4th Season: Second Year, First Semester",
+      "moduleId": "BvIyX",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "VidLink",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 180745,
+      "title": "Classroom of the Elite 4th Season: Second Year, First Semester",
+      "moduleId": "BRHoq",
+      "catalogPath": "Sources/English/006",
+      "sourceName": "AnimeNana",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 182483,
+      "title": "The Warrior Princess and the Barbaric King",
+      "moduleId": "mod_163960337",
+      "catalogPath": "Sources/English/014",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 182483,
+      "title": "The Warrior Princess and the Barbaric King",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/002",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 182483,
+      "title": "The Warrior Princess and the Barbaric King",
+      "moduleId": "BvIyX",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "VidLink",
+      "errors": [
+        "stream: Unexpected end of JSON input"
+      ]
+    },
+    {
+      "aniListId": 182205,
+      "title": "That Time I Got Reincarnated as a Slime Season 4",
+      "moduleId": "mod_163960337",
+      "catalogPath": "Sources/English/014",
+      "sourceName": "AnimeLand",
       "errors": [
         "search: searchResults returned an unusable result"
       ]
@@ -124,6 +324,118 @@
       ]
     },
     {
+      "aniListId": 195600,
+      "title": "Daemons of the Shadow Realm",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/002",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 195600,
+      "title": "Daemons of the Shadow Realm",
+      "moduleId": "BvIyX",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "VidLink",
+      "errors": [
+        "stream: Unexpected end of JSON input"
+      ]
+    },
+    {
+      "aniListId": 182300,
+      "title": "Wistoria: Wand and Sword Season 2",
+      "moduleId": "G7jX",
+      "catalogPath": "Sources/English/011",
+      "sourceName": "Animetsu",
+      "errors": [
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 182300,
+      "title": "Wistoria: Wand and Sword Season 2",
+      "moduleId": "mod_163960337",
+      "catalogPath": "Sources/English/014",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 182300,
+      "title": "Wistoria: Wand and Sword Season 2",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/002",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "implausible episode match: verified=1 available=1 expected<=9"
+      ]
+    },
+    {
+      "aniListId": 182300,
+      "title": "Wistoria: Wand and Sword Season 2",
+      "moduleId": "BvIyX",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "VidLink",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 169580,
+      "title": "I Made Friends with the Second Prettiest Girl in My Class",
+      "moduleId": "G7jX",
+      "catalogPath": "Sources/English/011",
+      "sourceName": "Animetsu",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 169580,
+      "title": "I Made Friends with the Second Prettiest Girl in My Class",
+      "moduleId": "mod_163960337",
+      "catalogPath": "Sources/English/014",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 169580,
+      "title": "I Made Friends with the Second Prettiest Girl in My Class",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/002",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "implausible episode match: verified=1 available=1 expected<=10"
+      ]
+    },
+    {
+      "aniListId": 169580,
+      "title": "I Made Friends with the Second Prettiest Girl in My Class",
+      "moduleId": "BvIyX",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "VidLink",
+      "errors": [
+        "stream: Unexpected end of JSON input"
+      ]
+    },
+    {
+      "aniListId": 101922,
+      "title": "Demon Slayer: Kimetsu no Yaiba",
+      "moduleId": "G7jX",
+      "catalogPath": "Sources/English/011",
+      "sourceName": "Animetsu",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
       "aniListId": 101922,
       "title": "Demon Slayer: Kimetsu no Yaiba",
       "moduleId": "mod_163960337",
@@ -134,6 +446,46 @@
       ]
     },
     {
+      "aniListId": 101922,
+      "title": "Demon Slayer: Kimetsu no Yaiba",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/002",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "implausible episode match: verified=1 available=1 expected<=26"
+      ]
+    },
+    {
+      "aniListId": 101922,
+      "title": "Demon Slayer: Kimetsu no Yaiba",
+      "moduleId": "BvIyX",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "VidLink",
+      "errors": [
+        "implausible episode match: verified=26 available=63 expected<=26"
+      ]
+    },
+    {
+      "aniListId": 101922,
+      "title": "Demon Slayer: Kimetsu no Yaiba",
+      "moduleId": "BRHoq",
+      "catalogPath": "Sources/English/006",
+      "sourceName": "AnimeNana",
+      "errors": [
+        "implausible episode match: verified=26 available=41 expected<=26"
+      ]
+    },
+    {
+      "aniListId": 170019,
+      "title": "The Angel Next Door Spoils Me Rotten2",
+      "moduleId": "mod_163960337",
+      "catalogPath": "Sources/English/014",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
       "aniListId": 113415,
       "title": "JUJUTSU KAISEN",
       "moduleId": "mod_163960337",
@@ -141,6 +493,146 @@
       "sourceName": "AnimeLand",
       "errors": [
         "implausible episode match: verified=23 available=23 expected<=24"
+      ]
+    },
+    {
+      "aniListId": 113415,
+      "title": "JUJUTSU KAISEN",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/002",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "implausible episode match: verified=1 available=1 expected<=24"
+      ]
+    },
+    {
+      "aniListId": 113415,
+      "title": "JUJUTSU KAISEN",
+      "moduleId": "BvIyX",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "VidLink",
+      "errors": [
+        "implausible episode match: verified=24 available=59 expected<=24"
+      ]
+    },
+    {
+      "aniListId": 113415,
+      "title": "JUJUTSU KAISEN",
+      "moduleId": "BRHoq",
+      "catalogPath": "Sources/English/006",
+      "sourceName": "AnimeNana",
+      "errors": [
+        "implausible episode match: verified=23 available=23 expected<=24"
+      ]
+    },
+    {
+      "aniListId": 1535,
+      "title": "Death Note",
+      "moduleId": "mod_163960337",
+      "catalogPath": "Sources/English/014",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "stream: extractStreamUrl returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 1535,
+      "title": "Death Note",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/002",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 21087,
+      "title": "One-Punch Man",
+      "moduleId": "G7jX",
+      "catalogPath": "Sources/English/011",
+      "sourceName": "Animetsu",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 11061,
+      "title": "Hunter x Hunter (2011)",
+      "moduleId": "mod_163960337",
+      "catalogPath": "Sources/English/014",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 11061,
+      "title": "Hunter x Hunter (2011)",
+      "moduleId": "mangayomi_1744325818",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "AnimeHeaven",
+      "errors": [
+        "implausible episode match: verified=58 available=58 expected<=148"
+      ]
+    },
+    {
+      "aniListId": 11061,
+      "title": "Hunter x Hunter (2011)",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/002",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "implausible episode match: verified=10 available=10 expected<=148"
+      ]
+    },
+    {
+      "aniListId": 11061,
+      "title": "Hunter x Hunter (2011)",
+      "moduleId": "BvIyX",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "VidLink",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 11061,
+      "title": "Hunter x Hunter (2011)",
+      "moduleId": "BRHoq",
+      "catalogPath": "Sources/English/006",
+      "sourceName": "AnimeNana",
+      "errors": [
+        "implausible episode match: verified=147 available=149 expected<=148"
+      ]
+    },
+    {
+      "aniListId": 21087,
+      "title": "One-Punch Man",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/002",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 21087,
+      "title": "One-Punch Man",
+      "moduleId": "BvIyX",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "VidLink",
+      "errors": [
+        "implausible episode match: verified=12 available=36 expected<=12"
+      ]
+    },
+    {
+      "aniListId": 21087,
+      "title": "One-Punch Man",
+      "moduleId": "BRHoq",
+      "catalogPath": "Sources/English/006",
+      "sourceName": "AnimeNana",
+      "errors": [
+        "implausible episode match: verified=11 available=18 expected<=12"
       ]
     }
   ]
