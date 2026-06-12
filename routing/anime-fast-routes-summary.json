@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-12T10:16:59.838Z",
+  "generatedAt": "2026-06-12T15:46:22.744Z",
   "mediaRequested": 22,
   "categories": {
     "trendingNow": {
@@ -18,101 +18,388 @@
       "animeWithRoutes": 22
     }
   },
-  "mediaChecked": 49,
+  "mediaChecked": 50,
   "modulesChecked": 10,
-  "animeWithRoutes": 49,
-  "routeCount": 147,
-  "refreshedAnime": 48,
+  "animeWithRoutes": 50,
+  "routeCount": 149,
+  "refreshedAnime": 47,
   "mergeExisting": true,
-  "unresolvedAnime": 0,
-  "rejectedAttempts": 142,
+  "unresolvedAnime": 25,
+  "rejectedAttempts": 324,
   "rejectedAttemptSummary": {
     "byReason": {
-      "search_no_usable_result": 63,
-      "implausible_match": 48,
-      "bad_json_response": 15,
-      "stream_timeout": 7,
-      "episodes_timeout": 5,
-      "other": 4
+      "search_no_usable_result": 158,
+      "stream_timeout": 68,
+      "implausible_match": 62,
+      "other": 34,
+      "episodes_timeout": 2
     },
     "topModules": [
       {
+        "sourceName": "LmAnime",
+        "count": 47,
+        "reasons": {
+          "search_no_usable_result": 46,
+          "implausible_match": 1
+        }
+      },
+      {
+        "sourceName": "LuciferDonghua",
+        "count": 46,
+        "reasons": {
+          "search_no_usable_result": 34,
+          "other": 2,
+          "implausible_match": 10
+        }
+      },
+      {
+        "sourceName": "VidFast",
+        "count": 44,
+        "reasons": {
+          "implausible_match": 13,
+          "stream_timeout": 17,
+          "search_no_usable_result": 13,
+          "other": 1
+        }
+      },
+      {
         "sourceName": "AnimeLand",
-        "count": 37,
+        "count": 38,
         "reasons": {
-          "search_no_usable_result": 29,
           "implausible_match": 7,
+          "search_no_usable_result": 30,
           "other": 1
         }
       },
       {
-        "sourceName": "OneTouch TV",
+        "sourceName": "Aniwave",
         "count": 33,
         "reasons": {
-          "implausible_match": 18,
-          "search_no_usable_result": 14,
-          "other": 1
+          "stream_timeout": 27,
+          "implausible_match": 4,
+          "search_no_usable_result": 1,
+          "episodes_timeout": 1
         }
       },
       {
-        "sourceName": "VidLink",
-        "count": 33,
+        "sourceName": "Anikuro",
+        "count": 28,
         "reasons": {
-          "search_no_usable_result": 11,
-          "implausible_match": 5,
-          "bad_json_response": 15,
+          "stream_timeout": 21,
+          "implausible_match": 7
+        }
+      },
+      {
+        "sourceName": "Anime-Portal",
+        "count": 27,
+        "reasons": {
+          "search_no_usable_result": 17,
+          "other": 3,
+          "implausible_match": 7
+        }
+      },
+      {
+        "sourceName": "AnimeWorld",
+        "count": 27,
+        "reasons": {
+          "other": 21,
+          "search_no_usable_result": 6
+        }
+      },
+      {
+        "sourceName": "An1me",
+        "count": 24,
+        "reasons": {
+          "search_no_usable_result": 10,
+          "implausible_match": 11,
+          "episodes_timeout": 1,
           "stream_timeout": 2
         }
       },
       {
-        "sourceName": "Animetsu",
-        "count": 12,
+        "sourceName": "Senshi",
+        "count": 5,
         "reasons": {
-          "stream_timeout": 5,
-          "episodes_timeout": 4,
-          "implausible_match": 3
+          "implausible_match": 2,
+          "search_no_usable_result": 1,
+          "stream_timeout": 1,
+          "other": 1
         }
       },
       {
-        "sourceName": "AnimeNana",
-        "count": 11,
-        "reasons": {
-          "search_no_usable_result": 5,
-          "episodes_timeout": 1,
-          "implausible_match": 5
-        }
-      },
-      {
-        "sourceName": "AnimeHeaven",
-        "count": 7,
-        "reasons": {
-          "search_no_usable_result": 4,
-          "implausible_match": 3
-        }
-      },
-      {
-        "sourceName": "123Anime",
-        "count": 6,
-        "reasons": {
-          "other": 2,
-          "implausible_match": 4
-        }
-      },
-      {
-        "sourceName": "AniNeko",
-        "count": 2,
-        "reasons": {
-          "implausible_match": 2
-        }
-      },
-      {
-        "sourceName": "AllAnime",
+        "sourceName": "AnimeJara",
         "count": 1,
         "reasons": {
-          "implausible_match": 1
+          "other": 1
+        }
+      },
+      {
+        "sourceName": "AniWorld (GER DUB)",
+        "count": 1,
+        "reasons": {
+          "other": 1
+        }
+      },
+      {
+        "sourceName": "AniWorld (GER SUB)",
+        "count": 1,
+        "reasons": {
+          "other": 1
+        }
+      },
+      {
+        "sourceName": "Latanime",
+        "count": 1,
+        "reasons": {
+          "other": 1
+        }
+      },
+      {
+        "sourceName": "Monoschinos2",
+        "count": 1,
+        "reasons": {
+          "other": 1
         }
       }
     ]
   },
-  "failures": []
+  "failures": [
+    {
+      "catalogPath": "Sources/German/001",
+      "sourceName": "AniWorld (GER DUB)",
+      "errors": [
+        "load: ENOENT: no such file or directory, open '/Users/ikki/Library/Application Support/SoraRouteWorker/run/content-manifest/Sources/German/001/manifest.json'"
+      ]
+    },
+    {
+      "catalogPath": "Sources/German/002",
+      "sourceName": "AniWorld (GER SUB)",
+      "errors": [
+        "load: ENOENT: no such file or directory, open '/Users/ikki/Library/Application Support/SoraRouteWorker/run/content-manifest/Sources/German/002/manifest.json'"
+      ]
+    },
+    {
+      "catalogPath": "Sources/Spanish/003",
+      "sourceName": "Latanime",
+      "errors": [
+        "load: ENOENT: no such file or directory, open '/Users/ikki/Library/Application Support/SoraRouteWorker/run/content-manifest/Sources/Spanish/003/manifest.json'"
+      ]
+    },
+    {
+      "catalogPath": "Sources/Spanish/004",
+      "sourceName": "Monoschinos2",
+      "errors": [
+        "load: ENOENT: no such file or directory, open '/Users/ikki/Library/Application Support/SoraRouteWorker/run/content-manifest/Sources/Spanish/004/manifest.json'"
+      ]
+    },
+    {
+      "catalogPath": "Sources/Spanish/005",
+      "sourceName": "AnimeJara",
+      "errors": [
+        "load: ENOENT: no such file or directory, open '/Users/ikki/Library/Application Support/SoraRouteWorker/run/content-manifest/Sources/Spanish/005/manifest.json'"
+      ]
+    },
+    {
+      "aniListId": 170019,
+      "title": "The Angel Next Door Spoils Me Rotten2",
+      "moduleId": "Sources/English/006",
+      "catalogPath": "Sources/English/006",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 170019,
+      "title": "The Angel Next Door Spoils Me Rotten2",
+      "moduleId": "Sources/English/015",
+      "catalogPath": "Sources/English/015",
+      "sourceName": "Senshi",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 170019,
+      "title": "The Angel Next Door Spoils Me Rotten2",
+      "moduleId": "Sources/English/001",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "Aniwave",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 170019,
+      "title": "The Angel Next Door Spoils Me Rotten2",
+      "moduleId": "Sources/English/003",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "VidFast",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 170019,
+      "title": "The Angel Next Door Spoils Me Rotten2",
+      "moduleId": "Sources/English/007",
+      "catalogPath": "Sources/English/007",
+      "sourceName": "LmAnime",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 170019,
+      "title": "The Angel Next Door Spoils Me Rotten2",
+      "moduleId": "Sources/English/009",
+      "catalogPath": "Sources/English/009",
+      "sourceName": "LuciferDonghua",
+      "errors": [
+        "implausible episode match: verified=11 available=158 expected<=11"
+      ]
+    },
+    {
+      "aniListId": 170019,
+      "title": "The Angel Next Door Spoils Me Rotten2",
+      "moduleId": "Sources/English/013",
+      "catalogPath": "Sources/English/013",
+      "sourceName": "Anikuro",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 170019,
+      "title": "The Angel Next Door Spoils Me Rotten2",
+      "moduleId": "Sources/Greek/001",
+      "catalogPath": "Sources/Greek/001",
+      "sourceName": "An1me",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 170019,
+      "title": "The Angel Next Door Spoils Me Rotten2",
+      "moduleId": "Sources/Russian/001",
+      "catalogPath": "Sources/Russian/001",
+      "sourceName": "Anime-Portal",
+      "errors": [
+        "implausible episode match: verified=11 available=518 expected<=11"
+      ]
+    },
+    {
+      "aniListId": 170019,
+      "title": "The Angel Next Door Spoils Me Rotten2",
+      "moduleId": "thn9",
+      "catalogPath": "Sources/Italian/001",
+      "sourceName": "AnimeWorld",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 101922,
+      "title": "Demon Slayer: Kimetsu no Yaiba",
+      "moduleId": "Sources/English/006",
+      "catalogPath": "Sources/English/006",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "implausible episode match: verified=11 available=11 expected<=26"
+      ]
+    },
+    {
+      "aniListId": 101922,
+      "title": "Demon Slayer: Kimetsu no Yaiba",
+      "moduleId": "Sources/English/015",
+      "catalogPath": "Sources/English/015",
+      "sourceName": "Senshi",
+      "errors": [
+        "implausible episode match: verified=11 available=11 expected<=26"
+      ]
+    },
+    {
+      "aniListId": 101922,
+      "title": "Demon Slayer: Kimetsu no Yaiba",
+      "moduleId": "Sources/English/001",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "Aniwave",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 101922,
+      "title": "Demon Slayer: Kimetsu no Yaiba",
+      "moduleId": "Sources/English/003",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "VidFast",
+      "errors": [
+        "implausible episode match: verified=26 available=63 expected<=26"
+      ]
+    },
+    {
+      "aniListId": 101922,
+      "title": "Demon Slayer: Kimetsu no Yaiba",
+      "moduleId": "Sources/English/007",
+      "catalogPath": "Sources/English/007",
+      "sourceName": "LmAnime",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 101922,
+      "title": "Demon Slayer: Kimetsu no Yaiba",
+      "moduleId": "Sources/English/009",
+      "catalogPath": "Sources/English/009",
+      "sourceName": "LuciferDonghua",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 101922,
+      "title": "Demon Slayer: Kimetsu no Yaiba",
+      "moduleId": "Sources/English/013",
+      "catalogPath": "Sources/English/013",
+      "sourceName": "Anikuro",
+      "errors": [
+        "implausible episode match: verified=7 available=7 expected<=26"
+      ]
+    },
+    {
+      "aniListId": 101922,
+      "title": "Demon Slayer: Kimetsu no Yaiba",
+      "moduleId": "Sources/Greek/001",
+      "catalogPath": "Sources/Greek/001",
+      "sourceName": "An1me",
+      "errors": [
+        "implausible episode match: verified=1 available=1 expected<=26"
+      ]
+    },
+    {
+      "aniListId": 101922,
+      "title": "Demon Slayer: Kimetsu no Yaiba",
+      "moduleId": "Sources/Russian/001",
+      "catalogPath": "Sources/Russian/001",
+      "sourceName": "Anime-Portal",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 101922,
+      "title": "Demon Slayer: Kimetsu no Yaiba",
+      "moduleId": "thn9",
+      "catalogPath": "Sources/Italian/001",
+      "sourceName": "AnimeWorld",
+      "errors": [
+        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl returned an unusable result"
+      ]
+    }
+  ]
 }
