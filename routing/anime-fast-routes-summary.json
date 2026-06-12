@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-12T16:52:53.888Z",
+  "generatedAt": "2026-06-12T19:36:29.376Z",
   "mediaRequested": 22,
   "categories": {
     "trendingNow": {
@@ -18,42 +18,41 @@
       "animeWithRoutes": 22
     }
   },
-  "mediaChecked": 51,
+  "mediaChecked": 52,
   "modulesChecked": 10,
-  "animeWithRoutes": 51,
-  "routeCount": 152,
-  "refreshedAnime": 49,
+  "animeWithRoutes": 52,
+  "routeCount": 156,
+  "refreshedAnime": 48,
   "mergeExisting": true,
-  "unresolvedAnime": 0,
-  "rejectedAttempts": 200,
+  "unresolvedAnime": 10,
+  "rejectedAttempts": 179,
   "rejectedAttemptSummary": {
     "byReason": {
-      "search_no_usable_result": 88,
-      "implausible_match": 62,
-      "stream_timeout": 37,
-      "other": 7,
-      "episodes_timeout": 4,
-      "timeout": 2
+      "search_no_usable_result": 75,
+      "implausible_match": 58,
+      "stream_timeout": 36,
+      "other": 6,
+      "episodes_timeout": 3,
+      "timeout": 1
     },
     "topModules": [
       {
         "sourceName": "AnimeLand",
         "count": 39,
         "reasons": {
-          "search_no_usable_result": 29,
+          "search_no_usable_result": 30,
           "implausible_match": 7,
-          "timeout": 2,
+          "timeout": 1,
           "other": 1
         }
       },
       {
         "sourceName": "Aniwave",
-        "count": 33,
+        "count": 34,
         "reasons": {
-          "search_no_usable_result": 2,
-          "stream_timeout": 28,
-          "implausible_match": 2,
-          "episodes_timeout": 1
+          "search_no_usable_result": 1,
+          "stream_timeout": 32,
+          "implausible_match": 1
         }
       },
       {
@@ -66,68 +65,165 @@
       },
       {
         "sourceName": "AnimeNoSub",
-        "count": 21,
+        "count": 20,
         "reasons": {
           "search_no_usable_result": 7,
           "implausible_match": 9,
-          "stream_timeout": 1,
           "other": 4
         }
       },
       {
         "sourceName": "LmAnime",
-        "count": 17,
+        "count": 13,
         "reasons": {
-          "search_no_usable_result": 17
-        }
-      },
-      {
-        "sourceName": "LuciferDonghua",
-        "count": 16,
-        "reasons": {
-          "implausible_match": 5,
-          "search_no_usable_result": 10,
-          "other": 1
+          "search_no_usable_result": 13
         }
       },
       {
         "sourceName": "OneTouch TV",
-        "count": 16,
+        "count": 13,
         "reasons": {
           "implausible_match": 11,
-          "search_no_usable_result": 4,
+          "search_no_usable_result": 2
+        }
+      },
+      {
+        "sourceName": "LuciferDonghua",
+        "count": 12,
+        "reasons": {
+          "implausible_match": 4,
+          "search_no_usable_result": 7,
           "other": 1
         }
       },
       {
-        "sourceName": "An1me",
-        "count": 12,
+        "sourceName": "Animetsu",
+        "count": 9,
         "reasons": {
-          "search_no_usable_result": 5,
-          "implausible_match": 6,
-          "episodes_timeout": 1
+          "implausible_match": 3,
+          "episodes_timeout": 3,
+          "stream_timeout": 3
+        }
+      },
+      {
+        "sourceName": "An1me",
+        "count": 6,
+        "reasons": {
+          "search_no_usable_result": 1,
+          "implausible_match": 5
         }
       },
       {
         "sourceName": "Kisskh",
-        "count": 11,
+        "count": 6,
         "reasons": {
-          "implausible_match": 6,
+          "implausible_match": 4,
           "search_no_usable_result": 1,
-          "stream_timeout": 3,
-          "episodes_timeout": 1
-        }
-      },
-      {
-        "sourceName": "Animetsu",
-        "count": 8,
-        "reasons": {
-          "stream_timeout": 5,
-          "implausible_match": 2,
-          "episodes_timeout": 1
+          "stream_timeout": 1
         }
       }
     ]
   },
-  "failures": []
+  "failures": [
+    {
+      "aniListId": 269,
+      "title": "Bleach",
+      "moduleId": "Sources/English/003",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "Animetsu",
+      "errors": [
+        "episodes: extractEpisodes timed out"
+      ]
+    },
+    {
+      "aniListId": 269,
+      "title": "Bleach",
+      "moduleId": "Sources/English/009",
+      "catalogPath": "Sources/English/009",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "implausible episode match: verified=13 available=13 expected<=366"
+      ]
+    },
+    {
+      "aniListId": 269,
+      "title": "Bleach",
+      "moduleId": "Sources/English/001",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "Aniwave",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 269,
+      "title": "Bleach",
+      "moduleId": "Sources/English/002",
+      "catalogPath": "Sources/English/002",
+      "sourceName": "AniWorld (ENG SUB)",
+      "errors": [
+        "implausible episode match: verified=51 available=412 expected<=366"
+      ]
+    },
+    {
+      "aniListId": 269,
+      "title": "Bleach",
+      "moduleId": "Sources/English/006",
+      "catalogPath": "Sources/English/006",
+      "sourceName": "AnimeNoSub",
+      "errors": [
+        "implausible episode match: verified=14 available=14 expected<=366"
+      ]
+    },
+    {
+      "aniListId": 269,
+      "title": "Bleach",
+      "moduleId": "Sources/English/007",
+      "catalogPath": "Sources/English/007",
+      "sourceName": "Kisskh",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 269,
+      "title": "Bleach",
+      "moduleId": "Sources/English/008",
+      "catalogPath": "Sources/English/008",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "implausible episode match: verified=1 available=1 expected<=366"
+      ]
+    },
+    {
+      "aniListId": 269,
+      "title": "Bleach",
+      "moduleId": "Sources/English/010",
+      "catalogPath": "Sources/English/010",
+      "sourceName": "LmAnime",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 269,
+      "title": "Bleach",
+      "moduleId": "Sources/English/012",
+      "catalogPath": "Sources/English/012",
+      "sourceName": "LuciferDonghua",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 269,
+      "title": "Bleach",
+      "moduleId": "Sources/Greek/001",
+      "catalogPath": "Sources/Greek/001",
+      "sourceName": "An1me",
+      "errors": [
+        "implausible episode match: verified=14 available=14 expected<=366"
+      ]
+    }
+  ]
 }
