@@ -1,125 +1,122 @@
-function cleanTitle(title) {
-    return title
-        .replace(/&#8217;/g, "'")  
-        .replace(/&#8211;/g, "-")  
-        .replace(/&#[0-9]+;/g, ""); 
-}
-
 async function searchResults(keyword) {
+    const baseUrl = "https://w7.animeland.tv";
     const results = [];
-    const response = await fetchv2(`https://luciferdonghua.in/?s=${keyword}`);
-    const html = await response.text();
+    try {
+        const response = await fetchv2(baseUrl + "/?s=" + encodeURIComponent(keyword));
+        const html = await response.text();
 
-    const regex = /<article class="bs"[^>]*>.*?<a href="([^"]+)"[^>]*>.*?<img src="([^"]+)"[^>]*>.*?<h2[^>]*>(.*?)<\/h2>/gs;
+        const regex = /<a href="([^"]+)"[^>]*>\s*<img[^>]*src="([^"]*)"[^>]*alt="([^"]*)"/g;
 
-    let match;
-    while ((match = regex.exec(html)) !== null) {
-        results.push({
-            title: cleanTitle(match[3].trim()),
-            image: match[2].trim(),
-            href: match[1].trim()
-        });
+        let match;
+        while ((match = regex.exec(html)) !== null) {
+            let href = match[1].trim();
+            let image = match[2].trim();
+            let title = match[3].trim();
+
+            if (href.startsWith("/")) {
+                href = baseUrl + href;
+            }
+            if (image.startsWith("/")) {
+                image = baseUrl + image;
+            }
+
+            if (href === baseUrl + "/" || href.includes("kissanimes.net")) {
+                continue;
+            }
+
+            results.push({
+                href,
+                image,
+                title
+            });
+        }
+
+        return JSON.stringify(results);
+    } catch (err) {
+        return JSON.stringify([{
+            title: "Error",
+            image: "Error",
+            href: "Error"
+        }]);
     }
-
-    return JSON.stringify(results);
 }
 
 async function extractDetails(url) {
-    const results = [];
-    const response = await fetchv2(url);
-    const html = await response.text();
+    try {
+        const response = await fetchv2(url);
+        const html = await response.text();
 
-    const match = html.match(/<div class="entry-content"[^>]*>([\s\S]*?)<\/div>/);
+        const regex = /<div class="Anime Info">\s*<\/div>\s*([\s\S]*?)<\/div>/i;
+        const match = html.match(regex);
 
-    let description = "N/A";
-    if (match) {
-        description = match[1]
-            .replace(/<[^>]+>/g, '') 
-            .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(code)) 
-            .replace(/&quot;/g, '"') 
-            .replace(/&apos;/g, "'") 
-            .replace(/&amp;/g, "&") 
-            .trim();
+        const description = match ? match[1].trim() : "N/A";
+
+        return JSON.stringify([{
+            description: description,
+            aliases: "N/A",
+            airdate: "N/A"
+        }]);
+    } catch (err) {
+        return JSON.stringify([{
+            description: "Error",
+            aliases: "Error",
+            airdate: "Error"
+        }]);
     }
-
-    results.push({
-        description: description,
-        aliases: 'N/A',
-        airdate: 'N/A'
-    });
-
-    return JSON.stringify(results);
 }
 
 async function extractEpisodes(url) {
     const results = [];
-    const response = await fetchv2(url);
-    const html = await response.text();
+    try {
+        const response = await fetchv2(url);
+        const html = await response.text();
 
-    const regex = /<li data-index="\d+">[\s\S]*?<a href="([^"]+)">/g;
+        const regex = /<li class="play"><a[^>]*href="([^"]+)"[^>]*>([^<]*)<\/a><\/li>/g;
 
-    let match;
-    let count = 1;
-    while ((match = regex.exec(html)) !== null) {
-        results.push({
-            href: match[1].trim(),
-            number: count
-        });
-        count++;
+        let match;
+        while ((match = regex.exec(html)) !== null) {
+            const href = match[1].trim();
+            const text = match[2].trim();
+
+            let number = null;
+            const urlMatch = href.match(/-episode-(\d+)/i);
+            if (urlMatch) {
+                number = parseInt(urlMatch[1], 10);
+            } else {
+                const textMatch = text.match(/Episode\s*(\d+)/i);
+                if (textMatch) number = parseInt(textMatch[1], 10);
+            }
+
+            results.push({
+                href,
+                number
+            });
+        }
+
+        return JSON.stringify(results.reverse());
+    } catch (err) {
+        return JSON.stringify([{
+            href: "Error",
+            number: "Error"
+        }]);
     }
-
-    results.reverse();
-    return JSON.stringify(results.reverse());
 }
-
 
 async function extractStreamUrl(url) {
     try {
         const response = await fetchv2(url);
         const html = await response.text();
-
-        const iframeMatch = html.match(/<meta itemprop="embedUrl" content="https?:\/\/geo\.dailymotion\.com\/player\/[^?]+\.html\?video=([a-zA-Z0-9]+)"/);
-        if (!iframeMatch) return JSON.stringify({ streams: [], subtitles: "" });
-
-        const videoId = iframeMatch[1];
-
-        const metaRes = await fetchv2(`https://www.dailymotion.com/player/metadata/video/${videoId}`);
-        const metaJson = await metaRes.json();
-        const hlsLink = metaJson.qualities?.auto?.[0]?.url;
-        if (!hlsLink) return JSON.stringify({ streams: [], subtitles: "" });
-
-        async function getBestHls(hlsUrl) {
-            try {
-                const res = await fetchv2(hlsUrl);
-                const text = await res.text();
-                const regex = /#EXT-X-STREAM-INF:.*RESOLUTION=(\d+)x(\d+).*?\n(https?:\/\/[^\n]+)/g;
-                const streams = [];
-                let match;
-                while ((match = regex.exec(text)) !== null) {
-                    streams.push({ width: parseInt(match[1]), height: parseInt(match[2]), url: match[3] });
-                }
-                if (streams.length === 0) return hlsUrl;
-                streams.sort((a, b) => b.height - a.height);
-                return streams[0].url;
-            } catch {
-                return hlsUrl;
-            }
+        const match = html.match(/file=([a-zA-Z0-9]+\.html)/);
+        if (match) {
+            const filename = match[1];
+            console.log('Filename:' + filename);
+            const videoUrl = `https://animesource.me/cache/${filename}.mp4`;
+            console.log('Video URL:' + videoUrl);
+            return videoUrl;
         }
 
-        const bestHls = await getBestHls(hlsLink);
-
-        const subtitles = metaJson.subtitles?.data?.['en-auto']?.urls?.[0] || "";
-
-        const result = {
-            streams: ["english", bestHls],
-            subtitles: subtitles
-        };
-
-        console.log("Extracted stream result:" + JSON.stringify(result));
-
-        return bestHls;
-    } catch {
-        console.log("Extracted stream result:" + JSON.stringify(empty));
-        return JSON.stringify("empty");
+    } catch (err) {
+        console.error("Error:" + err);
+        return null;
     }
 }

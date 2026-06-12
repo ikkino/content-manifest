@@ -13,7 +13,7 @@ async function searchResults(query) {
   try {
     const encodedQuery = encodeQuery(query);
     const searchUrl = searchBaseUrl + encodedQuery;
-    const response = await fetchv2(searchUrl);
+    const response = await fetchv2("https://deno-proxies-sznvnpnxwhbv.deno.dev/?url=" + encodeURIComponent(searchUrl));
     const htmlText = await response.text();
     
     const results = [];
@@ -30,9 +30,7 @@ async function searchResults(query) {
         null;
       
       const imageMatch = imageMatches[index].match(extractImageRegex);
-      const imageSrc = imageMatch
-        ? (imageMatch[1].startsWith("http") ? imageMatch[1] : baseUrl + imageMatch[1])
-        : null;
+      const imageSrc = imageMatch ? imageMatch[1] : null;
       
       const titleMatch = titleMatches[index].match(extractTitleRegex);
       const cleanTitle = titleMatch ? 
@@ -42,7 +40,7 @@ async function searchResults(query) {
       if (fullHref && imageSrc && cleanTitle) {
         results.push({
           href: fullHref,
-          image: imageSrc,
+          image: "https://deno-proxies-sznvnpnxwhbv.deno.dev/?url=" + encodeURIComponent(imageSrc),
           title: cleanTitle
         });
       }
@@ -60,8 +58,9 @@ async function searchResults(query) {
 
 async function extractDetails(url) {
   try {
-    const response = await fetchv2(url);
+    const response = await fetchv2("https://deno-proxies-sznvnpnxwhbv.deno.dev/?url=" + encodeURIComponent(url));
     const htmlText = await response.text();
+    console.log(htmlText);
     
     const descriptionMatch = (/<div class="desc text-expand">([\s\S]*?)<\/div>/.exec(htmlText) || [])[1];
     const aliasesMatch = (/<small class="al-title text-expand">([\s\S]*?)<\/small>/.exec(htmlText) || [])[1];
@@ -84,7 +83,7 @@ async function extractDetails(url) {
 async function extractEpisodes(url) {  
   try {
       const actualUrl = url.replace("Animekai:", "").trim();
-  const htmlText = await (await fetchv2(actualUrl)).text();
+      const htmlText = await (await fetchv2("https://deno-proxies-sznvnpnxwhbv.deno.dev/?url=" + encodeURIComponent(actualUrl))).text();
       const animeIdMatch = (htmlText.match(/<div class="rate-box"[^>]*data-id="([^"]+)"/) || [])[1];
       if (!animeIdMatch) return JSON.stringify([{ error: "AniID not found" }]);
 
@@ -93,7 +92,7 @@ async function extractEpisodes(url) {
       const token = tokenData.result;
 
       const episodeListUrl = `https://anikai.to/ajax/episodes/list?ani_id=${animeIdMatch}&_=${token}`;
-      const episodeListData = await (await fetchv2(episodeListUrl)).json();
+      const episodeListData = await (await fetchv2("https://deno-proxies-sznvnpnxwhbv.deno.dev/?url=" + encodeURIComponent(episodeListUrl))).json();
       const cleanedHtml = cleanJsonHtml(episodeListData.result);
 
       const episodeRegex = /<a[^>]+num="([^"]+)"[^>]+token="([^"]+)"[^>]*>/g;
@@ -115,149 +114,138 @@ async function extractEpisodes(url) {
 }
 
 async function extractStreamUrl(url) {
-    const headers = {
-      "Referer": "https://anikai.to/",
-      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36"
+  const headers = {
+    "Referer": "https://anikai.to/",
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36"
+  };
+
+  try {
+    const tokenMatch = url.match(/token=([^&]+)/);
+    if (tokenMatch && tokenMatch[1]) {
+      const rawToken = tokenMatch[1];
+      const encryptResponse = await fetchv2(`https://enc-dec.app/api/enc-kai?text=${encodeURIComponent(rawToken)}`);
+      const encryptData = await encryptResponse.json();
+      const encryptedToken = encryptData.result;
+      url = url.replace('&_=ENCRYPT_ME', `&_=${encryptedToken}`);
+    }
+    
+    const response = await fetchv2("https://deno-proxies-sznvnpnxwhbv.deno.dev/?url=" + encodeURIComponent(url));
+    const text = await response.text();
+
+    let ajaxResultHtml = "";
+    try {
+      const parsedAjax = JSON.parse(text);
+      ajaxResultHtml = parsedAjax?.result || "";
+    } catch {}
+
+    const cleanedHtml = cleanJsonHtml(text);
+    const cleanedAjaxResultHtml = cleanJsonHtml(ajaxResultHtml);
+    const serverHtmlSource = cleanedAjaxResultHtml || cleanedHtml;
+
+    const subRegex = /<div class="server-items lang-group" data-id="sub"[^>]*>([\s\S]*?)<\/div>/;
+    const softsubRegex = /<div class="server-items lang-group" data-id="softsub"[^>]*>([\s\S]*?)<\/div>/;
+    const dubRegex = /<div class="server-items lang-group" data-id="dub"[^>]*>([\s\S]*?)<\/div>/;
+    const subContent = subRegex.exec(serverHtmlSource)?.[1]?.trim() || "";
+    const softsubContent = softsubRegex.exec(serverHtmlSource)?.[1]?.trim() || "";
+    const dubContent = dubRegex.exec(serverHtmlSource)?.[1]?.trim() || "";
+
+    const extractServerId = (content) => {
+      if (!content) return null;
+      const preferred = /<span class="server"[^>]*data-lid="([^"]+)"[^>]*>\s*Server\s*1\s*<\/span>/i.exec(content);
+      if (preferred?.[1]) return preferred[1];
+      return /<span class="server"[^>]*data-lid="([^"]+)"/i.exec(content)?.[1] || null;
     };
 
-    let actualUrl = url;
-    try {
-      const tokenMatch = actualUrl.match(/token=([^&]+)/);
-      if (tokenMatch && tokenMatch[1]) {
-        const rawToken = tokenMatch[1];
-        const encryptResponse = await fetchv2(`https://enc-dec.app/api/enc-kai?text=${encodeURIComponent(rawToken)}`);
-        const encryptData = await encryptResponse.json();
-        const encryptedToken = encryptData.result;
-        actualUrl = actualUrl.replace('&_=ENCRYPT_ME', `&_=${encryptedToken}`);
-      }
-      
-      const response = await fetchv2(actualUrl);
-      const text = await response.text();
+    const serverIdDub = extractServerId(dubContent);
+    const serverIdSoftsub = extractServerId(softsubContent);
+    const serverIdSub = extractServerId(subContent);
 
-      let ajaxResultHtml = "";
-      try {
-        const parsedAjax = JSON.parse(text);
-        ajaxResultHtml = parsedAjax?.result || "";
-      } catch {}
+    const tokenRequestData = [
+      { name: "Dub", data: serverIdDub },
+      { name: "Softsub", data: serverIdSoftsub },
+      { name: "Sub", data: serverIdSub }
+    ].filter(item => item.data);
 
-      const cleanedHtml = cleanJsonHtml(text);
-      const cleanedAjaxResultHtml = cleanJsonHtml(ajaxResultHtml);
-      const serverHtmlSource = cleanedAjaxResultHtml || cleanedHtml;
+    const tokenPromises = tokenRequestData.map(item => 
+      fetchv2(`https://enc-dec.app/api/enc-kai?text=${encodeURIComponent(item.data)}`)
+        .then(res => res.json())
+        .then(json => ({ name: item.name, data: json.result }))
+        .catch(err => ({ name: item.name, error: err.toString() }))
+    );
+    const tokenResults = await Promise.all(tokenPromises);
 
-      const subRegex = /<div class="server-items lang-group" data-id="sub"[^>]*>([\s\S]*?)<\/div>/;
-      const softsubRegex = /<div class="server-items lang-group" data-id="softsub"[^>]*>([\s\S]*?)<\/div>/;
-      const dubRegex = /<div class="server-items lang-group" data-id="dub"[^>]*>([\s\S]*?)<\/div>/;
-      const subMatch = subRegex.exec(serverHtmlSource);
-      const softsubMatch = softsubRegex.exec(serverHtmlSource);
-      const dubMatch = dubRegex.exec(serverHtmlSource);
+    const serverIdMap = {
+      "Dub": serverIdDub,
+      "Softsub": serverIdSoftsub,
+      "Sub": serverIdSub
+    };
 
-      const subContent = subMatch ? subMatch[1].trim() : "";
-      const softsubContent = softsubMatch ? softsubMatch[1].trim() : "";
-      const dubContent = dubMatch ? dubMatch[1].trim() : "";
+    const streamUrls = tokenResults.map(result => ({
+      type: result.name,
+      url: `https://anikai.to/ajax/links/view?id=${serverIdMap[result.name]}&_=${result.data}`
+    }));
 
-      const extractServerId = (content) => {
-        if (!content) return null;
-        const preferred = /<span class="server"[^>]*data-lid="([^"]+)"[^>]*>\s*Server\s*1\s*<\/span>/i.exec(content);
-        if (preferred?.[1]) return preferred[1];
-        return /<span class="server"[^>]*data-lid="([^"]+)"/i.exec(content)?.[1] || null;
-      };
-
-      const serverIdDub = extractServerId(dubContent);
-      const serverIdSoftsub = extractServerId(softsubContent);
-      const serverIdSub = extractServerId(subContent);
-
-      const tokenRequestData = [
-        { name: "Dub", data: serverIdDub },
-        { name: "Softsub", data: serverIdSoftsub },
-        { name: "Sub", data: serverIdSub }
-      ].filter(item => item.data);
-
-      const tokenPromises = tokenRequestData.map(item => 
-        fetchv2(`https://enc-dec.app/api/enc-kai?text=${encodeURIComponent(item.data)}`)
-          .then(res => res.json())
-          .then(json => ({ name: item.name, data: json.result }))
-          .catch(err => ({ name: item.name, error: err.toString() }))
-      );
-      const tokenResults = await Promise.all(tokenPromises);
-
-      const serverIdMap = {
-        "Dub": serverIdDub,
-        "Softsub": serverIdSoftsub,
-        "Sub": serverIdSub
-      };
-
-      const streamUrls = tokenResults.map(result => ({
-        type: result.name,
-        url: `https://anikai.to/ajax/links/view?id=${serverIdMap[result.name]}&_=${result.data}`
-      }));
-
-      const streamResponses = await Promise.all(
-        streamUrls.map(async ({ type, url }) => {
-          try {
-            const res = await fetchv2(url);
-            const json = await res.json();
-            return { type, result: json.result };
-          } catch {
-            return { type, result: null };
-          }
-        })
-      );
-
-      const decryptPromises = streamResponses
-        .filter(item => item.result)
-        .map(item =>
-          fetchv2(`https://enc-dec.app/api/dec-kai?text=${item.result}`, headers)
-            .then(res => res.json())
-            .then(json => ({ name: item.type, url: json.result?.url || null }))
-            .catch(() => ({ name: item.type, url: null }))
-        );
-      const decryptResults = await Promise.all(decryptPromises);
-
-      const urlMap = Object.fromEntries(decryptResults.map(i => [i.name, i.url]));
-
-      const decryptedSub = urlMap.Sub;
-      const decryptedDub = urlMap.Dub;
-      const decryptedRaw = urlMap.Softsub;
-
-      async function getStream(url) {
+    // Step 1: fetch links/view via proxy
+    const streamResponses = await Promise.all(
+      streamUrls.map(async ({ type, url }) => {
         try {
-          const response = await fetchv2(url.replace("/e/", "/media/"), headers);
-          const responseJson = await response.json();
-          const result = responseJson?.result;
-
-          const finalResponse = await fetchv2(
-            "https://enc-dec.app/api/dec-mega",
-            { "Content-Type": "application/json" },
-            "POST",
-            JSON.stringify({ text: result, agent: headers["User-Agent"] })
-          );
-
-          const finalJson = await finalResponse.json();
-          return finalJson?.result?.sources?.[0]?.file || null;
-        } catch {
-          return null;
+          const res = await fetchv2("https://deno-proxies-sznvnpnxwhbv.deno.dev/?url=" + encodeURIComponent(url));
+          const json = await res.json();
+          return { type, result: json.result };
+        } catch (error) {
+          console.log(`Error fetching ${type} stream:`, error);
+          return { type, result: null };
         }
-      }
+      })
+    );
 
-      const [subStream, dubStream, rawStream] = await Promise.all([
-        decryptedSub ? getStream(decryptedSub) : Promise.resolve(null),
-        decryptedDub ? getStream(decryptedDub) : Promise.resolve(null),
-        decryptedRaw ? getStream(decryptedRaw) : Promise.resolve(null)
-      ]);
+    // Step 2: decrypt with browser UA — no encodeURIComponent
+    const decryptPromises = streamResponses
+      .filter(item => item.result)
+      .map(item =>
+        fetchv2(`https://enc-dec.app/api/dec-kai?text=${item.result}`, headers)
+          .then(res => res.json())
+          .then(json => {
+            console.log(`decrypted ${item.type} URL:`, json.result?.url);
+            return { name: item.type, url: json.result?.url || null };
+          })
+          .catch(err => ({ name: item.type, url: null }))
+      );
+    const decryptResults = await Promise.all(decryptPromises);
 
-      console.log("[extractStreamUrl] Sub:", subStream, "Dub:", dubStream, "Softsub:", rawStream);
+    const urlMap = Object.fromEntries(decryptResults.map(i => [i.name, i.url]));
+    const decryptedDub = urlMap.Dub || urlMap.Sub || urlMap.Softsub;
 
-      const streams = [];
-      if (subStream) streams.push({ title: "Hardsub English", streamUrl: subStream });
-      if (dubStream) streams.push({ title: "Dubbed English",  streamUrl: dubStream });
-      if (rawStream) streams.push({ title: "Original audio",  streamUrl: rawStream });
+    console.log("Using URL:", decryptedDub);
 
-      return JSON.stringify({ streams, subtitles: "" });
+    if (decryptedDub) {
+      const mediaResponse = await fetchv2(decryptedDub.replace("/e/", "/media/"), headers);
+      const responseJson = await mediaResponse.json();
+      const result = responseJson?.result;
 
-    } catch (error) {
-      console.error("Animekai fetch error:" + error);
-      return "https://error.org";
+      const postData = {
+        "text": result,
+        "agent": headers["User-Agent"]
+      };
+
+      const finalResponse = await fetchv2(
+        "https://enc-dec.app/api/dec-mega",
+        { "Content-Type": "application/json" },
+        "POST",
+        JSON.stringify(postData)
+      );
+      const finalJson = await finalResponse.json();
+      console.log("dec-mega result:", finalJson);
+      const m3u8Link = finalJson?.result?.sources?.[0]?.file;
+
+      return m3u8Link;
     }
+
+    return "error";
+  } catch (error) {
+    console.log("Fetch error:" + error);
+    return "https://error.org";
+  }
 }
 
 function cleanHtmlSymbols(string) {

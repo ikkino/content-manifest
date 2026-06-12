@@ -1,23 +1,93 @@
 async function searchResults(keyword) {
     const results = [];
     try {
-        const response = await fetchv2("https://www.tokyoinsider.com/anime/search?k=" + encodeURIComponent(keyword));
-        const html = await response.text();
+        const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com|youtu\.be)\/(?:watch\?v=)?([a-zA-Z0-9_-]{11})/;
+        const youtubeMatch = keyword.match(youtubeRegex);
+        
+        if (youtubeMatch) {
+            const videoId = youtubeMatch[1];
+            try {
+                const response = await fetchv2("https://invidious.nikkosphere.com/api/v1/videos/" + videoId);
+                const data = await response.json();
+                
+                results.push({
+                    title: data.title || "YouTube Video",
+                    image: "https://proxy.piped.private.coffee" + (data.videoThumbnails && data.videoThumbnails.length > 0 ? data.videoThumbnails[0].url : ""),
+                    href: videoId
+                });
+                
+                return JSON.stringify(results);
+            } catch (err) {
+                console.error("Error fetching YouTube video:", err);
+                return JSON.stringify([{
+                    title: "Error",
+                    image: "Error",
+                    href: "Error"
+                }]);
+            }
+        }
+        
+        const response = await fetchv2("https://api.piped.private.coffee/search?q=" + encodeURIComponent(keyword) + "&filter=all");
+        const data = await response.json();
 
-        const regex = /<img class="a_img" src="([^"]*)"[^>]*><\/a>[\s\S]*?<a href="([^"]*)" style="font: bold 14px verdana;">([^<]*(?:<span[^>]*>[^<]*<\/span>[^<]*)*)<\/a>/g;
+        if (data && Array.isArray(data.items)) {
+            for (const item of data.items) {
+                if (item.type === "stream") {
+                    const videoId = item.url ? item.url.replace("/watch?v=", "") : "";
+                    results.push({
+                        title: item.title || "",
+                        image: item.thumbnail || "",
+                        href: videoId
+                    });
+                }
+            }
+        }
 
-        let match;
-        while ((match = regex.exec(html)) !== null) {
-            const titleText = match[3].replace(/<span class="searchhighlight">(.*?)<\/span>/g, '$1').replace(/&nbsp;/g, ' ');
-            results.push({
-                title: titleText.trim(),
-                image: match[1].trim(),
-                href: match[2].trim()
-            });
+        let nextpage = data.nextpage;
+        if (nextpage) {
+            try {
+                const response2 = await fetchv2("https://api.piped.private.coffee/nextpage/search?nextpage=" + encodeURIComponent(nextpage) + "&q=" + encodeURIComponent(keyword) + "&filter=all");
+                const data2 = await response2.json();
+
+                if (data2 && Array.isArray(data2.items)) {
+                    for (const item of data2.items) {
+                        if (item.type === "stream") {
+                            const videoId = item.url ? item.url.replace("/watch?v=", "") : "";
+                            results.push({
+                                title: item.title || "",
+                                image: item.thumbnail || "",
+                                href: videoId
+                            });
+                        }
+                    }
+                }
+
+                nextpage = data2.nextpage;
+                if (nextpage) {
+                    const response3 = await fetchv2("https://api.piped.private.coffee/nextpage/search?nextpage=" + encodeURIComponent(nextpage) + "&q=" + encodeURIComponent(keyword) + "&filter=all");
+                    const data3 = await response3.json();
+
+                    if (data3 && Array.isArray(data3.items)) {
+                        for (const item of data3.items) {
+                            if (item.type === "stream") {
+                                const videoId = item.url ? item.url.replace("/watch?v=", "") : "";
+                                results.push({
+                                    title: item.title || "",
+                                    image: item.thumbnail || "",
+                                    href: videoId
+                                });
+                            }
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error("Error fetching additional pages:", err);
+            }
         }
 
         return JSON.stringify(results);
     } catch (err) {
+        console.error(err);
         return JSON.stringify([{
             title: "Error",
             image: "Error",
@@ -26,34 +96,15 @@ async function searchResults(keyword) {
     }
 }
 
-async function extractDetails(slug) {
+async function extractDetails(ID) {
     try {
-        const response = await fetchv2("https://www.tokyoinsider.com" + slug);
-        const html = await response.text();
-
-        let titles = "N/A";
-        let airdate = "N/A";
-        let description = "N/A";
-
-        const titlesMatch = html.match(/<td width="80" valign="top"><b>Title\(s\):<\/b><\/td>\s*<td>([\s\S]*?)<\/td>\s*<\/tr>/);
-        if (titlesMatch) {
-            titles = titlesMatch[1].replace(/<br>/g, ', ').replace(/\s+/g, ' ').trim();
-        }
-
-        const airdateMatch = html.match(/<td valign="top"><b>Vintage:<\/b><\/td>\s*<td>([\s\S]*?)<\/td>\s*<\/tr>/);
-        if (airdateMatch) {
-            airdate = airdateMatch[1].replace(/\s+/g, ' ').trim();
-        }
-
-        const summaryMatch = html.match(/<td valign="top" style="border-bottom: 0;"><b>Summary:<\/b><\/td>\s*<td style="border-bottom: 0;">([\s\S]*?)<\/td>\s*<\/tr>/);
-        if (summaryMatch) {
-            description = summaryMatch[1].replace(/\s+/g, ' ').trim();
-        }
+        const response = await fetchv2("https://invidious.nikkosphere.com/api/v1/videos/" + ID);
+        const data = await response.json();
 
         return JSON.stringify([{
-            aliases: titles,
-            airdate: airdate,
-            description: description
+            description: data.description,
+            aliases: data.author,
+            airdate: data.publishedText
         }]);
     } catch (err) {
         return JSON.stringify([{
@@ -64,71 +115,35 @@ async function extractDetails(slug) {
     }
 }
 
-async function extractEpisodes(url) {
+async function extractEpisodes(ID) {
     const results = [];
     try {
-        const response = await fetchv2("https://www.tokyoinsider.com" + url);
-        const html = await response.text();
-
-        const regex = /<div class="episode[^"]*">\s*<div><a class="download-link" href="([^"]*)">[^<]*<em>(\w+)<\/em>\s*<strong>(\d+)<\/strong>(?:<i[^>]*>\s*:\s*([^<]*)<\/i>)?/g;
-
-        let match;
-        while ((match = regex.exec(html)) !== null) {
-            const number = parseInt(match[3], 10);
 
             results.push({
-                href: match[1].trim(),
-                number: number,
+                href: ID,
+                number: 1
             });
-        }
 
-        return JSON.stringify(results.reverse());
+        return JSON.stringify(results);
     } catch (err) {
         return JSON.stringify([{
             href: "Error",
-            type: "Error",
-            number: "Error",
-            title: "Error"
+            number: "Error"
         }]);
     }
 }
 
-async function extractStreamUrl(slug) {
+async function extractStreamUrl(ID) {
     try {
-        const response = await fetchv2("https://www.tokyoinsider.com" + slug);
-        const html = await response.text();
+        const response = await fetchv2("https://invidious.nikkosphere.com/api/v1/videos/" + ID);
+        const data = await response.json();
 
-        const streams = [];
-        
-        const containerMatch = html.match(/<div\s+id="inner_page">([\s\S]*?)<div\s+class="fsplit">/);
-        if (!containerMatch) {
-            return JSON.stringify({
-                streams: [],
-                subtitle: "Error"
-            });
-        }
-        
-        const container = containerMatch[1];
-        
-        const downloadRegex = /<a\s+href="(https:\/\/media\.tokyoinsider\.com:8080\/[^"]+)"\s*>([^<]+)<\/a>/g;
-        
-        let match;
-        while ((match = downloadRegex.exec(container)) !== null) {
-            streams.push({
-                title: match[2].trim(),
-                streamUrl: match[1].trim(),
-                headers: {}
-            });
+        if (data && Array.isArray(data.formatStreams) && data.formatStreams.length > 0) {
+            return data.formatStreams[0].url || "https://error.org/";
         }
 
-        return JSON.stringify({
-            streams: streams,
-            subtitle: "None"
-        });
+        return "https://error.org/";
     } catch (err) {
-        return JSON.stringify({
-            streams: [],
-            subtitle: "Error"
-        });
+        return "https://error.org/";
     }
 }

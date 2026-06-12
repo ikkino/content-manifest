@@ -1,78 +1,125 @@
+function cleanTitle(title) {
+    return title
+        .replace(/&#8217;/g, "'")  
+        .replace(/&#8211;/g, "-")  
+        .replace(/&#[0-9]+;/g, ""); 
+}
+
 async function searchResults(keyword) {
     const results = [];
+    const response = await fetchv2(`https://luciferdonghua.in/?s=${keyword}`);
+    const html = await response.text();
 
-    results.push({
-        title: "Use External Player",
-        image: "https://git.luna-app.eu/ibro/services/raw/branch/main/yuYuHakushoPace/UseExternalPlayer.png",
-        href: ""
-    });
+    const regex = /<article class="bs"[^>]*>.*?<a href="([^"]+)"[^>]*>.*?<img src="([^"]+)"[^>]*>.*?<h2[^>]*>(.*?)<\/h2>/gs;
 
-    results.push({
-        title: "Yu Yu Hakusho Pace",
-        image: "https://git.luna-app.eu/ibro/services/raw/branch/main/yuYuHakushoPace/icon.png",
-        href: "https://pixeldrain.net/l/Ldcn42AG"
-    });
-    
-    console.log(`Results: ${JSON.stringify(results)}`);
+    let match;
+    while ((match = regex.exec(html)) !== null) {
+        results.push({
+            title: cleanTitle(match[3].trim()),
+            image: match[2].trim(),
+            href: match[1].trim()
+        });
+    }
+
     return JSON.stringify(results);
 }
 
 async function extractDetails(url) {
-    const match = url.match(/https:\/\/pixeldrain\.net\/l\/([^\/]+)/);
-    if (!match) throw new Error("Invalid URL format");
+    const results = [];
+    const response = await fetchv2(url);
+    const html = await response.text();
 
-    const arcId = match[1];
+    const match = html.match(/<div class="entry-content"[^>]*>([\s\S]*?)<\/div>/);
 
-    const response = await soraFetch(`https://pixeldrain.net/api/list/${arcId}`);
-    const data = await response.json();    
+    let description = "N/A";
+    if (match) {
+        description = match[1]
+            .replace(/<[^>]+>/g, '') 
+            .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(code)) 
+            .replace(/&quot;/g, '"') 
+            .replace(/&apos;/g, "'") 
+            .replace(/&amp;/g, "&") 
+            .trim();
+    }
 
-    const transformedResults = [{
-        description: `Title: ${data.title}\nFile Count: ${data.file_count}`,
-        aliases: `Title: ${data.title}\nFile Count: ${data.file_count}`,
-        airdate: ''
-    }];
+    results.push({
+        description: description,
+        aliases: 'N/A',
+        airdate: 'N/A'
+    });
 
-    console.log(`Details: ${JSON.stringify(transformedResults)}`);
-    return JSON.stringify(transformedResults);
+    return JSON.stringify(results);
 }
 
 async function extractEpisodes(url) {
-    const match = url.match(/https:\/\/pixeldrain\.net\/l\/([^\/]+)/);
-    if (!match) throw new Error("Invalid URL format");
+    const results = [];
+    const response = await fetchv2(url);
+    const html = await response.text();
 
-    const arcId = match[1];
+    const regex = /<li data-index="\d+">[\s\S]*?<a href="([^"]+)">/g;
 
-    const response = await soraFetch(`https://pixeldrain.net/api/list/${arcId}`);
-    const data = await response.json();
+    let match;
+    let count = 1;
+    while ((match = regex.exec(html)) !== null) {
+        results.push({
+            href: match[1].trim(),
+            number: count
+        });
+        count++;
+    }
 
-    const transformedResults = data.files.map((result, index) => {
-        return {
-            href: `${result.id}`,
-            number: index + 1,
-        };
-    });
-
-    console.log(`Episodes: ${JSON.stringify(transformedResults)}`);
-    return JSON.stringify(transformedResults);
+    results.reverse();
+    return JSON.stringify(results.reverse());
 }
 
-// searchResults("all");
-// extractDetails("https://pixeldrain.net/l/dX3cF5Q3");
-// extractEpisodes("https://pixeldrain.net/l/dX3cF5Q3");
-// extractStreamUrl(`EDg7Q9Uu`);
 
 async function extractStreamUrl(url) {
-    return `https://pixeldrain.net/api/file/${url}`;
-}
-
-async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
     try {
-        return await fetchv2(url, options.headers ?? {}, options.method ?? 'GET', options.body ?? null);
-    } catch(e) {
-        try {
-            return await fetch(url, options);
-        } catch(error) {
-            return null;
+        const response = await fetchv2(url);
+        const html = await response.text();
+
+        const iframeMatch = html.match(/<meta itemprop="embedUrl" content="https?:\/\/geo\.dailymotion\.com\/player\/[^?]+\.html\?video=([a-zA-Z0-9]+)"/);
+        if (!iframeMatch) return JSON.stringify({ streams: [], subtitles: "" });
+
+        const videoId = iframeMatch[1];
+
+        const metaRes = await fetchv2(`https://www.dailymotion.com/player/metadata/video/${videoId}`);
+        const metaJson = await metaRes.json();
+        const hlsLink = metaJson.qualities?.auto?.[0]?.url;
+        if (!hlsLink) return JSON.stringify({ streams: [], subtitles: "" });
+
+        async function getBestHls(hlsUrl) {
+            try {
+                const res = await fetchv2(hlsUrl);
+                const text = await res.text();
+                const regex = /#EXT-X-STREAM-INF:.*RESOLUTION=(\d+)x(\d+).*?\n(https?:\/\/[^\n]+)/g;
+                const streams = [];
+                let match;
+                while ((match = regex.exec(text)) !== null) {
+                    streams.push({ width: parseInt(match[1]), height: parseInt(match[2]), url: match[3] });
+                }
+                if (streams.length === 0) return hlsUrl;
+                streams.sort((a, b) => b.height - a.height);
+                return streams[0].url;
+            } catch {
+                return hlsUrl;
+            }
         }
+
+        const bestHls = await getBestHls(hlsLink);
+
+        const subtitles = metaJson.subtitles?.data?.['en-auto']?.urls?.[0] || "";
+
+        const result = {
+            streams: ["english", bestHls],
+            subtitles: subtitles
+        };
+
+        console.log("Extracted stream result:" + JSON.stringify(result));
+
+        return bestHls;
+    } catch {
+        console.log("Extracted stream result:" + JSON.stringify(empty));
+        return JSON.stringify("empty");
     }
 }

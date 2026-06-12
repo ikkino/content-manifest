@@ -1,115 +1,146 @@
+// Search, Details and Episodes function are from ibro's module.
+
 async function searchResults(keyword) {
-    const results = [];
-    const response = await fetchv2(`https://lmanime.com/?s=${keyword}`);
-    const html = await response.text();
+    try {
+        const encodedKeyword = encodeURIComponent(keyword);
+        const responseText = await soraFetch(`https://kisskh.co/api/DramaList/Search?q=${encodedKeyword}&type=0`);
+        const data = await responseText.json();
 
-    const regex = /<article class="bs"[^>]*>.*?<a href="([^"]+)"[^>]*>.*?<img src="([^"]+)"[^>]*>.*?<h2[^>]*>(.*?)<\/h2>/gs;
+        const transformedResults = data.map(result => {
+            const editedTitle = result.title.replace(/[\s()']/g, '-');
 
-    let match;
-    while ((match = regex.exec(html)) !== null) {
-        results.push({
-            title: match[3].trim(),
-            image: match[2].trim(),
-            href: match[1].trim()
+            return {
+                title: result.title,
+                image: result.thumbnail,
+                href: `https://kisskh.co/Drama/${editedTitle}?id=${result.id}`
+            };
         });
-    }
 
-    return JSON.stringify(results);
+        return JSON.stringify(transformedResults);
+    } catch (error) {
+        console.log('Fetch error in searchResults:', error);
+        return JSON.stringify([{ title: 'Error', image: '', href: '' }]);
+    }
 }
 
 async function extractDetails(url) {
-    const results = [];
-    const response = await fetchv2(url);
-    const html = await response.text();
+    try {
+        const match = url.match(/https:\/\/kisskh\.co\/Drama\/([^\/]+)\?id=([^\/]+)/);
+        if (!match) throw new Error("Invalid URL format");
 
-    const match = html.match(/<div class="entry-content"[^>]*>([\s\S]*?)<\/div>/);
+        const showId = match[2];
+        const responseText = await soraFetch(`https://kisskh.co/api/DramaList/Drama/${showId}?isq=false`);
+        const data = await responseText.json();
 
-    let description = "N/A";
-    if (match) {
-        description = match[1]
-            .replace(/<[^>]+>/g, '') 
-            .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(code)) 
-            .replace(/&quot;/g, '"') 
-            .replace(/&apos;/g, "'") 
-            .replace(/&amp;/g, "&") 
-            .trim();
+        const transformedResults = [{
+            description: data.description || 'No description available',
+            aliases: ``,
+            airdate: `Released: ${data.releaseDate ? data.releaseDate : 'Unknown'}`
+        }];
+
+        return JSON.stringify(transformedResults);
+    } catch (error) {
+        console.log('Details error:', error);
+        return JSON.stringify([{
+            description: 'Error loading description',
+            aliases: 'Duration: Unknown',
+            airdate: 'Aired/Released: Unknown'
+        }]);
     }
-
-    results.push({
-        description: description,
-        aliases: 'N/A',
-        airdate: 'N/A'
-    });
-
-    return JSON.stringify(results);
 }
 
 async function extractEpisodes(url) {
-    const results = [];
-    const response = await fetchv2(url);
-    const html = await response.text();
+    try {
+        const match = url.match(/https:\/\/kisskh\.co\/Drama\/([^\/]+)\?id=([^\/]+)/);
+        if (!match) throw new Error("Invalid URL format");
+        const showTitle = match[1];
+        const showId = match[2];
 
-    const regex = /<a href="([^"]+)">\s*<div class="epl-num">([\d.]+)<\/div>/g;
+        const showResponseText = await soraFetch(`https://kisskh.co/api/DramaList/Drama/${showId}?isq=false`);
+        const showData = await showResponseText.json();
 
-    let match;
-    while ((match = regex.exec(html)) !== null) {
-        results.push({
-            href: match[1].trim(),
-            number: parseInt(match[2], 10)
-        });
-    }
-    results.reverse();
-    return JSON.stringify(results);
+        const episodes = showData.episodes?.map(episode => ({
+            href: `https://kisskh.co/Drama/${showTitle}/Episode-${episode.number}?id=${showId}&ep=${episode.id}`,
+            number: episode.number,
+            title: episode.name || `Episode ${episode.number}` ||  ""
+        }));
+
+        const reversedEpisodes = episodes.reverse();
+
+        console.log(reversedEpisodes);
+    
+        return JSON.stringify(reversedEpisodes);
+    } catch (error) {
+        console.log('Fetch error in extractEpisodes:', error);
+        return JSON.stringify([]);
+    }    
 }
 
 async function extractStreamUrl(url) {
     try {
-        const response = await fetchv2(url);
-        const html = await response.text();
+        const episodeID = url.split('&ep=')[1];
 
-        const iframeMatch = html.match(/dailymotion\.com\/embed\/video\/([a-zA-Z0-9]+)/);
-        if (!iframeMatch) return JSON.stringify({ streams: [], subtitles: "" });
+        const decryptedStreamResponse = await soraFetch(`https://enc-dec.app/api/enc-kisskh?text=${episodeID}&type=vid`);
+        const decryptedStreamData = await decryptedStreamResponse.json();
+        const streamkKey = decryptedStreamData.result;
 
-        const videoId = iframeMatch[1];
+        const decryptedSubtitlesResponse = await soraFetch(`https://enc-dec.app/api/enc-kisskh?text=${episodeID}&type=sub`);
+        const decryptedSubtitlesData = await decryptedSubtitlesResponse.json();
+        const subtitlesKey = decryptedSubtitlesData.result;
 
-        const metaRes = await fetchv2(`https://www.dailymotion.com/player/metadata/video/${videoId}`);
-        const metaJson = await metaRes.json();
-        const hlsLink = metaJson.qualities?.auto?.[0]?.url;
-        if (!hlsLink) return JSON.stringify({ streams: [], subtitles: "" });
+        const streamResponse = await soraFetch(`https://kisskh.co/api/DramaList/Episode/${episodeID}.png?err=false&ts=null&time=null&kkey=${streamkKey}`);
+        const streamData = await streamResponse.json();
+        const streamUrl = streamData.Video;
 
-        async function getBestHls(hlsUrl) {
-            try {
-                const res = await fetchv2(hlsUrl);
-                const text = await res.text();
-                const regex = /#EXT-X-STREAM-INF:.*RESOLUTION=(\d+)x(\d+).*?\n(https?:\/\/[^\n]+)/g;
-                const streams = [];
-                let match;
-                while ((match = regex.exec(text)) !== null) {
-                    streams.push({ width: parseInt(match[1]), height: parseInt(match[2]), url: match[3] });
-                }
-                if (streams.length === 0) return hlsUrl;
-                streams.sort((a, b) => b.height - a.height);
-                return streams[0].url;
-            } catch {
-                return hlsUrl;
+        const subtitlesResponse = await soraFetch(`https://kisskh.co/api/Sub/${episodeID}?kkey=${subtitlesKey}`);
+        const subtitlesData = await subtitlesResponse.json();
+        const englishSubtitle = subtitlesData.find(sub => sub.land === "en");
+        const englishSubtitleUrl = englishSubtitle?.src || "none";
+
+		let formattedSubtitleUrl = englishSubtitleUrl;
+		if (/\?v=/.test(englishSubtitleUrl)) {
+			formattedSubtitleUrl = "https://kisskh-five.vercel.app/api/proxy?url=" + encodeURIComponent(englishSubtitleUrl);
+		}
+
+        if (streamUrl) {
+            const results = {
+                streams: [{
+                    title: "Stream",
+                    streamUrl,  
+                    headers: {
+                        "Referer": "https://kisskh.co/",
+                        "Origin": "https://kisskh.co"
+                    },
+                }],
+            subtitles: formattedSubtitleUrl
             }
+
+            return JSON.stringify(results);
+        } else {
+            return "";
         }
-
-        const bestHls = await getBestHls(hlsLink);
-
-        const subtitles = metaJson.subtitles?.data?.['en-auto']?.urls?.[0] || "";
-
-        const result = {
-            streams: ["english", bestHls],
-            subtitles: subtitles
-        };
-
-        console.log("Extracted stream result:" + JSON.stringify(result));
-
-        return JSON.stringify(result);
-    } catch {
-        const empty = { streams: [], subtitles: "" };
-        console.log("Extracted stream result:" + JSON.stringify(empty));
-        return JSON.stringify(empty);
+    } catch (error) {
+        console.log('Fetch error in extractStreamUrl:', error);
+        return null;
     }
 }
+
+async function soraFetch(url, options = { headers: {}, method: 'GET', body: null, encoding: 'utf-8' }) {
+    try {
+        return await fetchv2(
+            url,
+            options.headers ?? {},
+            options.method ?? 'GET',
+            options.body ?? null,
+            true,
+            options.encoding ?? 'utf-8'
+        );
+    } catch(e) {
+        try {
+            return await fetch(url, options);
+        } catch(error) {
+            return null;
+        }
+    }
+}
+

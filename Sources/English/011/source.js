@@ -1,65 +1,32 @@
 async function searchResults(keyword) {
     const results = [];
-    const response = await soraFetch(`https://sites.google.com/view/borucut`);
-    const html = await response.text();
 
-    // --- Regex patterns ---
-    const arcRegex = /<span class="C9DxTc "[^>]*>([^<]*Arc)<\/span>/g;
-    const linkRegex = /<a[^>]*href="([^"]+)"[^>]*>\s*<div class="NsaAfc">\s*<p>.*?<\/p>/g;
-    const imageRegex = /<img src="([^"]+)"[^>]*>/g;
+    results.push({
+        title: "Use External Player",
+        image: "https://git.luna-app.eu/ibro/services/raw/branch/main/narucannon/UseExternalPlayer.png",
+        href: ""
+    });
 
-    // --- Extract arcs ---
-    let arcs = [];
-    let match;
-    while ((match = arcRegex.exec(html)) !== null) {
-        arcs.push(match[1].trim());
-    }
+    results.push({
+        title: "Narucannon Subbed",
+        image: "https://git.luna-app.eu/ibro/services/raw/branch/main/narucannon/icon.png",
+        href: "https://pixeldrain.net/l/dX3cF5Q3"
+    });
 
-    // --- Extract links ---
-    let hrefs = [];
-    while ((match = linkRegex.exec(html)) !== null) {
-        hrefs.push(match[1]);
-    }
-
-    // --- Extract ALL images ---
-    let allImages = [];
-    while ((match = imageRegex.exec(html)) !== null) {
-        allImages.push(match[1]);
-    }
-
-    // 🔑 Filter images: keep only the ones that appear after arcs start
-    // In your case, the "real" arc images start from index 4 onward
-    let images = allImages.slice(allImages.length - arcs.length);
-
-    // --- Zip arcs + hrefs + images together ---
-    for (let i = 0; i < arcs.length; i++) {
-        results.push({
-            title: arcs[i] || "",
-            href: hrefs[i] || "",
-            image: images[i] || ""
-        });
-    }
-
-    for (const item of results) {
-        const match = item.href.match(/q=(https[^&]+)/);
-        if (match) {
-            let decoded = decodeURIComponent(match[1]);
-            decoded = decoded.replace(/pixeldrain\.com/, "pixeldrain.net");
-            item.href = decoded;
-        }
-    }
-
-    console.log("Results:", results);
+    results.push({
+        title: "Narucannon Dubbed",
+        image: "https://git.luna-app.eu/ibro/services/raw/branch/main/narucannon/icon.png",
+        href: "https://pixeldrain.net/l/tqeCisSm"
+    });
+    
+    console.log(`Results: ${JSON.stringify(results)}`);
     return JSON.stringify(results);
 }
-
-// searchResults();
-// extractEpisodes("https://pixeldrain.net/l/hUCyAHnR");
 
 async function extractDetails(url) {
     const match = url.match(/https:\/\/pixeldrain\.net\/l\/([^\/]+)/);
     if (!match) throw new Error("Invalid URL format");
-
+            
     const arcId = match[1];
 
     const response = await soraFetch(`https://pixeldrain.net/api/list/${arcId}`);
@@ -78,7 +45,7 @@ async function extractDetails(url) {
 async function extractEpisodes(url) {
     const match = url.match(/https:\/\/pixeldrain\.net\/l\/([^\/]+)/);
     if (!match) throw new Error("Invalid URL format");
-
+            
     const arcId = match[1];
 
     const response = await soraFetch(`https://pixeldrain.net/api/list/${arcId}`);

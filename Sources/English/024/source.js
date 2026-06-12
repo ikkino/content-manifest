@@ -1,288 +1,316 @@
-async function searchResults(query) {
-  const encodeQuery = keyword => encodeURIComponent(keyword);
-  const searchBaseUrl = "https://anikai.to/browser?keyword=";
-  const baseUrl = "https://anikai.to";
-  
-  const posterHrefRegex = /href="[^"]*" class="poster"/g;
-  const titleRegex = /class="title"[^>]*title="[^"]*"/g;
-  const imageRegex = /data-src="[^"]*"/g;
-  const extractHrefRegex = /href="([^"]*)"/;
-  const extractImageRegex = /data-src="([^"]*)"/;
-  const extractTitleRegex = /title="([^"]*)"/;
-  
-  try {
-    const encodedQuery = encodeQuery(query);
-    const searchUrl = searchBaseUrl + encodedQuery;
-    const response = await fetchv2("https://deno-proxies-sznvnpnxwhbv.deno.dev/?url=" + encodeURIComponent(searchUrl));
-    const htmlText = await response.text();
-    
+async function searchResults(keyword) {
     const results = [];
-    const posterMatches = htmlText.match(posterHrefRegex) || [];
-    const titleMatches = htmlText.match(titleRegex) || [];
-    const imageMatches = htmlText.match(imageRegex) || [];
-    
-    const minLength = Math.min(posterMatches.length, titleMatches.length, imageMatches.length);
-    
-    for (let index = 0; index < minLength; index++) {
-      const hrefMatch = posterMatches[index].match(extractHrefRegex);
-      const fullHref = hrefMatch ? 
-        (hrefMatch[1].startsWith("http") ? hrefMatch[1] : baseUrl + hrefMatch[1]) : 
-        null;
-      
-      const imageMatch = imageMatches[index].match(extractImageRegex);
-      const imageSrc = imageMatch ? imageMatch[1] : null;
-      
-      const titleMatch = titleMatches[index].match(extractTitleRegex);
-      const cleanTitle = titleMatch ? 
-        decodeHtmlEntities(titleMatch[1]) : 
-        null;
-      
-      if (fullHref && imageSrc && cleanTitle) {
-        results.push({
-          href: fullHref,
-          image: "https://deno-proxies-sznvnpnxwhbv.deno.dev/?url=" + encodeURIComponent(imageSrc),
-          title: cleanTitle
-        });
-      }
+    try {
+        const response = await fetchv2("https://anineko.to/browser?keyword=" + encodeURIComponent(keyword));
+        const html = await response.text();
+
+        const regex = /<article class="nv-anime-card nv-browse-card">[\s\S]*?<a[^>]+href="([^"]+)"[^>]*>[\s\S]*?<img[^>]+src="([^"]+)"[^>]+alt="([^"]+)"/g;
+        let match;
+        while ((match = regex.exec(html)) !== null) {
+            results.push({
+                title: match[3].trim(),
+                image: match[2].trim(),
+                href: "https://anineko.to" + match[1].trim()
+            });
+        }
+
+        return JSON.stringify(results);
+    } catch (err) {
+        return JSON.stringify([{
+            title: "Error",
+            image: "Error",
+            href: "Error"
+        }]);
     }
-    
-    return JSON.stringify(results);
-  } catch (error) {
-    return JSON.stringify([{
-      href: "",
-      image: "",
-      title: "Search failed: " + error.message
-    }]);
-  }
 }
 
 async function extractDetails(url) {
-  try {
-    const response = await fetchv2("https://deno-proxies-sznvnpnxwhbv.deno.dev/?url=" + encodeURIComponent(url));
-    const htmlText = await response.text();
-    console.log(htmlText);
-    
-    const descriptionMatch = (/<div class="desc text-expand">([\s\S]*?)<\/div>/.exec(htmlText) || [])[1];
-    const aliasesMatch = (/<small class="al-title text-expand">([\s\S]*?)<\/small>/.exec(htmlText) || [])[1];
-    
-    return JSON.stringify([{
-      description: descriptionMatch ? cleanHtmlSymbols(descriptionMatch) : "Not available",
-      aliases: aliasesMatch ? cleanHtmlSymbols(aliasesMatch) : "Not available",
-      airdate: "If stream doesn't load try later or disable VPN/DNS"
-    }]);
-  } catch (error) {
-    console.error("Error fetching details:" + error);
-    return [{
-      description: "Error loading description",
-      aliases: "Aliases: Unknown",
-      airdate: "Aired: Unknown"
-    }];
-  }
+    try {
+        const response = await fetchv2(url);
+        const html = await response.text();
+
+        let description = "N/A";
+        const descMatch = html.match(/<meta name="description" content="([^"]+)"/);
+        if (descMatch) {
+            description = descMatch[1].trim();
+        }
+
+        return JSON.stringify([{
+            description: description,
+            aliases: "N/A",
+            airdate: "N/A"
+        }]);
+    } catch (err) {
+        return JSON.stringify([{
+            description: "Error",
+            aliases: "Error",
+            airdate: "Error"
+        }]);
+    }
 }
 
-async function extractEpisodes(url) {  
-  try {
-      const actualUrl = url.replace("Animekai:", "").trim();
-      const htmlText = await (await fetchv2("https://deno-proxies-sznvnpnxwhbv.deno.dev/?url=" + encodeURIComponent(actualUrl))).text();
-      const animeIdMatch = (htmlText.match(/<div class="rate-box"[^>]*data-id="([^"]+)"/) || [])[1];
-      if (!animeIdMatch) return JSON.stringify([{ error: "AniID not found" }]);
+async function extractEpisodes(url) {
+    const results = [];
+    try {
+        const response = await fetchv2(url);
+        const html = await response.text();
 
-      const tokenResponse = await fetchv2(`https://enc-dec.app/api/enc-kai?text=${encodeURIComponent(animeIdMatch)}`);
-      const tokenData = await tokenResponse.json();
-      const token = tokenData.result;
+        const regex = /<article class="nv-info-episode-item">[\s\S]*?<a[^>]+href="([^"]+)"[^>]*>[\s\S]*?<strong>Episode (\d+)<\/strong>/g;
+        let match;
+        while ((match = regex.exec(html)) !== null) {
+            results.push({
+                href: "https://anineko.to" + match[1].trim(),
+                number: parseInt(match[2], 10)
+            });
+        }
 
-      const episodeListUrl = `https://anikai.to/ajax/episodes/list?ani_id=${animeIdMatch}&_=${token}`;
-      const episodeListData = await (await fetchv2("https://deno-proxies-sznvnpnxwhbv.deno.dev/?url=" + encodeURIComponent(episodeListUrl))).json();
-      const cleanedHtml = cleanJsonHtml(episodeListData.result);
-
-      const episodeRegex = /<a[^>]+num="([^"]+)"[^>]+token="([^"]+)"[^>]*>/g;
-      const episodeMatches = [...cleanedHtml.matchAll(episodeRegex)];
-
-      const episodes = episodeMatches.map(([_, episodeNum, episodeToken]) => ({
-        number: parseInt(episodeNum, 10),
-        href: `https://anikai.to/ajax/links/list?token=${episodeToken}&_=ENCRYPT_ME`
-      }));
-
-      return JSON.stringify(episodes);
-  } catch (err) {
-    console.error("Error fetching episodes:" + err);
-    return [{
-      number: 1,
-      href: "Error fetching episodes"
-    }];
-  }
+        return JSON.stringify(results);
+    } catch (err) {
+        return JSON.stringify([{
+            href: "Error",
+            number: "Error"
+        }]);
+    }
 }
 
 async function extractStreamUrl(url) {
-  const headers = {
-    "Referer": "https://anikai.to/",
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36"
-  };
-
-  try {
-    const tokenMatch = url.match(/token=([^&]+)/);
-    if (tokenMatch && tokenMatch[1]) {
-      const rawToken = tokenMatch[1];
-      const encryptResponse = await fetchv2(`https://enc-dec.app/api/enc-kai?text=${encodeURIComponent(rawToken)}`);
-      const encryptData = await encryptResponse.json();
-      const encryptedToken = encryptData.result;
-      url = url.replace('&_=ENCRYPT_ME', `&_=${encryptedToken}`);
-    }
-    
-    const response = await fetchv2("https://deno-proxies-sznvnpnxwhbv.deno.dev/?url=" + encodeURIComponent(url));
-    const text = await response.text();
-
-    let ajaxResultHtml = "";
     try {
-      const parsedAjax = JSON.parse(text);
-      ajaxResultHtml = parsedAjax?.result || "";
-    } catch {}
+        const response = await fetchv2(url);
+        const html = await response.text();
 
-    const cleanedHtml = cleanJsonHtml(text);
-    const cleanedAjaxResultHtml = cleanJsonHtml(ajaxResultHtml);
-    const serverHtmlSource = cleanedAjaxResultHtml || cleanedHtml;
+        const serverTasks = [];
+        let subtitles = "";
 
-    const subRegex = /<div class="server-items lang-group" data-id="sub"[^>]*>([\s\S]*?)<\/div>/;
-    const softsubRegex = /<div class="server-items lang-group" data-id="softsub"[^>]*>([\s\S]*?)<\/div>/;
-    const dubRegex = /<div class="server-items lang-group" data-id="dub"[^>]*>([\s\S]*?)<\/div>/;
-    const subContent = subRegex.exec(serverHtmlSource)?.[1]?.trim() || "";
-    const softsubContent = softsubRegex.exec(serverHtmlSource)?.[1]?.trim() || "";
-    const dubContent = dubRegex.exec(serverHtmlSource)?.[1]?.trim() || "";
+        const regex = /<button[^>]+data-video="([^"]+)"[^>]*>\s*([^<\s]+)\s*<span>([^<]+)<\/span>/g;
+        let match;
+        while ((match = regex.exec(html)) !== null) {
+            const videoUrl = match[1];
+            const serverName = match[2].trim();
+            let label = match[3].trim();
 
-    const extractServerId = (content) => {
-      if (!content) return null;
-      const preferred = /<span class="server"[^>]*data-lid="([^"]+)"[^>]*>\s*Server\s*1\s*<\/span>/i.exec(content);
-      if (preferred?.[1]) return preferred[1];
-      return /<span class="server"[^>]*data-lid="([^"]+)"/i.exec(content)?.[1] || null;
-    };
+            if (label === "Sort Sub") label = "Soft Sub";
 
-    const serverIdDub = extractServerId(dubContent);
-    const serverIdSoftsub = extractServerId(softsubContent);
-    const serverIdSub = extractServerId(subContent);
+            if (!subtitles) {
+                const subMatch = videoUrl.match(/(?:sub|caption_1|c1_file)=([^&"]+)/);
+                if (subMatch) {
+                    subtitles = decodeURIComponent(subMatch[1]);
+                }
+            }
 
-    const tokenRequestData = [
-      { name: "Dub", data: serverIdDub },
-      { name: "Softsub", data: serverIdSoftsub },
-      { name: "Sub", data: serverIdSub }
-    ].filter(item => item.data);
+            serverTasks.push((async () => {
+                let streamUrl = null;
+                let priority = 99;
 
-    const tokenPromises = tokenRequestData.map(item => 
-      fetchv2(`https://enc-dec.app/api/enc-kai?text=${encodeURIComponent(item.data)}`)
-        .then(res => res.json())
-        .then(json => ({ name: item.name, data: json.result }))
-        .catch(err => ({ name: item.name, error: err.toString() }))
-    );
-    const tokenResults = await Promise.all(tokenPromises);
+                try {
+                    if (serverName === "HD-1" || serverName === "HD-2") {
+                        priority = serverName === "HD-1" ? 1 : 2;
+                        if (videoUrl.includes("vibeplayer.site")) {
+                            const idMatch = videoUrl.match(/vibeplayer\.site\/([a-z0-9]+)/);
+                            if (idMatch) {
+                                streamUrl = `https://vibeplayer.site/public/stream/${idMatch[1]}/master.m3u8`;
+                            }
+                        }
+                    } else if (serverName === "StreamHG" || serverName === "Earnvids") {
+                        priority = serverName === "StreamHG" ? 3 : 4;
+                        const playerResponse = await fetchv2(videoUrl);
+                        const playerHtml = await playerResponse.text();
+                        const obfuscatedScript = playerHtml.match(/<script[^>]*>\s*(eval\(function\(p,a,c,k,e,d.*?\)[\s\S]*?)<\/script>/);
+                        if (obfuscatedScript) {
+                            const unpackedScript = unpack(obfuscatedScript[1]);
 
-    const serverIdMap = {
-      "Dub": serverIdDub,
-      "Softsub": serverIdSoftsub,
-      "Sub": serverIdSub
-    };
+                            const hlsMatch = unpackedScript.match(/"(https:\/\/[^"]+master\.m3u8[^"]*)"/);
+                            if (hlsMatch) {
+                                streamUrl = hlsMatch[1];
+                            } else {
+                                const fileMatch = unpackedScript.match(/file\s*:\s*"([^"]+)"/);
+                                if (fileMatch) streamUrl = fileMatch[1];
+                            }
+                        }
+                    } else if (serverName === "Doodstream") {
+                        priority = 5;
+                        const playerResponse = await fetchv2(videoUrl);
+                        const playerHtml = await playerResponse.text();
+                        streamUrl = await doodstreamExtractor(playerHtml, videoUrl);
+                    }
+                } catch (e) {
+                    console.log("Error extracting server " + serverName + ": " + e);
+                }
 
-    const streamUrls = tokenResults.map(result => ({
-      type: result.name,
-      url: `https://anikai.to/ajax/links/view?id=${serverIdMap[result.name]}&_=${result.data}`
-    }));
-
-    // Step 1: fetch links/view via proxy
-    const streamResponses = await Promise.all(
-      streamUrls.map(async ({ type, url }) => {
-        try {
-          const res = await fetchv2("https://deno-proxies-sznvnpnxwhbv.deno.dev/?url=" + encodeURIComponent(url));
-          const json = await res.json();
-          return { type, result: json.result };
-        } catch (error) {
-          console.log(`Error fetching ${type} stream:`, error);
-          return { type, result: null };
+                if (streamUrl) {
+                    return { serverName, label, priority, streamUrl };
+                }
+                return null;
+            })());
         }
-      })
-    );
 
-    // Step 2: decrypt with browser UA — no encodeURIComponent
-    const decryptPromises = streamResponses
-      .filter(item => item.result)
-      .map(item =>
-        fetchv2(`https://enc-dec.app/api/dec-kai?text=${item.result}`, headers)
-          .then(res => res.json())
-          .then(json => {
-            console.log(`decrypted ${item.type} URL:`, json.result?.url);
-            return { name: item.type, url: json.result?.url || null };
-          })
-          .catch(err => ({ name: item.type, url: null }))
-      );
-    const decryptResults = await Promise.all(decryptPromises);
+        const resolvedResults = await Promise.all(serverTasks);
+        const validStreams = resolvedResults.filter(s => s !== null);
 
-    const urlMap = Object.fromEntries(decryptResults.map(i => [i.name, i.url]));
-    const decryptedSub = urlMap.Sub || urlMap.Dub || urlMap.Softsub;
+        validStreams.sort((a, b) => a.priority - b.priority);
 
-    console.log("Using URL:", decryptedSub);
+        const streams = [];
+        const serverCounts = {};
 
-    if (decryptedSub) {
-      const mediaResponse = await fetchv2(decryptedSub.replace("/e/", "/media/"), headers);
-      const responseJson = await mediaResponse.json();
-      const result = responseJson?.result;
+        for (const s of validStreams) {
+            let baseName = s.serverName.replace("-", " ");
+            let baseTitle = "";
+            if (s.serverName === "HD-1" || s.serverName === "HD-2") {
+                baseTitle = `[👑] ${baseName} ${s.label}`;
+            } else {
+                baseTitle = `${baseName} ${s.label}`;
+            }
 
-      const postData = {
-        "text": result,
-        "agent": headers["User-Agent"]
-      };
+            let finalTitle = baseTitle;
+            if (serverCounts[baseTitle]) {
+                serverCounts[baseTitle]++;
+                finalTitle = `${baseTitle} ${serverCounts[baseTitle]}`;
+            } else {
+                serverCounts[baseTitle] = 1;
+            }
 
-      const finalResponse = await fetchv2(
-        "https://enc-dec.app/api/dec-mega",
-        { "Content-Type": "application/json" },
-        "POST",
-        JSON.stringify(postData)
-      );
-      const finalJson = await finalResponse.json();
-      console.log("dec-mega result:", finalJson);
-      const m3u8Link = finalJson?.result?.sources?.[0]?.file;
+            streams.push({
+                title: finalTitle,
+                streamUrl: s.streamUrl,
+                headers: {}
+            });
+        }
 
-      return m3u8Link;
+        return JSON.stringify({
+            streams: streams,
+            subtitles: subtitles
+        });
+    } catch (err) {
+        return JSON.stringify({
+            streams: [],
+            subtitles: ""
+        });
     }
-
-    return "error";
-  } catch (error) {
-    console.log("Fetch error:" + error);
-    return "https://error.org";
-  }
 }
 
-function cleanHtmlSymbols(string) {
-  if (!string) {
-    return "";
-  }
-  return string
-    .replace(/&#8217;/g, "'")
-    .replace(/&#8211;/g, "-")
-    .replace(/&#[0-9]+;/g, "")
-    .replace(/\r?\n|\r/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
+async function doodstreamExtractor(html, url) {
+    try {
+        const streamDomain = url.match(/https:\/\/(.*?)\//)[1];
+        const md5Match = html.match(/'\/pass_md5\/(.*?)',/);
+        if (!md5Match) return null;
+        const md5Path = md5Match[1];
+
+        const token = md5Path.substring(md5Path.lastIndexOf("/") + 1);
+        const expiryTimestamp = new Date().valueOf();
+        const random = randomStr(10);
+
+        const passResponse = await fetchv2(`https://${streamDomain}/pass_md5/${md5Path}`, {
+            headers: {
+                "Referer": url,
+            },
+        });
+        const responseData = await passResponse.text();
+        return `${responseData}${random}?token=${token}&expiry=${expiryTimestamp}`;
+    } catch (e) {
+        return null;
+    }
 }
 
-function cleanJsonHtml(jsonHtml) {
-  if (!jsonHtml) {
-    return "";
-  }
-  return jsonHtml
-    .replace(/\\"/g, "\"")
-    .replace(/\\'/g, "'")
-    .replace(/\\\\/g, "\\")
-    .replace(/\\n/g, "\n")
-    .replace(/\\t/g, "\t")
-    .replace(/\\r/g, "\r");
+function randomStr(length) {
+    const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let result = "";
+    for (let i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+    return result;
 }
 
-function decodeHtmlEntities(text) {
-  if (!text) {
-    return "";
-  }
-  return text
-    .replace(/&#039;/g, "'")
-    .replace(/&quot;/g, "\"")
-    .replace(/&amp;/g, "&")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&nbsp;/g, " ");
+class Unbaser {
+    constructor(base) {
+        this.ALPHABET = {
+            62: "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
+            95: "' !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~'",
+        };
+        this.dictionary = {};
+        this.base = base;
+        if (36 < base && base < 62) {
+            this.ALPHABET[base] = this.ALPHABET[base] ||
+                this.ALPHABET[62].substr(0, base);
+        }
+        if (2 <= base && base <= 36) {
+            this.unbase = (value) => parseInt(value, base);
+        }
+        else {
+            try {
+                [...this.ALPHABET[base]].forEach((cipher, index) => {
+                    this.dictionary[cipher] = index;
+                });
+            }
+            catch (er) {
+                throw Error("Unsupported base encoding.");
+            }
+            this.unbase = this._dictunbaser;
+        }
+    }
+    _dictunbaser(value) {
+        let ret = 0;
+        [...value].reverse().forEach((cipher, index) => {
+            ret = ret + ((Math.pow(this.base, index)) * this.dictionary[cipher]);
+        });
+        return ret;
+    }
+}
+
+function detect(source) {
+    return source.replace(" ", "").startsWith("eval(function(p,a,c,k,e,");
+}
+
+function unpack(source) {
+    let { payload, symtab, radix, count } = _filterargs(source);
+    if (count != symtab.length) {
+        throw Error("Malformed p.a.c.k.e.r. symtab.");
+    }
+    let unbase;
+    try {
+        unbase = new Unbaser(radix);
+    }
+    catch (e) {
+        throw Error("Unknown p.a.c.k.e.r. encoding.");
+    }
+    function lookup(match) {
+        const word = match;
+        let word2;
+        if (radix == 1) {
+            word2 = symtab[parseInt(word)];
+        }
+        else {
+            word2 = symtab[unbase.unbase(word)];
+        }
+        return word2 || word;
+    }
+    source = payload.replace(/\b\w+\b/g, lookup);
+    return _replacestrings(source);
+    function _filterargs(source) {
+        const juicers = [
+            /}\('(.*)', *(\d+|\[\]), *(\d+), *'(.*)'\.split\('\|'\), *(\d+), *(.*)\)\)/,
+            /}\('(.*)', *(\d+|\[\]), *(\d+), *'(.*)'\.split\('\|'\)/,
+        ];
+        for (const juicer of juicers) {
+            const args = juicer.exec(source);
+            if (args) {
+                let a = args;
+                if (a[2] == "[]") {
+                }
+                try {
+                    return {
+                        payload: a[1],
+                        symtab: a[4].split("|"),
+                        radix: parseInt(a[2]),
+                        count: parseInt(a[3]),
+                    };
+                }
+                catch (ValueError) {
+                    throw Error("Corrupted p.a.c.k.e.r. data.");
+                }
+            }
+        }
+        throw Error("Could not make sense of p.a.c.k.e.r data (unexpected code structure)");
+    }
+    function _replacestrings(source) {
+        return source;
+    }
 }
