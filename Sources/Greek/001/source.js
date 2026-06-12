@@ -1,57 +1,53 @@
 async function searchResults(keyword) {
     const results = [];
-    const headers = {
-        "Content-Type": "multipart/form-data; boundary=----geckoformboundary38c356867533a17de80e8c65d9125df5"
-    };
-    const postData = `------geckoformboundary38c356867533a17de80e8c65d9125df5
-Content-Disposition: form-data; name="s_keyword"
-
-${keyword}
-------geckoformboundary38c356867533a17de80e8c65d9125df5
-Content-Disposition: form-data; name="orderby"
-
-popular
-------geckoformboundary38c356867533a17de80e8c65d9125df5
-Content-Disposition: form-data; name="order"
-
-DESC
-------geckoformboundary38c356867533a17de80e8c65d9125df5
-Content-Disposition: form-data; name="action"
-
-advanced_search
-------geckoformboundary38c356867533a17de80e8c65d9125df5
-Content-Disposition: form-data; name="page"
-
-1
-------geckoformboundary38c356867533a17de80e8c65d9125df5--`;
-
+    
     try {
-        const response = await fetchv2("https://an1me.to/wp-admin/admin-ajax.php", headers, "POST", postData);
-        const data = await response.json();
-        const html = data.data.html;
-        const articlePattern = /<article[^>]*class="anime-card[^"]*"[^>]*>([\s\S]*?)<\/article>/g;
-        let articleMatch;
-        
-        while ((articleMatch = articlePattern.exec(html)) !== null) {
-            const articleHtml = articleMatch[1];
-            
-            const imgMatch = articleHtml.match(/<img[^>]+src=['"]([^'"]+)['"][^>]+alt=['"]([^'"]+)['"]/);
-            
+        const url = "https://an1me.to/wp-admin/admin-ajax.php?action=instant_search&query=" + encodeURIComponent(keyword);
+        const headers = {
+            "Accept": "application/json, text/javascript, */*; q=0.01",
+            "X-Requested-With": "XMLHttpRequest",
+            "Referer": "https://an1me.to/",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36"
+        };
+        const response = await fetchv2(url, headers);
+        const text = await response.text();
 
-            const linkMatch = articleHtml.match(/<h3[^>]*>[\s\S]*?<a[^>]+href=['"]([^'"]+)['"][^>]*title=['"]([^'"]+)['"]/);
+        let data;
+        try {
+            data = JSON.parse(text);
+        } catch (e) {
+            return JSON.stringify(results);
+        }
+        
+        if (!data.success || !data.data || !data.data.html) {
+            return JSON.stringify(results);
+        }
+
+        const html = data.data.html;
+        const anchorPattern = /<a[^>]+href=["']([^"']+)["'][^>]*title=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/g;
+        let anchorMatch;
+        let matchCount = 0;
+        
+        while ((anchorMatch = anchorPattern.exec(html)) !== null) {
+            matchCount++;
+            const href = anchorMatch[1];
+            const title = anchorMatch[2];
+            const innerHtml = anchorMatch[3];
             
-            if (imgMatch && linkMatch) {
+            const imgMatch = innerHtml.match(/<img[^>]+src=["']([^"']+)["'][^>]*>/);
+            
+            if (imgMatch) {
                 results.push({
-                    title: linkMatch[2].trim(),
+                    title: title.trim(),
                     image: imgMatch[1].trim(),
-                    href: linkMatch[1].trim()
+                    href: href.trim()
                 });
             }
         }
         
         return JSON.stringify(results);
     } catch (err) {
-        console.log(err);
+        console.log("Search error:", err.message);
         return JSON.stringify([{
             title: "Error",
             image: "Error",
@@ -62,15 +58,18 @@ Content-Disposition: form-data; name="page"
 
 async function extractDetails(url) {
     try {
-        const response = await fetchv2(url);
+        const headers = {
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+            "Referer": "https://an1me.to/",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36"
+        };
+        const response = await fetchv2(url, headers);
         const html = await response.text();
 
-        const match = html.match(
-            /<div class="anime-synopsis">[\s\S]*?<p>([\s\S]*?)<\/p>/
-        );
+        const match = html.match(/aria-label="Anime Overview"[^>]*>([\s\S]*?)<\/section>/);
 
         const description = match
-            ? match[1].replace(/\s+/g, " ").trim()
+            ? match[1].replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim()
             : "N/A";
 
         return JSON.stringify([{
@@ -78,7 +77,8 @@ async function extractDetails(url) {
             aliases: "N/A",
             airdate: "N/A"
         }]);
-    } catch {
+    } catch (err) {
+        console.log("extractDetails error:", err.message);
         return JSON.stringify([{
             description: "Error",
             aliases: "Error",
@@ -91,30 +91,64 @@ async function extractDetails(url) {
 async function extractEpisodes(url) {
     const results = [];
     try {
-        const response = await fetchv2(url);
+        const headers = {
+            "Accept": "application/json, text/javascript, */*; q=0.01",
+            "X-Requested-With": "XMLHttpRequest",
+            "Referer": "https://an1me.to/",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36"
+        };
+        const response = await fetchv2(url, headers);
         const html = await response.text();
         
+        const postIdMatch = html.match(/postid-(\d+)/) || 
+                          html.match(/post_id['"]\s*,\s*['"](\d+)['"]/) ||
+                          html.match(/anime_id['"]\s*:\s*(\d+)/);
 
-        const regex = /<a href="([^"]+)"[^>]*class="episode-list-display-box episode-list-item[^"]*"[^>]*>[\s\S]*?<span class="episode-list-item-number">\s*(\d+)\s*<\/span>/g;
-        
-        let match;
-        while ((match = regex.exec(html)) !== null) {
-            results.push({
-                href: match[1].trim(),
-                number: parseInt(match[2], 10)
-            });
+        if (!postIdMatch) {
+            console.log("Could not find anime_id (postid)");
+            return JSON.stringify(results);
         }
+
+        const animeId = postIdMatch[1];
         
-        if (results.length === 0 && url) {
-            results.push({
-                href: url,
-                number: 1
+        const firstPageUrl = `https://an1me.to/wp-admin/admin-ajax.php?action=get_episodes&anime_id=${animeId}&page=1&order=desc`;
+        const firstPageRes = await fetchv2(firstPageUrl, headers);
+        const firstPageData = await firstPageRes.json();
+
+        if (firstPageData.success && firstPageData.data && Array.isArray(firstPageData.data.episodes)) {
+            firstPageData.data.episodes.forEach(ep => {
+                results.push({
+                    href: ep.url,
+                    number: parseFloat(ep.meta_number)
+                });
             });
+            
+            const maxPages = firstPageData.data.max_episodes_page || 1;
+            
+            if (maxPages > 1) {
+                const promises = [];
+                for (let i = 2; i <= maxPages; i++) {
+                    const pageUrl = `https://an1me.to/wp-admin/admin-ajax.php?action=get_episodes&anime_id=${animeId}&page=${i}&order=desc`;
+                    promises.push(fetchv2(pageUrl, headers).then(res => res.json()));
+                }
+
+                const otherPagesData = await Promise.all(promises);
+                otherPagesData.forEach(data => {
+                    if (data.success && data.data && Array.isArray(data.data.episodes)) {
+                        data.data.episodes.forEach(ep => {
+                            results.push({
+                                href: ep.url,
+                                number: parseFloat(ep.meta_number)
+                            });
+                        });
+                    }
+                });
+            }
         }
         
         return JSON.stringify(results);
     } catch (err) {
-        console.log(err);
+        console.log("Error in extractEpisodes:", err);
         return JSON.stringify([{
             href: "Error",
             number: "Error"
@@ -124,85 +158,31 @@ async function extractEpisodes(url) {
 
 async function extractStreamUrl(url) {
     try {
-        const response = await fetchv2(url);
+        const headers = {
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+            "Referer": "https://an1me.to/",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36"
+        };
+        const response = await fetchv2(url, headers);
         const html = await response.text();
-        const sources = await getSourcesFromEpisode(url);
-        if(sources == null) return null;
-
-        const streams = await extractStreamsFromSources(sources);
-        if(streams == null) return null;
-        console.log("Streams: " + JSON.stringify(streams));
-
-        const streamUrl = streams[0].stream;
-        console.log("Stream URL: " + streamUrl);
-        return streamUrl;
+        
+        const iframeMatch = html.match(/<iframe[^>]+src=["']([^"']+)["']/i);
+        if (!iframeMatch) throw new Error("Iframe not found");
+        
+        let iframeUrl = iframeMatch[1].replace(/&#038;/g, '&').replace(/&amp;/g, '&');
+        const iframeResponse = await fetchv2(iframeUrl, headers);
+        const iframeHtml = await iframeResponse.text();
+        
+        const paramsMatch = iframeHtml.match(/const\s+params\s*=\s*({.*?});/s);
+        if (!paramsMatch) throw new Error("Params not found");
+        
+        const params = JSON.parse(paramsMatch[1]);
+        const streamUrl = params.sources?.[0]?.url;
+        
+        console.log("Stream URL secured:", streamUrl);
+        return streamUrl || "https://files.catbox.moe/avolvc.mp4";
     } catch (err) {
+        console.log("extractStreamUrl error:", err.message);
         return "https://files.catbox.moe/avolvc.mp4";
     }
-}
-
-async function getSourcesFromEpisode(url) {
-    const sources = [];
-    try {
-        const res = await fetchv2(url);
-        const html = await res.text();
-
-        const regex = /<span[^>]+data-embed-id="([^"]+)"[^>]*>/gi;
-        let match;
-
-        while ((match = regex.exec(html)) !== null) {
-            const dataEmbedId = match[1];
-            const [_, iframeBase64] = dataEmbedId.split(":");
-            if (!iframeBase64) continue;
-
-            const iframeHtml = atob(iframeBase64);
-
-            const srcMatch = iframeHtml.match(/src\s*=\s*["']([^"']+)["']/i);
-            if (!srcMatch) continue;
-
-            const isSub = /class="[^"]*player-sub[^"]*"/.test(match[0]);
-
-            sources.push({
-                source: srcMatch[1],
-                audio: isSub ? 'original' : 'Greek'
-            });
-        }
-
-        return sources;
-    } catch (e) {
-        console.error('Error extracting source: ' + e.message);
-        return [];
-    }
-}
-
-async function extractStreamsFromSources(sources) {
-  const streams = [];
-
-  for(let source of sources) {
-      try {
-          const res = await fetchv2(source.source);
-          const html = await res.text();
-
-          const jsonString = html.match(/params[\s]*=[\s]*(\{[^;]*);/)?.[1];
-          if(jsonString == null) continue;
-
-          const json = JSON.parse(jsonString);
-          if(json?.sources == null || json.sources.length <= 0) continue;
-
-          for(let s of json.sources) {
-              const resolution = s?.html ?? null;
-              let arrayLength = streams.push(source);
-              let i = arrayLength - 1;
-
-              streams[i].stream = s.url;
-              streams[i].resolution = resolution != null ? resolution.slice(0, -1) : null;
-          }
-
-          
-      } catch(e) {
-          console.warn('Error extracting stream: ' + e.message);
-      }
-  }
-
-  return streams.filter(source => source.stream != null);
 }
