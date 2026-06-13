@@ -1,27 +1,25 @@
 {
-  "sourceName": "AnimeLib",
-  "iconUrl": "https://i.ibb.co/rfktbGyD/Untitled-design.png",
+  "sourceName": "AniDub",
+  "iconUrl": "https://anidub.org/templates/CinemaBlue/images/jutfun.png",
   "author": {
-    "name": "50/50",
-    "icon": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ3122kQwublLkZ6rf1fEpUP79BxZOFmH9BSA&s"
+    "name": "anonymous",
+    "icon": "https://git.luna-app.eu/avatars/11bb6ee2fdba48e70ee21594f4ac96344358be3bb9770732ba8c406b5cda98f0?size=512$0"
   },
-  "version": "1.0.5",
+  "version": "1.0.3",
   "language": "Russian",
-  "streamType": "MP4 & HLS",
+  "streamType": "MP4",
   "quality": "4K",
-  "baseUrl": "https://animelib.org/ru",
-  "searchBaseUrl": "https://animelib.org/ru",
+  "baseUrl": "https://anidub.org/",
+  "searchBaseUrl": "https://anidub.org/index.php?do=search&subaction=search&story=%s",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Russian/002/source.js",
-  "type": "anime",
   "asyncJS": true,
-  "softsub": true,
+  "streamAsyncJS": true,
+  "softsub": false,
+  "type": "anime",
   "downloadSupport": false,
   "supportsMojuru": true,
   "supportsDartotsu": true,
   "supportsSora": true,
   "supportsLuna": true,
-  "supportsAnymex": true,
-  "supportsTsumi": true,
-  "supportsHiyoku": true,
-  "supportsShirox": true
+  "supportMiruShin": true
 }

@@ -1,735 +1,290 @@
-const BASE_URL = "https://rezka.ag";
-const BACKUP_URL = "https://hdrezka-home.tv";
+const SITE_BASES = [
+  "https://shizaproject.com",
+  "https://shiza-project.com"
+];
 
-const defaultHeaders = {
-  "User-Agent": "Mozilla/5.0",
-  "Cookie": "hdmbbs=1"
-};
+const SITE_BASE = SITE_BASES[0];
+const DEFAULT_SUBTITLE = "https://none.com";
 
-function decodeHtmlEntities(str) {
-  return String(str || "")
-    .replace(/&#58;/g, ":")
-    .replace(/&amp;/g, "&")
-    .replace(/&quot;/g, '"')
-    .replace(/&#039;/g, "'")
-    .replace(/&#39;/g, "'")
-    .replace(/&apos;/g, "'")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&nbsp;/g, " ")
-    .replace(/&#(\d+);/g, function (_, n) {
-      const code = parseInt(n, 10);
-      return Number.isFinite(code) ? String.fromCharCode(code) : "";
-    })
-    .replace(/&#x([0-9a-f]+);/gi, function (_, h) {
-      const code = parseInt(h, 16);
-      return Number.isFinite(code) ? String.fromCharCode(code) : "";
-    });
+function _ua() {
+  return "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
 }
 
-function stripTags(value) {
-  return decodeHtmlEntities(
-    String(value || "")
-      .replace(/<script[\s\S]*?<\/script>/gi, " ")
-      .replace(/<style[\s\S]*?<\/style>/gi, " ")
-      .replace(/<br\s*\/?>/gi, " ")
-      .replace(/<[^>]+>/g, " ")
-      .replace(/\s+/g, " ")
-      .trim()
-  );
+function _safeJsonParse(value, fallback) {
+  try {
+    return JSON.parse(value);
+  } catch (_) {
+    return fallback;
+  }
 }
 
-function getAttr(tag, name) {
-  const s = String(tag || "");
-  const quoted = new RegExp(name + "\\s*=\\s*(['\"])(.*?)\\1", "i").exec(s);
-  if (quoted && quoted[2]) return decodeHtmlEntities(quoted[2]);
-
-  const plain = new RegExp(name + "\\s*=\\s*([^\\s>]+)", "i").exec(s);
-  return plain && plain[1] ? decodeHtmlEntities(plain[1]) : "";
+function _cleanBase(base) {
+  const raw = String(base || SITE_BASE).trim().replace(/\/+$/, "");
+  return raw || SITE_BASE;
 }
 
-function normalizeUrl(url, base) {
-  const raw = decodeHtmlEntities(String(url || "").trim());
+function _normalizeUrl(url) {
+  const raw = String(url || "").trim();
   if (!raw) return "";
-  if (raw.startsWith("http://") || raw.startsWith("https://")) return raw;
   if (raw.startsWith("//")) return "https:" + raw;
-
-  const root = String(base || BASE_URL).replace(/\/+$/, "");
-  return root + "/" + raw.replace(/^\/+/, "");
+  return raw;
 }
 
-function backupUrl(url) {
-  const raw = normalizeUrl(url, BASE_URL);
+function _packRelease(payload) {
+  return "shizaproject-release:" + encodeURIComponent(JSON.stringify(payload || {}));
+}
+
+function _unpackRelease(href) {
+  const raw = String(href || "");
+  if (!raw.startsWith("shizaproject-release:")) return null;
+  return _safeJsonParse(decodeURIComponent(raw.slice("shizaproject-release:".length)), null);
+}
+
+function _packEpisode(payload) {
+  return "shizaproject:" + encodeURIComponent(JSON.stringify(payload || {}));
+}
+
+function _unpackEpisode(href) {
+  const raw = String(href || "");
+  if (!raw.startsWith("shizaproject:")) return null;
+  return _safeJsonParse(decodeURIComponent(raw.slice("shizaproject:".length)), null);
+}
+
+function _extractSlug(input) {
+  const packed = _unpackRelease(input);
+  if (packed?.slug) return String(packed.slug);
+
+  const raw = String(input || "").trim();
   if (!raw) return "";
 
   try {
-    const parsed = new URL(raw);
-    const backup = new URL(BACKUP_URL);
-    parsed.protocol = backup.protocol;
-    parsed.host = backup.host;
-    return parsed.toString();
-  } catch (_) {
-    return raw;
-  }
+    const u = new URL(raw);
+    const parts = u.pathname.split("/").filter(Boolean);
+    return parts[parts.length - 1] || raw;
+  } catch (_) {}
+
+  return raw;
 }
 
-function getOrigin(url) {
+function _extractPreferredBase(input) {
+  const packed = _unpackRelease(input);
+  if (packed?.siteBase) return _cleanBase(packed.siteBase);
+
+  const raw = String(input || "").trim();
+  if (!raw) return SITE_BASE;
+
   try {
-    const parsed = new URL(url);
-    return parsed.protocol + "//" + parsed.host;
-  } catch (_) {
-    return BASE_URL;
-  }
+    const u = new URL(raw);
+    return _cleanBase(u.origin);
+  } catch (_) {}
+
+  return SITE_BASE;
 }
 
-function getQueryParam(url, name) {
-  try {
-    return new URL(String(url || "")).searchParams.get(name);
-  } catch (_) {
-    const re = new RegExp("[?&]" + name + "=([^&#]*)");
-    const m = re.exec(String(url || ""));
-    return m && m[1] ? decodeURIComponent(m[1]) : null;
-  }
+function _orderedBases(preferredBase) {
+  const out = [];
+
+  const add = (base) => {
+    const clean = _cleanBase(base);
+    if (clean && !out.includes(clean)) out.push(clean);
+  };
+
+  if (preferredBase) add(preferredBase);
+  for (const base of SITE_BASES) add(base);
+
+  return out;
 }
 
-function appendQueryParams(url, params) {
-  const base = String(url || "").split("?")[0];
-  const query = Object.entries(params)
-    .filter(function (pair) {
-      return pair[1] !== null && pair[1] !== undefined && String(pair[1]) !== "";
-    })
-    .map(function (pair) {
-      return encodeURIComponent(pair[0]) + "=" + encodeURIComponent(String(pair[1]));
-    })
-    .join("&");
-
-  return query ? base + "?" + query : base;
-}
-
-async function fetchTextBackup(url, headers) {
-  const primary = normalizeUrl(url, BASE_URL);
-  const backup = backupUrl(primary);
-  const tries = primary === backup ? [primary] : [primary, backup];
-
-  for (const u of tries) {
-    try {
-      const res = await fetchv2(u, headers || defaultHeaders);
-      const text = await res.text();
-
-      if (text && String(text).length > 0) {
-        return {
-          url: u,
-          text: String(text)
-        };
-      }
-    } catch (_) {}
-  }
+function _graphqlHeaders(base) {
+  const site = _cleanBase(base);
 
   return {
-    url: primary,
-    text: ""
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+    "User-Agent": _ua(),
+    "Origin": site,
+    "Referer": site + "/"
   };
 }
 
-async function fetchJsonBackup(url, headers, method, body) {
-  const primary = normalizeUrl(url, BASE_URL);
-  const backup = backupUrl(primary);
-  const tries = primary === backup ? [primary] : [primary, backup];
+async function _graphqlOnBase(base, operationName, variables, query) {
+  const site = _cleanBase(base);
+  const body = JSON.stringify({ operationName, variables, query });
 
-  for (const u of tries) {
-    try {
-      const res = await fetchv2(u, headers || defaultHeaders, method || "GET", body);
-      const data = await res.json();
+  const response = await fetchv2(site + "/graphql", _graphqlHeaders(site), "POST", body);
+  const data = await response.json();
 
-      if (data) return data;
-    } catch (_) {}
+  if (data?.errors?.length) {
+    throw new Error("GraphQL error");
   }
 
-  return null;
-}
-
-function ajaxHeaders(referer) {
   return {
-    "User-Agent": defaultHeaders["User-Agent"],
-    "Cookie": defaultHeaders["Cookie"],
-    "Accept": "application/json,text/javascript,*/*;q=0.01",
-    "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-    "X-Requested-With": "XMLHttpRequest",
-    "Referer": referer || BASE_URL + "/",
-    "Origin": getOrigin(referer || BASE_URL + "/")
+    data: data?.data || {},
+    siteBase: site
   };
 }
 
-function getPostId(html, url) {
-  const src = String(html || "");
+async function _graphql(operationName, variables, query, preferredBase) {
+  let lastError = null;
 
-  const match1 =
-    src.match(/id="post_id"\s+value="(\d+)"/) ||
-    src.match(/value="(\d+)"\s+id="post_id"/);
-
-  if (match1) return match1[1];
-
-  const input =
-    src.match(/<input\b[^>]*(?:id|name)=["']post_id["'][^>]*>/i) ||
-    src.match(/<input\b[^>]*value=["']\d+["'][^>]*(?:id|name)=["']post_id["'][^>]*>/i);
-
-  if (input) {
-    const id = parseInt(getAttr(input[0], "value"), 10);
-    if (Number.isFinite(id)) return String(id);
-  }
-
-  const init = src.match(/sof\.tv\.initCDN(?:Series|Movies)Events\(\s*(\d+)/);
-  if (init) return init[1];
-
-  const issue = src.match(/<[^>]+id=["']send-video-issue["'][^>]*>/i);
-  if (issue) {
-    const id = parseInt(getAttr(issue[0], "data-id"), 10);
-    if (Number.isFinite(id)) return String(id);
-  }
-
-  const fav = src.match(/<[^>]+id=["']user-favorites-holder["'][^>]*>/i);
-  if (fav) {
-    const id = parseInt(getAttr(fav[0], "data-post_id"), 10);
-    if (Number.isFinite(id)) return String(id);
-  }
-
-  const last = String(url || "").split("/").pop() || "";
-  const slug = last.match(/^(\d+)/);
-  if (slug) return slug[1];
-
-  return null;
-}
-
-function getDefaultTranslatorId(html) {
-  const src = String(html || "");
-
-  const init = src.match(/sof\.tv\.initCDN(?:Series|Movies)Events\(\s*\d+\s*,\s*(\d+)/);
-  if (init) {
-    const id = parseInt(init[1], 10);
-    if (Number.isFinite(id)) return id;
-  }
-
-  const links = src.match(/<a\b[^>]*\bb-translator__item\b[^>]*>/gi) || [];
-  for (const tag of links) {
-    const cls = getAttr(tag, "class").toLowerCase();
-    if (!cls.includes("active")) continue;
-
-    const id = parseInt(getAttr(tag, "data-translator_id"), 10);
-    if (Number.isFinite(id)) return id;
-  }
-
-  return null;
-}
-
-function isPremiumTranslatorTag(tag) {
-  const cls = getAttr(tag, "class").toLowerCase();
-  return cls.includes("b-prem_translator") || cls.includes("prem_translator");
-}
-
-function addTranslatorUnique(list, id, name, href) {
-  const cleanId = parseInt(id, 10);
-  if (!Number.isFinite(cleanId)) return;
-
-  if (list.some(function (t) {
-    return parseInt(t.id, 10) === cleanId;
-  })) {
-    return;
-  }
-
-  list.push({
-    id: cleanId,
-    name: stripTags(name || "") || ("Voiceover " + cleanId),
-    href: href || ""
-  });
-}
-
-function parseTranslators(html, pageUrl) {
-  const src = String(html || "");
-  const translators = [];
-  let match;
-
-  const listMatch = src.match(/<ul\b[^>]*id=["']translators-list["'][^>]*>([\s\S]*?)<\/ul>/i);
-  const scope = listMatch ? listMatch[1] : src;
-
-  const linkRegex = /<a\b[^>]*\bb-translator__item\b[^>]*>[\s\S]*?<\/a>/gi;
-
-  while ((match = linkRegex.exec(scope)) !== null) {
-    const block = match[0];
-    const tag = (block.match(/<a\b[^>]*>/i) || [""])[0];
-
-    if (isPremiumTranslatorTag(tag)) continue;
-
-    const id = getAttr(tag, "data-translator_id");
-    const name = getAttr(tag, "title") || stripTags(block);
-    const href = normalizeUrl(getAttr(tag, "href"), pageUrl || BASE_URL);
-
-    addTranslatorUnique(translators, id, name, href || pageUrl);
-  }
-
-  if (!translators.length) {
-    const anyTranslatorRegex = /data-translator_id\s*=\s*["']?(\d+)["']?[^>]*>([\s\S]{0,200}?)<\//gi;
-
-    while ((match = anyTranslatorRegex.exec(src)) !== null) {
-      const tagStart = src.lastIndexOf("<", match.index);
-      const tagEnd = src.indexOf(">", match.index);
-      const tag = tagStart >= 0 && tagEnd >= 0 ? src.slice(tagStart, tagEnd + 1) : "";
-
-      if (isPremiumTranslatorTag(tag)) continue;
-
-      addTranslatorUnique(translators, match[1], match[2], pageUrl);
+  for (const base of _orderedBases(preferredBase)) {
+    try {
+      return await _graphqlOnBase(base, operationName, variables, query);
+    } catch (e) {
+      lastError = e;
     }
   }
 
-  return normalizeTranslators(translators, null);
+  throw lastError || new Error("All ShizaProject domains failed");
 }
 
-function normalizeTranslators(translators, preferredId) {
-  const result = [];
-  const seen = new Set();
-
-  for (const t of Array.isArray(translators) ? translators : []) {
-    const id = parseInt(t && t.id, 10);
-    if (!Number.isFinite(id)) continue;
-    if (seen.has(id)) continue;
-
-    seen.add(id);
-
-    result.push({
-      id: id,
-      name: stripTags(t && t.name ? t.name : "") || ("Voiceover " + id),
-      href: t && t.href ? t.href : ""
-    });
+const SEARCH_QUERY = `
+query search($query: String!, $type: SearchType!) {
+  search(query: $query, type: $type, first: 10) {
+    edges {
+      node {
+        id
+        __typename
+        ... on Release {
+          id
+          slug
+          name
+          originalName
+          airedOn
+          releasedOn
+          publishedAt
+          announcement
+          episodesCount
+          episodesAired
+          episodeDuration
+          season
+          seasonYear
+          seasonNumber
+          status
+          activity
+          type
+          rating
+          viewCount
+          score
+          posters {
+            original {
+              url
+            }
+            preview: resize(width: 360, height: 500) {
+              url
+            }
+          }
+          genres {
+            id
+            slug
+            name
+            __typename
+          }
+          __typename
+        }
+      }
+    }
   }
+}`;
 
-  if (Number.isFinite(preferredId)) {
-    result.sort(function (a, b) {
-      if (a.id === preferredId) return -1;
-      if (b.id === preferredId) return 1;
-      return 0;
-    });
+const RELEASE_QUERY = `
+query releaseAllSafe($slug: String!) {
+  release(slug: $slug) {
+    __typename
+    id
+    slug
+    name
+    originalName
+    airedOn
+    releasedOn
+    publishedAt
+    announcement
+    episodesCount
+    episodesAired
+    episodeDuration
+    season
+    seasonYear
+    seasonNumber
+    status
+    activity
+    type
+    rating
+    viewCount
+    score
+    genres {
+      id
+      slug
+      name
+      __typename
+    }
+    episodes {
+      __typename
+      id
+      number
+      name
+      duration
+      videos {
+        id
+        embedUrl
+        __typename
+      }
+    }
   }
+}`;
 
-  return result;
-}
-
-function parseEpisodesHtml(episodesHtml, pageUrl, postId, translatorId) {
-  const src = String(episodesHtml || "");
-  const results = [];
-  const seen = new Set();
-
-  const itemRegex = /<li\b([^>]*\bb-simple_episode__item\b[^>]*)>([\s\S]*?)<\/li>/gi;
-  let match;
-
-  while ((match = itemRegex.exec(src)) !== null) {
-    const attrs = match[1] || "";
-
-    const season = parseInt(getAttr(attrs, "data-season_id"), 10);
-    const episode = parseInt(getAttr(attrs, "data-episode_id"), 10);
-
-    if (!Number.isFinite(season) || !Number.isFinite(episode)) continue;
-
-    const key = season + ":" + episode;
-    if (seen.has(key)) continue;
-    seen.add(key);
-
-    results.push({
-      href: appendQueryParams(pageUrl, {
-        post_id: postId,
-        translator_id: translatorId,
-        season: season,
-        episode: episode
-      }),
-      number: episode,
-      episode: episode,
-      season: season,
-      description: `S${season}E${episode}`,
-      title: `S${season}E${episode}`
-    });
-  }
-
-  results.sort(function (a, b) {
-    if (a.season !== b.season) return a.season - b.season;
-    return a.episode - b.episode;
-  });
-
-  return results;
-}
-
-function getEpisodeStats(episodes) {
-  const seasons = {};
-  let count = 0;
-
-  for (const ep of Array.isArray(episodes) ? episodes : []) {
-    const season = parseInt(ep.season, 10);
-    if (Number.isFinite(season)) seasons[season] = true;
-    count++;
-  }
-
-  const seasonNumbers = Object.keys(seasons)
-    .map(function (x) { return parseInt(x, 10); })
-    .filter(function (x) { return Number.isFinite(x); });
+async function _getRelease(slug, preferredBase) {
+  const result = await _graphql(
+    "releaseAllSafe",
+    { slug: String(slug || "") },
+    RELEASE_QUERY,
+    preferredBase
+  );
 
   return {
-    count: count,
-    seasonCount: seasonNumbers.length,
-    hasSeason1: seasonNumbers.includes(1),
-    maxSeason: seasonNumbers.length ? Math.max.apply(null, seasonNumbers) : 0
+    release: result?.data?.release || null,
+    siteBase: result?.siteBase || _cleanBase(preferredBase)
   };
 }
 
-function scoreEpisodes(episodes) {
-  const stats = getEpisodeStats(episodes);
+function _pickPoster(release) {
+  const posters = Array.isArray(release?.posters) ? release.posters : [];
+  if (!posters.length) return "";
+
+  const first = posters[0];
 
   return (
-    stats.count +
-    stats.seasonCount * 100 +
-    (stats.hasSeason1 ? 1000 : 0) +
-    stats.maxSeason
+    _normalizeUrl(first?.original?.url || "") ||
+    _normalizeUrl(first?.preview?.url || "") ||
+    ""
   );
 }
 
-async function findBestEpisodesResponse(postId, pageUrl, translators) {
-  const origin = getOrigin(pageUrl);
-  const headers = ajaxHeaders(pageUrl);
+function _releaseAliases(release) {
+  const parts = [];
 
-  let best = {
-    translator: null,
-    episodes: [],
-    score: -1
-  };
+  if (release?.originalName) parts.push(`Original: ${release.originalName}`);
+  if (release?.type) parts.push(`Type: ${release.type}`);
+  if (Number.isFinite(release?.episodesCount)) parts.push(`Episodes: ${release.episodesCount}`);
+  if (Number.isFinite(release?.episodeDuration)) parts.push(`Duration: ${release.episodeDuration}m`);
+  if (release?.announcement) parts.push(String(release.announcement));
 
-  const list = Array.isArray(translators) ? translators : [];
-  const maxChecks = Math.min(list.length, 8);
-
-  for (let i = 0; i < maxChecks; i++) {
-    const tr = list[i];
-
-    try {
-      const translatorId = parseInt(tr.id, 10);
-      if (!Number.isFinite(translatorId)) continue;
-
-      const body =
-        "id=" + encodeURIComponent(postId) +
-        "&translator_id=" + encodeURIComponent(translatorId) +
-        "&action=get_episodes";
-
-      const trHeaders = {
-        ...headers,
-        "Referer": tr.href || pageUrl
-      };
-
-      const data = await fetchJsonBackup(origin + "/ajax/get_cdn_series/", trHeaders, "POST", body);
-
-      if (!data || !data.success || !data.episodes) continue;
-
-      const episodes = parseEpisodesHtml(data.episodes, pageUrl, postId, translatorId);
-      const score = scoreEpisodes(episodes);
-      const stats = getEpisodeStats(episodes);
-
-      if (score > best.score) {
-        best = {
-          translator: tr,
-          episodes: episodes,
-          score: score
-        };
-      }
-
-      if (stats.hasSeason1 && stats.seasonCount >= 3 && stats.count >= 40) {
-        break;
-      }
-    } catch (_) {}
+  if (Array.isArray(release?.genres) && release.genres.length) {
+    parts.push(`Genres: ${release.genres.map(g => g?.name).filter(Boolean).join(", ")}`);
   }
 
-  return best;
+  return parts.join(" | ");
 }
 
-function getCombinations(arr, length) {
-  if (length === 1) return arr.map(function (x) { return [x]; });
+function _scoreTitle(title, keyword) {
+  const t = String(title || "").toLowerCase().trim();
+  const k = String(keyword || "").toLowerCase().trim();
 
-  const results = [];
-  const sub = getCombinations(arr, length - 1);
+  if (!t || !k) return 99;
+  if (t === k) return 0;
+  if (t.startsWith(k)) return 1;
+  if (t.includes(k)) return 2;
 
-  for (const val of arr) {
-    for (const s of sub) {
-      results.push([val].concat(s));
-    }
-  }
-
-  return results;
-}
-
-function btoaLocal(input) {
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-  let str = "";
-
-  for (let i = 0; i < input.length; i += 3) {
-    const c1 = input.charCodeAt(i);
-    const c2 = i + 1 < input.length ? input.charCodeAt(i + 1) : NaN;
-    const c3 = i + 2 < input.length ? input.charCodeAt(i + 2) : NaN;
-
-    str +=
-      chars.charAt(c1 >> 2) +
-      chars.charAt(((c1 & 3) << 4) | (isNaN(c2) ? 0 : c2 >> 4)) +
-      chars.charAt(isNaN(c2) ? 64 : ((c2 & 15) << 2) | (isNaN(c3) ? 0 : c3 >> 6)) +
-      chars.charAt(isNaN(c3) ? 64 : c3 & 63);
-  }
-
-  return str;
-}
-
-function atobLocal(input) {
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-  const raw = String(input || "");
-  let str = "";
-  let buffer = 0;
-  let bits = 0;
-
-  for (let i = 0; i < raw.length; i++) {
-    const ch = raw.charAt(i);
-    if (ch === "=") break;
-
-    const idx = chars.indexOf(ch);
-    if (idx === -1) continue;
-
-    buffer = (buffer << 6) | idx;
-    bits += 6;
-
-    if (bits >= 8) {
-      bits -= 8;
-      str += String.fromCharCode((buffer >> bits) & 0xff);
-      buffer &= (1 << bits) - 1;
-    }
-  }
-
-  return str;
-}
-
-function decodeUtf8(str) {
-  try {
-    return decodeURIComponent(escape(str));
-  } catch (_) {
-    return str;
-  }
-}
-
-function clearTrash(data) {
-  const trashList = ["@", "#", "!", "^", "$"];
-  const trashCodes = [];
-
-  for (let i = 2; i <= 3; i++) {
-    const combos = getCombinations(trashList, i);
-
-    for (const combo of combos) {
-      trashCodes.push(btoaLocal(combo.join("")));
-    }
-  }
-
-  let text = String(data || "").replace("#h", "").split("//_//").join("");
-
-  for (const code of trashCodes) {
-    text = text.split(code).join("");
-  }
-
-  try {
-    return decodeUtf8(atobLocal(text + "=="));
-  } catch (_) {
-    return text;
-  }
-}
-
-function isPremiumQualityLabel(label) {
-  const s = String(label || "").toLowerCase();
-
-  return (
-    s.includes("ultra") ||
-    s.includes("4k") ||
-    s.includes("2k") ||
-    s.includes("2160") ||
-    s.includes("1440") ||
-    s.includes("premium") ||
-    s.includes("vip") ||
-    s.includes("премиум")
-  );
-}
-
-function qualityKeyFromLabel(label) {
-  const s = String(label || "").toLowerCase();
-
-  if (isPremiumQualityLabel(s)) return null;
-
-  const m = s.match(/(1080|720|480|360|240|144)\s*p?/);
-  const value = m ? parseInt(m[1], 10) : 0;
-
-  if (value >= 1080 || s.includes("fullhd") || s.includes("full hd")) return "url1080";
-  if (value >= 720 || s.includes("hd")) return "url720";
-  if (value >= 480) return "url480";
-  if (value >= 360) return "url360";
-  if (value >= 240) return "url240";
-  if (value >= 144) return "url144";
-
-  return null;
-}
-
-function emptyQualityUrls() {
-  return {
-    url1080: null,
-    url720: null,
-    url480: null,
-    url360: null,
-    url240: null,
-    url144: null,
-    hlsUrl: null,
-    dashUrl: null
-  };
-}
-
-function parseRezkaStreams(rawUrl, voiceName, referer) {
-  const raw = String(rawUrl || "").trim();
-  if (!raw) return [];
-
-  let decoded = raw;
-
-  if (!decoded.startsWith("[") && !decoded.startsWith("http")) {
-    decoded = clearTrash(decoded);
-  }
-
-  decoded = decodeHtmlEntities(decoded);
-
-  const qualityUrls = emptyQualityUrls();
-
-  if (!decoded.includes("[") && (decoded.includes(".mp4") || decoded.includes(".m3u8") || decoded.includes(".mpd"))) {
-    if (decoded.includes(".m3u8")) qualityUrls.hlsUrl = decoded;
-    else if (decoded.includes(".mpd")) qualityUrls.dashUrl = decoded;
-    else qualityUrls.url720 = decoded;
-
-    const stream = makeQualityStream(voiceName, qualityUrls, referer);
-    return stream ? [stream] : [];
-  }
-
-  const partRegex = /\[([^\]]+)\]\s*([^\[]+)/g;
-  let match;
-
-  while ((match = partRegex.exec(decoded)) !== null) {
-    const quality = stripTags(match[1]).trim();
-    if (!quality || quality.includes("<")) continue;
-
-    const key = qualityKeyFromLabel(quality);
-    if (!key) continue;
-
-    const links = String(match[2] || "")
-      .split(/\s+or\s+/i)
-      .map(function (x) {
-        return x.replace(/^,+|,+$/g, "").trim();
-      })
-      .filter(Boolean)
-      .filter(function (x) {
-        return x.includes(".mp4") || x.includes(".m3u8") || x.includes(".mpd");
-      });
-
-    if (!links.length) continue;
-
-    const mp4 = links.find(function (x) { return x.includes(".mp4"); });
-    const hls = links.find(function (x) { return x.includes(".m3u8"); });
-    const dash = links.find(function (x) { return x.includes(".mpd"); });
-
-    if (mp4 && !qualityUrls[key]) qualityUrls[key] = mp4;
-    if (hls && !qualityUrls.hlsUrl) qualityUrls.hlsUrl = hls;
-    if (dash && !qualityUrls.dashUrl) qualityUrls.dashUrl = dash;
-  }
-
-  const stream = makeQualityStream(voiceName, qualityUrls, referer);
-  return stream ? [stream] : [];
-}
-
-function makeQualityStream(voiceName, qualityUrls, referer) {
-  const streamUrl =
-    qualityUrls.url1080 ||
-    qualityUrls.url720 ||
-    qualityUrls.url480 ||
-    qualityUrls.url360 ||
-    qualityUrls.url240 ||
-    qualityUrls.url144 ||
-    qualityUrls.hlsUrl ||
-    qualityUrls.dashUrl ||
-    null;
-
-  if (!streamUrl) return null;
-
-  return {
-    title: stripTags(voiceName || "HDRezka"),
-    streamUrl: streamUrl,
-    url: streamUrl,
-    url1080: qualityUrls.url1080,
-    url720: qualityUrls.url720,
-    url480: qualityUrls.url480,
-    url360: qualityUrls.url360,
-    url240: qualityUrls.url240,
-    url144: qualityUrls.url144,
-    hlsUrl: qualityUrls.hlsUrl,
-    dashUrl: qualityUrls.dashUrl,
-    headers: {
-      "User-Agent": defaultHeaders["User-Agent"],
-      "Cookie": defaultHeaders["Cookie"],
-      "Referer": referer || BASE_URL + "/"
-    }
-  };
-}
-
-function parseSubtitles(data) {
-  const result = {
-    subtitle: "",
-    subtitles: []
-  };
-
-  if (!data || !data.success || !data.subtitle) {
-    return result;
-  }
-
-  const raw = String(data.subtitle || "");
-  const lns = data.subtitle_lns || {};
-  const def = String(data.subtitle_def || "").toLowerCase();
-
-  const re = /\[([^\]]+)\]\s*([^,\s]+)/g;
-  let match;
-
-  while ((match = re.exec(raw)) !== null) {
-    const label = stripTags(match[1]);
-    const url = String(match[2] || "").trim();
-
-    if (!label || !url) continue;
-
-    const mapped = lns && lns[label] ? String(lns[label]) : "";
-    const lang = mapped || label.toLowerCase();
-
-    if (!lang || lang === "откл.") continue;
-
-    result.subtitles.push({
-      lang: lang,
-      label: label,
-      url: url,
-      default: def ? lang.toLowerCase() === def : false
-    });
-  }
-
-  const defaultSub = result.subtitles.find(function (s) {
-    return s.default;
-  });
-
-  const englishSub = result.subtitles.find(function (s) {
-    const lang = String(s.lang || "").toLowerCase();
-    const label = String(s.label || "").toLowerCase();
-    return lang === "en" || label.includes("english") || label.includes("eng");
-  });
-
-  const firstSub = result.subtitles[0];
-
-  result.subtitle = (defaultSub || englishSub || firstSub || {}).url || "";
-
-  return result;
-}
-
-function parseSubtitleUrl(data) {
-  return parseSubtitles(data).subtitle;
+  return 3;
 }
 
 async function searchResults(keyword) {
@@ -737,230 +292,395 @@ async function searchResults(keyword) {
     const query = String(keyword || "").trim();
     if (!query) return JSON.stringify([]);
 
-    const url = BASE_URL + "/search/?do=search&subaction=search&q=" + encodeURIComponent(query);
-    const page = await fetchTextBackup(url, defaultHeaders);
-    const html = page.text;
+    const result = await _graphql("search", { query, type: "RELEASE" }, SEARCH_QUERY);
+    const siteBase = result?.siteBase || SITE_BASE;
+    const edges = Array.isArray(result?.data?.search?.edges) ? result.data.search.edges : [];
 
-    const results = [];
-    const seen = new Set();
-    const parts = html.split('class="b-content__inline_item"');
+    const out = edges
+      .map(edge => edge?.node)
+      .filter(node => node?.__typename === "Release" && node?.slug)
+      .map(release => {
+        const title = release?.name || release?.originalName || "Unknown title";
+        const image = _pickPoster(release);
 
-    for (let i = 1; i < parts.length; i++) {
-      const part = parts[i];
+        const item = {
+          title,
+          href: _packRelease({
+            slug: release.slug,
+            id: release.id,
+            title,
+            originalName: release?.originalName || "",
+            airedOn: release?.airedOn || release?.releasedOn || "",
+            image,
+            siteBase
+          }),
+          _score: Math.min(
+            _scoreTitle(release?.name || "", query),
+            _scoreTitle(release?.originalName || "", query)
+          )
+        };
 
-      const imgMatch = part.match(/<img\b[^>]*src=["']([^"']+)["']/i);
-      const linkMatch = part.match(/<div\b[^>]*class=["']b-content__inline_item-link["'][^>]*>[\s\S]*?<a\b[^>]*href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/i);
+        if (image) {
+          item.image = image;
+        }
 
-      if (!imgMatch || !linkMatch) continue;
+        return item;
+      });
 
-      const href = normalizeUrl(linkMatch[1], page.url || BASE_URL);
-      if (!href || seen.has(href)) continue;
+    out.sort((a, b) => a._score - b._score);
 
-      seen.add(href);
+    return JSON.stringify(out.map(({ _score, ...rest }) => rest));
+  } catch (_) {
+    return JSON.stringify([]);
+  }
+}
 
-      results.push({
-        title: stripTags(linkMatch[2]) || "HDRezka",
-        image: normalizeUrl(imgMatch[1], page.url || BASE_URL),
-        href: href
+async function extractDetails(href) {
+  try {
+    const slug = _extractSlug(href);
+    const preferredBase = _extractPreferredBase(href);
+
+    if (!slug) return JSON.stringify([]);
+
+    const result = await _getRelease(slug, preferredBase);
+    const release = result?.release;
+
+    if (!release) return JSON.stringify([]);
+
+    const titleLine = release?.originalName && release?.originalName !== release?.name
+      ? `${release.name} / ${release.originalName}`
+      : (release?.name || release?.originalName || "ShizaProject");
+
+    const statusLine = [release?.status, release?.activity]
+      .filter(Boolean)
+      .join(" / ");
+
+    const description = [titleLine, statusLine]
+      .filter(Boolean)
+      .join("\n");
+
+    return JSON.stringify([{
+      description: description || "No description available.",
+      aliases: _releaseAliases(release) || "ShizaProject",
+      airdate: release?.airedOn || release?.releasedOn || "Unknown"
+    }]);
+  } catch (_) {
+    return JSON.stringify([]);
+  }
+}
+
+async function extractEpisodes(href) {
+  try {
+    const slug = _extractSlug(href);
+    const preferredBase = _extractPreferredBase(href);
+
+    if (!slug) return JSON.stringify([]);
+
+    const result = await _getRelease(slug, preferredBase);
+    const release = result?.release;
+    const siteBase = result?.siteBase || preferredBase || SITE_BASE;
+
+    if (!release) return JSON.stringify([]);
+
+    const episodes = Array.isArray(release?.episodes) ? release.episodes : [];
+
+    const out = episodes
+      .map((ep, index) => {
+        const videos = Array.isArray(ep?.videos) ? ep.videos : [];
+
+        const embedUrls = videos
+          .map(v => _normalizeUrl(v?.embedUrl || ""))
+          .filter(Boolean);
+
+        if (!embedUrls.length) return null;
+
+        const number = Number.isFinite(ep?.number) ? ep.number : (index + 1);
+        const title = ep?.name ? String(ep.name) : `Episode ${number}`;
+
+        const entry = {
+          href: _packEpisode({
+            releaseSlug: release.slug,
+            episodeId: ep?.id || "",
+            number,
+            title,
+            embedUrls,
+            fallbackEmbedUrl: embedUrls[0],
+            siteBase
+          }),
+          number,
+          title
+        };
+
+        if (Number.isFinite(ep?.duration)) {
+          entry.duration = ep.duration * 60;
+        }
+
+        return entry;
+      })
+      .filter(Boolean)
+      .sort((a, b) => Number(a.number) - Number(b.number));
+
+    return JSON.stringify(out);
+  } catch (_) {
+    return JSON.stringify([]);
+  }
+}
+
+function _qualityNumber(key) {
+  const n = parseInt(String(key || "").replace(/[^\d]/g, ""), 10);
+  return Number.isFinite(n) ? n : 0;
+}
+
+function _pickQualityUrl(qualities, target) {
+  for (const key in qualities || {}) {
+    const q = _qualityNumber(key);
+    const src = _normalizeUrl(qualities?.[key]?.src || "");
+    if (q === target && src) return src;
+  }
+
+  return null;
+}
+
+function _streamHeaders(siteBase) {
+  const site = _cleanBase(siteBase || SITE_BASE);
+
+  return {
+    "User-Agent": _ua(),
+    "Referer": site + "/",
+    "Origin": site
+  };
+}
+
+function _buildStreamsFromQualities(qualities, siteBase) {
+  const url720 = _pickQualityUrl(qualities, 720);
+  const url480 = _pickQualityUrl(qualities, 480);
+  const url360 = _pickQualityUrl(qualities, 360);
+
+  const known = {
+    720: url720,
+    480: url480,
+    360: url360
+  };
+
+  const headers = _streamHeaders(siteBase);
+  const streams = [];
+
+  for (const quality of [720, 480, 360]) {
+    const streamUrl = known[quality];
+    if (!streamUrl) continue;
+
+    streams.push({
+      title: `${quality}p`,
+      streamUrl,
+      url720,
+      url480,
+      url360,
+      headers
+    });
+  }
+
+  if (!streams.length) {
+    let bestQuality = 0;
+    let bestUrl = "";
+
+    for (const key in qualities || {}) {
+      const q = _qualityNumber(key);
+      const src = _normalizeUrl(qualities?.[key]?.src || "");
+      if (!src) continue;
+
+      if (q > bestQuality) {
+        bestQuality = q;
+        bestUrl = src;
+      }
+    }
+
+    if (bestUrl) {
+      streams.push({
+        title: bestQuality ? `${bestQuality}p` : "Kodik",
+        streamUrl: bestUrl,
+        url720: bestQuality >= 720 ? bestUrl : null,
+        url480: bestQuality >= 480 && bestQuality < 720 ? bestUrl : null,
+        url360: bestQuality >= 360 && bestQuality < 480 ? bestUrl : null,
+        headers
       });
     }
-
-    return JSON.stringify(results);
-  } catch (_) {
-    return JSON.stringify([]);
   }
+
+  return streams;
 }
 
-async function extractDetails(url) {
-  try {
-    const page = await fetchTextBackup(url, defaultHeaders);
-    const html = page.text;
-
-    const descMatch = html.match(/class=["'][^"']*b-post__description_text[^"']*["'][^>]*>([\s\S]*?)<\/div>/i);
-    const origMatch = html.match(/<div[^>]*class=["'][^"']*b-post__origtitle[^"']*["'][^>]*>([\s\S]*?)<\/div>/i);
-    const yearMatch = html.match(/href=["'][^"']*\/year\/[^"']*["'][^>]*>([^<]+)<\/a>/i);
-
-    return JSON.stringify([
-      {
-        description: descMatch ? stripTags(descMatch[1]) : "N/A",
-        aliases: origMatch ? stripTags(origMatch[1]) : "N/A",
-        airdate: yearMatch ? stripTags(yearMatch[1]) : "N/A"
-      }
-    ]);
-  } catch (_) {
-    return JSON.stringify([
-      {
-        description: "Error",
-        aliases: "Error",
-        airdate: "Error"
-      }
-    ]);
-  }
+function _isKodikUrl(url) {
+  const raw = String(url || "").toLowerCase();
+  return raw.includes("kodikplayer.com") || raw.includes("kodik.info");
 }
 
-async function extractEpisodes(url) {
+async function extractStreamUrl(href) {
   try {
-    const page = await fetchTextBackup(url, defaultHeaders);
-    const pageUrl = page.url;
-    const html = page.text;
+    const payload = _unpackEpisode(href);
 
-    const isTV = /<meta\b[^>]*property=["']og:type["'][^>]*content=["']video\.tv_series["']/i.test(html);
-    const postId = getPostId(html, pageUrl);
-    const defaultTranslatorId = getDefaultTranslatorId(html);
-    const translators = normalizeTranslators(parseTranslators(html, pageUrl), defaultTranslatorId);
-
-    if (!postId) return JSON.stringify([]);
-
-    const selectedTranslator = translators[0] || {
-      id: Number.isFinite(defaultTranslatorId) ? defaultTranslatorId : 0,
-      name: "Default",
-      href: pageUrl
-    };
-
-    if (!isTV) {
-      return JSON.stringify([
-        {
-          href: appendQueryParams(pageUrl, {
-            post_id: postId,
-            translator_id: selectedTranslator.id
-          }),
-          number: 1,
-          episode: 1,
-          season: 1,
-          title: "Фильм"
-        }
-      ]);
-    }
-
-    const best = await findBestEpisodesResponse(postId, pageUrl, translators);
-
-    if (!best || !best.episodes || !best.episodes.length) {
-      return JSON.stringify([]);
-    }
-
-    return JSON.stringify(best.episodes);
-  } catch (_) {
-    return JSON.stringify([]);
-  }
-}
-
-async function extractStreamUrl(url) {
-  try {
-    const rawUrl = String(url || "");
-    const basePageUrl = rawUrl.split("?")[0];
-
-    let postId = parseInt(getQueryParam(rawUrl, "post_id"), 10);
-    let selectedTranslatorId = parseInt(getQueryParam(rawUrl, "translator_id"), 10);
-    let season = parseInt(getQueryParam(rawUrl, "season"), 10);
-    let episode = parseInt(getQueryParam(rawUrl, "episode"), 10);
-
-    const page = await fetchTextBackup(basePageUrl, defaultHeaders);
-    const pageUrl = page.url || basePageUrl;
-    const html = page.text || "";
-
-    if (!postId) postId = parseInt(getPostId(html, pageUrl), 10);
-
-    const pageTranslators = parseTranslators(html, pageUrl);
-    const preferredId = Number.isFinite(selectedTranslatorId)
-      ? selectedTranslatorId
-      : getDefaultTranslatorId(html);
-
-    const translators = normalizeTranslators(pageTranslators, preferredId);
-
-    if (!postId) {
+    if (!payload) {
       return JSON.stringify({
         streams: [],
-        subtitle: "",
-        subtitles: []
+        subtitle: DEFAULT_SUBTITLE
       });
     }
 
-    if (!Number.isFinite(season)) season = 1;
-    if (!Number.isFinite(episode)) episode = 1;
+    const siteBase = _cleanBase(payload?.siteBase || SITE_BASE);
 
-    const isTV = rawUrl.includes("season=") && rawUrl.includes("episode=");
-    const ajaxUrl = getOrigin(pageUrl) + "/ajax/get_cdn_series/";
+    const embedUrls = Array.isArray(payload?.embedUrls)
+      ? payload.embedUrls.map(_normalizeUrl).filter(Boolean)
+      : [_normalizeUrl(payload?.fallbackEmbedUrl)].filter(Boolean);
 
     const streams = [];
-    const seenStreams = new Set();
 
-    const subtitles = [];
-    const seenSubtitleKeys = new Set();
-    let finalSubtitle = "";
+    for (const embedUrl of embedUrls) {
+      if (!_isKodikUrl(embedUrl)) continue;
 
-    for (const tr of translators) {
       try {
-        const translatorId = parseInt(tr.id, 10);
-        if (!Number.isFinite(translatorId)) continue;
-
-        const body = isTV
-          ? "id=" + encodeURIComponent(postId) +
-            "&translator_id=" + encodeURIComponent(translatorId) +
-            "&season=" + encodeURIComponent(season) +
-            "&episode=" + encodeURIComponent(episode) +
-            "&action=get_stream"
-          : "id=" + encodeURIComponent(postId) +
-            "&translator_id=" + encodeURIComponent(translatorId) +
-            "&action=get_movie";
-
-        const headers = ajaxHeaders(tr.href || pageUrl);
-        const data = await fetchJsonBackup(ajaxUrl, headers, "POST", body);
-
-        if (!data || !data.success || !data.url) {
-          continue;
-        }
-
-        const parsedSubs = parseSubtitles(data);
-
-        if (!finalSubtitle && parsedSubs.subtitle) {
-          finalSubtitle = parsedSubs.subtitle;
-        }
-
-        for (const sub of parsedSubs.subtitles) {
-          const subKey = sub.lang + ":" + sub.url;
-          if (seenSubtitleKeys.has(subKey)) continue;
-
-          seenSubtitleKeys.add(subKey);
-          subtitles.push(sub);
-        }
-
-        const voiceName =
-          tr.name ||
-          stripTags(data.translation || data.translator || data.title || "") ||
-          ("Voiceover " + translatorId);
-
-        const translatorStreams = parseRezkaStreams(data.url, voiceName, tr.href || pageUrl);
-
-        for (const stream of translatorStreams) {
-          const key = translatorId + ":" + stream.streamUrl;
-          if (seenStreams.has(key)) continue;
-
-          seenStreams.add(key);
-          streams.push(stream);
-        }
+        const qualitiesJson = await kodikParser(embedUrl, siteBase);
+        const qualities = _safeJsonParse(qualitiesJson, {});
+        const parsedStreams = _buildStreamsFromQualities(qualities, siteBase);
+        streams.push(...parsedStreams);
       } catch (_) {}
     }
 
     return JSON.stringify({
-      streams: streams,
-      subtitle: finalSubtitle,
-      subtitles: subtitles
+      streams,
+      subtitle: DEFAULT_SUBTITLE
     });
   } catch (_) {
     return JSON.stringify({
       streams: [],
-      subtitle: "",
-      subtitles: []
+      subtitle: DEFAULT_SUBTITLE
     });
   }
 }
 
+async function kodikParser(url, siteBase) {
+  try {
+    const site = _cleanBase(siteBase || SITE_BASE);
+    const embedUrl = _normalizeUrl(url);
+
+    const headers = {
+      "Referer": site + "/",
+      "User-Agent": _ua()
+    };
+
+    const response = await fetchv2(embedUrl, headers);
+    const htmlText = await response.text();
+
+    const urlParamsMatch = htmlText.match(/var\s+urlParams\s*=\s*'([^']+)'/);
+    const videoInfoTypeMatch = htmlText.match(/vInfo\.type\s*=\s*'([^']+)'/);
+    const videoInfoHashMatch = htmlText.match(/vInfo\.hash\s*=\s*'([^']+)'/);
+    const videoInfoIdMatch = htmlText.match(/vInfo\.id\s*=\s*'([^']+)'/);
+
+    const urlParams = urlParamsMatch ? _safeJsonParse(urlParamsMatch[1], {}) : {};
+    const videoInfoType = videoInfoTypeMatch ? videoInfoTypeMatch[1] : "";
+    const videoInfoHash = videoInfoHashMatch ? videoInfoHashMatch[1] : "";
+    const videoInfoId = videoInfoIdMatch ? videoInfoIdMatch[1] : "";
+
+    const finalData =
+      `d=${urlParams.d || ""}` +
+      `&d_sign=${urlParams.d_sign || ""}` +
+      `&pd=${urlParams.pd || ""}` +
+      `&pd_sign=${urlParams.pd_sign || ""}` +
+      `&ref=${urlParams.ref || ""}` +
+      `&ref_sign=${urlParams.ref_sign || ""}` +
+      `&bad_user=false&cdn_is_working=true` +
+      `&type=${encodeURIComponent(videoInfoType)}` +
+      `&hash=${encodeURIComponent(videoInfoHash)}` +
+      `&id=${encodeURIComponent(videoInfoId)}` +
+      `&info=%7B%7D`;
+
+    const headers2 = {
+      "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+      "Referer": site + "/",
+      "User-Agent": _ua(),
+      "X-Requested-With": "XMLHttpRequest"
+    };
+
+    const apiResponse = await fetchv2(
+      "https://kodikplayer.com/ftor",
+      headers2,
+      "POST",
+      finalData
+    );
+
+    const apiJson = await apiResponse.json();
+
+    const qualities = {};
+
+    if (apiJson?.links) {
+      for (const quality in apiJson.links) {
+        const qualityArray = apiJson.links[quality];
+        const first = Array.isArray(qualityArray) ? qualityArray[0] : null;
+
+        if (!first?.src) continue;
+
+        qualities[quality] = {
+          src: decode(first.src),
+          type: first.type || "application/x-mpegURL"
+        };
+      }
+    }
+
+    return JSON.stringify(qualities, null, 2);
+  } catch (_) {
+    return JSON.stringify({});
+  }
+}
+
+function decode(input) {
+  const map = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+  let out = "";
+  let buffer = 0;
+  let count = 0;
+
+  const rotated = [];
+  const source = String(input || "");
+
+  for (let i = 0; i < source.length; i++) {
+    const ch = source[i];
+
+    if (/[a-zA-Z]/.test(ch)) {
+      const code = ch.charCodeAt(0);
+      const max = ch <= "Z" ? 90 : 122;
+      const shifted = code + 18;
+
+      rotated.push(String.fromCharCode(shifted <= max ? shifted : shifted - 26));
+    } else {
+      rotated.push(ch);
+    }
+  }
+
+  const rot = rotated.join("");
+
+  for (let j = 0; j < rot.length; j++) {
+    const ch = rot[j];
+
+    if (ch === "=") break;
+
+    const val = map.indexOf(ch);
+    if (val === -1) continue;
+
+    buffer = (buffer << 6) | val;
+    count += 6;
+
+    if (count >= 8) {
+      count -= 8;
+      out += String.fromCharCode((buffer >> count) & 0xff);
+    }
+  }
+
+  return out;
+}
+
 function _defaultExport() {
   return {
-    searchResults: searchResults,
-    extractDetails: extractDetails,
-    extractEpisodes: extractEpisodes,
-    extractStreamUrl: extractStreamUrl
+    searchResults,
+    extractDetails,
+    extractEpisodes,
+    extractStreamUrl
   };
 }
 
@@ -974,7 +694,5 @@ try {
 
 try {
   globalThis.module = globalThis.module || {};
-  globalThis.module.exports = {
-    default: _defaultExport
-  };
+  globalThis.module.exports = { default: _defaultExport };
 } catch (_) {}

@@ -1,27 +1,25 @@
 {
   "sourceName": "HDRezka",
-  "iconUrl": "https://rezka.ag/apple-touch-icon-144.png",
+  "iconUrl": "https://rezka.ag/favicon.ico",
   "author": {
-    "name": "50/50",
-    "icon": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ3122kQwublLkZ6rf1fEpUP79BxZOFmH9BSA&s"
+    "name": "anonymous",
+    "icon": "https://git.luna-app.eu/avatars/11bb6ee2fdba48e70ee21594f4ac96344358be3bb9770732ba8c406b5cda98f0?size=512$0"
   },
-  "version": "1.0.0",
+  "version": "1.0.1",
   "language": "Russian",
-  "streamType": "MP4 & HLS",
-  "quality": "4K",
+  "streamType": "HLS",
+  "quality": "1080p",
   "baseUrl": "https://rezka.ag",
-  "searchBaseUrl": "https://rezka.ag",
+  "searchBaseUrl": "https://rezka.ag/search/?do=search&subaction=search&q=%s",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Russian/006/source.js",
-  "type": "movies/shows/anime",
   "asyncJS": true,
+  "streamAsyncJS": true,
   "softsub": true,
-  "downloadSupport": true,
+  "type": "shows/movies/anime",
+  "downloadSupport": false,
   "supportsMojuru": true,
   "supportsDartotsu": true,
   "supportsSora": true,
   "supportsLuna": true,
-  "supportsAnymex": true,
-  "supportsTsumi": true,
-  "supportsHiyoku": true,
-  "supportsShirox": true
+  "supportMiruShin": true
 }

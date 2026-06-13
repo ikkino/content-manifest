@@ -1,115 +1,117 @@
 async function searchResults(keyword) {
     const results = [];
-    const response = await fetchv2(`https://lmanime.com/?s=${keyword}`);
+    const response = await soraFetch(`https://sites.google.com/view/borucut`);
     const html = await response.text();
 
-    const regex = /<article class="bs"[^>]*>.*?<a href="([^"]+)"[^>]*>.*?<img src="([^"]+)"[^>]*>.*?<h2[^>]*>(.*?)<\/h2>/gs;
+    // --- Regex patterns ---
+    const arcRegex = /<span class="C9DxTc "[^>]*>([^<]*Arc)<\/span>/g;
+    const linkRegex = /<a[^>]*href="([^"]+)"[^>]*>\s*<div class="NsaAfc">\s*<p>.*?<\/p>/g;
+    const imageRegex = /<img src="([^"]+)"[^>]*>/g;
 
+    // --- Extract arcs ---
+    let arcs = [];
     let match;
-    while ((match = regex.exec(html)) !== null) {
+    while ((match = arcRegex.exec(html)) !== null) {
+        arcs.push(match[1].trim());
+    }
+
+    // --- Extract links ---
+    let hrefs = [];
+    while ((match = linkRegex.exec(html)) !== null) {
+        hrefs.push(match[1]);
+    }
+
+    // --- Extract ALL images ---
+    let allImages = [];
+    while ((match = imageRegex.exec(html)) !== null) {
+        allImages.push(match[1]);
+    }
+
+    // 🔑 Filter images: keep only the ones that appear after arcs start
+    // In your case, the "real" arc images start from index 4 onward
+    let images = allImages.slice(allImages.length - arcs.length);
+
+    // --- Zip arcs + hrefs + images together ---
+    for (let i = 0; i < arcs.length; i++) {
         results.push({
-            title: match[3].trim(),
-            image: match[2].trim(),
-            href: match[1].trim()
+            title: arcs[i] || "",
+            href: hrefs[i] || "",
+            image: images[i] || ""
         });
     }
 
+    for (const item of results) {
+        const match = item.href.match(/q=(https[^&]+)/);
+        if (match) {
+            let decoded = decodeURIComponent(match[1]);
+            decoded = decoded.replace(/pixeldrain\.com/, "pixeldrain.net");
+            item.href = decoded;
+        }
+    }
+
+    console.log("Results:", results);
     return JSON.stringify(results);
 }
 
+// searchResults();
+// extractEpisodes("https://pixeldrain.net/l/hUCyAHnR");
+
 async function extractDetails(url) {
-    const results = [];
-    const response = await fetchv2(url);
-    const html = await response.text();
+    const match = url.match(/https:\/\/pixeldrain\.net\/l\/([^\/]+)/);
+    if (!match) throw new Error("Invalid URL format");
 
-    const match = html.match(/<div class="entry-content"[^>]*>([\s\S]*?)<\/div>/);
+    const arcId = match[1];
 
-    let description = "N/A";
-    if (match) {
-        description = match[1]
-            .replace(/<[^>]+>/g, '') 
-            .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(code)) 
-            .replace(/&quot;/g, '"') 
-            .replace(/&apos;/g, "'") 
-            .replace(/&amp;/g, "&") 
-            .trim();
-    }
+    const response = await soraFetch(`https://pixeldrain.net/api/list/${arcId}`);
+    const data = await response.json();    
 
-    results.push({
-        description: description,
-        aliases: 'N/A',
-        airdate: 'N/A'
-    });
+    const transformedResults = [{
+        description: `Title: ${data.title}\nFile Count: ${data.file_count}`,
+        aliases: `Title: ${data.title}\nFile Count: ${data.file_count}`,
+        airdate: ''
+    }];
 
-    return JSON.stringify(results);
+    console.log(`Details: ${JSON.stringify(transformedResults)}`);
+    return JSON.stringify(transformedResults);
 }
 
 async function extractEpisodes(url) {
-    const results = [];
-    const response = await fetchv2(url);
-    const html = await response.text();
+    const match = url.match(/https:\/\/pixeldrain\.net\/l\/([^\/]+)/);
+    if (!match) throw new Error("Invalid URL format");
 
-    const regex = /<a href="([^"]+)">\s*<div class="epl-num">([\d.]+)<\/div>/g;
+    const arcId = match[1];
 
-    let match;
-    while ((match = regex.exec(html)) !== null) {
-        results.push({
-            href: match[1].trim(),
-            number: parseInt(match[2], 10)
-        });
-    }
-    results.reverse();
-    return JSON.stringify(results);
+    const response = await soraFetch(`https://pixeldrain.net/api/list/${arcId}`);
+    const data = await response.json();
+
+    const transformedResults = data.files.map((result, index) => {
+        return {
+            href: `${result.id}`,
+            number: index + 1,
+        };
+    });
+
+    console.log(`Episodes: ${JSON.stringify(transformedResults)}`);
+    return JSON.stringify(transformedResults);
 }
 
+// searchResults("all");
+// extractDetails("https://pixeldrain.net/l/dX3cF5Q3");
+// extractEpisodes("https://pixeldrain.net/l/dX3cF5Q3");
+// extractStreamUrl(`EDg7Q9Uu`);
+
 async function extractStreamUrl(url) {
+    return `https://pixeldrain.net/api/file/${url}?download`;
+}
+
+async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
     try {
-        const response = await fetchv2(url);
-        const html = await response.text();
-
-        const iframeMatch = html.match(/dailymotion\.com\/embed\/video\/([a-zA-Z0-9]+)/);
-        if (!iframeMatch) return JSON.stringify({ streams: [], subtitles: "" });
-
-        const videoId = iframeMatch[1];
-
-        const metaRes = await fetchv2(`https://www.dailymotion.com/player/metadata/video/${videoId}`);
-        const metaJson = await metaRes.json();
-        const hlsLink = metaJson.qualities?.auto?.[0]?.url;
-        if (!hlsLink) return JSON.stringify({ streams: [], subtitles: "" });
-
-        async function getBestHls(hlsUrl) {
-            try {
-                const res = await fetchv2(hlsUrl);
-                const text = await res.text();
-                const regex = /#EXT-X-STREAM-INF:.*RESOLUTION=(\d+)x(\d+).*?\n(https?:\/\/[^\n]+)/g;
-                const streams = [];
-                let match;
-                while ((match = regex.exec(text)) !== null) {
-                    streams.push({ width: parseInt(match[1]), height: parseInt(match[2]), url: match[3] });
-                }
-                if (streams.length === 0) return hlsUrl;
-                streams.sort((a, b) => b.height - a.height);
-                return streams[0].url;
-            } catch {
-                return hlsUrl;
-            }
+        return await fetchv2(url, options.headers ?? {}, options.method ?? 'GET', options.body ?? null);
+    } catch(e) {
+        try {
+            return await fetch(url, options);
+        } catch(error) {
+            return null;
         }
-
-        const bestHls = await getBestHls(hlsLink);
-
-        const subtitles = metaJson.subtitles?.data?.['en-auto']?.urls?.[0] || "";
-
-        const result = {
-            streams: ["english", bestHls],
-            subtitles: subtitles
-        };
-
-        console.log("Extracted stream result:" + JSON.stringify(result));
-
-        return JSON.stringify(result);
-    } catch {
-        const empty = { streams: [], subtitles: "" };
-        console.log("Extracted stream result:" + JSON.stringify(empty));
-        return JSON.stringify(empty);
     }
 }

@@ -1,27 +1,21 @@
 {
-  "sourceName": "AnimeAV1",
-  "iconUrl": "https://animeav1.com/favicon.png",
+  "sourceName": "JKanime",
+  "iconUrl": "https://www.google.com/s2/favicons?sz=128&domain_url=jkanime.net",
   "author": {
-    "name": "50/50",
-    "icon": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ3122kQwublLkZ6rf1fEpUP79BxZOFmH9BSA&s"
+    "name": "alexrica",
+    "icon": "https://github.com/alexrica.png",
+    "url": "https://github.com/alexrica"
   },
-  "version": "1.0.1",
+  "version": "1.0.0",
   "language": "Spanish",
   "streamType": "HLS",
-  "quality": "1080p",
-  "baseUrl": "https://animeav1.com/",
-  "searchBaseUrl": "https://animeav1.com/search?q=%s",
+  "quality": "720p",
+  "baseUrl": "https://jkanime.net/",
+  "searchBaseUrl": "https://jkanime.net/buscar?q=%s",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/002/source.js",
   "type": "anime",
-  "asyncJS": true,
-  "softsub": true,
   "downloadSupport": false,
-  "note": "Use external player.",
-  "supportsMojuru": true,
-  "supportsDartotsu": true,
-  "supportsSora": true,
-  "supportsLuna": true,
-  "supportsAnymex": true,
-  "supportsTsumi": true,
-  "supportsHiyoku": true
+  "asyncJS": true,
+  "streamAsyncJS": false,
+  "softsub": false
 }

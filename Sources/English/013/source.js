@@ -2,9 +2,15 @@ async function searchResults(keyword) {
     const results = [];
 
     results.push({
-        title: "Onigashima Paced",
-        image: "https://git.luna-app.eu/ibro/services/raw/branch/main/onigashima/icon.png",
-        href: "https://pixeldrain.net/l/JVMSKn7c"
+        title: "Black Clover Pace [SUB]",
+        image: "https://git.luna-app.eu/ibro/services/raw/branch/main/blackCloverPace/icon.png",
+        href: "https://pixeldrain.net/l/nhfMpi4V"
+    });
+
+    results.push({
+        title: "Black Clover Pace [DUB]",
+        image: "https://git.luna-app.eu/ibro/services/raw/branch/main/blackCloverPace/icon.png",
+        href: "https://pixeldrain.net/l/iryu2NWQ"
     });
     
     console.log(`Results: ${JSON.stringify(results)}`);
