@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-13T07:17:07.008Z",
+  "generatedAt": "2026-06-13T08:12:36.910Z",
   "mediaRequested": 22,
   "categories": {
     "trendingNow": {
@@ -22,25 +22,26 @@
   "modulesChecked": 10,
   "animeWithRoutes": 54,
   "routeCount": 162,
-  "refreshedAnime": 50,
+  "refreshedAnime": 48,
   "mergeExisting": true,
-  "unresolvedAnime": 0,
-  "rejectedAttempts": 184,
+  "unresolvedAnime": 10,
+  "rejectedAttempts": 175,
   "rejectedAttemptSummary": {
     "byReason": {
-      "search_no_usable_result": 77,
-      "implausible_match": 61,
+      "search_no_usable_result": 72,
+      "implausible_match": 58,
       "stream_timeout": 35,
       "other": 8,
-      "episodes_timeout": 3
+      "route_too_slow": 1,
+      "episodes_timeout": 1
     },
     "topModules": [
       {
         "sourceName": "AnimeLand",
         "count": 38,
         "reasons": {
-          "search_no_usable_result": 30,
-          "implausible_match": 7,
+          "search_no_usable_result": 29,
+          "implausible_match": 8,
           "other": 1
         }
       },
@@ -48,8 +49,8 @@
         "sourceName": "Aniwave",
         "count": 32,
         "reasons": {
-          "search_no_usable_result": 1,
           "stream_timeout": 30,
+          "search_no_usable_result": 1,
           "implausible_match": 1
         }
       },
@@ -66,32 +67,31 @@
         "count": 22,
         "reasons": {
           "search_no_usable_result": 7,
-          "implausible_match": 10,
-          "other": 5
+          "implausible_match": 9,
+          "other": 6
         }
       },
       {
         "sourceName": "LmAnime",
-        "count": 14,
+        "count": 12,
         "reasons": {
-          "search_no_usable_result": 14
+          "search_no_usable_result": 12
         }
       },
       {
         "sourceName": "OneTouch TV",
-        "count": 14,
+        "count": 12,
         "reasons": {
-          "implausible_match": 11,
           "search_no_usable_result": 2,
-          "other": 1
+          "implausible_match": 10
         }
       },
       {
         "sourceName": "LuciferDonghua",
-        "count": 13,
+        "count": 11,
         "reasons": {
-          "search_no_usable_result": 7,
-          "implausible_match": 5,
+          "search_no_usable_result": 6,
+          "implausible_match": 4,
           "other": 1
         }
       },
@@ -100,28 +100,129 @@
         "count": 8,
         "reasons": {
           "stream_timeout": 5,
-          "episodes_timeout": 2,
-          "implausible_match": 1
+          "implausible_match": 2,
+          "episodes_timeout": 1
         }
       },
       {
         "sourceName": "An1me",
-        "count": 7,
+        "count": 6,
         "reasons": {
-          "implausible_match": 5,
-          "search_no_usable_result": 2
+          "implausible_match": 4,
+          "search_no_usable_result": 1,
+          "route_too_slow": 1
         }
       },
       {
         "sourceName": "Kisskh",
-        "count": 7,
+        "count": 5,
         "reasons": {
-          "implausible_match": 5,
-          "search_no_usable_result": 1,
-          "episodes_timeout": 1
+          "implausible_match": 4,
+          "search_no_usable_result": 1
         }
       }
     ]
   },
-  "failures": []
+  "failures": [
+    {
+      "aniListId": 170019,
+      "title": "The Angel Next Door Spoils Me Rotten2",
+      "moduleId": "Sources/English/003",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "Animetsu",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 170019,
+      "title": "The Angel Next Door Spoils Me Rotten2",
+      "moduleId": "Sources/English/009",
+      "catalogPath": "Sources/English/009",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 170019,
+      "title": "The Angel Next Door Spoils Me Rotten2",
+      "moduleId": "Sources/English/001",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "Aniwave",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 170019,
+      "title": "The Angel Next Door Spoils Me Rotten2",
+      "moduleId": "Sources/English/002",
+      "catalogPath": "Sources/English/002",
+      "sourceName": "AniWorld (ENG SUB)",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 170019,
+      "title": "The Angel Next Door Spoils Me Rotten2",
+      "moduleId": "Sources/English/006",
+      "catalogPath": "Sources/English/006",
+      "sourceName": "AnimeNoSub",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 170019,
+      "title": "The Angel Next Door Spoils Me Rotten2",
+      "moduleId": "Sources/English/007",
+      "catalogPath": "Sources/English/007",
+      "sourceName": "Kisskh",
+      "errors": [
+        "implausible episode match: verified=1 available=1 expected<=11"
+      ]
+    },
+    {
+      "aniListId": 170019,
+      "title": "The Angel Next Door Spoils Me Rotten2",
+      "moduleId": "Sources/English/008",
+      "catalogPath": "Sources/English/008",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "implausible episode match: verified=10 available=10 expected<=11"
+      ]
+    },
+    {
+      "aniListId": 170019,
+      "title": "The Angel Next Door Spoils Me Rotten2",
+      "moduleId": "Sources/English/010",
+      "catalogPath": "Sources/English/010",
+      "sourceName": "LmAnime",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 170019,
+      "title": "The Angel Next Door Spoils Me Rotten2",
+      "moduleId": "Sources/English/012",
+      "catalogPath": "Sources/English/012",
+      "sourceName": "LuciferDonghua",
+      "errors": [
+        "implausible episode match: verified=11 available=158 expected<=11"
+      ]
+    },
+    {
+      "aniListId": 170019,
+      "title": "The Angel Next Door Spoils Me Rotten2",
+      "moduleId": "Sources/Greek/001",
+      "catalogPath": "Sources/Greek/001",
+      "sourceName": "An1me",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    }
+  ]
 }
