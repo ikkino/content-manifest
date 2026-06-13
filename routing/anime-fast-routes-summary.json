@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-13T11:50:18.713Z",
+  "generatedAt": "2026-06-13T12:34:42.157Z",
   "mediaRequested": 22,
   "categories": {
     "trendingNow": {
@@ -24,205 +24,193 @@
   "routeCount": 168,
   "refreshedAnime": 49,
   "mergeExisting": true,
-  "unresolvedAnime": 10,
-  "rejectedAttempts": 167,
+  "unresolvedAnime": 7,
+  "rejectedAttempts": 41,
   "rejectedAttemptSummary": {
     "byReason": {
-      "search_no_usable_result": 73,
-      "implausible_match": 49,
-      "other": 38,
-      "stream_timeout": 5,
-      "episodes_timeout": 1,
+      "implausible_match": 15,
+      "other": 10,
+      "stream_timeout": 7,
+      "episodes_timeout": 5,
+      "search_no_usable_result": 3,
       "route_too_slow": 1
     },
     "topModules": [
       {
-        "sourceName": "AnimeLand",
-        "count": 50,
+        "sourceName": "Animetsu",
+        "count": 13,
         "reasons": {
-          "search_no_usable_result": 32,
-          "implausible_match": 7,
-          "other": 11
+          "episodes_timeout": 5,
+          "stream_timeout": 7,
+          "implausible_match": 1
         }
       },
       {
-        "sourceName": "AniWorld (ENG SUB)",
-        "count": 50,
-        "reasons": {
-          "search_no_usable_result": 15,
-          "implausible_match": 14,
-          "other": 21
-        }
-      },
-      {
-        "sourceName": "AnimeNoSub",
-        "count": 22,
-        "reasons": {
-          "search_no_usable_result": 7,
-          "implausible_match": 10,
-          "other": 5
-        }
-      },
-      {
-        "sourceName": "LmAnime",
-        "count": 9,
-        "reasons": {
-          "search_no_usable_result": 9
-        }
-      },
-      {
-        "sourceName": "LuciferDonghua",
-        "count": 9,
+        "sourceName": "Senshi",
+        "count": 5,
         "reasons": {
           "implausible_match": 3,
-          "search_no_usable_result": 5,
+          "search_no_usable_result": 1,
           "other": 1
         }
       },
       {
         "sourceName": "OneTouch TV",
-        "count": 9,
+        "count": 4,
         "reasons": {
-          "implausible_match": 8,
-          "search_no_usable_result": 1
-        }
-      },
-      {
-        "sourceName": "Animetsu",
-        "count": 6,
-        "reasons": {
-          "stream_timeout": 4,
-          "episodes_timeout": 1,
-          "implausible_match": 1
+          "implausible_match": 4
         }
       },
       {
         "sourceName": "Aniwave",
-        "count": 5,
+        "count": 3,
         "reasons": {
           "search_no_usable_result": 1,
-          "implausible_match": 2,
           "route_too_slow": 1,
-          "stream_timeout": 1
+          "implausible_match": 1
         }
       },
       {
         "sourceName": "Kisskh",
-        "count": 4,
+        "count": 3,
         "reasons": {
-          "implausible_match": 3,
-          "search_no_usable_result": 1
+          "implausible_match": 3
+        }
+      },
+      {
+        "sourceName": "Anikuro",
+        "count": 2,
+        "reasons": {
+          "implausible_match": 2
         }
       },
       {
         "sourceName": "An1me",
-        "count": 3,
+        "count": 1,
         "reasons": {
-          "search_no_usable_result": 2,
+          "other": 1
+        }
+      },
+      {
+        "sourceName": "Anime-Portal",
+        "count": 1,
+        "reasons": {
+          "other": 1
+        }
+      },
+      {
+        "sourceName": "AnimeGG",
+        "count": 1,
+        "reasons": {
+          "search_no_usable_result": 1
+        }
+      },
+      {
+        "sourceName": "AnimeJara",
+        "count": 1,
+        "reasons": {
+          "other": 1
+        }
+      },
+      {
+        "sourceName": "AnimeWorld",
+        "count": 1,
+        "reasons": {
+          "other": 1
+        }
+      },
+      {
+        "sourceName": "AniTube",
+        "count": 1,
+        "reasons": {
           "implausible_match": 1
+        }
+      },
+      {
+        "sourceName": "AniWorld (GER DUB)",
+        "count": 1,
+        "reasons": {
+          "other": 1
+        }
+      },
+      {
+        "sourceName": "AniWorld (GER SUB)",
+        "count": 1,
+        "reasons": {
+          "other": 1
+        }
+      },
+      {
+        "sourceName": "Latanime",
+        "count": 1,
+        "reasons": {
+          "other": 1
+        }
+      },
+      {
+        "sourceName": "Monoschinos2",
+        "count": 1,
+        "reasons": {
+          "other": 1
+        }
+      },
+      {
+        "sourceName": "Nimegami",
+        "count": 1,
+        "reasons": {
+          "other": 1
         }
       }
     ]
   },
   "failures": [
     {
-      "aniListId": 170019,
-      "title": "The Angel Next Door Spoils Me Rotten2",
-      "moduleId": "Sources/English/003",
-      "catalogPath": "Sources/English/003",
-      "sourceName": "Animetsu",
+      "catalogPath": "Sources/German/001",
+      "sourceName": "AniWorld (GER DUB)",
       "errors": [
-        "stream: extractStreamUrl timed out"
+        "load: ENOENT: no such file or directory, open '/Users/ikki/Library/Application Support/SoraRouteWorker/run/content-manifest/Sources/German/001/manifest.json'"
       ]
     },
     {
-      "aniListId": 170019,
-      "title": "The Angel Next Door Spoils Me Rotten2",
-      "moduleId": "Sources/English/009",
-      "catalogPath": "Sources/English/009",
-      "sourceName": "AnimeLand",
+      "catalogPath": "Sources/German/002",
+      "sourceName": "AniWorld (GER SUB)",
       "errors": [
-        "search: searchResults returned an unusable result"
+        "load: ENOENT: no such file or directory, open '/Users/ikki/Library/Application Support/SoraRouteWorker/run/content-manifest/Sources/German/002/manifest.json'"
       ]
     },
     {
-      "aniListId": 170019,
-      "title": "The Angel Next Door Spoils Me Rotten2",
-      "moduleId": "Sources/English/001",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "Aniwave",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 170019,
-      "title": "The Angel Next Door Spoils Me Rotten2",
-      "moduleId": "Sources/English/002",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "AniWorld (ENG SUB)",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 170019,
-      "title": "The Angel Next Door Spoils Me Rotten2",
-      "moduleId": "Sources/English/006",
-      "catalogPath": "Sources/English/006",
-      "sourceName": "AnimeNoSub",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 170019,
-      "title": "The Angel Next Door Spoils Me Rotten2",
-      "moduleId": "Sources/English/007",
-      "catalogPath": "Sources/English/007",
-      "sourceName": "Kisskh",
-      "errors": [
-        "implausible episode match: verified=1 available=1 expected<=11"
-      ]
-    },
-    {
-      "aniListId": 170019,
-      "title": "The Angel Next Door Spoils Me Rotten2",
-      "moduleId": "Sources/English/008",
-      "catalogPath": "Sources/English/008",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "implausible episode match: verified=10 available=10 expected<=11"
-      ]
-    },
-    {
-      "aniListId": 170019,
-      "title": "The Angel Next Door Spoils Me Rotten2",
-      "moduleId": "Sources/English/010",
-      "catalogPath": "Sources/English/010",
-      "sourceName": "LmAnime",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 170019,
-      "title": "The Angel Next Door Spoils Me Rotten2",
-      "moduleId": "Sources/English/012",
-      "catalogPath": "Sources/English/012",
-      "sourceName": "LuciferDonghua",
-      "errors": [
-        "implausible episode match: verified=11 available=158 expected<=11"
-      ]
-    },
-    {
-      "aniListId": 170019,
-      "title": "The Angel Next Door Spoils Me Rotten2",
-      "moduleId": "Sources/Greek/001",
       "catalogPath": "Sources/Greek/001",
       "sourceName": "An1me",
       "errors": [
-        "search: searchResults returned an unusable result"
+        "load: ENOENT: no such file or directory, open '/Users/ikki/Library/Application Support/SoraRouteWorker/run/content-manifest/Sources/Greek/001/manifest.json'"
+      ]
+    },
+    {
+      "catalogPath": "Sources/Indonesian/001",
+      "sourceName": "Nimegami",
+      "errors": [
+        "load: ENOENT: no such file or directory, open '/Users/ikki/Library/Application Support/SoraRouteWorker/run/content-manifest/Sources/Indonesian/001/manifest.json'"
+      ]
+    },
+    {
+      "catalogPath": "Sources/Spanish/003",
+      "sourceName": "Latanime",
+      "errors": [
+        "load: ENOENT: no such file or directory, open '/Users/ikki/Library/Application Support/SoraRouteWorker/run/content-manifest/Sources/Spanish/003/manifest.json'"
+      ]
+    },
+    {
+      "catalogPath": "Sources/Spanish/004",
+      "sourceName": "Monoschinos2",
+      "errors": [
+        "load: ENOENT: no such file or directory, open '/Users/ikki/Library/Application Support/SoraRouteWorker/run/content-manifest/Sources/Spanish/004/manifest.json'"
+      ]
+    },
+    {
+      "catalogPath": "Sources/Spanish/005",
+      "sourceName": "AnimeJara",
+      "errors": [
+        "load: ENOENT: no such file or directory, open '/Users/ikki/Library/Application Support/SoraRouteWorker/run/content-manifest/Sources/Spanish/005/manifest.json'"
       ]
     }
   ]
