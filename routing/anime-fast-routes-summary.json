@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-13T19:17:06.942Z",
+  "generatedAt": "2026-06-13T20:17:07.858Z",
   "mediaRequested": 5,
   "categories": {
     "trendingNow": {
@@ -40,8 +40,8 @@
         "count": 13,
         "reasons": {
           "media_probe_failed": 5,
-          "host_cooldown_active": 2,
           "stream_timeout": 1,
+          "host_cooldown_active": 2,
           "media_probe_budget_exhausted": 5
         }
       },
@@ -110,7 +110,7 @@
       "catalogPath": "Sources/English/002",
       "sourceName": "Animetsu",
       "errors": [
-        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
+        "stream: extractStreamUrl timed out"
       ]
     },
     {
@@ -270,7 +270,7 @@
       "catalogPath": "Sources/English/002",
       "sourceName": "Animetsu",
       "errors": [
-        "stream: extractStreamUrl timed out"
+        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
       ]
     },
     {
