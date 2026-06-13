@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-13T18:17:07.475Z",
+  "generatedAt": "2026-06-13T19:17:06.942Z",
   "mediaRequested": 5,
   "categories": {
     "trendingNow": {
@@ -28,10 +28,10 @@
   "rejectedAttempts": 29,
   "rejectedAttemptSummary": {
     "byReason": {
-      "media_probe_failed": 14,
-      "stream_timeout": 7,
-      "media_probe_budget_exhausted": 6,
-      "host_cooldown_active": 1,
+      "media_probe_failed": 12,
+      "stream_timeout": 9,
+      "media_probe_budget_exhausted": 5,
+      "host_cooldown_active": 2,
       "implausible_match": 1
     },
     "topModules": [
@@ -39,25 +39,25 @@
         "sourceName": "Animetsu",
         "count": 13,
         "reasons": {
-          "media_probe_failed": 7,
-          "host_cooldown_active": 1,
-          "media_probe_budget_exhausted": 4,
-          "implausible_match": 1
-        }
-      },
-      {
-        "sourceName": "Senshi",
-        "count": 9,
-        "reasons": {
-          "media_probe_failed": 7,
-          "media_probe_budget_exhausted": 2
+          "media_probe_failed": 5,
+          "host_cooldown_active": 2,
+          "stream_timeout": 1,
+          "media_probe_budget_exhausted": 5
         }
       },
       {
         "sourceName": "Anikoto",
-        "count": 7,
+        "count": 8,
         "reasons": {
-          "stream_timeout": 7
+          "stream_timeout": 8
+        }
+      },
+      {
+        "sourceName": "Senshi",
+        "count": 8,
+        "reasons": {
+          "media_probe_failed": 7,
+          "implausible_match": 1
         }
       }
     ]
@@ -66,8 +66,8 @@
   "mediaProbesUsed": 15,
   "hostHealth": {
     "successEvents": 0,
-    "failureEvents": 14,
-    "skippedByCooldown": 1,
+    "failureEvents": 12,
+    "skippedByCooldown": 2,
     "coolingDownHosts": 2
   },
   "failures": [
@@ -163,32 +163,33 @@
       "sourceName": "Anikoto",
       "errors": [
         "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out",
         "stream: extractStreamUrl timed out"
       ]
     },
     {
-      "aniListId": 190143,
-      "title": "Agents of the Four Seasons: Dance of Spring",
+      "aniListId": 21,
+      "title": "ONE PIECE",
       "moduleId": "Sources/English/002",
       "catalogPath": "Sources/English/002",
       "sourceName": "Animetsu",
       "errors": [
-        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
+        "host cooldown active: swiftstream.top"
       ]
     },
     {
-      "aniListId": 190143,
-      "title": "Agents of the Four Seasons: Dance of Spring",
+      "aniListId": 21,
+      "title": "ONE PIECE",
       "moduleId": "Sources/English/014",
       "catalogPath": "Sources/English/014",
       "sourceName": "Senshi",
       "errors": [
-        "media probe failed: host=ninstream.com empty media response"
+        "implausible episode match: verified=1164 available=1164 expected<=1165"
       ]
     },
     {
-      "aniListId": 190143,
-      "title": "Agents of the Four Seasons: Dance of Spring",
+      "aniListId": 21,
+      "title": "ONE PIECE",
       "moduleId": "Sources/English/019",
       "catalogPath": "Sources/English/019",
       "sourceName": "Anikoto",
@@ -199,8 +200,8 @@
       ]
     },
     {
-      "aniListId": 198113,
-      "title": "KILL BLUE",
+      "aniListId": 190143,
+      "title": "Agents of the Four Seasons: Dance of Spring",
       "moduleId": "Sources/English/002",
       "catalogPath": "Sources/English/002",
       "sourceName": "Animetsu",
@@ -209,8 +210,8 @@
       ]
     },
     {
-      "aniListId": 198113,
-      "title": "KILL BLUE",
+      "aniListId": 190143,
+      "title": "Agents of the Four Seasons: Dance of Spring",
       "moduleId": "Sources/English/014",
       "catalogPath": "Sources/English/014",
       "sourceName": "Senshi",
@@ -219,8 +220,8 @@
       ]
     },
     {
-      "aniListId": 198113,
-      "title": "KILL BLUE",
+      "aniListId": 190143,
+      "title": "Agents of the Four Seasons: Dance of Spring",
       "moduleId": "Sources/English/019",
       "catalogPath": "Sources/English/019",
       "sourceName": "Anikoto",
@@ -269,7 +270,7 @@
       "catalogPath": "Sources/English/002",
       "sourceName": "Animetsu",
       "errors": [
-        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
+        "stream: extractStreamUrl timed out"
       ]
     },
     {
@@ -311,7 +312,19 @@
       "catalogPath": "Sources/English/014",
       "sourceName": "Senshi",
       "errors": [
-        "media probe budget exhausted: 15/15"
+        "media probe failed: host=ninstream.com empty media response"
+      ]
+    },
+    {
+      "aniListId": 180745,
+      "title": "Classroom of the Elite 4th Season: Second Year, First Semester",
+      "moduleId": "Sources/English/019",
+      "catalogPath": "Sources/English/019",
+      "sourceName": "Anikoto",
+      "errors": [
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out"
       ]
     },
     {
@@ -360,16 +373,6 @@
       "moduleId": "Sources/English/002",
       "catalogPath": "Sources/English/002",
       "sourceName": "Animetsu",
-      "errors": [
-        "implausible episode match: verified=13 available=25 expected<=13"
-      ]
-    },
-    {
-      "aniListId": 21459,
-      "title": "My Hero Academia",
-      "moduleId": "Sources/English/014",
-      "catalogPath": "Sources/English/014",
-      "sourceName": "Senshi",
       "errors": [
         "media probe budget exhausted: 15/15"
       ]
