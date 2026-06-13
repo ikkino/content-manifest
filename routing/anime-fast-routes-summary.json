@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-13T21:17:07.903Z",
+  "generatedAt": "2026-06-13T21:28:21.926Z",
   "mediaRequested": 5,
   "categories": {
     "trendingNow": {
@@ -24,13 +24,14 @@
   "routeCount": 152,
   "refreshedAnime": 0,
   "mergeExisting": true,
-  "unresolvedAnime": 28,
-  "rejectedAttempts": 28,
+  "unresolvedAnime": 30,
+  "rejectedAttempts": 30,
   "rejectedAttemptSummary": {
     "byReason": {
-      "media_probe_failed": 13,
-      "stream_timeout": 8,
+      "media_probe_failed": 14,
+      "stream_timeout": 7,
       "media_probe_budget_exhausted": 6,
+      "implausible_match": 2,
       "host_cooldown_active": 1
     },
     "topModules": [
@@ -38,18 +39,18 @@
         "sourceName": "Animetsu",
         "count": 13,
         "reasons": {
-          "media_probe_failed": 6,
-          "stream_timeout": 1,
+          "media_probe_failed": 7,
           "host_cooldown_active": 1,
-          "media_probe_budget_exhausted": 5
+          "implausible_match": 2,
+          "media_probe_budget_exhausted": 3
         }
       },
       {
         "sourceName": "Senshi",
-        "count": 8,
+        "count": 10,
         "reasons": {
           "media_probe_failed": 7,
-          "media_probe_budget_exhausted": 1
+          "media_probe_budget_exhausted": 3
         }
       },
       {
@@ -65,7 +66,7 @@
   "mediaProbesUsed": 15,
   "hostHealth": {
     "successEvents": 0,
-    "failureEvents": 13,
+    "failureEvents": 14,
     "skippedByCooldown": 1,
     "coolingDownHosts": 2
   },
@@ -141,7 +142,7 @@
       "catalogPath": "Sources/English/002",
       "sourceName": "Animetsu",
       "errors": [
-        "stream: extractStreamUrl timed out"
+        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
       ]
     },
     {
@@ -321,6 +322,16 @@
       "catalogPath": "Sources/English/002",
       "sourceName": "Animetsu",
       "errors": [
+        "implausible episode match: verified=22 available=22 expected<=25"
+      ]
+    },
+    {
+      "aniListId": 16498,
+      "title": "Attack on Titan",
+      "moduleId": "Sources/English/014",
+      "catalogPath": "Sources/English/014",
+      "sourceName": "Senshi",
+      "errors": [
         "media probe budget exhausted: 15/15"
       ]
     },
@@ -350,6 +361,16 @@
       "moduleId": "Sources/English/002",
       "catalogPath": "Sources/English/002",
       "sourceName": "Animetsu",
+      "errors": [
+        "implausible episode match: verified=2 available=2 expected<=37"
+      ]
+    },
+    {
+      "aniListId": 1535,
+      "title": "Death Note",
+      "moduleId": "Sources/English/014",
+      "catalogPath": "Sources/English/014",
+      "sourceName": "Senshi",
       "errors": [
         "media probe budget exhausted: 15/15"
       ]
