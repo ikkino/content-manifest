@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-13T06:17:04.613Z",
+  "generatedAt": "2026-06-13T07:17:07.008Z",
   "mediaRequested": 22,
   "categories": {
     "trendingNow": {
@@ -22,17 +22,17 @@
   "modulesChecked": 10,
   "animeWithRoutes": 54,
   "routeCount": 162,
-  "refreshedAnime": 47,
+  "refreshedAnime": 50,
   "mergeExisting": true,
-  "unresolvedAnime": 20,
-  "rejectedAttempts": 183,
+  "unresolvedAnime": 0,
+  "rejectedAttempts": 184,
   "rejectedAttemptSummary": {
     "byReason": {
-      "search_no_usable_result": 75,
-      "implausible_match": 58,
-      "stream_timeout": 40,
-      "other": 6,
-      "episodes_timeout": 4
+      "search_no_usable_result": 77,
+      "implausible_match": 61,
+      "stream_timeout": 35,
+      "other": 8,
+      "episodes_timeout": 3
     },
     "topModules": [
       {
@@ -46,285 +46,82 @@
       },
       {
         "sourceName": "Aniwave",
-        "count": 33,
+        "count": 32,
         "reasons": {
-          "stream_timeout": 30,
           "search_no_usable_result": 1,
-          "episodes_timeout": 1,
+          "stream_timeout": 30,
           "implausible_match": 1
         }
       },
       {
         "sourceName": "AniWorld (ENG SUB)",
-        "count": 28,
+        "count": 29,
         "reasons": {
           "search_no_usable_result": 13,
-          "implausible_match": 15
+          "implausible_match": 16
         }
       },
       {
         "sourceName": "AnimeNoSub",
-        "count": 24,
+        "count": 22,
         "reasons": {
-          "stream_timeout": 3,
           "search_no_usable_result": 7,
-          "implausible_match": 9,
-          "other": 4,
-          "episodes_timeout": 1
+          "implausible_match": 10,
+          "other": 5
         }
       },
       {
         "sourceName": "LmAnime",
-        "count": 13,
+        "count": 14,
         "reasons": {
-          "search_no_usable_result": 13
+          "search_no_usable_result": 14
         }
       },
       {
         "sourceName": "OneTouch TV",
-        "count": 13,
+        "count": 14,
         "reasons": {
           "implausible_match": 11,
-          "search_no_usable_result": 2
+          "search_no_usable_result": 2,
+          "other": 1
         }
       },
       {
         "sourceName": "LuciferDonghua",
-        "count": 12,
+        "count": 13,
         "reasons": {
-          "implausible_match": 4,
           "search_no_usable_result": 7,
+          "implausible_match": 5,
           "other": 1
         }
       },
       {
         "sourceName": "Animetsu",
-        "count": 10,
+        "count": 8,
         "reasons": {
-          "stream_timeout": 7,
-          "episodes_timeout": 1,
-          "implausible_match": 2
+          "stream_timeout": 5,
+          "episodes_timeout": 2,
+          "implausible_match": 1
         }
       },
       {
         "sourceName": "An1me",
         "count": 7,
         "reasons": {
-          "search_no_usable_result": 1,
           "implausible_match": 5,
-          "episodes_timeout": 1
+          "search_no_usable_result": 2
         }
       },
       {
         "sourceName": "Kisskh",
-        "count": 5,
+        "count": 7,
         "reasons": {
-          "implausible_match": 4,
-          "search_no_usable_result": 1
+          "implausible_match": 5,
+          "search_no_usable_result": 1,
+          "episodes_timeout": 1
         }
       }
     ]
   },
-  "failures": [
-    {
-      "aniListId": 170019,
-      "title": "The Angel Next Door Spoils Me Rotten2",
-      "moduleId": "Sources/English/003",
-      "catalogPath": "Sources/English/003",
-      "sourceName": "Animetsu",
-      "errors": [
-        "stream: extractStreamUrl timed out"
-      ]
-    },
-    {
-      "aniListId": 170019,
-      "title": "The Angel Next Door Spoils Me Rotten2",
-      "moduleId": "Sources/English/009",
-      "catalogPath": "Sources/English/009",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 170019,
-      "title": "The Angel Next Door Spoils Me Rotten2",
-      "moduleId": "Sources/English/001",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "Aniwave",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 170019,
-      "title": "The Angel Next Door Spoils Me Rotten2",
-      "moduleId": "Sources/English/002",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "AniWorld (ENG SUB)",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 170019,
-      "title": "The Angel Next Door Spoils Me Rotten2",
-      "moduleId": "Sources/English/006",
-      "catalogPath": "Sources/English/006",
-      "sourceName": "AnimeNoSub",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 170019,
-      "title": "The Angel Next Door Spoils Me Rotten2",
-      "moduleId": "Sources/English/007",
-      "catalogPath": "Sources/English/007",
-      "sourceName": "Kisskh",
-      "errors": [
-        "implausible episode match: verified=1 available=1 expected<=11"
-      ]
-    },
-    {
-      "aniListId": 170019,
-      "title": "The Angel Next Door Spoils Me Rotten2",
-      "moduleId": "Sources/English/008",
-      "catalogPath": "Sources/English/008",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "implausible episode match: verified=10 available=10 expected<=11"
-      ]
-    },
-    {
-      "aniListId": 170019,
-      "title": "The Angel Next Door Spoils Me Rotten2",
-      "moduleId": "Sources/English/010",
-      "catalogPath": "Sources/English/010",
-      "sourceName": "LmAnime",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 170019,
-      "title": "The Angel Next Door Spoils Me Rotten2",
-      "moduleId": "Sources/English/012",
-      "catalogPath": "Sources/English/012",
-      "sourceName": "LuciferDonghua",
-      "errors": [
-        "implausible episode match: verified=11 available=158 expected<=11"
-      ]
-    },
-    {
-      "aniListId": 170019,
-      "title": "The Angel Next Door Spoils Me Rotten2",
-      "moduleId": "Sources/Greek/001",
-      "catalogPath": "Sources/Greek/001",
-      "sourceName": "An1me",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 113415,
-      "title": "JUJUTSU KAISEN",
-      "moduleId": "Sources/English/003",
-      "catalogPath": "Sources/English/003",
-      "sourceName": "Animetsu",
-      "errors": [
-        "implausible episode match: verified=23 available=23 expected<=24"
-      ]
-    },
-    {
-      "aniListId": 113415,
-      "title": "JUJUTSU KAISEN",
-      "moduleId": "Sources/English/009",
-      "catalogPath": "Sources/English/009",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "implausible episode match: verified=23 available=23 expected<=24"
-      ]
-    },
-    {
-      "aniListId": 113415,
-      "title": "JUJUTSU KAISEN",
-      "moduleId": "Sources/English/001",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "Aniwave",
-      "errors": [
-        "stream: extractStreamUrl timed out"
-      ]
-    },
-    {
-      "aniListId": 113415,
-      "title": "JUJUTSU KAISEN",
-      "moduleId": "Sources/English/002",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "AniWorld (ENG SUB)",
-      "errors": [
-        "implausible episode match: verified=24 available=62 expected<=24"
-      ]
-    },
-    {
-      "aniListId": 113415,
-      "title": "JUJUTSU KAISEN",
-      "moduleId": "Sources/English/006",
-      "catalogPath": "Sources/English/006",
-      "sourceName": "AnimeNoSub",
-      "errors": [
-        "implausible episode match: verified=12 available=12 expected<=24"
-      ]
-    },
-    {
-      "aniListId": 113415,
-      "title": "JUJUTSU KAISEN",
-      "moduleId": "Sources/English/007",
-      "catalogPath": "Sources/English/007",
-      "sourceName": "Kisskh",
-      "errors": [
-        "implausible episode match: verified=23 available=23 expected<=24"
-      ]
-    },
-    {
-      "aniListId": 113415,
-      "title": "JUJUTSU KAISEN",
-      "moduleId": "Sources/English/008",
-      "catalogPath": "Sources/English/008",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "implausible episode match: verified=1 available=1 expected<=24"
-      ]
-    },
-    {
-      "aniListId": 113415,
-      "title": "JUJUTSU KAISEN",
-      "moduleId": "Sources/English/010",
-      "catalogPath": "Sources/English/010",
-      "sourceName": "LmAnime",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 113415,
-      "title": "JUJUTSU KAISEN",
-      "moduleId": "Sources/English/012",
-      "catalogPath": "Sources/English/012",
-      "sourceName": "LuciferDonghua",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 113415,
-      "title": "JUJUTSU KAISEN",
-      "moduleId": "Sources/Greek/001",
-      "catalogPath": "Sources/Greek/001",
-      "sourceName": "An1me",
-      "errors": [
-        "episodes: extractEpisodes timed out"
-      ]
-    }
-  ]
+  "failures": []
 }
