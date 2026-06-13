@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-13T20:17:07.858Z",
+  "generatedAt": "2026-06-13T21:17:07.903Z",
   "mediaRequested": 5,
   "categories": {
     "trendingNow": {
@@ -24,32 +24,24 @@
   "routeCount": 152,
   "refreshedAnime": 0,
   "mergeExisting": true,
-  "unresolvedAnime": 29,
-  "rejectedAttempts": 29,
+  "unresolvedAnime": 28,
+  "rejectedAttempts": 28,
   "rejectedAttemptSummary": {
     "byReason": {
-      "media_probe_failed": 12,
-      "stream_timeout": 9,
-      "media_probe_budget_exhausted": 5,
-      "host_cooldown_active": 2,
-      "implausible_match": 1
+      "media_probe_failed": 13,
+      "stream_timeout": 8,
+      "media_probe_budget_exhausted": 6,
+      "host_cooldown_active": 1
     },
     "topModules": [
       {
         "sourceName": "Animetsu",
         "count": 13,
         "reasons": {
-          "media_probe_failed": 5,
+          "media_probe_failed": 6,
           "stream_timeout": 1,
-          "host_cooldown_active": 2,
+          "host_cooldown_active": 1,
           "media_probe_budget_exhausted": 5
-        }
-      },
-      {
-        "sourceName": "Anikoto",
-        "count": 8,
-        "reasons": {
-          "stream_timeout": 8
         }
       },
       {
@@ -57,7 +49,14 @@
         "count": 8,
         "reasons": {
           "media_probe_failed": 7,
-          "implausible_match": 1
+          "media_probe_budget_exhausted": 1
+        }
+      },
+      {
+        "sourceName": "Anikoto",
+        "count": 7,
+        "reasons": {
+          "stream_timeout": 7
         }
       }
     ]
@@ -66,8 +65,8 @@
   "mediaProbesUsed": 15,
   "hostHealth": {
     "successEvents": 0,
-    "failureEvents": 12,
-    "skippedByCooldown": 2,
+    "failureEvents": 13,
+    "skippedByCooldown": 1,
     "coolingDownHosts": 2
   },
   "failures": [
@@ -110,7 +109,7 @@
       "catalogPath": "Sources/English/002",
       "sourceName": "Animetsu",
       "errors": [
-        "stream: extractStreamUrl timed out"
+        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
       ]
     },
     {
@@ -138,6 +137,38 @@
     {
       "aniListId": 196935,
       "title": "Akane-banashi",
+      "moduleId": "Sources/English/002",
+      "catalogPath": "Sources/English/002",
+      "sourceName": "Animetsu",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 196935,
+      "title": "Akane-banashi",
+      "moduleId": "Sources/English/014",
+      "catalogPath": "Sources/English/014",
+      "sourceName": "Senshi",
+      "errors": [
+        "media probe failed: host=ninstream.com empty media response"
+      ]
+    },
+    {
+      "aniListId": 196935,
+      "title": "Akane-banashi",
+      "moduleId": "Sources/English/019",
+      "catalogPath": "Sources/English/019",
+      "sourceName": "Anikoto",
+      "errors": [
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 198113,
+      "title": "KILL BLUE",
       "moduleId": "Sources/English/002",
       "catalogPath": "Sources/English/002",
       "sourceName": "Animetsu",
@@ -146,8 +177,8 @@
       ]
     },
     {
-      "aniListId": 196935,
-      "title": "Akane-banashi",
+      "aniListId": 198113,
+      "title": "KILL BLUE",
       "moduleId": "Sources/English/014",
       "catalogPath": "Sources/English/014",
       "sourceName": "Senshi",
@@ -156,40 +187,8 @@
       ]
     },
     {
-      "aniListId": 196935,
-      "title": "Akane-banashi",
-      "moduleId": "Sources/English/019",
-      "catalogPath": "Sources/English/019",
-      "sourceName": "Anikoto",
-      "errors": [
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out"
-      ]
-    },
-    {
-      "aniListId": 21,
-      "title": "ONE PIECE",
-      "moduleId": "Sources/English/002",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "Animetsu",
-      "errors": [
-        "host cooldown active: swiftstream.top"
-      ]
-    },
-    {
-      "aniListId": 21,
-      "title": "ONE PIECE",
-      "moduleId": "Sources/English/014",
-      "catalogPath": "Sources/English/014",
-      "sourceName": "Senshi",
-      "errors": [
-        "implausible episode match: verified=1164 available=1164 expected<=1165"
-      ]
-    },
-    {
-      "aniListId": 21,
-      "title": "ONE PIECE",
+      "aniListId": 198113,
+      "title": "KILL BLUE",
       "moduleId": "Sources/English/019",
       "catalogPath": "Sources/English/019",
       "sourceName": "Anikoto",
@@ -312,19 +311,7 @@
       "catalogPath": "Sources/English/014",
       "sourceName": "Senshi",
       "errors": [
-        "media probe failed: host=ninstream.com empty media response"
-      ]
-    },
-    {
-      "aniListId": 180745,
-      "title": "Classroom of the Elite 4th Season: Second Year, First Semester",
-      "moduleId": "Sources/English/019",
-      "catalogPath": "Sources/English/019",
-      "sourceName": "Anikoto",
-      "errors": [
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out"
+        "media probe budget exhausted: 15/15"
       ]
     },
     {
