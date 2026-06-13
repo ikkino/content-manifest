@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-06-13T12:34:42.157Z",
+  "generatedAt": "2026-06-13T12:48:53.051Z",
   "mediaRequested": 22,
   "categories": {
     "trendingNow": {
       "requested": 22,
       "mediaChecked": 21,
-      "animeWithRoutes": 21
+      "animeWithRoutes": 18
     },
     "popularThisSeason": {
       "requested": 22,
@@ -18,200 +18,91 @@
       "animeWithRoutes": 22
     }
   },
-  "mediaChecked": 56,
+  "mediaChecked": 49,
   "modulesChecked": 10,
-  "animeWithRoutes": 56,
-  "routeCount": 168,
+  "animeWithRoutes": 49,
+  "routeCount": 147,
   "refreshedAnime": 49,
   "mergeExisting": true,
-  "unresolvedAnime": 7,
-  "rejectedAttempts": 41,
+  "unresolvedAnime": 0,
+  "rejectedAttempts": 79,
   "rejectedAttemptSummary": {
     "byReason": {
-      "implausible_match": 15,
-      "other": 10,
-      "stream_timeout": 7,
-      "episodes_timeout": 5,
-      "search_no_usable_result": 3,
+      "stream_timeout": 49,
+      "implausible_match": 19,
+      "search_no_usable_result": 7,
+      "other": 3,
       "route_too_slow": 1
     },
     "topModules": [
       {
-        "sourceName": "Animetsu",
-        "count": 13,
+        "sourceName": "Anikoto",
+        "count": 49,
         "reasons": {
-          "episodes_timeout": 5,
-          "stream_timeout": 7,
-          "implausible_match": 1
+          "stream_timeout": 46,
+          "implausible_match": 2,
+          "other": 1
+        }
+      },
+      {
+        "sourceName": "VidFast",
+        "count": 8,
+        "reasons": {
+          "implausible_match": 3,
+          "search_no_usable_result": 3,
+          "stream_timeout": 1,
+          "route_too_slow": 1
+        }
+      },
+      {
+        "sourceName": "AnimeNoSub",
+        "count": 7,
+        "reasons": {
+          "search_no_usable_result": 2,
+          "implausible_match": 4,
+          "other": 1
+        }
+      },
+      {
+        "sourceName": "Aniwave",
+        "count": 6,
+        "reasons": {
+          "implausible_match": 3,
+          "search_no_usable_result": 1,
+          "stream_timeout": 2
         }
       },
       {
         "sourceName": "Senshi",
-        "count": 5,
+        "count": 4,
         "reasons": {
-          "implausible_match": 3,
+          "implausible_match": 2,
           "search_no_usable_result": 1,
           "other": 1
         }
       },
       {
-        "sourceName": "OneTouch TV",
-        "count": 4,
-        "reasons": {
-          "implausible_match": 4
-        }
-      },
-      {
-        "sourceName": "Aniwave",
-        "count": 3,
-        "reasons": {
-          "search_no_usable_result": 1,
-          "route_too_slow": 1,
-          "implausible_match": 1
-        }
-      },
-      {
         "sourceName": "Kisskh",
-        "count": 3,
-        "reasons": {
-          "implausible_match": 3
-        }
-      },
-      {
-        "sourceName": "Anikuro",
         "count": 2,
         "reasons": {
           "implausible_match": 2
         }
       },
       {
-        "sourceName": "An1me",
-        "count": 1,
+        "sourceName": "OneTouch TV",
+        "count": 2,
         "reasons": {
-          "other": 1
+          "implausible_match": 2
         }
       },
       {
-        "sourceName": "Anime-Portal",
-        "count": 1,
-        "reasons": {
-          "other": 1
-        }
-      },
-      {
-        "sourceName": "AnimeGG",
-        "count": 1,
-        "reasons": {
-          "search_no_usable_result": 1
-        }
-      },
-      {
-        "sourceName": "AnimeJara",
-        "count": 1,
-        "reasons": {
-          "other": 1
-        }
-      },
-      {
-        "sourceName": "AnimeWorld",
-        "count": 1,
-        "reasons": {
-          "other": 1
-        }
-      },
-      {
-        "sourceName": "AniTube",
+        "sourceName": "Animetsu",
         "count": 1,
         "reasons": {
           "implausible_match": 1
         }
-      },
-      {
-        "sourceName": "AniWorld (GER DUB)",
-        "count": 1,
-        "reasons": {
-          "other": 1
-        }
-      },
-      {
-        "sourceName": "AniWorld (GER SUB)",
-        "count": 1,
-        "reasons": {
-          "other": 1
-        }
-      },
-      {
-        "sourceName": "Latanime",
-        "count": 1,
-        "reasons": {
-          "other": 1
-        }
-      },
-      {
-        "sourceName": "Monoschinos2",
-        "count": 1,
-        "reasons": {
-          "other": 1
-        }
-      },
-      {
-        "sourceName": "Nimegami",
-        "count": 1,
-        "reasons": {
-          "other": 1
-        }
       }
     ]
   },
-  "failures": [
-    {
-      "catalogPath": "Sources/German/001",
-      "sourceName": "AniWorld (GER DUB)",
-      "errors": [
-        "load: ENOENT: no such file or directory, open '/Users/ikki/Library/Application Support/SoraRouteWorker/run/content-manifest/Sources/German/001/manifest.json'"
-      ]
-    },
-    {
-      "catalogPath": "Sources/German/002",
-      "sourceName": "AniWorld (GER SUB)",
-      "errors": [
-        "load: ENOENT: no such file or directory, open '/Users/ikki/Library/Application Support/SoraRouteWorker/run/content-manifest/Sources/German/002/manifest.json'"
-      ]
-    },
-    {
-      "catalogPath": "Sources/Greek/001",
-      "sourceName": "An1me",
-      "errors": [
-        "load: ENOENT: no such file or directory, open '/Users/ikki/Library/Application Support/SoraRouteWorker/run/content-manifest/Sources/Greek/001/manifest.json'"
-      ]
-    },
-    {
-      "catalogPath": "Sources/Indonesian/001",
-      "sourceName": "Nimegami",
-      "errors": [
-        "load: ENOENT: no such file or directory, open '/Users/ikki/Library/Application Support/SoraRouteWorker/run/content-manifest/Sources/Indonesian/001/manifest.json'"
-      ]
-    },
-    {
-      "catalogPath": "Sources/Spanish/003",
-      "sourceName": "Latanime",
-      "errors": [
-        "load: ENOENT: no such file or directory, open '/Users/ikki/Library/Application Support/SoraRouteWorker/run/content-manifest/Sources/Spanish/003/manifest.json'"
-      ]
-    },
-    {
-      "catalogPath": "Sources/Spanish/004",
-      "sourceName": "Monoschinos2",
-      "errors": [
-        "load: ENOENT: no such file or directory, open '/Users/ikki/Library/Application Support/SoraRouteWorker/run/content-manifest/Sources/Spanish/004/manifest.json'"
-      ]
-    },
-    {
-      "catalogPath": "Sources/Spanish/005",
-      "sourceName": "AnimeJara",
-      "errors": [
-        "load: ENOENT: no such file or directory, open '/Users/ikki/Library/Application Support/SoraRouteWorker/run/content-manifest/Sources/Spanish/005/manifest.json'"
-      ]
-    }
-  ]
+  "failures": []
 }
