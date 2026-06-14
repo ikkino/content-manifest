@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-14T14:17:07.932Z",
+  "generatedAt": "2026-06-14T15:17:07.777Z",
   "mediaRequested": 5,
   "categories": {
     "trendingNow": {
@@ -28,21 +28,19 @@
   "rejectedAttempts": 31,
   "rejectedAttemptSummary": {
     "byReason": {
-      "media_probe_failed": 12,
+      "media_probe_failed": 13,
       "stream_timeout": 7,
       "media_probe_budget_exhausted": 5,
       "implausible_match": 4,
-      "host_cooldown_active": 2,
-      "media_host_error": 1
+      "host_cooldown_active": 2
     },
     "topModules": [
       {
         "sourceName": "Animetsu",
         "count": 13,
         "reasons": {
-          "media_probe_failed": 5,
+          "media_probe_failed": 6,
           "implausible_match": 2,
-          "media_host_error": 1,
           "host_cooldown_active": 2,
           "media_probe_budget_exhausted": 3
         }
@@ -140,45 +138,13 @@
       ]
     },
     {
-      "aniListId": 21,
-      "title": "ONE PIECE",
-      "moduleId": "G7jX",
-      "catalogPath": "Sources/English/003",
-      "sourceName": "Animetsu",
-      "errors": [
-        "implausible episode match: verified=1 available=1 expected<=1166"
-      ]
-    },
-    {
-      "aniListId": 21,
-      "title": "ONE PIECE",
-      "moduleId": "jR5U5",
-      "catalogPath": "Sources/English/016",
-      "sourceName": "Senshi",
-      "errors": [
-        "implausible episode match: verified=1164 available=1164 expected<=1166"
-      ]
-    },
-    {
-      "aniListId": 21,
-      "title": "ONE PIECE",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/021",
-      "sourceName": "Anikoto",
-      "errors": [
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out"
-      ]
-    },
-    {
       "aniListId": 206914,
       "title": "NIPPON SANGOKU: The Three Nations of the Crimson Sun",
       "moduleId": "G7jX",
       "catalogPath": "Sources/English/003",
       "sourceName": "Animetsu",
       "errors": [
-        "media probe failed: host=swiftstream.top HTTP 400; host=swiftstream.top HTTP 500 media_host_error; host=swiftstream.top empty media response; host=swiftstream.top HTTP 400; host=swiftstream.top empty media response"
+        "media probe failed: host=swiftstream.top HTTP 400; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
       ]
     },
     {
@@ -194,6 +160,38 @@
     {
       "aniListId": 206914,
       "title": "NIPPON SANGOKU: The Three Nations of the Crimson Sun",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/021",
+      "sourceName": "Anikoto",
+      "errors": [
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 21,
+      "title": "ONE PIECE",
+      "moduleId": "G7jX",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "Animetsu",
+      "errors": [
+        "implausible episode match: verified=1165 available=1165 expected<=1166"
+      ]
+    },
+    {
+      "aniListId": 21,
+      "title": "ONE PIECE",
+      "moduleId": "jR5U5",
+      "catalogPath": "Sources/English/016",
+      "sourceName": "Senshi",
+      "errors": [
+        "implausible episode match: verified=1164 available=1164 expected<=1166"
+      ]
+    },
+    {
+      "aniListId": 21,
+      "title": "ONE PIECE",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/021",
       "sourceName": "Anikoto",
@@ -366,16 +364,6 @@
       "catalogPath": "Sources/English/003",
       "sourceName": "Animetsu",
       "errors": [
-        "implausible episode match: verified=1 available=1 expected<=24"
-      ]
-    },
-    {
-      "aniListId": 113415,
-      "title": "JUJUTSU KAISEN",
-      "moduleId": "jR5U5",
-      "catalogPath": "Sources/English/016",
-      "sourceName": "Senshi",
-      "errors": [
         "media probe budget exhausted: 15/15"
       ]
     },
@@ -395,6 +383,16 @@
       "moduleId": "G7jX",
       "catalogPath": "Sources/English/003",
       "sourceName": "Animetsu",
+      "errors": [
+        "implausible episode match: verified=13 available=25 expected<=13"
+      ]
+    },
+    {
+      "aniListId": 21459,
+      "title": "My Hero Academia",
+      "moduleId": "jR5U5",
+      "catalogPath": "Sources/English/016",
+      "sourceName": "Senshi",
       "errors": [
         "media probe budget exhausted: 15/15"
       ]
