@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-14T11:17:07.818Z",
+  "generatedAt": "2026-06-14T12:17:07.993Z",
   "mediaRequested": 5,
   "categories": {
     "trendingNow": {
@@ -28,20 +28,21 @@
   "rejectedAttempts": 30,
   "rejectedAttemptSummary": {
     "byReason": {
-      "media_probe_failed": 12,
+      "media_probe_failed": 11,
       "stream_timeout": 7,
-      "implausible_match": 5,
-      "host_cooldown_active": 3,
-      "media_probe_budget_exhausted": 3
+      "host_cooldown_active": 4,
+      "implausible_match": 4,
+      "media_probe_budget_exhausted": 3,
+      "timeout": 1
     },
     "topModules": [
       {
         "sourceName": "Animetsu",
         "count": 12,
         "reasons": {
-          "media_probe_failed": 5,
-          "implausible_match": 1,
-          "host_cooldown_active": 3,
+          "media_probe_failed": 4,
+          "host_cooldown_active": 4,
+          "timeout": 1,
           "media_probe_budget_exhausted": 3
         }
       },
@@ -67,8 +68,8 @@
   "mediaProbesUsed": 15,
   "hostHealth": {
     "successEvents": 0,
-    "failureEvents": 12,
-    "skippedByCooldown": 3,
+    "failureEvents": 11,
+    "skippedByCooldown": 4,
     "coolingDownHosts": 2
   },
   "failures": [
@@ -143,7 +144,7 @@
       "catalogPath": "Sources/English/003",
       "sourceName": "Animetsu",
       "errors": [
-        "implausible episode match: verified=1 available=1 expected<=1165"
+        "host cooldown active: swiftstream.top"
       ]
     },
     {
@@ -239,7 +240,7 @@
       "catalogPath": "Sources/English/003",
       "sourceName": "Animetsu",
       "errors": [
-        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
+        "search: searchResults timed out"
       ]
     },
     {
