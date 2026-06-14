@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-14T10:34:27.536Z",
+  "generatedAt": "2026-06-14T11:17:07.818Z",
   "mediaRequested": 5,
   "categories": {
     "trendingNow": {
@@ -18,57 +18,58 @@
       "animeWithRoutes": 0
     }
   },
-  "mediaChecked": 12,
+  "mediaChecked": 0,
   "modulesChecked": 3,
   "animeWithRoutes": 0,
   "routeCount": 0,
   "refreshedAnime": 0,
   "mergeExisting": true,
-  "unresolvedAnime": 36,
-  "rejectedAttempts": 36,
+  "unresolvedAnime": 30,
+  "rejectedAttempts": 30,
   "rejectedAttemptSummary": {
     "byReason": {
-      "search_no_usable_result": 12,
-      "stream_timeout": 10,
-      "host_cooldown_active": 6,
-      "media_probe_failed": 5,
-      "implausible_match": 2,
-      "route_too_slow": 1
+      "media_probe_failed": 12,
+      "stream_timeout": 7,
+      "implausible_match": 5,
+      "host_cooldown_active": 3,
+      "media_probe_budget_exhausted": 3
     },
     "topModules": [
-      {
-        "sourceName": "Anikoto",
-        "count": 12,
-        "reasons": {
-          "stream_timeout": 10,
-          "implausible_match": 2
-        }
-      },
       {
         "sourceName": "Animetsu",
         "count": 12,
         "reasons": {
           "media_probe_failed": 5,
-          "host_cooldown_active": 6,
-          "route_too_slow": 1
+          "implausible_match": 1,
+          "host_cooldown_active": 3,
+          "media_probe_budget_exhausted": 3
+        }
+      },
+      {
+        "sourceName": "Anikoto",
+        "count": 9,
+        "reasons": {
+          "stream_timeout": 7,
+          "implausible_match": 2
         }
       },
       {
         "sourceName": "Senshi",
-        "count": 12,
+        "count": 9,
         "reasons": {
-          "search_no_usable_result": 12
+          "media_probe_failed": 7,
+          "implausible_match": 2
         }
       }
     ]
   },
-  "mediaProbeBudget": 24,
-  "mediaProbesUsed": 12,
+  "mediaProbeBudget": 15,
+  "mediaProbesUsed": 15,
   "hostHealth": {
     "successEvents": 0,
-    "failureEvents": 5,
-    "skippedByCooldown": 6,
-    "coolingDownHosts": 1
+    "failureEvents": 12,
+    "skippedByCooldown": 3,
+    "coolingDownHosts": 2
   },
   "failures": [
     {
@@ -78,7 +79,7 @@
       "catalogPath": "Sources/English/003",
       "sourceName": "Animetsu",
       "errors": [
-        "media probe failed: host=swiftstream.top HTTP 400; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
+        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
       ]
     },
     {
@@ -88,7 +89,7 @@
       "catalogPath": "Sources/English/015",
       "sourceName": "Senshi",
       "errors": [
-        "search: searchResults returned an unusable result"
+        "media probe failed: host=ninstream.com empty media response"
       ]
     },
     {
@@ -120,7 +121,7 @@
       "catalogPath": "Sources/English/015",
       "sourceName": "Senshi",
       "errors": [
-        "search: searchResults returned an unusable result"
+        "media probe failed: host=ninstream.com empty media response"
       ]
     },
     {
@@ -142,7 +143,7 @@
       "catalogPath": "Sources/English/003",
       "sourceName": "Animetsu",
       "errors": [
-        "host cooldown active: swiftstream.top"
+        "implausible episode match: verified=1 available=1 expected<=1165"
       ]
     },
     {
@@ -152,7 +153,7 @@
       "catalogPath": "Sources/English/015",
       "sourceName": "Senshi",
       "errors": [
-        "search: searchResults returned an unusable result"
+        "implausible episode match: verified=1164 available=1164 expected<=1165"
       ]
     },
     {
@@ -184,7 +185,7 @@
       "catalogPath": "Sources/English/015",
       "sourceName": "Senshi",
       "errors": [
-        "search: searchResults returned an unusable result"
+        "media probe failed: host=ninstream.com empty media response"
       ]
     },
     {
@@ -216,7 +217,7 @@
       "catalogPath": "Sources/English/015",
       "sourceName": "Senshi",
       "errors": [
-        "search: searchResults returned an unusable result"
+        "media probe failed: host=ninstream.com empty media response; host=ninstream.com empty media response"
       ]
     },
     {
@@ -248,7 +249,7 @@
       "catalogPath": "Sources/English/015",
       "sourceName": "Senshi",
       "errors": [
-        "search: searchResults returned an unusable result"
+        "media probe failed: host=ninstream.com empty media response; host=ninstream.com empty media response"
       ]
     },
     {
@@ -280,7 +281,7 @@
       "catalogPath": "Sources/English/015",
       "sourceName": "Senshi",
       "errors": [
-        "search: searchResults returned an unusable result"
+        "media probe failed: host=ninstream.com empty media response"
       ]
     },
     {
@@ -310,7 +311,7 @@
       "catalogPath": "Sources/English/015",
       "sourceName": "Senshi",
       "errors": [
-        "search: searchResults returned an unusable result"
+        "media probe failed: host=ninstream.com empty media response"
       ]
     },
     {
@@ -342,7 +343,7 @@
       "catalogPath": "Sources/English/015",
       "sourceName": "Senshi",
       "errors": [
-        "search: searchResults returned an unusable result"
+        "implausible episode match: verified=11 available=11 expected<=26"
       ]
     },
     {
@@ -362,29 +363,7 @@
       "catalogPath": "Sources/English/003",
       "sourceName": "Animetsu",
       "errors": [
-        "host cooldown active: swiftstream.top"
-      ]
-    },
-    {
-      "aniListId": 113415,
-      "title": "JUJUTSU KAISEN",
-      "moduleId": "jR5U5",
-      "catalogPath": "Sources/English/015",
-      "sourceName": "Senshi",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 113415,
-      "title": "JUJUTSU KAISEN",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/020",
-      "sourceName": "Anikoto",
-      "errors": [
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out"
+        "media probe budget exhausted: 15/15"
       ]
     },
     {
@@ -394,29 +373,7 @@
       "catalogPath": "Sources/English/003",
       "sourceName": "Animetsu",
       "errors": [
-        "stored route too slow: 20316ms > 12000ms"
-      ]
-    },
-    {
-      "aniListId": 1535,
-      "title": "Death Note",
-      "moduleId": "jR5U5",
-      "catalogPath": "Sources/English/015",
-      "sourceName": "Senshi",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 1535,
-      "title": "Death Note",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/020",
-      "sourceName": "Anikoto",
-      "errors": [
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out"
+        "media probe budget exhausted: 15/15"
       ]
     },
     {
@@ -426,29 +383,7 @@
       "catalogPath": "Sources/English/003",
       "sourceName": "Animetsu",
       "errors": [
-        "host cooldown active: swiftstream.top"
-      ]
-    },
-    {
-      "aniListId": 21459,
-      "title": "My Hero Academia",
-      "moduleId": "jR5U5",
-      "catalogPath": "Sources/English/015",
-      "sourceName": "Senshi",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 21459,
-      "title": "My Hero Academia",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/020",
-      "sourceName": "Anikoto",
-      "errors": [
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out"
+        "media probe budget exhausted: 15/15"
       ]
     }
   ]
