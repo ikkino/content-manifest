@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-14T00:17:03.741Z",
+  "generatedAt": "2026-06-14T01:17:08.271Z",
   "mediaRequested": 5,
   "categories": {
     "trendingNow": {
@@ -24,25 +24,34 @@
   "routeCount": 152,
   "refreshedAnime": 0,
   "mergeExisting": true,
-  "unresolvedAnime": 28,
-  "rejectedAttempts": 28,
+  "unresolvedAnime": 31,
+  "rejectedAttempts": 31,
   "rejectedAttemptSummary": {
     "byReason": {
-      "media_probe_failed": 11,
-      "stream_timeout": 8,
-      "media_probe_budget_exhausted": 4,
-      "host_cooldown_active": 3,
-      "implausible_match": 2
+      "media_probe_failed": 13,
+      "stream_timeout": 7,
+      "media_probe_budget_exhausted": 5,
+      "implausible_match": 4,
+      "host_cooldown_active": 2
     },
     "topModules": [
       {
         "sourceName": "Animetsu",
-        "count": 12,
+        "count": 13,
         "reasons": {
-          "media_probe_failed": 4,
-          "stream_timeout": 1,
-          "host_cooldown_active": 3,
-          "media_probe_budget_exhausted": 4
+          "media_probe_failed": 6,
+          "implausible_match": 2,
+          "host_cooldown_active": 2,
+          "media_probe_budget_exhausted": 3
+        }
+      },
+      {
+        "sourceName": "Senshi",
+        "count": 10,
+        "reasons": {
+          "media_probe_failed": 7,
+          "implausible_match": 1,
+          "media_probe_budget_exhausted": 2
         }
       },
       {
@@ -52,14 +61,6 @@
           "stream_timeout": 7,
           "implausible_match": 1
         }
-      },
-      {
-        "sourceName": "Senshi",
-        "count": 8,
-        "reasons": {
-          "media_probe_failed": 7,
-          "implausible_match": 1
-        }
       }
     ]
   },
@@ -67,8 +68,8 @@
   "mediaProbesUsed": 15,
   "hostHealth": {
     "successEvents": 0,
-    "failureEvents": 11,
-    "skippedByCooldown": 3,
+    "failureEvents": 13,
+    "skippedByCooldown": 2,
     "coolingDownHosts": 2
   },
   "failures": [
@@ -111,7 +112,7 @@
       "catalogPath": "Sources/English/002",
       "sourceName": "Animetsu",
       "errors": [
-        "stream: extractStreamUrl timed out"
+        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
       ]
     },
     {
@@ -143,7 +144,7 @@
       "catalogPath": "Sources/English/002",
       "sourceName": "Animetsu",
       "errors": [
-        "host cooldown active: swiftstream.top"
+        "implausible episode match: verified=1 available=1 expected<=1165"
       ]
     },
     {
@@ -195,6 +196,38 @@
       "catalogPath": "Sources/English/019",
       "sourceName": "Anikoto",
       "errors": [
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 190704,
+      "title": "Mistress Kanan is Devilishly Easy",
+      "moduleId": "G7jX",
+      "catalogPath": "Sources/English/002",
+      "sourceName": "Animetsu",
+      "errors": [
+        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
+      ]
+    },
+    {
+      "aniListId": 190704,
+      "title": "Mistress Kanan is Devilishly Easy",
+      "moduleId": "jR5U5",
+      "catalogPath": "Sources/English/014",
+      "sourceName": "Senshi",
+      "errors": [
+        "media probe failed: host=ninstream.com empty media response"
+      ]
+    },
+    {
+      "aniListId": 190704,
+      "title": "Mistress Kanan is Devilishly Easy",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/019",
+      "sourceName": "Anikoto",
+      "errors": [
+        "stream: extractStreamUrl timed out",
         "stream: extractStreamUrl timed out",
         "stream: extractStreamUrl timed out"
       ]
@@ -310,19 +343,7 @@
       "catalogPath": "Sources/English/014",
       "sourceName": "Senshi",
       "errors": [
-        "media probe failed: host=ninstream.com empty media response"
-      ]
-    },
-    {
-      "aniListId": 16498,
-      "title": "Attack on Titan",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/019",
-      "sourceName": "Anikoto",
-      "errors": [
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out"
+        "media probe budget exhausted: 15/15"
       ]
     },
     {
@@ -361,6 +382,16 @@
       "moduleId": "G7jX",
       "catalogPath": "Sources/English/002",
       "sourceName": "Animetsu",
+      "errors": [
+        "implausible episode match: verified=13 available=25 expected<=13"
+      ]
+    },
+    {
+      "aniListId": 21459,
+      "title": "My Hero Academia",
+      "moduleId": "jR5U5",
+      "catalogPath": "Sources/English/014",
+      "sourceName": "Senshi",
       "errors": [
         "media probe budget exhausted: 15/15"
       ]
