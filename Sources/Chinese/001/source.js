@@ -1,17 +1,16 @@
 async function searchResults(keyword) {
     const results = [];
     try {
-        const response = await fetchv2(`https://e.kortw.cc/vodsearch/-------------.html?keyword=${keyword}`);
+        const response = await fetchv2("https://xiaoxintv.cc/index.php/vod/search.html?wd=" + encodeURIComponent(keyword) + "&submit=");
         const html = await response.text();
-        
-        const regex = /<li class="qy-mod-li[^>]*>[\s\S]*?<a href="([^"]+)"[\s\S]*?background-image:\s*url\(([^)]+)\)[\s\S]*?<span class="text-score">[^<]*<\/span>[\s\S]*?<span>([^<]+)<\/span>[\s\S]*?<\/li>/g;
 
+        const regex = /class="myui-vodlist__thumb[^"]*" href="([^"]*)"[^>]*title="([^"]*)"[^>]*data-original="([^"]*)"/g;
         let match;
         while ((match = regex.exec(html)) !== null) {
             results.push({
-                title: match[3].trim(),
-                image: "https://www.nivod.cc" + match[2].trim(),
-                href: "https://www.nivod.cc" + match[1].trim()
+                title: match[2].trim(),
+                image: "https://xiaoxintv.cc" + match[3].trim(),
+                href: "https://xiaoxintv.cc" + match[1].trim()
             });
         }
 
@@ -30,8 +29,9 @@ async function extractDetails(url) {
         const response = await fetchv2(url);
         const html = await response.text();
 
-        const match = html.match(/id="show-desc">([\s\S]*?)<\/div>/);
-        const description = match ? match[1].trim() : "N/A";
+        const regex = /<span class="data"[^>]*><p>(.*?)<\/p><\/span>/s;
+        const match = regex.exec(html);
+        const description = match ? match[1].trim() : "No description available";
 
         return JSON.stringify([{
             description: description,
@@ -53,17 +53,23 @@ async function extractEpisodes(url) {
         const response = await fetchv2(url);
         const html = await response.text();
 
-        const regex = /<a\s+href="([^"]+)">\s*<div\s+class="item"\s*>第(\d+)集<\/div>\s*<\/a>/g;
-
+        const ulRegex = /<ul class="myui-content__list scrollbar sort-list clearfix"[^>]*>(.*?)<\/ul>/s;
+        const ulMatch = ulRegex.exec(html);
+        
+        if (!ulMatch) return JSON.stringify(results);
+        
+        const ulContent = ulMatch[1];
+        const regex = /href="([^"]*\/vod\/play\/[^"]*nid\/(\d+)\.html)"/g;
         let match;
-        while ((match = regex.exec(html)) !== null) {
+        
+        while ((match = regex.exec(ulContent)) !== null) {
             results.push({
-                href: match[1].trim().startsWith('/') ? 'https://www.nivod.cc' + match[1].trim() : match[1].trim(),
+                href: "https://xiaoxintv.cc" + match[1].trim(),
                 number: parseInt(match[2], 10)
             });
         }
 
-        return JSON.stringify(results.reverse());
+        return JSON.stringify(results);
     } catch (err) {
         return JSON.stringify([{
             href: "Error",
@@ -74,55 +80,54 @@ async function extractEpisodes(url) {
 
 async function extractStreamUrl(url) {
     try {
-        const match = url.match(/\/vodplay\/(\d+)\/(ep\d+)/);
+        const response = await fetchv2(url);
+        const html = await response.text();
+
+        const regex = /var\s+player_aaaa\s*=\s*(\{[^}]+\})/;
+        const match = regex.exec(html);
+        
         if (!match) {
             return JSON.stringify({
                 streams: [],
                 subtitle: ""
             });
         }
-        
-        const videoId = match[1];
-        const episodeId = match[2];
-        const apiUrl = `https://www.nivod.cc/xhr_playinfo/${videoId}-${episodeId}`;
-        
-        const response = await fetchv2(apiUrl);
-        const data = await response.json();
-        console.log(JSON.stringify(data));
-        const streams = [];
-        
-        if (data.pdatas && Array.isArray(data.pdatas)) {
-            data.pdatas.forEach((item, index) => {
-                const streamUrl = item.playurl;
-                
-                let hostname = '';
-                const match = streamUrl.match(/^https?:\/\/([^\/]+)/);
-                if (match) {
-                    hostname = match[1];
-                }
-                
-                streams.push({
-                    title: `Server ${index + 1}`,
-                    streamUrl: streamUrl,
-                    headers: {
-                        "Host": hostname,
-                        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:145.0) Gecko/20100101 Firefox/145.0",
-                        "Accept": "*/*",
-                        "Accept-Language": "en-US,en;q=0.5",
-                        "Accept-Encoding": "gzip, deflate, br, zstd",
-                        "Referer": "https://www.nivod.cc/",
-                        "Origin": "https://www.nivod.cc",
-                        "Connection": "keep-alive",
-                        "Sec-Fetch-Dest": "empty",
-                        "Sec-Fetch-Mode": "cors",
-                        "Sec-Fetch-Site": "cross-site"
-                    }
-                });
+
+        const playerData = JSON.parse(match[1]);
+        const indexUrl = playerData.url;
+
+        if (!indexUrl) {
+            return JSON.stringify({
+                streams: [],
+                subtitle: ""
             });
         }
+
+        const m3u8Response = await fetchv2(indexUrl);
+        const m3u8Content = await m3u8Response.text();
+
+        const streamPathMatch = /^(?!#)(.+\.m3u8)$/m.exec(m3u8Content);
         
+        if (!streamPathMatch) {
+            return JSON.stringify({
+                streams: [],
+                subtitle: ""
+            });
+        }
+
+        const streamPath = streamPathMatch[1].trim();
+        
+        const baseUrl = indexUrl.substring(0, indexUrl.lastIndexOf('/'));
+        const streamUrl = baseUrl + '/' + streamPath;
+        console.log("Extracted Stream URL: " + streamUrl);
         return JSON.stringify({
-            streams: streams,
+            streams: [
+                {
+                    title: "Server 1",
+                    streamUrl: streamUrl,
+                    headers: {}
+                }
+            ],
             subtitle: ""
         });
     } catch (err) {

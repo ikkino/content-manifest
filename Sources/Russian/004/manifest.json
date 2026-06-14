@@ -1,19 +1,19 @@
 {
-  "sourceName": "AnimeVost",
-  "iconUrl": "https://git.luna-app.eu/emp0ry/sources/raw/branch/main/animevost/logo.png",
+  "sourceName": "AniLiberty",
+  "iconUrl": "https://aniliberty.top/static/favicon-96x96.png",
   "author": {
     "name": "anonymous",
     "icon": "https://git.luna-app.eu/avatars/11bb6ee2fdba48e70ee21594f4ac96344358be3bb9770732ba8c406b5cda98f0?size=512$0"
   },
-  "version": "1.0.4",
+  "version": "1.0.7",
   "language": "Russian",
-  "streamType": "MP4",
-  "quality": "720p",
-  "baseUrl": "https://api.animevost.org/v1/",
-  "searchBaseUrl": "https://api.animevost.org/v1/search?name=%s",
+  "streamType": "HLS",
+  "quality": "1080p",
+  "baseUrl": "https://aniliberty.top/api/v1/",
+  "searchBaseUrl": "https://aniliberty.top/api/v1/app/search/releases?query=%s",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Russian/004/source.js",
   "asyncJS": true,
-  "streamAsyncJS": false,
+  "streamAsyncJS": true,
   "softsub": false,
   "type": "anime",
   "downloadSupport": false,
@@ -22,5 +22,5 @@
   "supportsSora": true,
   "supportsLuna": true,
   "supportMiruShin": true,
-  "id": "j9T1e"
+  "id": "j95VP"
 }

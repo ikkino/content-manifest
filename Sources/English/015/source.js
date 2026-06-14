@@ -1,18 +1,17 @@
 async function searchResults(keyword) {
+    const regex = /<a href="([^"]*)" class="mse">[\s\S]*?<img src="([^"]*)" class="media-object">[\s\S]*?<h2>([^<]*?)<\/h2>/g;
     const results = [];
-    const postData = `{"searchTerm":"${keyword}","page":1,"limit":100}`;
     try {
-        const response = await fetchv2("https://senshi.live/anime/filter", { "Content-Type": "application/json", "Referer": "https://senshi.live/" }, "POST", postData);
-        const data = await response.json();
+        const response = await fetchv2("https://www.animegg.org/search/?q=" + encodeURIComponent(keyword));
+        const html = await response.text();
 
-        if (data.data && Array.isArray(data.data)) {
-            for (const item of data.data) {
-                results.push({
-                    title: item.title,
-                    image: "https://senshi.live" + item.anime_picture,
-                    href: "https://senshi.live/anime/" + item.id
-                });
-            }
+        let match;
+        while ((match = regex.exec(html)) !== null) {
+            results.push({
+                title: match[3].trim(),
+                image: match[2].trim(),
+                href: "https://www.animegg.org" + match[1].trim()
+            });
         }
 
         return JSON.stringify(results);
@@ -28,12 +27,15 @@ async function searchResults(keyword) {
 async function extractDetails(url) {
     try {
         const response = await fetchv2(url);
-        const data = await response.json();
+        const html = await response.text();
+
+        const descMatch = html.match(/<p class="ptext">(.*?)<\/p>/s);
+        const description = descMatch ? descMatch[1].trim() : "N/A";
 
         return JSON.stringify([{
-            description: data.ani_description,
-            aliases: data.synonyms,
-            airdate: data.created_at
+            description: description,
+            aliases: "N/A",
+            airdate: "N/A"
         }]);
     } catch (err) {
         return JSON.stringify([{
@@ -45,22 +47,28 @@ async function extractDetails(url) {
 }
 
 async function extractEpisodes(url) {
-    const ID = url.split("/").pop();
     const results = [];
     try {
-        const response = await fetchv2("https://senshi.live/episodes/" + ID, {"Referer": "https://senshi.live/"});
-        const data = await response.json();
+        const response = await fetchv2(url);
+        const html = await response.text();
 
-        if (Array.isArray(data)) {
-            for (const ep of data) {
-                results.push({
-                    href: "https://senshi.live/episode-embeds/" + ep.mal_id + "/" + ep.ep_id,
-                    number: ep.ep_id
-                });
+        const regex = /<a href="([^"]*)" class="anm_det_pop">[\s\S]*?<i class="anititle">(Episode (\d+)|Movie)<\/i>/g;
+        let match;
+        while ((match = regex.exec(html)) !== null) {
+            const href = "https://www.animegg.org" + match[1].trim();
+            let number;
+            if (match[2] === "Movie") {
+                number = 1;
+            } else {
+                number = parseInt(match[3], 10);
             }
+            results.push({
+                href: href,
+                number: number
+            });
         }
 
-        return JSON.stringify(results);
+        return JSON.stringify(results.reverse());
     } catch (err) {
         return JSON.stringify([{
             href: "Error",
@@ -71,31 +79,40 @@ async function extractEpisodes(url) {
 
 async function extractStreamUrl(url) {
     try {
-        const response = await fetchv2(url, {"Referer": "https://senshi.live/"});
-        const data = await response.json();
-
-        const streams = [];
-        const count = {};
-        for (const item of data) {
-            const status = item.status;
-            if (!count[status]) count[status] = 0;
-            count[status]++;
-            const title = count[status] > 1 ? `${status} ${count[status]}` : status;
-            streams.push({
-                title: title,
-                streamUrl: item.url,
-                headers: { "Referer": "https://senshi.live/" }
-            });
+        const response = await fetchv2(url);
+        const html = await response.text();
+        const ulMatch = html.match(/<ul id="videos"[^>]*>(.*?)<\/ul>/s);
+        if (!ulMatch) return JSON.stringify({streams: [], subtitle: "none"});
+        const ulHtml = ulMatch[1];
+        const liRegex = /<li><a[^>]*data-id='(\d+)'[^>]*data-version="(subbed|dubbed)"[^>]*>/g;
+        const versions = [];
+        let liMatch;
+        while ((liMatch = liRegex.exec(ulHtml)) !== null) {
+            versions.push({id: liMatch[1], type: liMatch[2]});
         }
-
-        return JSON.stringify({
-            streams: streams,
-            subtitle: ""
+        const embedPromises = versions.map(async (ver) => {
+            const embedUrl = `https://www.animegg.org/embed/${ver.id}`;
+            const embedResponse = await fetchv2(embedUrl);
+            const embedHtml = await embedResponse.text();
+            const vsMatch = embedHtml.match(/(?:var|const|let) videoSources = (\[[\s\S]*?\]);/);
+            if (!vsMatch) return [];
+            const jsonString = vsMatch[1].replace(/([{,]\s*)([a-zA-Z_][a-zA-Z0-9_]*)\s*:/g, '$1"$2":');
+            const vsJson = JSON.parse(jsonString);
+            return vsJson.map(src => {
+                const quality = src.label;
+                const fileUrl = "https://www.animegg.org" + src.file;
+                const title = (ver.type === 'subbed' ? 'Sub' : 'Dub') + ' • ' + quality;
+                return {
+                    title: title,
+                    streamUrl: fileUrl,
+                    headers: { "Referer": "https://www.animegg.org/" }
+                };
+            });
         });
+        const streamArrays = await Promise.all(embedPromises);
+        const streams = streamArrays.flat();
+        return JSON.stringify({streams: streams, subtitle: "none"});
     } catch (err) {
-        return JSON.stringify({
-            streams: [],
-            subtitle: ""
-        });
+        return JSON.stringify({streams: [], subtitle: "none"});
     }
 }

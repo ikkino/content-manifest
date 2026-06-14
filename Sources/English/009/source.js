@@ -2,21 +2,9 @@ async function searchResults(keyword) {
     const results = [];
 
     results.push({
-        title: "Use External Player",
-        image: "https://git.luna-app.eu/ibro/services/raw/branch/main/narucannon/UseExternalPlayer.png",
-        href: ""
-    });
-
-    results.push({
-        title: "Narucannon Subbed",
-        image: "https://git.luna-app.eu/ibro/services/raw/branch/main/narucannon/icon.png",
-        href: "https://pixeldrain.net/l/dX3cF5Q3"
-    });
-
-    results.push({
-        title: "Narucannon Dubbed",
-        image: "https://git.luna-app.eu/ibro/services/raw/branch/main/narucannon/icon.png",
-        href: "https://pixeldrain.net/l/tqeCisSm"
+        title: "Onigashima Paced",
+        image: "https://git.luna-app.eu/ibro/services/raw/branch/main/onigashima/icon.png",
+        href: "https://pixeldrain.net/l/JVMSKn7c"
     });
     
     console.log(`Results: ${JSON.stringify(results)}`);
