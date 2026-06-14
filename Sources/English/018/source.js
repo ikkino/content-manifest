@@ -2,57 +2,27 @@ async function searchResults(keyword) {
     const results = [];
 
     results.push({
-        title: "Use External Player",
-        image: "https://git.luna-app.eu/ibro/services/raw/branch/main/narucannon/UseExternalPlayer.png",
-        href: ""
+        title: "Saiyan Arc",
+        image: "https://ugc.production.linktr.ee/5fe54b0e-0381-4ca2-a1da-260e5b09da3a_image.png?io=true&size=thumbnail-stack_v1_0",
+        href: "https://pixeldrain.net/l/wCsLUVni"
     });
 
     results.push({
-        title: "Rebuild of Naruto (2019) - Season 1 - Naruto",
-        image: "https://pixeldrain.net/api/file/tseMo66v",
-        href: "https://pixeldrain.net/l/SmsFwCAT"
+        title: "Freeza Arc",
+        image: "https://ugc.production.linktr.ee/bad5121e-debd-4d09-8d07-a047fb791526_image.png?io=true&size=thumbnail-stack_v1_0",
+        href: "https://pixeldrain.net/l/UFw6sshg"
     });
 
     results.push({
-        title: "Rebuild of Naruto (2019) - Season 2 - Naruto Gaiden",
-        image: "https://pixeldrain.net/api/file/PqkviitQ",
-        href: "https://pixeldrain.net/l/1YKx5EWn"
+        title: "Cell Arc",
+        image: "https://ugc.production.linktr.ee/1d3c535f-8f02-45ca-b8cd-d0cf3abd77ec_image.png?io=true&size=thumbnail-stack_v1_0",
+        href: "https://pixeldrain.net/l/C3TS8gGk"
     });
 
     results.push({
-        title: "Rebuild of Naruto (2019) - Season 3 - Kakashi Gaiden",
-        image: "https://pixeldrain.net/api/file/WWbQ5efe",
-        href: "https://pixeldrain.net/l/bc226sF1"
-    });
-
-    results.push({
-        title: "Rebuild of Naruto (2019) - Season 4 - Naruto Shippuden",
-        image: "https://pixeldrain.net/api/file/jjW3hhCL",
-        href: "https://pixeldrain.net/l/E1EuRcLU"
-    });
-
-    results.push({
-        title: "Rebuild of Naruto (2019) - Season 5 - Naruto Senjou",
-        image: "https://pixeldrain.net/api/file/eZUREmqQ",
-        href: "https://pixeldrain.net/l/vKm6yFu4"
-    });
-
-    results.push({
-        title: "Rebuild of Naruto (2019) - Season 6 - Itachi Shinden",
-        image: "https://pixeldrain.net/api/file/xZ4qFLcz",
-        href: "https://pixeldrain.net/l/6HKj825x"
-    });
-
-    results.push({
-        title: "Rebuild of Naruto (2019) - Season 7 - Naruto Hiden",
-        image: "https://pixeldrain.net/api/file/YeBS7udw",
-        href: "https://pixeldrain.net/l/hif36HTr"
-    });
-
-    results.push({
-        title: "Rebuild of Naruto (2019) - Season 8 - Next Generations",
-        image: "",
-        href: "https://pixeldrain.net/l/mTCVETnp"
+        title: "Boo Arc",
+        image: "https://ugc.production.linktr.ee/71f7161c-0ae3-41ec-8bb0-43a75ecaaaac_image.png?io=true&size=thumbnail-stack_v1_0",
+        href: "https://pixeldrain.net/l/NGxFsN2P"
     });
     
     console.log(`Results: ${JSON.stringify(results)}`);
