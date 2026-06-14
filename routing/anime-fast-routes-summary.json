@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-14T20:17:07.430Z",
+  "generatedAt": "2026-06-14T21:17:07.356Z",
   "mediaRequested": 5,
   "categories": {
     "trendingNow": {
@@ -28,19 +28,18 @@
   "rejectedAttempts": 29,
   "rejectedAttemptSummary": {
     "byReason": {
-      "media_probe_failed": 14,
-      "stream_timeout": 7,
+      "media_probe_failed": 12,
+      "stream_timeout": 10,
       "media_probe_budget_exhausted": 5,
-      "implausible_match": 2,
-      "host_cooldown_active": 1
+      "implausible_match": 2
     },
     "topModules": [
       {
         "sourceName": "Animetsu",
         "count": 13,
         "reasons": {
-          "media_probe_failed": 7,
-          "host_cooldown_active": 1,
+          "media_probe_failed": 5,
+          "stream_timeout": 3,
           "media_probe_budget_exhausted": 5
         }
       },
@@ -66,8 +65,8 @@
   "mediaProbesUsed": 15,
   "hostHealth": {
     "successEvents": 0,
-    "failureEvents": 14,
-    "skippedByCooldown": 1,
+    "failureEvents": 12,
+    "skippedByCooldown": 0,
     "coolingDownHosts": 2
   },
   "failures": [
@@ -238,7 +237,7 @@
       "catalogPath": "Sources/English/003",
       "sourceName": "Animetsu",
       "errors": [
-        "host cooldown active: swiftstream.top"
+        "stream: extractStreamUrl timed out"
       ]
     },
     {
@@ -270,7 +269,7 @@
       "catalogPath": "Sources/English/003",
       "sourceName": "Animetsu",
       "errors": [
-        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
+        "stream: extractStreamUrl timed out"
       ]
     },
     {
@@ -302,7 +301,7 @@
       "catalogPath": "Sources/English/003",
       "sourceName": "Animetsu",
       "errors": [
-        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
+        "stream: extractStreamUrl timed out"
       ]
     },
     {
