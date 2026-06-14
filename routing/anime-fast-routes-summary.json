@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-14T12:17:07.993Z",
+  "generatedAt": "2026-06-14T12:53:12.461Z",
   "mediaRequested": 5,
   "categories": {
     "trendingNow": {
@@ -24,42 +24,40 @@
   "routeCount": 0,
   "refreshedAnime": 0,
   "mergeExisting": true,
-  "unresolvedAnime": 30,
-  "rejectedAttempts": 30,
+  "unresolvedAnime": 28,
+  "rejectedAttempts": 28,
   "rejectedAttemptSummary": {
     "byReason": {
-      "media_probe_failed": 11,
+      "media_probe_failed": 12,
       "stream_timeout": 7,
-      "host_cooldown_active": 4,
-      "implausible_match": 4,
-      "media_probe_budget_exhausted": 3,
-      "timeout": 1
+      "media_probe_budget_exhausted": 4,
+      "host_cooldown_active": 3,
+      "implausible_match": 2
     },
     "topModules": [
       {
         "sourceName": "Animetsu",
         "count": 12,
         "reasons": {
-          "media_probe_failed": 4,
-          "host_cooldown_active": 4,
-          "timeout": 1,
-          "media_probe_budget_exhausted": 3
+          "media_probe_failed": 5,
+          "host_cooldown_active": 3,
+          "media_probe_budget_exhausted": 4
         }
       },
       {
         "sourceName": "Anikoto",
-        "count": 9,
+        "count": 8,
         "reasons": {
           "stream_timeout": 7,
-          "implausible_match": 2
+          "implausible_match": 1
         }
       },
       {
         "sourceName": "Senshi",
-        "count": 9,
+        "count": 8,
         "reasons": {
           "media_probe_failed": 7,
-          "implausible_match": 2
+          "implausible_match": 1
         }
       }
     ]
@@ -68,8 +66,8 @@
   "mediaProbesUsed": 15,
   "hostHealth": {
     "successEvents": 0,
-    "failureEvents": 11,
-    "skippedByCooldown": 4,
+    "failureEvents": 12,
+    "skippedByCooldown": 3,
     "coolingDownHosts": 2
   },
   "failures": [
@@ -87,7 +85,7 @@
       "aniListId": 182300,
       "title": "Wistoria: Wand and Sword Season 2",
       "moduleId": "jR5U5",
-      "catalogPath": "Sources/English/015",
+      "catalogPath": "Sources/English/016",
       "sourceName": "Senshi",
       "errors": [
         "media probe failed: host=ninstream.com empty media response"
@@ -97,7 +95,7 @@
       "aniListId": 182300,
       "title": "Wistoria: Wand and Sword Season 2",
       "moduleId": "jF12G",
-      "catalogPath": "Sources/English/020",
+      "catalogPath": "Sources/English/021",
       "sourceName": "Anikoto",
       "errors": [
         "stream: extractStreamUrl timed out",
@@ -119,7 +117,7 @@
       "aniListId": 195600,
       "title": "Daemons of the Shadow Realm",
       "moduleId": "jR5U5",
-      "catalogPath": "Sources/English/015",
+      "catalogPath": "Sources/English/016",
       "sourceName": "Senshi",
       "errors": [
         "media probe failed: host=ninstream.com empty media response"
@@ -129,7 +127,7 @@
       "aniListId": 195600,
       "title": "Daemons of the Shadow Realm",
       "moduleId": "jF12G",
-      "catalogPath": "Sources/English/020",
+      "catalogPath": "Sources/English/021",
       "sourceName": "Anikoto",
       "errors": [
         "stream: extractStreamUrl timed out",
@@ -151,7 +149,7 @@
       "aniListId": 21,
       "title": "ONE PIECE",
       "moduleId": "jR5U5",
-      "catalogPath": "Sources/English/015",
+      "catalogPath": "Sources/English/016",
       "sourceName": "Senshi",
       "errors": [
         "implausible episode match: verified=1164 available=1164 expected<=1165"
@@ -161,7 +159,7 @@
       "aniListId": 21,
       "title": "ONE PIECE",
       "moduleId": "jF12G",
-      "catalogPath": "Sources/English/020",
+      "catalogPath": "Sources/English/021",
       "sourceName": "Anikoto",
       "errors": [
         "stream: extractStreamUrl timed out",
@@ -183,7 +181,7 @@
       "aniListId": 182205,
       "title": "That Time I Got Reincarnated as a Slime Season 4",
       "moduleId": "jR5U5",
-      "catalogPath": "Sources/English/015",
+      "catalogPath": "Sources/English/016",
       "sourceName": "Senshi",
       "errors": [
         "media probe failed: host=ninstream.com empty media response"
@@ -193,7 +191,7 @@
       "aniListId": 182205,
       "title": "That Time I Got Reincarnated as a Slime Season 4",
       "moduleId": "jF12G",
-      "catalogPath": "Sources/English/020",
+      "catalogPath": "Sources/English/021",
       "sourceName": "Anikoto",
       "errors": [
         "stream: extractStreamUrl timed out",
@@ -215,7 +213,7 @@
       "aniListId": 147105,
       "title": "Witch Hat Atelier",
       "moduleId": "jR5U5",
-      "catalogPath": "Sources/English/015",
+      "catalogPath": "Sources/English/016",
       "sourceName": "Senshi",
       "errors": [
         "media probe failed: host=ninstream.com empty media response; host=ninstream.com empty media response"
@@ -225,7 +223,7 @@
       "aniListId": 147105,
       "title": "Witch Hat Atelier",
       "moduleId": "jF12G",
-      "catalogPath": "Sources/English/020",
+      "catalogPath": "Sources/English/021",
       "sourceName": "Anikoto",
       "errors": [
         "stream: extractStreamUrl timed out",
@@ -240,14 +238,14 @@
       "catalogPath": "Sources/English/003",
       "sourceName": "Animetsu",
       "errors": [
-        "search: searchResults timed out"
+        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
       ]
     },
     {
       "aniListId": 189046,
       "title": "Re:ZERO -Starting Life in Another World- Season 4",
       "moduleId": "jR5U5",
-      "catalogPath": "Sources/English/015",
+      "catalogPath": "Sources/English/016",
       "sourceName": "Senshi",
       "errors": [
         "media probe failed: host=ninstream.com empty media response; host=ninstream.com empty media response"
@@ -257,7 +255,7 @@
       "aniListId": 189046,
       "title": "Re:ZERO -Starting Life in Another World- Season 4",
       "moduleId": "jF12G",
-      "catalogPath": "Sources/English/020",
+      "catalogPath": "Sources/English/021",
       "sourceName": "Anikoto",
       "errors": [
         "stream: extractStreamUrl timed out",
@@ -279,7 +277,7 @@
       "aniListId": 180745,
       "title": "Classroom of the Elite 4th Season: Second Year, First Semester",
       "moduleId": "jR5U5",
-      "catalogPath": "Sources/English/015",
+      "catalogPath": "Sources/English/016",
       "sourceName": "Senshi",
       "errors": [
         "media probe failed: host=ninstream.com empty media response"
@@ -289,7 +287,7 @@
       "aniListId": 180745,
       "title": "Classroom of the Elite 4th Season: Second Year, First Semester",
       "moduleId": "jF12G",
-      "catalogPath": "Sources/English/020",
+      "catalogPath": "Sources/English/021",
       "sourceName": "Anikoto",
       "errors": [
         "implausible episode match: verified=12 available=12 expected<=14"
@@ -309,7 +307,7 @@
       "aniListId": 16498,
       "title": "Attack on Titan",
       "moduleId": "jR5U5",
-      "catalogPath": "Sources/English/015",
+      "catalogPath": "Sources/English/016",
       "sourceName": "Senshi",
       "errors": [
         "media probe failed: host=ninstream.com empty media response"
@@ -319,7 +317,7 @@
       "aniListId": 16498,
       "title": "Attack on Titan",
       "moduleId": "jF12G",
-      "catalogPath": "Sources/English/020",
+      "catalogPath": "Sources/English/021",
       "sourceName": "Anikoto",
       "errors": [
         "stream: extractStreamUrl timed out",
@@ -334,27 +332,7 @@
       "catalogPath": "Sources/English/003",
       "sourceName": "Animetsu",
       "errors": [
-        "host cooldown active: swiftstream.top"
-      ]
-    },
-    {
-      "aniListId": 101922,
-      "title": "Demon Slayer: Kimetsu no Yaiba",
-      "moduleId": "jR5U5",
-      "catalogPath": "Sources/English/015",
-      "sourceName": "Senshi",
-      "errors": [
-        "implausible episode match: verified=11 available=11 expected<=26"
-      ]
-    },
-    {
-      "aniListId": 101922,
-      "title": "Demon Slayer: Kimetsu no Yaiba",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/020",
-      "sourceName": "Anikoto",
-      "errors": [
-        "implausible episode match: verified=1 available=1 expected<=26"
+        "media probe budget exhausted: 15/15"
       ]
     },
     {
