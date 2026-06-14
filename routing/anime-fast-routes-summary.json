@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-13T23:17:08.067Z",
+  "generatedAt": "2026-06-14T00:17:03.741Z",
   "mediaRequested": 5,
   "categories": {
     "trendingNow": {
@@ -39,8 +39,8 @@
         "sourceName": "Animetsu",
         "count": 12,
         "reasons": {
-          "stream_timeout": 1,
           "media_probe_failed": 4,
+          "stream_timeout": 1,
           "host_cooldown_active": 3,
           "media_probe_budget_exhausted": 4
         }
@@ -79,7 +79,7 @@
       "catalogPath": "Sources/English/002",
       "sourceName": "Animetsu",
       "errors": [
-        "stream: extractStreamUrl timed out"
+        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
       ]
     },
     {
@@ -111,7 +111,7 @@
       "catalogPath": "Sources/English/002",
       "sourceName": "Animetsu",
       "errors": [
-        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
+        "stream: extractStreamUrl timed out"
       ]
     },
     {
@@ -195,7 +195,6 @@
       "catalogPath": "Sources/English/019",
       "sourceName": "Anikoto",
       "errors": [
-        "stream: extractStreamUrl timed out",
         "stream: extractStreamUrl timed out",
         "stream: extractStreamUrl timed out"
       ]
