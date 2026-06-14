@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-14T22:17:07.151Z",
+  "generatedAt": "2026-06-14T23:17:07.549Z",
   "mediaRequested": 5,
   "categories": {
     "trendingNow": {
@@ -24,15 +24,14 @@
   "routeCount": 0,
   "refreshedAnime": 0,
   "mergeExisting": true,
-  "unresolvedAnime": 29,
-  "rejectedAttempts": 29,
+  "unresolvedAnime": 31,
+  "rejectedAttempts": 31,
   "rejectedAttemptSummary": {
     "byReason": {
-      "media_probe_failed": 12,
-      "stream_timeout": 7,
-      "media_probe_budget_exhausted": 5,
-      "implausible_match": 2,
-      "media_host_error": 2,
+      "media_probe_failed": 14,
+      "stream_timeout": 8,
+      "implausible_match": 4,
+      "media_probe_budget_exhausted": 4,
       "host_cooldown_active": 1
     },
     "topModules": [
@@ -40,26 +39,26 @@
         "sourceName": "Animetsu",
         "count": 13,
         "reasons": {
-          "media_probe_failed": 5,
+          "media_probe_failed": 7,
           "host_cooldown_active": 1,
-          "media_host_error": 2,
-          "media_probe_budget_exhausted": 5
+          "media_probe_budget_exhausted": 4,
+          "implausible_match": 1
         }
       },
       {
         "sourceName": "Anikoto",
-        "count": 8,
+        "count": 9,
         "reasons": {
-          "stream_timeout": 7,
+          "stream_timeout": 8,
           "implausible_match": 1
         }
       },
       {
         "sourceName": "Senshi",
-        "count": 8,
+        "count": 9,
         "reasons": {
           "media_probe_failed": 7,
-          "implausible_match": 1
+          "implausible_match": 2
         }
       }
     ]
@@ -170,6 +169,38 @@
       ]
     },
     {
+      "aniListId": 182205,
+      "title": "That Time I Got Reincarnated as a Slime Season 4",
+      "moduleId": "G7jX",
+      "catalogPath": "Sources/English/004",
+      "sourceName": "Animetsu",
+      "errors": [
+        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
+      ]
+    },
+    {
+      "aniListId": 182205,
+      "title": "That Time I Got Reincarnated as a Slime Season 4",
+      "moduleId": "jR5U5",
+      "catalogPath": "Sources/English/018",
+      "sourceName": "Senshi",
+      "errors": [
+        "media probe failed: host=ninstream.com empty media response"
+      ]
+    },
+    {
+      "aniListId": 182205,
+      "title": "That Time I Got Reincarnated as a Slime Season 4",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/023",
+      "sourceName": "Anikoto",
+      "errors": [
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
       "aniListId": 206914,
       "title": "NIPPON SANGOKU: The Three Nations of the Crimson Sun",
       "moduleId": "G7jX",
@@ -240,7 +271,7 @@
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
       "errors": [
-        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top HTTP 500 media_host_error; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
+        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
       ]
     },
     {
@@ -266,8 +297,8 @@
       ]
     },
     {
-      "aniListId": 182205,
-      "title": "That Time I Got Reincarnated as a Slime Season 4",
+      "aniListId": 180745,
+      "title": "Classroom of the Elite 4th Season: Second Year, First Semester",
       "moduleId": "G7jX",
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
@@ -276,8 +307,8 @@
       ]
     },
     {
-      "aniListId": 182205,
-      "title": "That Time I Got Reincarnated as a Slime Season 4",
+      "aniListId": 180745,
+      "title": "Classroom of the Elite 4th Season: Second Year, First Semester",
       "moduleId": "jR5U5",
       "catalogPath": "Sources/English/018",
       "sourceName": "Senshi",
@@ -286,8 +317,8 @@
       ]
     },
     {
-      "aniListId": 182205,
-      "title": "That Time I Got Reincarnated as a Slime Season 4",
+      "aniListId": 180745,
+      "title": "Classroom of the Elite 4th Season: Second Year, First Semester",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/023",
       "sourceName": "Anikoto",
@@ -295,36 +326,6 @@
         "stream: extractStreamUrl timed out",
         "stream: extractStreamUrl timed out",
         "stream: extractStreamUrl timed out"
-      ]
-    },
-    {
-      "aniListId": 180745,
-      "title": "Classroom of the Elite 4th Season: Second Year, First Semester",
-      "moduleId": "G7jX",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Animetsu",
-      "errors": [
-        "media probe failed: host=swiftstream.top HTTP 500 media_host_error; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
-      ]
-    },
-    {
-      "aniListId": 180745,
-      "title": "Classroom of the Elite 4th Season: Second Year, First Semester",
-      "moduleId": "jR5U5",
-      "catalogPath": "Sources/English/018",
-      "sourceName": "Senshi",
-      "errors": [
-        "media probe failed: host=ninstream.com empty media response"
-      ]
-    },
-    {
-      "aniListId": 180745,
-      "title": "Classroom of the Elite 4th Season: Second Year, First Semester",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/023",
-      "sourceName": "Anikoto",
-      "errors": [
-        "implausible episode match: verified=12 available=12 expected<=14"
       ]
     },
     {
@@ -344,7 +345,27 @@
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
       "errors": [
-        "media probe budget exhausted: 15/15"
+        "implausible episode match: verified=1 available=1 expected<=26"
+      ]
+    },
+    {
+      "aniListId": 101922,
+      "title": "Demon Slayer: Kimetsu no Yaiba",
+      "moduleId": "jR5U5",
+      "catalogPath": "Sources/English/018",
+      "sourceName": "Senshi",
+      "errors": [
+        "implausible episode match: verified=11 available=11 expected<=26"
+      ]
+    },
+    {
+      "aniListId": 101922,
+      "title": "Demon Slayer: Kimetsu no Yaiba",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/023",
+      "sourceName": "Anikoto",
+      "errors": [
+        "implausible episode match: verified=1 available=1 expected<=26"
       ]
     },
     {
