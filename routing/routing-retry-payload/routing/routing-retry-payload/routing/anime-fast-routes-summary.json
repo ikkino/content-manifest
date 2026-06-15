@@ -1,49 +1,55 @@
 {
-  "generatedAt": "2026-06-15T08:17:05.218Z",
+  "generatedAt": "2026-06-14T10:17:08.009Z",
   "mediaRequested": 5,
   "categories": {
     "trendingNow": {
       "requested": 5,
-      "mediaChecked": 5,
-      "animeWithRoutes": 5
+      "mediaChecked": 21,
+      "animeWithRoutes": 18
     },
     "popularThisSeason": {
       "requested": 5,
-      "mediaChecked": 5,
-      "animeWithRoutes": 5
+      "mediaChecked": 22,
+      "animeWithRoutes": 22
     },
     "popularAllTime": {
       "requested": 5,
-      "mediaChecked": 5,
-      "animeWithRoutes": 5
+      "mediaChecked": 22,
+      "animeWithRoutes": 22
     }
   },
-  "mediaChecked": 60,
+  "mediaChecked": 52,
   "modulesChecked": 3,
-  "animeWithRoutes": 60,
-  "routeCount": 180,
+  "animeWithRoutes": 52,
+  "routeCount": 152,
   "refreshedAnime": 0,
   "mergeExisting": true,
-  "unresolvedAnime": 27,
-  "rejectedAttempts": 27,
+  "unresolvedAnime": 28,
+  "rejectedAttempts": 28,
   "rejectedAttemptSummary": {
     "byReason": {
-      "media_probe_failed": 13,
-      "stream_timeout": 6,
-      "media_probe_budget_exhausted": 5,
-      "episodes_timeout": 1,
-      "implausible_match": 1,
-      "host_cooldown_active": 1
+      "media_probe_failed": 12,
+      "stream_timeout": 7,
+      "media_probe_budget_exhausted": 4,
+      "host_cooldown_active": 3,
+      "implausible_match": 2
     },
     "topModules": [
       {
         "sourceName": "Animetsu",
         "count": 12,
         "reasons": {
-          "media_probe_failed": 6,
-          "episodes_timeout": 1,
-          "host_cooldown_active": 1,
+          "media_probe_failed": 5,
+          "host_cooldown_active": 3,
           "media_probe_budget_exhausted": 4
+        }
+      },
+      {
+        "sourceName": "Anikoto",
+        "count": 8,
+        "reasons": {
+          "stream_timeout": 7,
+          "implausible_match": 1
         }
       },
       {
@@ -51,14 +57,6 @@
         "count": 8,
         "reasons": {
           "media_probe_failed": 7,
-          "media_probe_budget_exhausted": 1
-        }
-      },
-      {
-        "sourceName": "Anikoto",
-        "count": 7,
-        "reasons": {
-          "stream_timeout": 6,
           "implausible_match": 1
         }
       }
@@ -68,8 +66,8 @@
   "mediaProbesUsed": 15,
   "hostHealth": {
     "successEvents": 0,
-    "failureEvents": 13,
-    "skippedByCooldown": 1,
+    "failureEvents": 12,
+    "skippedByCooldown": 3,
     "coolingDownHosts": 2
   },
   "failures": [
@@ -77,17 +75,17 @@
       "aniListId": 182300,
       "title": "Wistoria: Wand and Sword Season 2",
       "moduleId": "G7jX",
-      "catalogPath": "Sources/English/004",
+      "catalogPath": "Sources/English/003",
       "sourceName": "Animetsu",
       "errors": [
-        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
+        "media probe failed: host=swiftstream.top HTTP 400; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
       ]
     },
     {
       "aniListId": 182300,
       "title": "Wistoria: Wand and Sword Season 2",
       "moduleId": "jR5U5",
-      "catalogPath": "Sources/English/018",
+      "catalogPath": "Sources/English/015",
       "sourceName": "Senshi",
       "errors": [
         "media probe failed: host=ninstream.com empty media response"
@@ -97,39 +95,7 @@
       "aniListId": 182300,
       "title": "Wistoria: Wand and Sword Season 2",
       "moduleId": "jF12G",
-      "catalogPath": "Sources/English/023",
-      "sourceName": "Anikoto",
-      "errors": [
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out"
-      ]
-    },
-    {
-      "aniListId": 21,
-      "title": "ONE PIECE",
-      "moduleId": "G7jX",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Animetsu",
-      "errors": [
-        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
-      ]
-    },
-    {
-      "aniListId": 21,
-      "title": "ONE PIECE",
-      "moduleId": "jR5U5",
-      "catalogPath": "Sources/English/018",
-      "sourceName": "Senshi",
-      "errors": [
-        "media probe failed: host=ninstream.com empty media response"
-      ]
-    },
-    {
-      "aniListId": 21,
-      "title": "ONE PIECE",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/023",
+      "catalogPath": "Sources/English/019",
       "sourceName": "Anikoto",
       "errors": [
         "stream: extractStreamUrl timed out",
@@ -141,7 +107,7 @@
       "aniListId": 195600,
       "title": "Daemons of the Shadow Realm",
       "moduleId": "G7jX",
-      "catalogPath": "Sources/English/004",
+      "catalogPath": "Sources/English/003",
       "sourceName": "Animetsu",
       "errors": [
         "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
@@ -151,7 +117,7 @@
       "aniListId": 195600,
       "title": "Daemons of the Shadow Realm",
       "moduleId": "jR5U5",
-      "catalogPath": "Sources/English/018",
+      "catalogPath": "Sources/English/015",
       "sourceName": "Senshi",
       "errors": [
         "media probe failed: host=ninstream.com empty media response"
@@ -161,7 +127,71 @@
       "aniListId": 195600,
       "title": "Daemons of the Shadow Realm",
       "moduleId": "jF12G",
-      "catalogPath": "Sources/English/023",
+      "catalogPath": "Sources/English/019",
+      "sourceName": "Anikoto",
+      "errors": [
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 21,
+      "title": "ONE PIECE",
+      "moduleId": "G7jX",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "Animetsu",
+      "errors": [
+        "host cooldown active: swiftstream.top"
+      ]
+    },
+    {
+      "aniListId": 21,
+      "title": "ONE PIECE",
+      "moduleId": "jR5U5",
+      "catalogPath": "Sources/English/015",
+      "sourceName": "Senshi",
+      "errors": [
+        "implausible episode match: verified=1164 available=1164 expected<=1165"
+      ]
+    },
+    {
+      "aniListId": 21,
+      "title": "ONE PIECE",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/019",
+      "sourceName": "Anikoto",
+      "errors": [
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 182205,
+      "title": "That Time I Got Reincarnated as a Slime Season 4",
+      "moduleId": "G7jX",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "Animetsu",
+      "errors": [
+        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
+      ]
+    },
+    {
+      "aniListId": 182205,
+      "title": "That Time I Got Reincarnated as a Slime Season 4",
+      "moduleId": "jR5U5",
+      "catalogPath": "Sources/English/015",
+      "sourceName": "Senshi",
+      "errors": [
+        "media probe failed: host=ninstream.com empty media response"
+      ]
+    },
+    {
+      "aniListId": 182205,
+      "title": "That Time I Got Reincarnated as a Slime Season 4",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/019",
       "sourceName": "Anikoto",
       "errors": [
         "stream: extractStreamUrl timed out",
@@ -173,17 +203,17 @@
       "aniListId": 147105,
       "title": "Witch Hat Atelier",
       "moduleId": "G7jX",
-      "catalogPath": "Sources/English/004",
+      "catalogPath": "Sources/English/003",
       "sourceName": "Animetsu",
       "errors": [
-        "episodes: extractEpisodes timed out"
+        "host cooldown active: swiftstream.top"
       ]
     },
     {
       "aniListId": 147105,
       "title": "Witch Hat Atelier",
       "moduleId": "jR5U5",
-      "catalogPath": "Sources/English/018",
+      "catalogPath": "Sources/English/015",
       "sourceName": "Senshi",
       "errors": [
         "media probe failed: host=ninstream.com empty media response; host=ninstream.com empty media response"
@@ -193,39 +223,7 @@
       "aniListId": 147105,
       "title": "Witch Hat Atelier",
       "moduleId": "jF12G",
-      "catalogPath": "Sources/English/023",
-      "sourceName": "Anikoto",
-      "errors": [
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out"
-      ]
-    },
-    {
-      "aniListId": 182205,
-      "title": "That Time I Got Reincarnated as a Slime Season 4",
-      "moduleId": "G7jX",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Animetsu",
-      "errors": [
-        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
-      ]
-    },
-    {
-      "aniListId": 182205,
-      "title": "That Time I Got Reincarnated as a Slime Season 4",
-      "moduleId": "jR5U5",
-      "catalogPath": "Sources/English/018",
-      "sourceName": "Senshi",
-      "errors": [
-        "media probe failed: host=ninstream.com empty media response"
-      ]
-    },
-    {
-      "aniListId": 182205,
-      "title": "That Time I Got Reincarnated as a Slime Season 4",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/023",
+      "catalogPath": "Sources/English/019",
       "sourceName": "Anikoto",
       "errors": [
         "stream: extractStreamUrl timed out",
@@ -237,7 +235,7 @@
       "aniListId": 189046,
       "title": "Re:ZERO -Starting Life in Another World- Season 4",
       "moduleId": "G7jX",
-      "catalogPath": "Sources/English/004",
+      "catalogPath": "Sources/English/003",
       "sourceName": "Animetsu",
       "errors": [
         "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
@@ -247,7 +245,7 @@
       "aniListId": 189046,
       "title": "Re:ZERO -Starting Life in Another World- Season 4",
       "moduleId": "jR5U5",
-      "catalogPath": "Sources/English/018",
+      "catalogPath": "Sources/English/015",
       "sourceName": "Senshi",
       "errors": [
         "media probe failed: host=ninstream.com empty media response; host=ninstream.com empty media response"
@@ -257,7 +255,7 @@
       "aniListId": 189046,
       "title": "Re:ZERO -Starting Life in Another World- Season 4",
       "moduleId": "jF12G",
-      "catalogPath": "Sources/English/023",
+      "catalogPath": "Sources/English/019",
       "sourceName": "Anikoto",
       "errors": [
         "stream: extractStreamUrl timed out",
@@ -269,7 +267,7 @@
       "aniListId": 180745,
       "title": "Classroom of the Elite 4th Season: Second Year, First Semester",
       "moduleId": "G7jX",
-      "catalogPath": "Sources/English/004",
+      "catalogPath": "Sources/English/003",
       "sourceName": "Animetsu",
       "errors": [
         "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
@@ -279,7 +277,7 @@
       "aniListId": 180745,
       "title": "Classroom of the Elite 4th Season: Second Year, First Semester",
       "moduleId": "jR5U5",
-      "catalogPath": "Sources/English/018",
+      "catalogPath": "Sources/English/015",
       "sourceName": "Senshi",
       "errors": [
         "media probe failed: host=ninstream.com empty media response"
@@ -289,7 +287,7 @@
       "aniListId": 180745,
       "title": "Classroom of the Elite 4th Season: Second Year, First Semester",
       "moduleId": "jF12G",
-      "catalogPath": "Sources/English/023",
+      "catalogPath": "Sources/English/019",
       "sourceName": "Anikoto",
       "errors": [
         "implausible episode match: verified=12 available=12 expected<=14"
@@ -299,7 +297,7 @@
       "aniListId": 16498,
       "title": "Attack on Titan",
       "moduleId": "G7jX",
-      "catalogPath": "Sources/English/004",
+      "catalogPath": "Sources/English/003",
       "sourceName": "Animetsu",
       "errors": [
         "host cooldown active: swiftstream.top"
@@ -309,17 +307,29 @@
       "aniListId": 16498,
       "title": "Attack on Titan",
       "moduleId": "jR5U5",
-      "catalogPath": "Sources/English/018",
+      "catalogPath": "Sources/English/015",
       "sourceName": "Senshi",
       "errors": [
-        "media probe budget exhausted: 15/15"
+        "media probe failed: host=ninstream.com empty media response"
+      ]
+    },
+    {
+      "aniListId": 16498,
+      "title": "Attack on Titan",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/019",
+      "sourceName": "Anikoto",
+      "errors": [
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out"
       ]
     },
     {
       "aniListId": 101922,
       "title": "Demon Slayer: Kimetsu no Yaiba",
       "moduleId": "G7jX",
-      "catalogPath": "Sources/English/004",
+      "catalogPath": "Sources/English/003",
       "sourceName": "Animetsu",
       "errors": [
         "media probe budget exhausted: 15/15"
@@ -329,7 +339,7 @@
       "aniListId": 113415,
       "title": "JUJUTSU KAISEN",
       "moduleId": "G7jX",
-      "catalogPath": "Sources/English/004",
+      "catalogPath": "Sources/English/003",
       "sourceName": "Animetsu",
       "errors": [
         "media probe budget exhausted: 15/15"
@@ -339,7 +349,7 @@
       "aniListId": 1535,
       "title": "Death Note",
       "moduleId": "G7jX",
-      "catalogPath": "Sources/English/004",
+      "catalogPath": "Sources/English/003",
       "sourceName": "Animetsu",
       "errors": [
         "media probe budget exhausted: 15/15"
@@ -349,7 +359,7 @@
       "aniListId": 21459,
       "title": "My Hero Academia",
       "moduleId": "G7jX",
-      "catalogPath": "Sources/English/004",
+      "catalogPath": "Sources/English/003",
       "sourceName": "Animetsu",
       "errors": [
         "media probe budget exhausted: 15/15"
