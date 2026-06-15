@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-15T20:17:05.268Z",
+  "generatedAt": "2026-06-15T21:17:07.492Z",
   "mediaRequested": 5,
   "categories": {
     "trendingNow": {
@@ -24,31 +24,31 @@
   "routeCount": 250,
   "refreshedAnime": 0,
   "mergeExisting": true,
-  "unresolvedAnime": 29,
-  "rejectedAttempts": 29,
+  "unresolvedAnime": 30,
+  "rejectedAttempts": 30,
   "rejectedAttemptSummary": {
     "byReason": {
-      "media_probe_failed": 14,
+      "media_probe_failed": 15,
       "stream_timeout": 7,
       "media_probe_budget_exhausted": 7,
-      "media_host_error": 1
+      "implausible_match": 1
     },
     "topModules": [
       {
         "sourceName": "Animetsu",
         "count": 14,
         "reasons": {
-          "media_host_error": 1,
-          "media_probe_failed": 7,
-          "media_probe_budget_exhausted": 6
+          "media_probe_failed": 8,
+          "media_probe_budget_exhausted": 5,
+          "implausible_match": 1
         }
       },
       {
         "sourceName": "Senshi",
-        "count": 8,
+        "count": 9,
         "reasons": {
           "media_probe_failed": 7,
-          "media_probe_budget_exhausted": 1
+          "media_probe_budget_exhausted": 2
         }
       },
       {
@@ -76,7 +76,7 @@
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
       "errors": [
-        "media probe failed: host=swiftstream.top HTTP 500 media_host_error; host=swiftstream.top HTTP 500 media_host_error; host=swiftstream.top empty media response; host=swiftstream.top HTTP 400; host=swiftstream.top empty media response"
+        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
       ]
     },
     {
@@ -349,6 +349,16 @@
       "moduleId": "G7jX",
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
+      "errors": [
+        "implausible episode match: verified=1 available=1 expected<=24"
+      ]
+    },
+    {
+      "aniListId": 113415,
+      "title": "JUJUTSU KAISEN",
+      "moduleId": "jR5U5",
+      "catalogPath": "Sources/English/018",
+      "sourceName": "Senshi",
       "errors": [
         "media probe budget exhausted: 15/15"
       ]
