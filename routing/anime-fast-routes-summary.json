@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-15T02:17:04.031Z",
+  "generatedAt": "2026-06-15T03:17:07.674Z",
   "mediaRequested": 5,
   "categories": {
     "trendingNow": {
@@ -24,24 +24,34 @@
   "routeCount": 180,
   "refreshedAnime": 0,
   "mergeExisting": true,
-  "unresolvedAnime": 29,
-  "rejectedAttempts": 29,
+  "unresolvedAnime": 30,
+  "rejectedAttempts": 30,
   "rejectedAttemptSummary": {
     "byReason": {
-      "media_probe_failed": 14,
+      "media_probe_failed": 13,
       "stream_timeout": 7,
       "media_probe_budget_exhausted": 5,
-      "implausible_match": 2,
-      "route_too_slow": 1
+      "implausible_match": 3,
+      "host_cooldown_active": 2
     },
     "topModules": [
       {
         "sourceName": "Animetsu",
         "count": 13,
         "reasons": {
+          "media_probe_failed": 6,
+          "implausible_match": 1,
+          "host_cooldown_active": 2,
+          "media_probe_budget_exhausted": 4
+        }
+      },
+      {
+        "sourceName": "Senshi",
+        "count": 9,
+        "reasons": {
           "media_probe_failed": 7,
-          "route_too_slow": 1,
-          "media_probe_budget_exhausted": 5
+          "implausible_match": 1,
+          "media_probe_budget_exhausted": 1
         }
       },
       {
@@ -51,14 +61,6 @@
           "stream_timeout": 7,
           "implausible_match": 1
         }
-      },
-      {
-        "sourceName": "Senshi",
-        "count": 8,
-        "reasons": {
-          "media_probe_failed": 7,
-          "implausible_match": 1
-        }
       }
     ]
   },
@@ -66,8 +68,8 @@
   "mediaProbesUsed": 15,
   "hostHealth": {
     "successEvents": 0,
-    "failureEvents": 14,
-    "skippedByCooldown": 0,
+    "failureEvents": 13,
+    "skippedByCooldown": 2,
     "coolingDownHosts": 2
   },
   "failures": [
@@ -110,7 +112,7 @@
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
       "errors": [
-        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
+        "implausible episode match: verified=1 available=1 expected<=1166"
       ]
     },
     {
@@ -238,7 +240,7 @@
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
       "errors": [
-        "stored route too slow: 43581ms > 12000ms"
+        "host cooldown active: swiftstream.top"
       ]
     },
     {
@@ -331,6 +333,16 @@
       "moduleId": "G7jX",
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
+      "errors": [
+        "host cooldown active: swiftstream.top"
+      ]
+    },
+    {
+      "aniListId": 16498,
+      "title": "Attack on Titan",
+      "moduleId": "jR5U5",
+      "catalogPath": "Sources/English/018",
+      "sourceName": "Senshi",
       "errors": [
         "media probe budget exhausted: 15/15"
       ]
