@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-15T22:17:04.224Z",
+  "generatedAt": "2026-06-15T23:17:06.516Z",
   "mediaRequested": 5,
   "categories": {
     "trendingNow": {
@@ -24,11 +24,11 @@
   "routeCount": 250,
   "refreshedAnime": 0,
   "mergeExisting": true,
-  "unresolvedAnime": 25,
-  "rejectedAttempts": 25,
+  "unresolvedAnime": 24,
+  "rejectedAttempts": 24,
   "rejectedAttemptSummary": {
     "byReason": {
-      "media_probe_failed": 10,
+      "media_probe_failed": 9,
       "media_probe_budget_exhausted": 9,
       "media_host_blocked": 5,
       "stream_timeout": 1
@@ -38,17 +38,9 @@
         "sourceName": "Animetsu",
         "count": 14,
         "reasons": {
-          "media_probe_failed": 5,
-          "media_probe_budget_exhausted": 8,
-          "stream_timeout": 1
-        }
-      },
-      {
-        "sourceName": "Senshi",
-        "count": 6,
-        "reasons": {
-          "media_probe_failed": 5,
-          "media_probe_budget_exhausted": 1
+          "media_probe_failed": 4,
+          "stream_timeout": 1,
+          "media_probe_budget_exhausted": 9
         }
       },
       {
@@ -57,6 +49,13 @@
         "reasons": {
           "media_host_blocked": 5
         }
+      },
+      {
+        "sourceName": "Senshi",
+        "count": 5,
+        "reasons": {
+          "media_probe_failed": 5
+        }
       }
     ]
   },
@@ -64,7 +63,7 @@
   "mediaProbesUsed": 15,
   "hostHealth": {
     "successEvents": 0,
-    "failureEvents": 15,
+    "failureEvents": 14,
     "skippedByCooldown": 0,
     "coolingDownHosts": 3
   },
@@ -130,8 +129,8 @@
       ]
     },
     {
-      "aniListId": 197824,
-      "title": "Farming Life in Another World 2",
+      "aniListId": 182300,
+      "title": "Wistoria: Wand and Sword Season 2",
       "moduleId": "G7jX",
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
@@ -140,8 +139,8 @@
       ]
     },
     {
-      "aniListId": 197824,
-      "title": "Farming Life in Another World 2",
+      "aniListId": 182300,
+      "title": "Wistoria: Wand and Sword Season 2",
       "moduleId": "jR5U5",
       "catalogPath": "Sources/English/018",
       "sourceName": "Senshi",
@@ -150,8 +149,8 @@
       ]
     },
     {
-      "aniListId": 197824,
-      "title": "Farming Life in Another World 2",
+      "aniListId": 182300,
+      "title": "Wistoria: Wand and Sword Season 2",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/023",
       "sourceName": "Anikoto",
@@ -160,8 +159,8 @@
       ]
     },
     {
-      "aniListId": 182300,
-      "title": "Wistoria: Wand and Sword Season 2",
+      "aniListId": 197824,
+      "title": "Farming Life in Another World 2",
       "moduleId": "G7jX",
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
@@ -170,8 +169,8 @@
       ]
     },
     {
-      "aniListId": 182300,
-      "title": "Wistoria: Wand and Sword Season 2",
+      "aniListId": 197824,
+      "title": "Farming Life in Another World 2",
       "moduleId": "jR5U5",
       "catalogPath": "Sources/English/018",
       "sourceName": "Senshi",
@@ -180,8 +179,8 @@
       ]
     },
     {
-      "aniListId": 182300,
-      "title": "Wistoria: Wand and Sword Season 2",
+      "aniListId": 197824,
+      "title": "Farming Life in Another World 2",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/023",
       "sourceName": "Anikoto",
@@ -196,7 +195,7 @@
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
       "errors": [
-        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
+        "stream: extractStreamUrl timed out"
       ]
     },
     {
@@ -295,17 +294,6 @@
       "moduleId": "G7jX",
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
-      "errors": [
-        "stream: extractStreamUrl timed out",
-        "episodes: Unexpected token '<', \"<!doctype \"... is not valid JSON"
-      ]
-    },
-    {
-      "aniListId": 1535,
-      "title": "Death Note",
-      "moduleId": "jR5U5",
-      "catalogPath": "Sources/English/018",
-      "sourceName": "Senshi",
       "errors": [
         "media probe budget exhausted: 15/15"
       ]
