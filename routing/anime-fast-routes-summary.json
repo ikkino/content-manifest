@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-15T05:17:07.297Z",
+  "generatedAt": "2026-06-15T06:17:04.130Z",
   "mediaRequested": 5,
   "categories": {
     "trendingNow": {
@@ -32,7 +32,7 @@
       "stream_timeout": 7,
       "media_probe_budget_exhausted": 5,
       "implausible_match": 2,
-      "route_too_slow": 1
+      "host_cooldown_active": 1
     },
     "topModules": [
       {
@@ -40,7 +40,7 @@
         "count": 13,
         "reasons": {
           "media_probe_failed": 7,
-          "route_too_slow": 1,
+          "host_cooldown_active": 1,
           "media_probe_budget_exhausted": 5
         }
       },
@@ -67,7 +67,7 @@
   "hostHealth": {
     "successEvents": 0,
     "failureEvents": 14,
-    "skippedByCooldown": 0,
+    "skippedByCooldown": 1,
     "coolingDownHosts": 2
   },
   "failures": [
@@ -168,38 +168,6 @@
       ]
     },
     {
-      "aniListId": 182205,
-      "title": "That Time I Got Reincarnated as a Slime Season 4",
-      "moduleId": "G7jX",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Animetsu",
-      "errors": [
-        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
-      ]
-    },
-    {
-      "aniListId": 182205,
-      "title": "That Time I Got Reincarnated as a Slime Season 4",
-      "moduleId": "jR5U5",
-      "catalogPath": "Sources/English/018",
-      "sourceName": "Senshi",
-      "errors": [
-        "media probe failed: host=ninstream.com empty media response"
-      ]
-    },
-    {
-      "aniListId": 182205,
-      "title": "That Time I Got Reincarnated as a Slime Season 4",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/023",
-      "sourceName": "Anikoto",
-      "errors": [
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out"
-      ]
-    },
-    {
       "aniListId": 206914,
       "title": "NIPPON SANGOKU: The Three Nations of the Crimson Sun",
       "moduleId": "G7jX",
@@ -232,13 +200,45 @@
       ]
     },
     {
+      "aniListId": 182205,
+      "title": "That Time I Got Reincarnated as a Slime Season 4",
+      "moduleId": "G7jX",
+      "catalogPath": "Sources/English/004",
+      "sourceName": "Animetsu",
+      "errors": [
+        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
+      ]
+    },
+    {
+      "aniListId": 182205,
+      "title": "That Time I Got Reincarnated as a Slime Season 4",
+      "moduleId": "jR5U5",
+      "catalogPath": "Sources/English/018",
+      "sourceName": "Senshi",
+      "errors": [
+        "media probe failed: host=ninstream.com empty media response"
+      ]
+    },
+    {
+      "aniListId": 182205,
+      "title": "That Time I Got Reincarnated as a Slime Season 4",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/023",
+      "sourceName": "Anikoto",
+      "errors": [
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
       "aniListId": 147105,
       "title": "Witch Hat Atelier",
       "moduleId": "G7jX",
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
       "errors": [
-        "stored route too slow: 43040ms > 12000ms"
+        "host cooldown active: swiftstream.top"
       ]
     },
     {
