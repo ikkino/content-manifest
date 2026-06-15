@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-15T21:17:07.492Z",
+  "generatedAt": "2026-06-15T22:17:04.224Z",
   "mediaRequested": 5,
   "categories": {
     "trendingNow": {
@@ -24,38 +24,38 @@
   "routeCount": 250,
   "refreshedAnime": 0,
   "mergeExisting": true,
-  "unresolvedAnime": 30,
-  "rejectedAttempts": 30,
+  "unresolvedAnime": 25,
+  "rejectedAttempts": 25,
   "rejectedAttemptSummary": {
     "byReason": {
-      "media_probe_failed": 15,
-      "stream_timeout": 7,
-      "media_probe_budget_exhausted": 7,
-      "implausible_match": 1
+      "media_probe_failed": 10,
+      "media_probe_budget_exhausted": 9,
+      "media_host_blocked": 5,
+      "stream_timeout": 1
     },
     "topModules": [
       {
         "sourceName": "Animetsu",
         "count": 14,
         "reasons": {
-          "media_probe_failed": 8,
-          "media_probe_budget_exhausted": 5,
-          "implausible_match": 1
+          "media_probe_failed": 5,
+          "media_probe_budget_exhausted": 8,
+          "stream_timeout": 1
         }
       },
       {
         "sourceName": "Senshi",
-        "count": 9,
+        "count": 6,
         "reasons": {
-          "media_probe_failed": 7,
-          "media_probe_budget_exhausted": 2
+          "media_probe_failed": 5,
+          "media_probe_budget_exhausted": 1
         }
       },
       {
         "sourceName": "Anikoto",
-        "count": 7,
+        "count": 5,
         "reasons": {
-          "stream_timeout": 7
+          "media_host_blocked": 5
         }
       }
     ]
@@ -66,7 +66,7 @@
     "successEvents": 0,
     "failureEvents": 15,
     "skippedByCooldown": 0,
-    "coolingDownHosts": 2
+    "coolingDownHosts": 3
   },
   "failures": [
     {
@@ -96,9 +96,7 @@
       "catalogPath": "Sources/English/023",
       "sourceName": "Anikoto",
       "errors": [
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out"
+        "media probe failed: host=cdn.mewstream.buzz HTTP 403; host=cdn.mewstream.buzz HTTP 403; host=fxpy7.watching.onl empty media response; host=fxpy7.watching.onl empty media response"
       ]
     },
     {
@@ -128,9 +126,7 @@
       "catalogPath": "Sources/English/023",
       "sourceName": "Anikoto",
       "errors": [
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out"
+        "media probe failed: host=cdn.mewstream.buzz HTTP 403; host=fxpy7.watching.onl empty media response"
       ]
     },
     {
@@ -160,9 +156,7 @@
       "catalogPath": "Sources/English/023",
       "sourceName": "Anikoto",
       "errors": [
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out"
+        "media probe failed: host=cdn.mewstream.buzz HTTP 403; host=fxpy7.watching.onl empty media response"
       ]
     },
     {
@@ -192,9 +186,7 @@
       "catalogPath": "Sources/English/023",
       "sourceName": "Anikoto",
       "errors": [
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out"
+        "media probe failed: host=cdn.mewstream.buzz HTTP 403; host=fxpy7.watching.onl empty media response"
       ]
     },
     {
@@ -224,9 +216,7 @@
       "catalogPath": "Sources/English/023",
       "sourceName": "Anikoto",
       "errors": [
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out"
+        "media probe failed: host=cdn.mewstream.buzz HTTP 403; host=fxpy7.watching.onl empty media response"
       ]
     },
     {
@@ -236,29 +226,7 @@
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
       "errors": [
-        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
-      ]
-    },
-    {
-      "aniListId": 189046,
-      "title": "Re:ZERO -Starting Life in Another World- Season 4",
-      "moduleId": "jR5U5",
-      "catalogPath": "Sources/English/018",
-      "sourceName": "Senshi",
-      "errors": [
-        "media probe failed: host=ninstream.com empty media response; host=ninstream.com empty media response"
-      ]
-    },
-    {
-      "aniListId": 189046,
-      "title": "Re:ZERO -Starting Life in Another World- Season 4",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/023",
-      "sourceName": "Anikoto",
-      "errors": [
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out"
+        "media probe budget exhausted: 15/15"
       ]
     },
     {
@@ -268,29 +236,7 @@
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
       "errors": [
-        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
-      ]
-    },
-    {
-      "aniListId": 195600,
-      "title": "Daemons of the Shadow Realm",
-      "moduleId": "jR5U5",
-      "catalogPath": "Sources/English/018",
-      "sourceName": "Senshi",
-      "errors": [
-        "media probe failed: host=ninstream.com empty media response"
-      ]
-    },
-    {
-      "aniListId": 195600,
-      "title": "Daemons of the Shadow Realm",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/023",
-      "sourceName": "Anikoto",
-      "errors": [
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out"
+        "media probe budget exhausted: 15/15"
       ]
     },
     {
@@ -299,16 +245,6 @@
       "moduleId": "G7jX",
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
-      "errors": [
-        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
-      ]
-    },
-    {
-      "aniListId": 182205,
-      "title": "That Time I Got Reincarnated as a Slime Season 4",
-      "moduleId": "jR5U5",
-      "catalogPath": "Sources/English/018",
-      "sourceName": "Senshi",
       "errors": [
         "media probe budget exhausted: 15/15"
       ]
@@ -350,16 +286,6 @@
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
       "errors": [
-        "implausible episode match: verified=1 available=1 expected<=24"
-      ]
-    },
-    {
-      "aniListId": 113415,
-      "title": "JUJUTSU KAISEN",
-      "moduleId": "jR5U5",
-      "catalogPath": "Sources/English/018",
-      "sourceName": "Senshi",
-      "errors": [
         "media probe budget exhausted: 15/15"
       ]
     },
@@ -369,6 +295,17 @@
       "moduleId": "G7jX",
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
+      "errors": [
+        "stream: extractStreamUrl timed out",
+        "episodes: Unexpected token '<', \"<!doctype \"... is not valid JSON"
+      ]
+    },
+    {
+      "aniListId": 1535,
+      "title": "Death Note",
+      "moduleId": "jR5U5",
+      "catalogPath": "Sources/English/018",
+      "sourceName": "Senshi",
       "errors": [
         "media probe budget exhausted: 15/15"
       ]
