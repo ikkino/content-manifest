@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-15T11:17:06.434Z",
+  "generatedAt": "2026-06-15T12:17:04.269Z",
   "mediaRequested": 5,
   "categories": {
     "trendingNow": {
@@ -24,26 +24,25 @@
   "routeCount": 250,
   "refreshedAnime": 0,
   "mergeExisting": true,
-  "unresolvedAnime": 27,
-  "rejectedAttempts": 27,
+  "unresolvedAnime": 28,
+  "rejectedAttempts": 28,
   "rejectedAttemptSummary": {
     "byReason": {
       "media_probe_failed": 13,
-      "stream_timeout": 6,
-      "media_probe_budget_exhausted": 5,
-      "route_too_slow": 1,
-      "implausible_match": 1,
+      "stream_timeout": 7,
+      "media_probe_budget_exhausted": 6,
+      "media_host_error": 1,
       "host_cooldown_active": 1
     },
     "topModules": [
       {
         "sourceName": "Animetsu",
-        "count": 12,
+        "count": 13,
         "reasons": {
           "media_probe_failed": 6,
-          "route_too_slow": 1,
+          "media_host_error": 1,
           "host_cooldown_active": 1,
-          "media_probe_budget_exhausted": 4
+          "media_probe_budget_exhausted": 5
         }
       },
       {
@@ -58,8 +57,7 @@
         "sourceName": "Anikoto",
         "count": 7,
         "reasons": {
-          "stream_timeout": 6,
-          "implausible_match": 1
+          "stream_timeout": 7
         }
       }
     ]
@@ -68,7 +66,7 @@
   "mediaProbesUsed": 15,
   "hostHealth": {
     "successEvents": 0,
-    "failureEvents": 13,
+    "failureEvents": 14,
     "skippedByCooldown": 1,
     "coolingDownHosts": 2
   },
@@ -202,13 +200,45 @@
       ]
     },
     {
+      "aniListId": 206914,
+      "title": "NIPPON SANGOKU: The Three Nations of the Crimson Sun",
+      "moduleId": "G7jX",
+      "catalogPath": "Sources/English/004",
+      "sourceName": "Animetsu",
+      "errors": [
+        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top HTTP 500 media_host_error; host=swiftstream.top empty media response; host=swiftstream.top HTTP 400; host=swiftstream.top empty media response"
+      ]
+    },
+    {
+      "aniListId": 206914,
+      "title": "NIPPON SANGOKU: The Three Nations of the Crimson Sun",
+      "moduleId": "jR5U5",
+      "catalogPath": "Sources/English/018",
+      "sourceName": "Senshi",
+      "errors": [
+        "media probe failed: host=ninstream.com empty media response; host=ninstream.com empty media response"
+      ]
+    },
+    {
+      "aniListId": 206914,
+      "title": "NIPPON SANGOKU: The Three Nations of the Crimson Sun",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/023",
+      "sourceName": "Anikoto",
+      "errors": [
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
       "aniListId": 147105,
       "title": "Witch Hat Atelier",
       "moduleId": "G7jX",
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
       "errors": [
-        "stored route too slow: 42721ms > 12000ms"
+        "host cooldown active: swiftstream.top"
       ]
     },
     {
@@ -282,17 +312,7 @@
       "catalogPath": "Sources/English/018",
       "sourceName": "Senshi",
       "errors": [
-        "media probe failed: host=ninstream.com empty media response"
-      ]
-    },
-    {
-      "aniListId": 180745,
-      "title": "Classroom of the Elite 4th Season: Second Year, First Semester",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/023",
-      "sourceName": "Anikoto",
-      "errors": [
-        "implausible episode match: verified=12 available=12 expected<=14"
+        "media probe budget exhausted: 15/15"
       ]
     },
     {
@@ -301,16 +321,6 @@
       "moduleId": "G7jX",
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
-      "errors": [
-        "host cooldown active: swiftstream.top"
-      ]
-    },
-    {
-      "aniListId": 16498,
-      "title": "Attack on Titan",
-      "moduleId": "jR5U5",
-      "catalogPath": "Sources/English/018",
-      "sourceName": "Senshi",
       "errors": [
         "media probe budget exhausted: 15/15"
       ]
