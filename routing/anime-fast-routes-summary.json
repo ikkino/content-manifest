@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-15T06:17:04.130Z",
+  "generatedAt": "2026-06-15T07:17:06.102Z",
   "mediaRequested": 5,
   "categories": {
     "trendingNow": {
@@ -24,14 +24,13 @@
   "routeCount": 180,
   "refreshedAnime": 0,
   "mergeExisting": true,
-  "unresolvedAnime": 29,
-  "rejectedAttempts": 29,
+  "unresolvedAnime": 28,
+  "rejectedAttempts": 28,
   "rejectedAttemptSummary": {
     "byReason": {
       "media_probe_failed": 14,
       "stream_timeout": 7,
-      "media_probe_budget_exhausted": 5,
-      "implausible_match": 2,
+      "media_probe_budget_exhausted": 6,
       "host_cooldown_active": 1
     },
     "topModules": [
@@ -45,19 +44,18 @@
         }
       },
       {
-        "sourceName": "Anikoto",
-        "count": 8,
-        "reasons": {
-          "stream_timeout": 7,
-          "implausible_match": 1
-        }
-      },
-      {
         "sourceName": "Senshi",
         "count": 8,
         "reasons": {
           "media_probe_failed": 7,
-          "implausible_match": 1
+          "media_probe_budget_exhausted": 1
+        }
+      },
+      {
+        "sourceName": "Anikoto",
+        "count": 7,
+        "reasons": {
+          "stream_timeout": 7
         }
       }
     ]
@@ -120,7 +118,7 @@
       "catalogPath": "Sources/English/018",
       "sourceName": "Senshi",
       "errors": [
-        "implausible episode match: verified=1164 available=1164 expected<=1166"
+        "media probe failed: host=ninstream.com empty media response"
       ]
     },
     {
@@ -312,17 +310,7 @@
       "catalogPath": "Sources/English/018",
       "sourceName": "Senshi",
       "errors": [
-        "media probe failed: host=ninstream.com empty media response"
-      ]
-    },
-    {
-      "aniListId": 180745,
-      "title": "Classroom of the Elite 4th Season: Second Year, First Semester",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/023",
-      "sourceName": "Anikoto",
-      "errors": [
-        "implausible episode match: verified=12 available=12 expected<=14"
+        "media probe budget exhausted: 15/15"
       ]
     },
     {
