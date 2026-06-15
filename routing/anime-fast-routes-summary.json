@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-15T12:17:04.269Z",
+  "generatedAt": "2026-06-15T13:17:07.357Z",
   "mediaRequested": 5,
   "categories": {
     "trendingNow": {
@@ -24,40 +24,42 @@
   "routeCount": 250,
   "refreshedAnime": 0,
   "mergeExisting": true,
-  "unresolvedAnime": 28,
-  "rejectedAttempts": 28,
+  "unresolvedAnime": 29,
+  "rejectedAttempts": 29,
   "rejectedAttemptSummary": {
     "byReason": {
       "media_probe_failed": 13,
       "stream_timeout": 7,
-      "media_probe_budget_exhausted": 6,
-      "media_host_error": 1,
-      "host_cooldown_active": 1
+      "media_probe_budget_exhausted": 5,
+      "implausible_match": 2,
+      "host_cooldown_active": 1,
+      "media_host_error": 1
     },
     "topModules": [
       {
         "sourceName": "Animetsu",
         "count": 13,
         "reasons": {
-          "media_probe_failed": 6,
-          "media_host_error": 1,
+          "implausible_match": 1,
+          "media_probe_failed": 5,
           "host_cooldown_active": 1,
+          "media_host_error": 1,
           "media_probe_budget_exhausted": 5
+        }
+      },
+      {
+        "sourceName": "Anikoto",
+        "count": 8,
+        "reasons": {
+          "stream_timeout": 7,
+          "implausible_match": 1
         }
       },
       {
         "sourceName": "Senshi",
         "count": 8,
         "reasons": {
-          "media_probe_failed": 7,
-          "media_probe_budget_exhausted": 1
-        }
-      },
-      {
-        "sourceName": "Anikoto",
-        "count": 7,
-        "reasons": {
-          "stream_timeout": 7
+          "media_probe_failed": 8
         }
       }
     ]
@@ -78,7 +80,7 @@
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
       "errors": [
-        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
+        "implausible episode match: verified=1 available=1 expected<=1166"
       ]
     },
     {
@@ -158,70 +160,6 @@
     {
       "aniListId": 195600,
       "title": "Daemons of the Shadow Realm",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/023",
-      "sourceName": "Anikoto",
-      "errors": [
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out"
-      ]
-    },
-    {
-      "aniListId": 182205,
-      "title": "That Time I Got Reincarnated as a Slime Season 4",
-      "moduleId": "G7jX",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Animetsu",
-      "errors": [
-        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
-      ]
-    },
-    {
-      "aniListId": 182205,
-      "title": "That Time I Got Reincarnated as a Slime Season 4",
-      "moduleId": "jR5U5",
-      "catalogPath": "Sources/English/018",
-      "sourceName": "Senshi",
-      "errors": [
-        "media probe failed: host=ninstream.com empty media response"
-      ]
-    },
-    {
-      "aniListId": 182205,
-      "title": "That Time I Got Reincarnated as a Slime Season 4",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/023",
-      "sourceName": "Anikoto",
-      "errors": [
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out"
-      ]
-    },
-    {
-      "aniListId": 206914,
-      "title": "NIPPON SANGOKU: The Three Nations of the Crimson Sun",
-      "moduleId": "G7jX",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Animetsu",
-      "errors": [
-        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top HTTP 500 media_host_error; host=swiftstream.top empty media response; host=swiftstream.top HTTP 400; host=swiftstream.top empty media response"
-      ]
-    },
-    {
-      "aniListId": 206914,
-      "title": "NIPPON SANGOKU: The Three Nations of the Crimson Sun",
-      "moduleId": "jR5U5",
-      "catalogPath": "Sources/English/018",
-      "sourceName": "Senshi",
-      "errors": [
-        "media probe failed: host=ninstream.com empty media response; host=ninstream.com empty media response"
-      ]
-    },
-    {
-      "aniListId": 206914,
-      "title": "NIPPON SANGOKU: The Three Nations of the Crimson Sun",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/023",
       "sourceName": "Anikoto",
@@ -264,6 +202,38 @@
       ]
     },
     {
+      "aniListId": 206914,
+      "title": "NIPPON SANGOKU: The Three Nations of the Crimson Sun",
+      "moduleId": "G7jX",
+      "catalogPath": "Sources/English/004",
+      "sourceName": "Animetsu",
+      "errors": [
+        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top HTTP 500 media_host_error; host=swiftstream.top empty media response; host=swiftstream.top HTTP 400; host=swiftstream.top empty media response"
+      ]
+    },
+    {
+      "aniListId": 206914,
+      "title": "NIPPON SANGOKU: The Three Nations of the Crimson Sun",
+      "moduleId": "jR5U5",
+      "catalogPath": "Sources/English/018",
+      "sourceName": "Senshi",
+      "errors": [
+        "media probe failed: host=ninstream.com empty media response; host=ninstream.com empty media response"
+      ]
+    },
+    {
+      "aniListId": 206914,
+      "title": "NIPPON SANGOKU: The Three Nations of the Crimson Sun",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/023",
+      "sourceName": "Anikoto",
+      "errors": [
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
       "aniListId": 189046,
       "title": "Re:ZERO -Starting Life in Another World- Season 4",
       "moduleId": "G7jX",
@@ -296,6 +266,38 @@
       ]
     },
     {
+      "aniListId": 182205,
+      "title": "That Time I Got Reincarnated as a Slime Season 4",
+      "moduleId": "G7jX",
+      "catalogPath": "Sources/English/004",
+      "sourceName": "Animetsu",
+      "errors": [
+        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
+      ]
+    },
+    {
+      "aniListId": 182205,
+      "title": "That Time I Got Reincarnated as a Slime Season 4",
+      "moduleId": "jR5U5",
+      "catalogPath": "Sources/English/018",
+      "sourceName": "Senshi",
+      "errors": [
+        "media probe failed: host=ninstream.com empty media response"
+      ]
+    },
+    {
+      "aniListId": 182205,
+      "title": "That Time I Got Reincarnated as a Slime Season 4",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/023",
+      "sourceName": "Anikoto",
+      "errors": [
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
       "aniListId": 180745,
       "title": "Classroom of the Elite 4th Season: Second Year, First Semester",
       "moduleId": "G7jX",
@@ -312,7 +314,17 @@
       "catalogPath": "Sources/English/018",
       "sourceName": "Senshi",
       "errors": [
-        "media probe budget exhausted: 15/15"
+        "media probe failed: host=ninstream.com empty media response"
+      ]
+    },
+    {
+      "aniListId": 180745,
+      "title": "Classroom of the Elite 4th Season: Second Year, First Semester",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/023",
+      "sourceName": "Anikoto",
+      "errors": [
+        "implausible episode match: verified=12 available=12 expected<=14"
       ]
     },
     {
