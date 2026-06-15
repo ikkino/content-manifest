@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-15T01:17:07.860Z",
+  "generatedAt": "2026-06-15T02:17:04.031Z",
   "mediaRequested": 5,
   "categories": {
     "trendingNow": {
@@ -32,7 +32,7 @@
       "stream_timeout": 7,
       "media_probe_budget_exhausted": 5,
       "implausible_match": 2,
-      "host_cooldown_active": 1
+      "route_too_slow": 1
     },
     "topModules": [
       {
@@ -40,7 +40,7 @@
         "count": 13,
         "reasons": {
           "media_probe_failed": 7,
-          "host_cooldown_active": 1,
+          "route_too_slow": 1,
           "media_probe_budget_exhausted": 5
         }
       },
@@ -67,7 +67,7 @@
   "hostHealth": {
     "successEvents": 0,
     "failureEvents": 14,
-    "skippedByCooldown": 1,
+    "skippedByCooldown": 0,
     "coolingDownHosts": 2
   },
   "failures": [
@@ -174,7 +174,7 @@
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
       "errors": [
-        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top HTTP 400; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
+        "media probe failed: host=swiftstream.top HTTP 400; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
       ]
     },
     {
@@ -238,7 +238,7 @@
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
       "errors": [
-        "host cooldown active: swiftstream.top"
+        "stored route too slow: 43581ms > 12000ms"
       ]
     },
     {
