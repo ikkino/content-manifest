@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-15T18:17:06.309Z",
+  "generatedAt": "2026-06-15T19:17:06.226Z",
   "mediaRequested": 5,
   "categories": {
     "trendingNow": {
@@ -28,16 +28,18 @@
   "rejectedAttempts": 29,
   "rejectedAttemptSummary": {
     "byReason": {
-      "media_probe_failed": 15,
+      "media_probe_failed": 14,
       "stream_timeout": 7,
-      "media_probe_budget_exhausted": 7
+      "media_probe_budget_exhausted": 7,
+      "media_host_error": 1
     },
     "topModules": [
       {
         "sourceName": "Animetsu",
         "count": 14,
         "reasons": {
-          "media_probe_failed": 8,
+          "media_host_error": 1,
+          "media_probe_failed": 7,
           "media_probe_budget_exhausted": 6
         }
       },
@@ -74,7 +76,7 @@
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
       "errors": [
-        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
+        "media probe failed: host=swiftstream.top HTTP 500 media_host_error; host=swiftstream.top HTTP 500 media_host_error; host=swiftstream.top HTTP 400; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
       ]
     },
     {
@@ -100,38 +102,6 @@
       ]
     },
     {
-      "aniListId": 197824,
-      "title": "Farming Life in Another World 2",
-      "moduleId": "G7jX",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Animetsu",
-      "errors": [
-        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
-      ]
-    },
-    {
-      "aniListId": 197824,
-      "title": "Farming Life in Another World 2",
-      "moduleId": "jR5U5",
-      "catalogPath": "Sources/English/018",
-      "sourceName": "Senshi",
-      "errors": [
-        "media probe failed: host=ninstream.com empty media response"
-      ]
-    },
-    {
-      "aniListId": 197824,
-      "title": "Farming Life in Another World 2",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/023",
-      "sourceName": "Anikoto",
-      "errors": [
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out"
-      ]
-    },
-    {
       "aniListId": 21,
       "title": "ONE PIECE",
       "moduleId": "G7jX",
@@ -164,8 +134,8 @@
       ]
     },
     {
-      "aniListId": 189987,
-      "title": "The Klutzy Class Monitor and the Girl with the Short Skirt",
+      "aniListId": 197824,
+      "title": "Farming Life in Another World 2",
       "moduleId": "G7jX",
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
@@ -174,8 +144,8 @@
       ]
     },
     {
-      "aniListId": 189987,
-      "title": "The Klutzy Class Monitor and the Girl with the Short Skirt",
+      "aniListId": 197824,
+      "title": "Farming Life in Another World 2",
       "moduleId": "jR5U5",
       "catalogPath": "Sources/English/018",
       "sourceName": "Senshi",
@@ -184,8 +154,8 @@
       ]
     },
     {
-      "aniListId": 189987,
-      "title": "The Klutzy Class Monitor and the Girl with the Short Skirt",
+      "aniListId": 197824,
+      "title": "Farming Life in Another World 2",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/023",
       "sourceName": "Anikoto",
@@ -218,6 +188,38 @@
     {
       "aniListId": 182300,
       "title": "Wistoria: Wand and Sword Season 2",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/023",
+      "sourceName": "Anikoto",
+      "errors": [
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 189987,
+      "title": "The Klutzy Class Monitor and the Girl with the Short Skirt",
+      "moduleId": "G7jX",
+      "catalogPath": "Sources/English/004",
+      "sourceName": "Animetsu",
+      "errors": [
+        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
+      ]
+    },
+    {
+      "aniListId": 189987,
+      "title": "The Klutzy Class Monitor and the Girl with the Short Skirt",
+      "moduleId": "jR5U5",
+      "catalogPath": "Sources/English/018",
+      "sourceName": "Senshi",
+      "errors": [
+        "media probe failed: host=ninstream.com empty media response"
+      ]
+    },
+    {
+      "aniListId": 189987,
+      "title": "The Klutzy Class Monitor and the Girl with the Short Skirt",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/023",
       "sourceName": "Anikoto",
