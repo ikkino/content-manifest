@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-16T16:17:07.349Z",
+  "generatedAt": "2026-06-16T17:17:07.317Z",
   "mediaRequested": 5,
   "categories": {
     "trendingNow": {
@@ -24,35 +24,36 @@
   "routeCount": 250,
   "refreshedAnime": 0,
   "mergeExisting": true,
-  "unresolvedAnime": 23,
-  "rejectedAttempts": 23,
+  "unresolvedAnime": 29,
+  "rejectedAttempts": 29,
   "rejectedAttemptSummary": {
     "byReason": {
-      "media_probe_failed": 10,
-      "media_probe_budget_exhausted": 8,
-      "media_host_blocked": 5
+      "media_probe_failed": 15,
+      "stream_timeout": 7,
+      "media_probe_budget_exhausted": 7
     },
     "topModules": [
       {
         "sourceName": "Animetsu",
-        "count": 13,
+        "count": 14,
         "reasons": {
-          "media_probe_failed": 5,
-          "media_probe_budget_exhausted": 8
-        }
-      },
-      {
-        "sourceName": "Anikoto",
-        "count": 5,
-        "reasons": {
-          "media_host_blocked": 5
+          "media_probe_failed": 8,
+          "media_probe_budget_exhausted": 6
         }
       },
       {
         "sourceName": "Senshi",
-        "count": 5,
+        "count": 8,
         "reasons": {
-          "media_probe_failed": 5
+          "media_probe_failed": 7,
+          "media_probe_budget_exhausted": 1
+        }
+      },
+      {
+        "sourceName": "Anikoto",
+        "count": 7,
+        "reasons": {
+          "stream_timeout": 7
         }
       }
     ]
@@ -66,6 +67,38 @@
     "coolingDownHosts": 3
   },
   "failures": [
+    {
+      "aniListId": 169580,
+      "title": "I Made Friends with the Second Prettiest Girl in My Class",
+      "moduleId": "G7jX",
+      "catalogPath": "Sources/English/004",
+      "sourceName": "Animetsu",
+      "errors": [
+        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
+      ]
+    },
+    {
+      "aniListId": 169580,
+      "title": "I Made Friends with the Second Prettiest Girl in My Class",
+      "moduleId": "jR5U5",
+      "catalogPath": "Sources/English/018",
+      "sourceName": "Senshi",
+      "errors": [
+        "media probe failed: host=ninstream.com empty media response"
+      ]
+    },
+    {
+      "aniListId": 169580,
+      "title": "I Made Friends with the Second Prettiest Girl in My Class",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/023",
+      "sourceName": "Anikoto",
+      "errors": [
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out"
+      ]
+    },
     {
       "aniListId": 147105,
       "title": "Witch Hat Atelier",
@@ -93,7 +126,73 @@
       "catalogPath": "Sources/English/023",
       "sourceName": "Anikoto",
       "errors": [
-        "media probe failed: host=cdn.mewstream.buzz HTTP 403; host=cdn.mewstream.buzz HTTP 403; host=fxpy7.watching.onl empty media response; host=fxpy7.watching.onl empty media response"
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 199547,
+      "title": "MARRIAGETOXIN",
+      "moduleId": "G7jX",
+      "catalogPath": "Sources/English/004",
+      "sourceName": "Animetsu",
+      "errors": [
+        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
+      ]
+    },
+    {
+      "aniListId": 199547,
+      "title": "MARRIAGETOXIN",
+      "moduleId": "jR5U5",
+      "catalogPath": "Sources/English/018",
+      "sourceName": "Senshi",
+      "errors": [
+        "media probe failed: host=ninstream.com empty media response"
+      ]
+    },
+    {
+      "aniListId": 199547,
+      "title": "MARRIAGETOXIN",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/023",
+      "sourceName": "Anikoto",
+      "errors": [
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 194393,
+      "title": "I Want to End this Love Game",
+      "moduleId": "G7jX",
+      "catalogPath": "Sources/English/004",
+      "sourceName": "Animetsu",
+      "errors": [
+        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
+      ]
+    },
+    {
+      "aniListId": 194393,
+      "title": "I Want to End this Love Game",
+      "moduleId": "jR5U5",
+      "catalogPath": "Sources/English/018",
+      "sourceName": "Senshi",
+      "errors": [
+        "media probe failed: host=ninstream.com empty media response"
+      ]
+    },
+    {
+      "aniListId": 194393,
+      "title": "I Want to End this Love Game",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/023",
+      "sourceName": "Anikoto",
+      "errors": [
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out"
       ]
     },
     {
@@ -123,97 +222,9 @@
       "catalogPath": "Sources/English/023",
       "sourceName": "Anikoto",
       "errors": [
-        "media probe failed: host=cdn.mewstream.buzz HTTP 403; host=fxpy7.watching.onl empty media response"
-      ]
-    },
-    {
-      "aniListId": 182300,
-      "title": "Wistoria: Wand and Sword Season 2",
-      "moduleId": "G7jX",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Animetsu",
-      "errors": [
-        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
-      ]
-    },
-    {
-      "aniListId": 182300,
-      "title": "Wistoria: Wand and Sword Season 2",
-      "moduleId": "jR5U5",
-      "catalogPath": "Sources/English/018",
-      "sourceName": "Senshi",
-      "errors": [
-        "media probe failed: host=ninstream.com empty media response"
-      ]
-    },
-    {
-      "aniListId": 182300,
-      "title": "Wistoria: Wand and Sword Season 2",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/023",
-      "sourceName": "Anikoto",
-      "errors": [
-        "media probe failed: host=cdn.mewstream.buzz HTTP 403; host=fxpy7.watching.onl empty media response"
-      ]
-    },
-    {
-      "aniListId": 197824,
-      "title": "Farming Life in Another World 2",
-      "moduleId": "G7jX",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Animetsu",
-      "errors": [
-        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
-      ]
-    },
-    {
-      "aniListId": 197824,
-      "title": "Farming Life in Another World 2",
-      "moduleId": "jR5U5",
-      "catalogPath": "Sources/English/018",
-      "sourceName": "Senshi",
-      "errors": [
-        "media probe failed: host=ninstream.com empty media response"
-      ]
-    },
-    {
-      "aniListId": 197824,
-      "title": "Farming Life in Another World 2",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/023",
-      "sourceName": "Anikoto",
-      "errors": [
-        "media probe failed: host=cdn.mewstream.buzz HTTP 403; host=fxpy7.watching.onl empty media response"
-      ]
-    },
-    {
-      "aniListId": 195600,
-      "title": "Daemons of the Shadow Realm",
-      "moduleId": "G7jX",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Animetsu",
-      "errors": [
-        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
-      ]
-    },
-    {
-      "aniListId": 195600,
-      "title": "Daemons of the Shadow Realm",
-      "moduleId": "jR5U5",
-      "catalogPath": "Sources/English/018",
-      "sourceName": "Senshi",
-      "errors": [
-        "media probe failed: host=ninstream.com empty media response"
-      ]
-    },
-    {
-      "aniListId": 195600,
-      "title": "Daemons of the Shadow Realm",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/023",
-      "sourceName": "Anikoto",
-      "errors": [
-        "media probe failed: host=cdn.mewstream.buzz HTTP 403; host=fxpy7.watching.onl empty media response"
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out"
       ]
     },
     {
@@ -223,7 +234,61 @@
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
       "errors": [
-        "media probe budget exhausted: 15/15"
+        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
+      ]
+    },
+    {
+      "aniListId": 189046,
+      "title": "Re:ZERO -Starting Life in Another World- Season 4",
+      "moduleId": "jR5U5",
+      "catalogPath": "Sources/English/018",
+      "sourceName": "Senshi",
+      "errors": [
+        "media probe failed: host=ninstream.com empty media response; host=ninstream.com empty media response"
+      ]
+    },
+    {
+      "aniListId": 189046,
+      "title": "Re:ZERO -Starting Life in Another World- Season 4",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/023",
+      "sourceName": "Anikoto",
+      "errors": [
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 195600,
+      "title": "Daemons of the Shadow Realm",
+      "moduleId": "G7jX",
+      "catalogPath": "Sources/English/004",
+      "sourceName": "Animetsu",
+      "errors": [
+        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
+      ]
+    },
+    {
+      "aniListId": 195600,
+      "title": "Daemons of the Shadow Realm",
+      "moduleId": "jR5U5",
+      "catalogPath": "Sources/English/018",
+      "sourceName": "Senshi",
+      "errors": [
+        "media probe failed: host=ninstream.com empty media response"
+      ]
+    },
+    {
+      "aniListId": 195600,
+      "title": "Daemons of the Shadow Realm",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/023",
+      "sourceName": "Anikoto",
+      "errors": [
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out"
       ]
     },
     {
@@ -232,6 +297,16 @@
       "moduleId": "G7jX",
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
+      "errors": [
+        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
+      ]
+    },
+    {
+      "aniListId": 182205,
+      "title": "That Time I Got Reincarnated as a Slime Season 4",
+      "moduleId": "jR5U5",
+      "catalogPath": "Sources/English/018",
+      "sourceName": "Senshi",
       "errors": [
         "media probe budget exhausted: 15/15"
       ]
