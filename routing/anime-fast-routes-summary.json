@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-16T10:17:08.305Z",
+  "generatedAt": "2026-06-16T11:17:07.848Z",
   "mediaRequested": 5,
   "categories": {
     "trendingNow": {
@@ -24,23 +24,21 @@
   "routeCount": 250,
   "refreshedAnime": 0,
   "mergeExisting": true,
-  "unresolvedAnime": 24,
-  "rejectedAttempts": 24,
+  "unresolvedAnime": 23,
+  "rejectedAttempts": 23,
   "rejectedAttemptSummary": {
     "byReason": {
-      "media_probe_failed": 9,
-      "media_probe_budget_exhausted": 9,
-      "media_host_blocked": 5,
-      "stream_timeout": 1
+      "media_probe_failed": 10,
+      "media_probe_budget_exhausted": 8,
+      "media_host_blocked": 5
     },
     "topModules": [
       {
         "sourceName": "Animetsu",
-        "count": 14,
+        "count": 13,
         "reasons": {
-          "media_probe_failed": 4,
-          "stream_timeout": 1,
-          "media_probe_budget_exhausted": 9
+          "media_probe_failed": 5,
+          "media_probe_budget_exhausted": 8
         }
       },
       {
@@ -63,7 +61,7 @@
   "mediaProbesUsed": 15,
   "hostHealth": {
     "successEvents": 0,
-    "failureEvents": 14,
+    "failureEvents": 15,
     "skippedByCooldown": 0,
     "coolingDownHosts": 3
   },
@@ -189,18 +187,18 @@
       ]
     },
     {
-      "aniListId": 189987,
-      "title": "The Klutzy Class Monitor and the Girl with the Short Skirt",
+      "aniListId": 195600,
+      "title": "Daemons of the Shadow Realm",
       "moduleId": "G7jX",
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
       "errors": [
-        "stream: extractStreamUrl timed out"
+        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
       ]
     },
     {
-      "aniListId": 189987,
-      "title": "The Klutzy Class Monitor and the Girl with the Short Skirt",
+      "aniListId": 195600,
+      "title": "Daemons of the Shadow Realm",
       "moduleId": "jR5U5",
       "catalogPath": "Sources/English/018",
       "sourceName": "Senshi",
@@ -209,8 +207,8 @@
       ]
     },
     {
-      "aniListId": 189987,
-      "title": "The Klutzy Class Monitor and the Girl with the Short Skirt",
+      "aniListId": 195600,
+      "title": "Daemons of the Shadow Realm",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/023",
       "sourceName": "Anikoto",
@@ -221,16 +219,6 @@
     {
       "aniListId": 189046,
       "title": "Re:ZERO -Starting Life in Another World- Season 4",
-      "moduleId": "G7jX",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Animetsu",
-      "errors": [
-        "media probe budget exhausted: 15/15"
-      ]
-    },
-    {
-      "aniListId": 195600,
-      "title": "Daemons of the Shadow Realm",
       "moduleId": "G7jX",
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
