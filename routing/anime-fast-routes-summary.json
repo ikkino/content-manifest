@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-16T11:17:07.848Z",
+  "generatedAt": "2026-06-16T12:17:09.008Z",
   "mediaRequested": 5,
   "categories": {
     "trendingNow": {
@@ -24,21 +24,33 @@
   "routeCount": 250,
   "refreshedAnime": 0,
   "mergeExisting": true,
-  "unresolvedAnime": 23,
-  "rejectedAttempts": 23,
+  "unresolvedAnime": 24,
+  "rejectedAttempts": 24,
   "rejectedAttemptSummary": {
     "byReason": {
-      "media_probe_failed": 10,
+      "media_probe_failed": 9,
       "media_probe_budget_exhausted": 8,
-      "media_host_blocked": 5
+      "media_host_blocked": 5,
+      "stream_timeout": 1,
+      "implausible_match": 1
     },
     "topModules": [
       {
         "sourceName": "Animetsu",
         "count": 13,
         "reasons": {
+          "media_probe_failed": 4,
+          "stream_timeout": 1,
+          "media_probe_budget_exhausted": 7,
+          "implausible_match": 1
+        }
+      },
+      {
+        "sourceName": "Senshi",
+        "count": 6,
+        "reasons": {
           "media_probe_failed": 5,
-          "media_probe_budget_exhausted": 8
+          "media_probe_budget_exhausted": 1
         }
       },
       {
@@ -47,13 +59,6 @@
         "reasons": {
           "media_host_blocked": 5
         }
-      },
-      {
-        "sourceName": "Senshi",
-        "count": 5,
-        "reasons": {
-          "media_probe_failed": 5
-        }
       }
     ]
   },
@@ -61,7 +66,7 @@
   "mediaProbesUsed": 15,
   "hostHealth": {
     "successEvents": 0,
-    "failureEvents": 15,
+    "failureEvents": 14,
     "skippedByCooldown": 0,
     "coolingDownHosts": 3
   },
@@ -193,7 +198,7 @@
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
       "errors": [
-        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
+        "stream: extractStreamUrl timed out"
       ]
     },
     {
@@ -272,6 +277,16 @@
       "moduleId": "G7jX",
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
+      "errors": [
+        "implausible episode match: verified=23 available=23 expected<=24"
+      ]
+    },
+    {
+      "aniListId": 113415,
+      "title": "JUJUTSU KAISEN",
+      "moduleId": "jR5U5",
+      "catalogPath": "Sources/English/018",
+      "sourceName": "Senshi",
       "errors": [
         "media probe budget exhausted: 15/15"
       ]
