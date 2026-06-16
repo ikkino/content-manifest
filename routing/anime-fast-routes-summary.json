@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-16T15:17:07.790Z",
+  "generatedAt": "2026-06-16T16:17:07.349Z",
   "mediaRequested": 5,
   "categories": {
     "trendingNow": {
@@ -28,18 +28,16 @@
   "rejectedAttempts": 23,
   "rejectedAttemptSummary": {
     "byReason": {
-      "media_probe_failed": 9,
+      "media_probe_failed": 10,
       "media_probe_budget_exhausted": 8,
-      "media_host_blocked": 5,
-      "media_host_error": 1
+      "media_host_blocked": 5
     },
     "topModules": [
       {
         "sourceName": "Animetsu",
         "count": 13,
         "reasons": {
-          "media_host_error": 1,
-          "media_probe_failed": 4,
+          "media_probe_failed": 5,
           "media_probe_budget_exhausted": 8
         }
       },
@@ -75,7 +73,7 @@
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
       "errors": [
-        "media probe failed: host=swiftstream.top HTTP 500 media_host_error; host=swiftstream.top HTTP 500 media_host_error; host=swiftstream.top HTTP 400; host=swiftstream.top HTTP 400; host=swiftstream.top empty media response"
+        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
       ]
     },
     {
