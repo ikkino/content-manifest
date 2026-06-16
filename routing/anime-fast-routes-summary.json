@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-16T13:17:07.647Z",
+  "generatedAt": "2026-06-16T14:17:07.473Z",
   "mediaRequested": 5,
   "categories": {
     "trendingNow": {
@@ -31,15 +31,15 @@
       "media_probe_failed": 9,
       "media_probe_budget_exhausted": 8,
       "media_host_blocked": 5,
-      "stream_timeout": 1
+      "media_host_error": 1
     },
     "topModules": [
       {
         "sourceName": "Animetsu",
         "count": 13,
         "reasons": {
+          "media_host_error": 1,
           "media_probe_failed": 4,
-          "stream_timeout": 1,
           "media_probe_budget_exhausted": 8
         }
       },
@@ -63,7 +63,7 @@
   "mediaProbesUsed": 15,
   "hostHealth": {
     "successEvents": 0,
-    "failureEvents": 14,
+    "failureEvents": 15,
     "skippedByCooldown": 0,
     "coolingDownHosts": 3
   },
@@ -75,7 +75,7 @@
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
       "errors": [
-        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
+        "media probe failed: host=swiftstream.top HTTP 500 media_host_error; host=swiftstream.top HTTP 500 media_host_error; host=swiftstream.top HTTP 400; host=swiftstream.top HTTP 400; host=swiftstream.top empty media response"
       ]
     },
     {
@@ -195,7 +195,7 @@
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
       "errors": [
-        "stream: extractStreamUrl timed out"
+        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
       ]
     },
     {
