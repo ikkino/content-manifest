@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-16T00:17:05.349Z",
+  "generatedAt": "2026-06-16T01:17:05.513Z",
   "mediaRequested": 5,
   "categories": {
     "trendingNow": {
@@ -24,14 +24,13 @@
   "routeCount": 250,
   "refreshedAnime": 0,
   "mergeExisting": true,
-  "unresolvedAnime": 25,
-  "rejectedAttempts": 25,
+  "unresolvedAnime": 24,
+  "rejectedAttempts": 24,
   "rejectedAttemptSummary": {
     "byReason": {
       "media_probe_failed": 9,
       "media_probe_budget_exhausted": 9,
       "media_host_blocked": 5,
-      "implausible_match": 1,
       "stream_timeout": 1
     },
     "topModules": [
@@ -40,17 +39,8 @@
         "count": 14,
         "reasons": {
           "media_probe_failed": 4,
-          "implausible_match": 1,
           "stream_timeout": 1,
-          "media_probe_budget_exhausted": 8
-        }
-      },
-      {
-        "sourceName": "Senshi",
-        "count": 6,
-        "reasons": {
-          "media_probe_failed": 5,
-          "media_probe_budget_exhausted": 1
+          "media_probe_budget_exhausted": 9
         }
       },
       {
@@ -58,6 +48,13 @@
         "count": 5,
         "reasons": {
           "media_host_blocked": 5
+        }
+      },
+      {
+        "sourceName": "Senshi",
+        "count": 5,
+        "reasons": {
+          "media_probe_failed": 5
         }
       }
     ]
@@ -102,36 +99,6 @@
       ]
     },
     {
-      "aniListId": 21,
-      "title": "ONE PIECE",
-      "moduleId": "G7jX",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Animetsu",
-      "errors": [
-        "implausible episode match: verified=1 available=1 expected<=1166"
-      ]
-    },
-    {
-      "aniListId": 21,
-      "title": "ONE PIECE",
-      "moduleId": "jR5U5",
-      "catalogPath": "Sources/English/018",
-      "sourceName": "Senshi",
-      "errors": [
-        "media probe failed: host=ninstream.com empty media response"
-      ]
-    },
-    {
-      "aniListId": 21,
-      "title": "ONE PIECE",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/023",
-      "sourceName": "Anikoto",
-      "errors": [
-        "media probe failed: host=cdn.mewstream.buzz HTTP 403; host=fxpy7.watching.onl empty media response"
-      ]
-    },
-    {
       "aniListId": 182300,
       "title": "Wistoria: Wand and Sword Season 2",
       "moduleId": "G7jX",
@@ -162,8 +129,68 @@
       ]
     },
     {
+      "aniListId": 21,
+      "title": "ONE PIECE",
+      "moduleId": "G7jX",
+      "catalogPath": "Sources/English/004",
+      "sourceName": "Animetsu",
+      "errors": [
+        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
+      ]
+    },
+    {
+      "aniListId": 21,
+      "title": "ONE PIECE",
+      "moduleId": "jR5U5",
+      "catalogPath": "Sources/English/018",
+      "sourceName": "Senshi",
+      "errors": [
+        "media probe failed: host=ninstream.com empty media response"
+      ]
+    },
+    {
+      "aniListId": 21,
+      "title": "ONE PIECE",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/023",
+      "sourceName": "Anikoto",
+      "errors": [
+        "media probe failed: host=cdn.mewstream.buzz HTTP 403; host=fxpy7.watching.onl empty media response"
+      ]
+    },
+    {
       "aniListId": 197824,
       "title": "Farming Life in Another World 2",
+      "moduleId": "G7jX",
+      "catalogPath": "Sources/English/004",
+      "sourceName": "Animetsu",
+      "errors": [
+        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
+      ]
+    },
+    {
+      "aniListId": 197824,
+      "title": "Farming Life in Another World 2",
+      "moduleId": "jR5U5",
+      "catalogPath": "Sources/English/018",
+      "sourceName": "Senshi",
+      "errors": [
+        "media probe failed: host=ninstream.com empty media response"
+      ]
+    },
+    {
+      "aniListId": 197824,
+      "title": "Farming Life in Another World 2",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/023",
+      "sourceName": "Anikoto",
+      "errors": [
+        "media probe failed: host=cdn.mewstream.buzz HTTP 403; host=fxpy7.watching.onl empty media response"
+      ]
+    },
+    {
+      "aniListId": 189987,
+      "title": "The Klutzy Class Monitor and the Girl with the Short Skirt",
       "moduleId": "G7jX",
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
@@ -172,36 +199,6 @@
       ]
     },
     {
-      "aniListId": 197824,
-      "title": "Farming Life in Another World 2",
-      "moduleId": "jR5U5",
-      "catalogPath": "Sources/English/018",
-      "sourceName": "Senshi",
-      "errors": [
-        "media probe failed: host=ninstream.com empty media response"
-      ]
-    },
-    {
-      "aniListId": 197824,
-      "title": "Farming Life in Another World 2",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/023",
-      "sourceName": "Anikoto",
-      "errors": [
-        "media probe failed: host=cdn.mewstream.buzz HTTP 403; host=fxpy7.watching.onl empty media response"
-      ]
-    },
-    {
-      "aniListId": 189987,
-      "title": "The Klutzy Class Monitor and the Girl with the Short Skirt",
-      "moduleId": "G7jX",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Animetsu",
-      "errors": [
-        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
-      ]
-    },
-    {
       "aniListId": 189987,
       "title": "The Klutzy Class Monitor and the Girl with the Short Skirt",
       "moduleId": "jR5U5",
@@ -227,16 +224,6 @@
       "moduleId": "G7jX",
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
-      "errors": [
-        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
-      ]
-    },
-    {
-      "aniListId": 189046,
-      "title": "Re:ZERO -Starting Life in Another World- Season 4",
-      "moduleId": "jR5U5",
-      "catalogPath": "Sources/English/018",
-      "sourceName": "Senshi",
       "errors": [
         "media probe budget exhausted: 15/15"
       ]
