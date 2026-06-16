@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-16T12:17:09.008Z",
+  "generatedAt": "2026-06-16T13:17:07.647Z",
   "mediaRequested": 5,
   "categories": {
     "trendingNow": {
@@ -24,15 +24,14 @@
   "routeCount": 250,
   "refreshedAnime": 0,
   "mergeExisting": true,
-  "unresolvedAnime": 24,
-  "rejectedAttempts": 24,
+  "unresolvedAnime": 23,
+  "rejectedAttempts": 23,
   "rejectedAttemptSummary": {
     "byReason": {
       "media_probe_failed": 9,
       "media_probe_budget_exhausted": 8,
       "media_host_blocked": 5,
-      "stream_timeout": 1,
-      "implausible_match": 1
+      "stream_timeout": 1
     },
     "topModules": [
       {
@@ -41,16 +40,7 @@
         "reasons": {
           "media_probe_failed": 4,
           "stream_timeout": 1,
-          "media_probe_budget_exhausted": 7,
-          "implausible_match": 1
-        }
-      },
-      {
-        "sourceName": "Senshi",
-        "count": 6,
-        "reasons": {
-          "media_probe_failed": 5,
-          "media_probe_budget_exhausted": 1
+          "media_probe_budget_exhausted": 8
         }
       },
       {
@@ -58,6 +48,13 @@
         "count": 5,
         "reasons": {
           "media_host_blocked": 5
+        }
+      },
+      {
+        "sourceName": "Senshi",
+        "count": 5,
+        "reasons": {
+          "media_probe_failed": 5
         }
       }
     ]
@@ -132,18 +129,18 @@
       ]
     },
     {
-      "aniListId": 182300,
-      "title": "Wistoria: Wand and Sword Season 2",
+      "aniListId": 197824,
+      "title": "Farming Life in Another World 2",
       "moduleId": "G7jX",
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
       "errors": [
-        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
+        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top HTTP 400; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
       ]
     },
     {
-      "aniListId": 182300,
-      "title": "Wistoria: Wand and Sword Season 2",
+      "aniListId": 197824,
+      "title": "Farming Life in Another World 2",
       "moduleId": "jR5U5",
       "catalogPath": "Sources/English/018",
       "sourceName": "Senshi",
@@ -152,8 +149,8 @@
       ]
     },
     {
-      "aniListId": 182300,
-      "title": "Wistoria: Wand and Sword Season 2",
+      "aniListId": 197824,
+      "title": "Farming Life in Another World 2",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/023",
       "sourceName": "Anikoto",
@@ -162,8 +159,8 @@
       ]
     },
     {
-      "aniListId": 197824,
-      "title": "Farming Life in Another World 2",
+      "aniListId": 182300,
+      "title": "Wistoria: Wand and Sword Season 2",
       "moduleId": "G7jX",
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
@@ -172,8 +169,8 @@
       ]
     },
     {
-      "aniListId": 197824,
-      "title": "Farming Life in Another World 2",
+      "aniListId": 182300,
+      "title": "Wistoria: Wand and Sword Season 2",
       "moduleId": "jR5U5",
       "catalogPath": "Sources/English/018",
       "sourceName": "Senshi",
@@ -182,8 +179,8 @@
       ]
     },
     {
-      "aniListId": 197824,
-      "title": "Farming Life in Another World 2",
+      "aniListId": 182300,
+      "title": "Wistoria: Wand and Sword Season 2",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/023",
       "sourceName": "Anikoto",
@@ -277,16 +274,6 @@
       "moduleId": "G7jX",
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
-      "errors": [
-        "implausible episode match: verified=23 available=23 expected<=24"
-      ]
-    },
-    {
-      "aniListId": 113415,
-      "title": "JUJUTSU KAISEN",
-      "moduleId": "jR5U5",
-      "catalogPath": "Sources/English/018",
-      "sourceName": "Senshi",
       "errors": [
         "media probe budget exhausted: 15/15"
       ]
