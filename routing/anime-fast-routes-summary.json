@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-16T20:17:08.589Z",
+  "generatedAt": "2026-06-16T21:17:08.292Z",
   "mediaRequested": 5,
   "categories": {
     "trendingNow": {
@@ -24,29 +24,32 @@
   "routeCount": 250,
   "refreshedAnime": 0,
   "mergeExisting": true,
-  "unresolvedAnime": 29,
-  "rejectedAttempts": 29,
+  "unresolvedAnime": 30,
+  "rejectedAttempts": 30,
   "rejectedAttemptSummary": {
     "byReason": {
-      "media_probe_failed": 15,
-      "stream_timeout": 7,
-      "media_probe_budget_exhausted": 7
+      "media_probe_failed": 14,
+      "stream_timeout": 8,
+      "media_probe_budget_exhausted": 7,
+      "other": 1
     },
     "topModules": [
       {
         "sourceName": "Animetsu",
         "count": 14,
         "reasons": {
-          "media_probe_failed": 8,
-          "media_probe_budget_exhausted": 6
+          "media_probe_failed": 7,
+          "stream_timeout": 1,
+          "media_probe_budget_exhausted": 5,
+          "other": 1
         }
       },
       {
         "sourceName": "Senshi",
-        "count": 8,
+        "count": 9,
         "reasons": {
           "media_probe_failed": 7,
-          "media_probe_budget_exhausted": 1
+          "media_probe_budget_exhausted": 2
         }
       },
       {
@@ -62,7 +65,7 @@
   "mediaProbesUsed": 15,
   "hostHealth": {
     "successEvents": 0,
-    "failureEvents": 15,
+    "failureEvents": 14,
     "skippedByCooldown": 0,
     "coolingDownHosts": 3
   },
@@ -138,7 +141,7 @@
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
       "errors": [
-        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
+        "stream: extractStreamUrl timed out"
       ]
     },
     {
@@ -367,6 +370,16 @@
       "moduleId": "G7jX",
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
+      "errors": [
+        "search: Unexpected token '<', \"<!doctype \"... is not valid JSON"
+      ]
+    },
+    {
+      "aniListId": 21459,
+      "title": "My Hero Academia",
+      "moduleId": "jR5U5",
+      "catalogPath": "Sources/English/018",
+      "sourceName": "Senshi",
       "errors": [
         "media probe budget exhausted: 15/15"
       ]
