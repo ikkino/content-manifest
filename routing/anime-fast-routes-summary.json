@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-16T07:17:04.580Z",
+  "generatedAt": "2026-06-16T08:17:05.768Z",
   "mediaRequested": 5,
   "categories": {
     "trendingNow": {
@@ -24,15 +24,14 @@
   "routeCount": 250,
   "refreshedAnime": 0,
   "mergeExisting": true,
-  "unresolvedAnime": 25,
-  "rejectedAttempts": 25,
+  "unresolvedAnime": 24,
+  "rejectedAttempts": 24,
   "rejectedAttemptSummary": {
     "byReason": {
       "media_probe_failed": 9,
       "media_probe_budget_exhausted": 9,
       "media_host_blocked": 5,
-      "stream_timeout": 1,
-      "implausible_match": 1
+      "stream_timeout": 1
     },
     "topModules": [
       {
@@ -41,16 +40,7 @@
         "reasons": {
           "media_probe_failed": 4,
           "stream_timeout": 1,
-          "media_probe_budget_exhausted": 8,
-          "implausible_match": 1
-        }
-      },
-      {
-        "sourceName": "Senshi",
-        "count": 6,
-        "reasons": {
-          "media_probe_failed": 5,
-          "media_probe_budget_exhausted": 1
+          "media_probe_budget_exhausted": 9
         }
       },
       {
@@ -58,6 +48,13 @@
         "count": 5,
         "reasons": {
           "media_host_blocked": 5
+        }
+      },
+      {
+        "sourceName": "Senshi",
+        "count": 5,
+        "reasons": {
+          "media_probe_failed": 5
         }
       }
     ]
@@ -287,16 +284,6 @@
       "moduleId": "G7jX",
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
-      "errors": [
-        "implausible episode match: verified=23 available=23 expected<=24"
-      ]
-    },
-    {
-      "aniListId": 113415,
-      "title": "JUJUTSU KAISEN",
-      "moduleId": "jR5U5",
-      "catalogPath": "Sources/English/018",
-      "sourceName": "Senshi",
       "errors": [
         "media probe budget exhausted: 15/15"
       ]
