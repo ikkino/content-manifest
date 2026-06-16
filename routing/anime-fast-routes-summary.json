@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-16T05:17:07.287Z",
+  "generatedAt": "2026-06-16T06:17:07.025Z",
   "mediaRequested": 5,
   "categories": {
     "trendingNow": {
@@ -24,40 +24,42 @@
   "routeCount": 250,
   "refreshedAnime": 0,
   "mergeExisting": true,
-  "unresolvedAnime": 24,
-  "rejectedAttempts": 24,
+  "unresolvedAnime": 27,
+  "rejectedAttempts": 27,
   "rejectedAttemptSummary": {
     "byReason": {
-      "media_probe_failed": 9,
+      "media_probe_failed": 8,
       "media_probe_budget_exhausted": 8,
-      "media_host_blocked": 5,
-      "stream_timeout": 1,
-      "implausible_match": 1
+      "media_host_blocked": 6,
+      "implausible_match": 2,
+      "other": 2,
+      "episodes_timeout": 1
     },
     "topModules": [
       {
         "sourceName": "Animetsu",
-        "count": 13,
+        "count": 14,
         "reasons": {
-          "media_probe_failed": 4,
-          "stream_timeout": 1,
-          "media_probe_budget_exhausted": 7,
-          "implausible_match": 1
+          "media_probe_failed": 2,
+          "implausible_match": 2,
+          "episodes_timeout": 1,
+          "other": 2,
+          "media_probe_budget_exhausted": 7
         }
       },
       {
         "sourceName": "Senshi",
-        "count": 6,
+        "count": 7,
         "reasons": {
-          "media_probe_failed": 5,
+          "media_probe_failed": 6,
           "media_probe_budget_exhausted": 1
         }
       },
       {
         "sourceName": "Anikoto",
-        "count": 5,
+        "count": 6,
         "reasons": {
-          "media_host_blocked": 5
+          "media_host_blocked": 6
         }
       }
     ]
@@ -108,7 +110,7 @@
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
       "errors": [
-        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
+        "implausible episode match: verified=1 available=1 expected<=1166"
       ]
     },
     {
@@ -132,43 +134,13 @@
       ]
     },
     {
-      "aniListId": 197824,
-      "title": "Farming Life in Another World 2",
-      "moduleId": "G7jX",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Animetsu",
-      "errors": [
-        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
-      ]
-    },
-    {
-      "aniListId": 197824,
-      "title": "Farming Life in Another World 2",
-      "moduleId": "jR5U5",
-      "catalogPath": "Sources/English/018",
-      "sourceName": "Senshi",
-      "errors": [
-        "media probe failed: host=ninstream.com empty media response"
-      ]
-    },
-    {
-      "aniListId": 197824,
-      "title": "Farming Life in Another World 2",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/023",
-      "sourceName": "Anikoto",
-      "errors": [
-        "media probe failed: host=cdn.mewstream.buzz HTTP 403; host=fxpy7.watching.onl empty media response"
-      ]
-    },
-    {
       "aniListId": 182300,
       "title": "Wistoria: Wand and Sword Season 2",
       "moduleId": "G7jX",
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
       "errors": [
-        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
+        "episodes: extractEpisodes timed out"
       ]
     },
     {
@@ -192,18 +164,20 @@
       ]
     },
     {
-      "aniListId": 195600,
-      "title": "Daemons of the Shadow Realm",
+      "aniListId": 197824,
+      "title": "Farming Life in Another World 2",
       "moduleId": "G7jX",
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
       "errors": [
-        "stream: extractStreamUrl timed out"
+        "episodes: Unexpected token '<', \"<!doctype \"... is not valid JSON",
+        "stream: extractStreamUrl returned an unusable result",
+        "episodes: Unexpected token '<', \"<!doctype \"... is not valid JSON"
       ]
     },
     {
-      "aniListId": 195600,
-      "title": "Daemons of the Shadow Realm",
+      "aniListId": 197824,
+      "title": "Farming Life in Another World 2",
       "moduleId": "jR5U5",
       "catalogPath": "Sources/English/018",
       "sourceName": "Senshi",
@@ -212,8 +186,40 @@
       ]
     },
     {
-      "aniListId": 195600,
-      "title": "Daemons of the Shadow Realm",
+      "aniListId": 197824,
+      "title": "Farming Life in Another World 2",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/023",
+      "sourceName": "Anikoto",
+      "errors": [
+        "media probe failed: host=cdn.mewstream.buzz HTTP 403; host=fxpy7.watching.onl empty media response"
+      ]
+    },
+    {
+      "aniListId": 189987,
+      "title": "The Klutzy Class Monitor and the Girl with the Short Skirt",
+      "moduleId": "G7jX",
+      "catalogPath": "Sources/English/004",
+      "sourceName": "Animetsu",
+      "errors": [
+        "episodes: Unexpected token '<', \"<!doctype \"... is not valid JSON",
+        "stream: extractStreamUrl returned an unusable result",
+        "episodes: Unexpected token '<', \"<!doctype \"... is not valid JSON"
+      ]
+    },
+    {
+      "aniListId": 189987,
+      "title": "The Klutzy Class Monitor and the Girl with the Short Skirt",
+      "moduleId": "jR5U5",
+      "catalogPath": "Sources/English/018",
+      "sourceName": "Senshi",
+      "errors": [
+        "media probe failed: host=ninstream.com empty media response"
+      ]
+    },
+    {
+      "aniListId": 189987,
+      "title": "The Klutzy Class Monitor and the Girl with the Short Skirt",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/023",
       "sourceName": "Anikoto",
@@ -224,6 +230,36 @@
     {
       "aniListId": 189046,
       "title": "Re:ZERO -Starting Life in Another World- Season 4",
+      "moduleId": "G7jX",
+      "catalogPath": "Sources/English/004",
+      "sourceName": "Animetsu",
+      "errors": [
+        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
+      ]
+    },
+    {
+      "aniListId": 189046,
+      "title": "Re:ZERO -Starting Life in Another World- Season 4",
+      "moduleId": "jR5U5",
+      "catalogPath": "Sources/English/018",
+      "sourceName": "Senshi",
+      "errors": [
+        "media probe failed: host=ninstream.com empty media response; host=ninstream.com empty media response"
+      ]
+    },
+    {
+      "aniListId": 189046,
+      "title": "Re:ZERO -Starting Life in Another World- Season 4",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/023",
+      "sourceName": "Anikoto",
+      "errors": [
+        "media probe failed: host=cdn.mewstream.buzz HTTP 403; host=cdn.mewstream.buzz HTTP 403; host=fxpy7.watching.onl empty media response; host=fxpy7.watching.onl empty media response"
+      ]
+    },
+    {
+      "aniListId": 195600,
+      "title": "Daemons of the Shadow Realm",
       "moduleId": "G7jX",
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
@@ -258,6 +294,16 @@
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
       "errors": [
+        "implausible episode match: verified=22 available=22 expected<=25"
+      ]
+    },
+    {
+      "aniListId": 16498,
+      "title": "Attack on Titan",
+      "moduleId": "jR5U5",
+      "catalogPath": "Sources/English/018",
+      "sourceName": "Senshi",
+      "errors": [
         "media probe budget exhausted: 15/15"
       ]
     },
@@ -277,16 +323,6 @@
       "moduleId": "G7jX",
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
-      "errors": [
-        "implausible episode match: verified=23 available=23 expected<=24"
-      ]
-    },
-    {
-      "aniListId": 113415,
-      "title": "JUJUTSU KAISEN",
-      "moduleId": "jR5U5",
-      "catalogPath": "Sources/English/018",
-      "sourceName": "Senshi",
       "errors": [
         "media probe budget exhausted: 15/15"
       ]
