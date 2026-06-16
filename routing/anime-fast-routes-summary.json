@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-16T06:17:07.025Z",
+  "generatedAt": "2026-06-16T07:17:04.580Z",
   "mediaRequested": 5,
   "categories": {
     "trendingNow": {
@@ -24,42 +24,40 @@
   "routeCount": 250,
   "refreshedAnime": 0,
   "mergeExisting": true,
-  "unresolvedAnime": 27,
-  "rejectedAttempts": 27,
+  "unresolvedAnime": 25,
+  "rejectedAttempts": 25,
   "rejectedAttemptSummary": {
     "byReason": {
-      "media_probe_failed": 8,
-      "media_probe_budget_exhausted": 8,
-      "media_host_blocked": 6,
-      "implausible_match": 2,
-      "other": 2,
-      "episodes_timeout": 1
+      "media_probe_failed": 9,
+      "media_probe_budget_exhausted": 9,
+      "media_host_blocked": 5,
+      "stream_timeout": 1,
+      "implausible_match": 1
     },
     "topModules": [
       {
         "sourceName": "Animetsu",
         "count": 14,
         "reasons": {
-          "media_probe_failed": 2,
-          "implausible_match": 2,
-          "episodes_timeout": 1,
-          "other": 2,
-          "media_probe_budget_exhausted": 7
+          "media_probe_failed": 4,
+          "stream_timeout": 1,
+          "media_probe_budget_exhausted": 8,
+          "implausible_match": 1
         }
       },
       {
         "sourceName": "Senshi",
-        "count": 7,
+        "count": 6,
         "reasons": {
-          "media_probe_failed": 6,
+          "media_probe_failed": 5,
           "media_probe_budget_exhausted": 1
         }
       },
       {
         "sourceName": "Anikoto",
-        "count": 6,
+        "count": 5,
         "reasons": {
-          "media_host_blocked": 6
+          "media_host_blocked": 5
         }
       }
     ]
@@ -110,7 +108,7 @@
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
       "errors": [
-        "implausible episode match: verified=1 available=1 expected<=1166"
+        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
       ]
     },
     {
@@ -140,7 +138,7 @@
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
       "errors": [
-        "episodes: extractEpisodes timed out"
+        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
       ]
     },
     {
@@ -170,9 +168,7 @@
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
       "errors": [
-        "episodes: Unexpected token '<', \"<!doctype \"... is not valid JSON",
-        "stream: extractStreamUrl returned an unusable result",
-        "episodes: Unexpected token '<', \"<!doctype \"... is not valid JSON"
+        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
       ]
     },
     {
@@ -202,9 +198,7 @@
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
       "errors": [
-        "episodes: Unexpected token '<', \"<!doctype \"... is not valid JSON",
-        "stream: extractStreamUrl returned an unusable result",
-        "episodes: Unexpected token '<', \"<!doctype \"... is not valid JSON"
+        "stream: extractStreamUrl timed out"
       ]
     },
     {
@@ -234,27 +228,7 @@
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
       "errors": [
-        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
-      ]
-    },
-    {
-      "aniListId": 189046,
-      "title": "Re:ZERO -Starting Life in Another World- Season 4",
-      "moduleId": "jR5U5",
-      "catalogPath": "Sources/English/018",
-      "sourceName": "Senshi",
-      "errors": [
-        "media probe failed: host=ninstream.com empty media response; host=ninstream.com empty media response"
-      ]
-    },
-    {
-      "aniListId": 189046,
-      "title": "Re:ZERO -Starting Life in Another World- Season 4",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/023",
-      "sourceName": "Anikoto",
-      "errors": [
-        "media probe failed: host=cdn.mewstream.buzz HTTP 403; host=cdn.mewstream.buzz HTTP 403; host=fxpy7.watching.onl empty media response; host=fxpy7.watching.onl empty media response"
+        "media probe budget exhausted: 15/15"
       ]
     },
     {
@@ -294,16 +268,6 @@
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
       "errors": [
-        "implausible episode match: verified=22 available=22 expected<=25"
-      ]
-    },
-    {
-      "aniListId": 16498,
-      "title": "Attack on Titan",
-      "moduleId": "jR5U5",
-      "catalogPath": "Sources/English/018",
-      "sourceName": "Senshi",
-      "errors": [
         "media probe budget exhausted: 15/15"
       ]
     },
@@ -323,6 +287,16 @@
       "moduleId": "G7jX",
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
+      "errors": [
+        "implausible episode match: verified=23 available=23 expected<=24"
+      ]
+    },
+    {
+      "aniListId": 113415,
+      "title": "JUJUTSU KAISEN",
+      "moduleId": "jR5U5",
+      "catalogPath": "Sources/English/018",
+      "sourceName": "Senshi",
       "errors": [
         "media probe budget exhausted: 15/15"
       ]
