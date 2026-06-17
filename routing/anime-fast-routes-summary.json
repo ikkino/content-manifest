@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-17T00:17:08.189Z",
+  "generatedAt": "2026-06-17T02:17:07.922Z",
   "mediaRequested": 5,
   "categories": {
     "trendingNow": {
@@ -24,13 +24,14 @@
   "routeCount": 250,
   "refreshedAnime": 0,
   "mergeExisting": true,
-  "unresolvedAnime": 29,
-  "rejectedAttempts": 29,
+  "unresolvedAnime": 30,
+  "rejectedAttempts": 30,
   "rejectedAttemptSummary": {
     "byReason": {
       "media_probe_failed": 15,
       "stream_timeout": 7,
-      "media_probe_budget_exhausted": 7
+      "media_probe_budget_exhausted": 7,
+      "implausible_match": 1
     },
     "topModules": [
       {
@@ -38,15 +39,16 @@
         "count": 14,
         "reasons": {
           "media_probe_failed": 8,
-          "media_probe_budget_exhausted": 6
+          "media_probe_budget_exhausted": 5,
+          "implausible_match": 1
         }
       },
       {
         "sourceName": "Senshi",
-        "count": 8,
+        "count": 9,
         "reasons": {
           "media_probe_failed": 7,
-          "media_probe_budget_exhausted": 1
+          "media_probe_budget_exhausted": 2
         }
       },
       {
@@ -164,8 +166,8 @@
       ]
     },
     {
-      "aniListId": 194393,
-      "title": "I Want to End this Love Game",
+      "aniListId": 21,
+      "title": "ONE PIECE",
       "moduleId": "G7jX",
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
@@ -174,8 +176,8 @@
       ]
     },
     {
-      "aniListId": 194393,
-      "title": "I Want to End this Love Game",
+      "aniListId": 21,
+      "title": "ONE PIECE",
       "moduleId": "jR5U5",
       "catalogPath": "Sources/English/018",
       "sourceName": "Senshi",
@@ -184,8 +186,8 @@
       ]
     },
     {
-      "aniListId": 194393,
-      "title": "I Want to End this Love Game",
+      "aniListId": 21,
+      "title": "ONE PIECE",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/023",
       "sourceName": "Anikoto",
@@ -196,8 +198,8 @@
       ]
     },
     {
-      "aniListId": 21,
-      "title": "ONE PIECE",
+      "aniListId": 194393,
+      "title": "I Want to End this Love Game",
       "moduleId": "G7jX",
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
@@ -206,8 +208,8 @@
       ]
     },
     {
-      "aniListId": 21,
-      "title": "ONE PIECE",
+      "aniListId": 194393,
+      "title": "I Want to End this Love Game",
       "moduleId": "jR5U5",
       "catalogPath": "Sources/English/018",
       "sourceName": "Senshi",
@@ -216,8 +218,8 @@
       ]
     },
     {
-      "aniListId": 21,
-      "title": "ONE PIECE",
+      "aniListId": 194393,
+      "title": "I Want to End this Love Game",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/023",
       "sourceName": "Anikoto",
@@ -367,6 +369,16 @@
       "moduleId": "G7jX",
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
+      "errors": [
+        "implausible episode match: verified=13 available=25 expected<=13"
+      ]
+    },
+    {
+      "aniListId": 21459,
+      "title": "My Hero Academia",
+      "moduleId": "jR5U5",
+      "catalogPath": "Sources/English/018",
+      "sourceName": "Senshi",
       "errors": [
         "media probe budget exhausted: 15/15"
       ]
