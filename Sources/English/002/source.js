@@ -1,135 +1,199 @@
-function cleanTitle(title) {
-    return title
-        .replace(/&#8217;/g, "'")  
-        .replace(/&#8211;/g, "-")  
-        .replace(/&#[0-9]+;/g, ""); 
-}
-
 async function searchResults(keyword) {
-    const url = `https://animeheaven.me/search.php?s=${encodeURIComponent(keyword)}`;
-    const response = await soraFetch(url);
-    const html = await response.text();
     const results = [];
+    const headers = {
+        'Referer': 'https://animetsu.live/',
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+    };
 
-    const itemRegex = /<a href='([^']+)'><img class='coverimg' src='([^']+)' alt='([^']*)'[\s\S]*?<div class='similarname c'><a href='[^']+' class='c'>([^<]+)<\/a><\/div>/g;
-    let match;
+    const encodedKeyword = encodeURIComponent(keyword);
+    const response = await fetchv2(`https://animetsu.live/v2/api/anime/search/?query=${encodedKeyword}`, headers);
+    const json = await response.json();
 
-    while ((match = itemRegex.exec(html)) !== null) {
-        const href = new URL(match[1], "https://animeheaven.me/").href;
-        const image = new URL(match[2], "https://animeheaven.me/").href;
-        const rawTitle = (match[4] || match[3]).trim();
-        const title = cleanTitle(rawTitle);
+    json.results.forEach(anime => {
+        const title = anime.title.english || anime.title.romaji || anime.title.native || "Unknown Title";
+        const image = anime.cover_image.large;
+        const href = `${anime.id}`;
 
-        results.push({ title, image, href });
-    }
-
-    const normalizedKeyword = keyword.toLowerCase().replace(/\s+/g, " ").trim();
-    results.sort((a, b) => {
-        const titleA = a.title.toLowerCase().trim();
-        const titleB = b.title.toLowerCase().trim();
-        const exactA = titleA === normalizedKeyword ? 0 : 1;
-        const exactB = titleB === normalizedKeyword ? 0 : 1;
-        if (exactA !== exactB) return exactA - exactB;
-        return a.title.length - b.title.length;
+        if (title && href && image) {
+            results.push({
+                title: title,
+                image: image,
+                href: href
+            });
+        } else {
+            console.error("Missing or invalid data in search result item:", {
+                title,
+                href,
+                image
+            });
+        }
     });
 
-    console.log(results);
     return JSON.stringify(results);
 }
 
-async function extractDetails(url) {
-    const response = await soraFetch(url);
-    const html = await response.text();
-    const details = [];
+async function extractDetails(id) {
+    const results = [];
+    const headers = {
+        'Referer': 'https://animetsu.live/',
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+    };
 
-    const descriptionMatch = html.match(/<div class='infodes c'>([^<]+)<\/div>/);
-    let description = descriptionMatch ? descriptionMatch[1] : '';
+    const response = await fetchv2(`https://animetsu.live/v2/api/anime/info/${id}`, headers);
+    const json = await response.json();
 
-    const aliasesMatch = html.match(/<div class='infotitle c'>([^<]+)<\/div>/);
-    let aliases = aliasesMatch ? aliasesMatch[1] : '';
+    const description = cleanHtmlSymbols(json.description) || "No description available";
 
-    const airdateMatch = html.match(/Year: <div class='inline c2'>([^<]+)<\/div>/);
-    let airdate = airdateMatch ? airdateMatch[1] : '';
+    results.push({
+        description: description.replace(/<br>/g, ''),
+        aliases: json.synonyms ? json.synonyms.join(', ') : 'N/A',
+        airdate: json.start_date || 'N/A'
+    });
 
-    if (description && airdate) {
-        details.push({
-            description: description,
-            aliases: aliases || 'N/A',
-            airdate: airdate
+    return JSON.stringify(results);
+}
+
+async function extractEpisodes(id) {
+    const results = [];
+    const headers = {
+        'Referer': 'https://animetsu.live/',
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+    };
+
+    const response = await fetchv2(`https://animetsu.live/v2/api/anime/eps/${id}`, headers);
+    const json = await response.json();
+
+    for (const ep of json) {
+        results.push({
+            number: ep.ep_num,
+            href: `&id=${id}&num=${ep.ep_num}`
         });
     }
 
-    console.log(details);
-    return JSON.stringify(details);
+    return JSON.stringify(results);
 }
 
-async function extractEpisodes(url) {
-    const response = await soraFetch(url);
-    const html = await response.text();
-    const episodes = [];
-
-    const episodeRegex = /<a[^>]+id=["']([^"']+)["'][^>]*>[\s\S]*?<div class=["']watch2[^"']*["'][^>]*>\s*(\d+(?:\.\d+)?)\s*<\/div>/g;
-
-    let match;
-    while ((match = episodeRegex.exec(html)) !== null) {
-        const id = match[1];
-        const number = parseFloat(match[2]);
-
-        if (!isNaN(number)) {
-            episodes.push({
-                href: id,
-                number: number
-            });
-        }
-    }
-
-    episodes.reverse();
-
-    console.log(episodes);
-    return JSON.stringify(episodes);
-}
-
-async function extractStreamUrl(id) {
-    
-    const cookieHeader = `key=${id}`;
+async function extractStreamUrl(slug) {
     const headers = {
-        Cookie: cookieHeader
+        'Referer': 'https://animetsu.live/',
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
     };
 
-    const response = await soraFetch(`https://animeheaven.me/gate.php`, { headers });
-    const html = await response.text();
+    const id = (slug.match(/[?&]id=([^&]+)/) || [])[1];
+    const num = (slug.match(/[?&]num=([^&]+)/) || [])[1];
 
-    const sourceRegex = /<source\s+src=['"]([^"']+\.mp4\?[^"']*)['"]\s+type=['"]video\/mp4['"]/i;
-    const match = html.match(sourceRegex);
+    const streams = [];
 
-    if (match) {
-        const streamUrl = match[1].replace(/&amp;/g, '&');
-        console.log("Extracted stream URL:", streamUrl);
-        return streamUrl;
-    } else {
-        console.error("Stream URL not found.");
-        return "";
-    }
-}
-
-async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
     try {
-        return await fetchv2(url, options.headers ?? {}, options.method ?? 'GET', options.body ?? null);
-    } catch(e) {
-        try {
-            return await fetch(url, options);
-        } catch(error) {
-            return null;
+        const serverListRes = await fetchv2(`https://animetsu.live/v2/api/anime/servers/${id}/${num}`, headers);
+        const serverList = await serverListRes.json();
+
+        const promises = [];
+        for (const server of serverList) {
+            for (const subType of ['sub', 'dub']) {
+                promises.push((async () => {
+                    try {
+                        const url = `https://animetsu.live/v2/api/anime/oppai/${id}/${num}?server=${server.id}&source_type=${subType}`;
+                        const res = await fetchv2(url, headers);
+                        const data = await res.json();
+
+                        if (data?.sources?.length) {
+                            for (const source of data.sources) {
+                                let streamUrl = `https://swiftstream.top/proxy${source.url}`;
+                                let quality = source.quality;
+
+                                if (server.id === 'kite') {
+                                    try {
+                                        const m3u8Res = await fetchv2(streamUrl, headers);
+                                        const m3u8Content = await m3u8Res.text();
+                                        const lines = m3u8Content.split('\n').filter(line => line.trim() !== '');
+                                        const targetLine = lines.find(line => !line.startsWith('#'));
+                                        if (targetLine) {
+                                            streamUrl = `https://swiftstream.top/proxy/oppai/kite/${targetLine.trim()}`;
+                                        }
+                                        if (quality.toLowerCase() === 'master') {
+                                            quality = '1080p';
+                                        }
+                                    } catch (e) {
+                                        console.error("Error rewriting kite URL:", e);
+                                    }
+                                }
+
+                                streams.push({
+                                    title: `${server.id} - ${quality} - ${subType.toUpperCase()}`,
+                                    streamUrl: streamUrl,
+                                    headers: headers
+                                });
+                            }
+                        }
+                    } catch (e) {
+                        console.error(`Error fetching streams for server ${server.id} (${subType}):`, e);
+                    }
+                })());
+            }
         }
+
+        await Promise.all(promises);
+    } catch (e) {
+        console.error("Error fetching server list:", e);
     }
+
+    const serverOrder = { 'pahe': 1, 'meg': 2, 'kite': 3 };
+    const qualityOrder = (q) => {
+        if (q.includes('1080')) return 1;
+        if (q.includes('720')) return 2;
+        if (q.includes('480')) return 3;
+        if (q.includes('360')) return 4;
+        if (q.includes('master')) return 5;
+        return 6;
+    };
+
+    streams.sort((a, b) => {
+        const partsA = a.title.split(' - ');
+        const partsB = b.title.split(' - ');
+
+        const sA = partsA[0].toLowerCase();
+        const sB = partsB[0].toLowerCase();
+        const qA = partsA[1].toLowerCase();
+        const qB = partsB[1].toLowerCase();
+
+        const qOrderA = qualityOrder(qA);
+        const qOrderB = qualityOrder(qB);
+
+        if (qOrderA !== qOrderB) return qOrderA - qOrderB;
+
+        const sOrderA = serverOrder[sA] || 99;
+        const sOrderB = serverOrder[sB] || 99;
+        return sOrderA - sOrderB;
+    });
+
+    const finalStreams = streams.map((s, index) => ({
+        ...s,
+        title: `[Server ${index + 1}] ${s.title}`
+    }));
+
+    const final = {
+        streams: finalStreams,
+        subtitle: ""
+    };
+
+    return JSON.stringify(final);
 }
 
-function _0xCheck() {
-    var _0x1a = typeof _0xB4F2 === 'function';
-    var _0x2b = typeof _0x7E9A === 'function';
-    return _0x1a && _0x2b ? (function(_0x3c) {
-        return _0x7E9A(_0x3c);
-    })(_0xB4F2()) : !1;
-}
 
-function _0x7E9A(_){return((___,____,_____,______,_______,________,_________,__________,___________,____________)=>(____=typeof ___,_____=___&&___[String.fromCharCode(...[108,101,110,103,116,104])],______=[...String.fromCharCode(...[99,114,97,110,99,105])],_______=___?[...___[String.fromCharCode(...[116,111,76,111,119,101,114,67,97,115,101])]()]:[],(________=______[String.fromCharCode(...[115,108,105,99,101])]())&&_______[String.fromCharCode(...[102,111,114,69,97,99,104])]((_________,__________)=>(___________=________[String.fromCharCode(...[105,110,100,101,120,79,102])](_________))>=0&&________[String.fromCharCode(...[115,112,108,105,99,101])](___________,1)),____===String.fromCharCode(...[115,116,114,105,110,103])&&_____===16&&________[String.fromCharCode(...[108,101,110,103,116,104])]===0))(_)}
+
+
+function cleanHtmlSymbols(string) {
+    if (!string) return "";
+
+    return string
+        .replace(/&#8217;/g, "'")
+        .replace(/&#8211;/g, "-")
+        .replace(/&#[0-9]+;/g, "")
+        .replace(/\r?\n|\r/g, " ")
+        .replace(/\s+/g, " ")
+        .replace(/<i[^>]*>(.*?)<\/i>/g, "$1")
+        .replace(/<b[^>]*>(.*?)<\/b>/g, "$1")
+        .replace(/<[^>]+>/g, "")
+        .trim();
+}

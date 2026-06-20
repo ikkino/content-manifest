@@ -1,20 +1,26 @@
 {
-  "sourceName": "Narucannon",
-  "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/narucannon/icon.png",
-  "author": {
-    "name": "ibro",
-    "icon": "https://git.luna-app.eu/ibro/services/raw/branch/main/profile.jpg",
-    "url": "https://github.com/xibrox"
-  },
-  "version": "2.0.9",
+  "id": "zangetsu_allanime",
+  "sourceName": "AllAnime (Zangetsu)",
+  "iconUrl": "",
+  "version": "1.0.3",
   "language": "English",
-  "streamType": "MP4",
-  "quality": "1080p - 720p - 480p",
-  "baseUrl": "https://pixeldrain.net/",
-  "searchBaseUrl": "https://pixeldrain.net/",
+  "streamType": "HLS",
+  "quality": "1080p",
+  "baseUrl": "https://allanime.day/",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/011/source.js",
-  "type": "anime",
-  "note": "Use external player to watch the streams (e.g. VLC).",
+  "softsub": true,
   "asyncJS": true,
-  "id": "KnqO"
+  "type": "anime",
+  "registry": "zangetsu",
+  "registries": [
+    "zangetsu"
+  ],
+  "manifestUrl": "https://raw.githubusercontent.com/Spyou/zangetsu-providers/main/index.json",
+  "status": "active",
+  "addedAt": "2026-06-14T10:25:37.655Z",
+  "note": "Ported from Zangetsu provider",
+  "author": {
+    "name": "Spyou",
+    "icon": ""
+  }
 }

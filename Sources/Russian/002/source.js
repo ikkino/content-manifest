@@ -45,10 +45,10 @@ function scoreTitle(title, keyword) {
     const t = title.toLowerCase();
     const k = keyword.toLowerCase();
 
-    if (t === k) return 0;              
-    if (t.startsWith(k)) return 1;     
-    if (t.includes(k)) return 2;        
-    return 3;                         
+    if (t === k) return 0;
+    if (t.startsWith(k)) return 1;
+    if (t.includes(k)) return 2;
+    return 3;
 }
 
 async function extractDetails(slug) {
@@ -58,7 +58,7 @@ async function extractDetails(slug) {
     };
     try {
         const response = await fetchv2(
-            "https://hapi.hentaicdn.org/api/anime/" + slug + 
+            "https://hapi.hentaicdn.org/api/anime/" + slug +
             "?fields[]=background&fields[]=eng_name&fields[]=otherNames&fields[]=summary&fields[]=releaseDate&fields[]=type_id&fields[]=caution&fields[]=views&fields[]=close_view&fields[]=rate_avg&fields[]=rate&fields[]=genres&fields[]=tags&fields[]=teams&fields[]=user&fields[]=franchise&fields[]=authors&fields[]=publisher&fields[]=userRating&fields[]=moderated&fields[]=metadata&fields[]=metadata.count&fields[]=metadata.close_comments&fields[]=anime_status_id&fields[]=time&fields[]=episodes&fields[]=episodes_count&fields[]=episodesSchedule&fields[]=shiki_rate"
         , headers);
         const json = await response.json();
@@ -133,7 +133,7 @@ async function extractStreamUrl(ID) {
         const url = "https://hapi.hentaicdn.org/api/episodes/" + ID;
         const response = await fetchv2(url, headers);
         const json = await response.json();
-        
+
         const data = json.data || {};
         const players = data.players || [];
         players.sort((a, b) => {
@@ -150,7 +150,7 @@ async function extractStreamUrl(ID) {
                     if (player.player === "Animelib" && player.video && player.video.quality) {
                         const qualities = player.video.quality;
 
-                        
+
                         for (const qualityItem of qualities) {
                             if (qualityItem.href && qualityItem.quality > highestQualityNum) {
                                 highestQualityNum = qualityItem.quality;
@@ -158,7 +158,7 @@ async function extractStreamUrl(ID) {
 
                             }
                         }
-                        
+
                         if (streamUrl && !streamUrl.startsWith('http')) {
                             streamUrl = 'https://video1.cdnlibs.org/.%D0%B0s/' + streamUrl;
                         }
@@ -169,7 +169,7 @@ async function extractStreamUrl(ID) {
                         }
                         const qualitiesJson = await kodikParser(kodikUrl);
                         const qualities = JSON.parse(qualitiesJson);
-                        
+
                         for (const quality in qualities) {
                             if (qualities[quality].src) {
                                 const qualityNum = parseInt(quality.replace('p', '')) || 0;
@@ -179,7 +179,7 @@ async function extractStreamUrl(ID) {
                                 }
                             }
                         }
-                        
+
                         if (streamUrl && streamUrl.startsWith('//')) {
                             streamUrl = 'https:' + streamUrl;
                         }
@@ -195,14 +195,14 @@ async function extractStreamUrl(ID) {
                             }
                         };
                     }
-                    
+
                     return null;
                 } catch (err) {
                     console.error("[extractStreamUrl] Player processing error:", err.message, err.code);
                     return null;
                 }
             });
-        
+
         const results = await Promise.all(parserPromises);
         const streams = results.filter(stream => stream !== null);
         return JSON.stringify({
@@ -258,15 +258,15 @@ async function kodikParser(url) {
     const apiJson = await apiResponse.json();
 
     const qualities = {};
-    
+
     if (apiJson?.links) {
       for (const quality in apiJson.links) {
         const qualityData = apiJson.links[quality];
-        
+
         if (qualityData && qualityData[0] && qualityData[0].src) {
           const encodedSrc = qualityData[0].src;
           const decodedUrl = decode(encodedSrc);
-          
+
           qualities[quality] = {
             src: decodedUrl,
             type: qualityData[0].type || 'application/x-mpegURL'
