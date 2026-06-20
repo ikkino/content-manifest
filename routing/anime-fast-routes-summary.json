@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-19T12:16:46.015Z",
+  "generatedAt": "2026-06-20T10:12:21.411Z",
   "mediaRequested": 5,
   "categories": {
     "trendingNow": {
@@ -22,18 +22,17 @@
   "modulesChecked": 3,
   "animeWithRoutes": 105,
   "routeCount": 250,
-  "refreshedAnime": 0,
+  "refreshedAnime": 1,
   "mergeExisting": true,
-  "unresolvedAnime": 39,
-  "rejectedAttempts": 39,
+  "unresolvedAnime": 36,
+  "rejectedAttempts": 38,
   "rejectedAttemptSummary": {
     "byReason": {
       "search_no_usable_result": 13,
       "stream_timeout": 11,
+      "host_cooldown_active": 6,
       "media_probe_failed": 4,
-      "host_cooldown_active": 4,
-      "implausible_match": 4,
-      "media_host_error": 2,
+      "implausible_match": 3,
       "route_too_slow": 1
     },
     "topModules": [
@@ -46,47 +45,46 @@
         }
       },
       {
-        "sourceName": "Animetsu",
-        "count": 13,
-        "reasons": {
-          "media_host_error": 2,
-          "media_probe_failed": 4,
-          "host_cooldown_active": 4,
-          "implausible_match": 2,
-          "route_too_slow": 1
-        }
-      },
-      {
         "sourceName": "Senshi",
         "count": 13,
         "reasons": {
           "search_no_usable_result": 13
         }
+      },
+      {
+        "sourceName": "Animetsu",
+        "count": 12,
+        "reasons": {
+          "implausible_match": 1,
+          "media_probe_failed": 4,
+          "host_cooldown_active": 6,
+          "route_too_slow": 1
+        }
       }
     ]
   },
   "mediaProbeBudget": 24,
-  "mediaProbesUsed": 11,
+  "mediaProbesUsed": 12,
   "hostHealth": {
-    "successEvents": 0,
-    "failureEvents": 6,
-    "skippedByCooldown": 4,
+    "successEvents": 1,
+    "failureEvents": 4,
+    "skippedByCooldown": 6,
     "coolingDownHosts": 1
   },
   "failures": [
     {
-      "aniListId": 199221,
-      "title": "Dr. STONE SCIENCE FUTURE Cour 3",
+      "aniListId": 21,
+      "title": "ONE PIECE",
       "moduleId": "G7jX",
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
       "errors": [
-        "media probe failed: host=swiftstream.top HTTP 500 media_host_error; host=swiftstream.top HTTP 500 media_host_error; host=swiftstream.top HTTP 400; host=swiftstream.top HTTP 400; host=swiftstream.top empty media response"
+        "implausible episode match: verified=1 available=1 expected<=1166"
       ]
     },
     {
-      "aniListId": 199221,
-      "title": "Dr. STONE SCIENCE FUTURE Cour 3",
+      "aniListId": 21,
+      "title": "ONE PIECE",
       "moduleId": "jR5U5",
       "catalogPath": "Sources/English/018",
       "sourceName": "Senshi",
@@ -95,8 +93,8 @@
       ]
     },
     {
-      "aniListId": 199221,
-      "title": "Dr. STONE SCIENCE FUTURE Cour 3",
+      "aniListId": 21,
+      "title": "ONE PIECE",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/023",
       "sourceName": "Anikoto",
@@ -107,8 +105,8 @@
       ]
     },
     {
-      "aniListId": 21,
-      "title": "ONE PIECE",
+      "aniListId": 170019,
+      "title": "The Angel Next Door Spoils Me Rotten2",
       "moduleId": "G7jX",
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
@@ -117,8 +115,8 @@
       ]
     },
     {
-      "aniListId": 21,
-      "title": "ONE PIECE",
+      "aniListId": 170019,
+      "title": "The Angel Next Door Spoils Me Rotten2",
       "moduleId": "jR5U5",
       "catalogPath": "Sources/English/018",
       "sourceName": "Senshi",
@@ -127,72 +125,8 @@
       ]
     },
     {
-      "aniListId": 21,
-      "title": "ONE PIECE",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/023",
-      "sourceName": "Anikoto",
-      "errors": [
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out"
-      ]
-    },
-    {
-      "aniListId": 186497,
-      "title": "The Ramparts of Ice",
-      "moduleId": "G7jX",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Animetsu",
-      "errors": [
-        "media probe failed: host=swiftstream.top HTTP 500 media_host_error; host=swiftstream.top HTTP 500 media_host_error; host=swiftstream.top HTTP 400; host=swiftstream.top HTTP 400; host=swiftstream.top empty media response"
-      ]
-    },
-    {
-      "aniListId": 186497,
-      "title": "The Ramparts of Ice",
-      "moduleId": "jR5U5",
-      "catalogPath": "Sources/English/018",
-      "sourceName": "Senshi",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 186497,
-      "title": "The Ramparts of Ice",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/023",
-      "sourceName": "Anikoto",
-      "errors": [
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out"
-      ]
-    },
-    {
-      "aniListId": 189046,
-      "title": "Re:ZERO -Starting Life in Another World- Season 4",
-      "moduleId": "G7jX",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Animetsu",
-      "errors": [
-        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
-      ]
-    },
-    {
-      "aniListId": 189046,
-      "title": "Re:ZERO -Starting Life in Another World- Season 4",
-      "moduleId": "jR5U5",
-      "catalogPath": "Sources/English/018",
-      "sourceName": "Senshi",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 189046,
-      "title": "Re:ZERO -Starting Life in Another World- Season 4",
+      "aniListId": 170019,
+      "title": "The Angel Next Door Spoils Me Rotten2",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/023",
       "sourceName": "Anikoto",
@@ -235,8 +169,8 @@
       ]
     },
     {
-      "aniListId": 195600,
-      "title": "Daemons of the Shadow Realm",
+      "aniListId": 192808,
+      "title": "An Observation Log of My Fiancée Who Calls Herself a Villainess",
       "moduleId": "G7jX",
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
@@ -245,8 +179,8 @@
       ]
     },
     {
-      "aniListId": 195600,
-      "title": "Daemons of the Shadow Realm",
+      "aniListId": 192808,
+      "title": "An Observation Log of My Fiancée Who Calls Herself a Villainess",
       "moduleId": "jR5U5",
       "catalogPath": "Sources/English/018",
       "sourceName": "Senshi",
@@ -255,8 +189,8 @@
       ]
     },
     {
-      "aniListId": 195600,
-      "title": "Daemons of the Shadow Realm",
+      "aniListId": 192808,
+      "title": "An Observation Log of My Fiancée Who Calls Herself a Villainess",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/023",
       "sourceName": "Anikoto",
@@ -267,18 +201,18 @@
       ]
     },
     {
-      "aniListId": 182205,
-      "title": "That Time I Got Reincarnated as a Slime Season 4",
+      "aniListId": 189046,
+      "title": "Re:ZERO -Starting Life in Another World- Season 4",
       "moduleId": "G7jX",
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
       "errors": [
-        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
+        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
       ]
     },
     {
-      "aniListId": 182205,
-      "title": "That Time I Got Reincarnated as a Slime Season 4",
+      "aniListId": 189046,
+      "title": "Re:ZERO -Starting Life in Another World- Season 4",
       "moduleId": "jR5U5",
       "catalogPath": "Sources/English/018",
       "sourceName": "Senshi",
@@ -287,8 +221,40 @@
       ]
     },
     {
-      "aniListId": 182205,
-      "title": "That Time I Got Reincarnated as a Slime Season 4",
+      "aniListId": 189046,
+      "title": "Re:ZERO -Starting Life in Another World- Season 4",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/023",
+      "sourceName": "Anikoto",
+      "errors": [
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 195600,
+      "title": "Daemons of the Shadow Realm",
+      "moduleId": "G7jX",
+      "catalogPath": "Sources/English/004",
+      "sourceName": "Animetsu",
+      "errors": [
+        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
+      ]
+    },
+    {
+      "aniListId": 195600,
+      "title": "Daemons of the Shadow Realm",
+      "moduleId": "jR5U5",
+      "catalogPath": "Sources/English/018",
+      "sourceName": "Senshi",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 195600,
+      "title": "Daemons of the Shadow Realm",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/023",
       "sourceName": "Anikoto",
@@ -335,7 +301,7 @@
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
       "errors": [
-        "implausible episode match: verified=12 available=12 expected<=25"
+        "host cooldown active: swiftstream.top"
       ]
     },
     {
@@ -367,7 +333,7 @@
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
       "errors": [
-        "implausible episode match: verified=1 available=1 expected<=26"
+        "host cooldown active: swiftstream.top"
       ]
     },
     {
@@ -429,7 +395,7 @@
       "catalogPath": "Sources/English/004",
       "sourceName": "Animetsu",
       "errors": [
-        "stored route too slow: 20059ms > 12000ms"
+        "stored route too slow: 20418ms > 12000ms"
       ]
     },
     {
