@@ -1,6 +1,17 @@
 async function searchResults(keyword) {
     const results = [];
     try {
+        const normalizeTitle = (value) => String(value || "")
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/[^a-z0-9]+/g, " ")
+            .replace(/\b(the|a|an)\b/g, " ")
+            .replace(/\s+/g, " ")
+            .trim();
+        const queryTitle = normalizeTitle(keyword);
+        const sequelTerms = /\b(season|movie|film|ova|ona|special|new generation|execution)\b/i;
+
         const response = await fetchv2("https://api3.devcorp.me/vod/search?page=1&keyword=" + encodeURIComponent(keyword.toLowerCase()));
         const encrypted = await response.text();
 
@@ -11,13 +22,27 @@ async function searchResults(keyword) {
         const decryptedData = await decryptedResponse.json();
         console.log(JSON.stringify(decryptedData));
         if (decryptedData.status === 200 && Array.isArray(decryptedData.result)) {
-            for (const item of decryptedData.result) {
-                results.push({
-                    title: item.title || "Unknown",
-                    image: item.image || "",
-                    href: item.id
-                });
+            const mapped = decryptedData.result
+                .filter(item => String(item.type || "").toLowerCase() === "anime")
+                .map(item => ({
+                title: item.title || "Unknown",
+                image: item.image || "",
+                href: item.id
+            }));
+            const exact = [];
+            const broad = [];
+            const sequels = [];
+            for (const item of mapped) {
+                const normalized = normalizeTitle(item.title);
+                if (normalized === queryTitle) {
+                    exact.push(item);
+                } else if (!sequelTerms.test(keyword) && sequelTerms.test(item.title)) {
+                    sequels.push(item);
+                } else {
+                    broad.push(item);
+                }
             }
+            results.push(...exact, ...broad, ...sequels);
         }
         console.log(results);
         return JSON.stringify(results);
@@ -102,25 +127,21 @@ async function extractStreamUrl(href) {
         const sources = decryptedData.result.sources;
         const tracks = decryptedData.result.track;
 
-        const stream = sources.find(s => s.url.includes(".mp4") || s.url.includes(".m3u8"));
+        const stream = sources.find(s => s.url && (s.url.includes(".mp4") || s.url.includes(".m3u8")));
+        if (!stream?.url) {
+            return JSON.stringify({ streams: [], subtitle: null });
+        }
         const subtitle = tracks.find(t => t.name && t.name.toLowerCase().includes("english"));
 
         return JSON.stringify({
             streams: [{
                 title: "Default",
-                streamUrl: stream ? stream.url : "https://error.org/",
-                headers: stream ? stream.headers : {}
+                streamUrl: stream.url,
+                headers: stream.headers || {}
             }],
             subtitle: subtitle ? subtitle.file : null
         });
     } catch (err) {
-        return JSON.stringify({
-            streams: [{
-                title: "Error",
-                streamUrl: "https://error.org/",
-                headers: {}
-            }],
-            subtitle: null
-        });
+        return JSON.stringify({ streams: [], subtitle: null });
     }
 }

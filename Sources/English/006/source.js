@@ -90,30 +90,29 @@ async function extractEpisodes(slug) {
     // console.log("Episodes data received: " + JSON.stringify(data));
 
 
-    let films = [];
-    const episodes = data.data.animeSeasons.reduce((acc, season) => {
+    const seasons = Array.isArray(data.data.animeSeasons) ? data.data.animeSeasons : [];
+    const nonFilmSeasons = seasons.filter(season => String(season.season || "").toLowerCase() !== "filme");
+    const totalSeriesEpisodes = nonFilmSeasons.reduce((total, season) => total + ((season.animeEpisodes || []).length), 0);
+    const useGlobalEpisodeNumbers = totalSeriesEpisodes > 100;
 
-
+    const episodes = [];
+    let globalEpisodeNumber = 1;
+    for (const season of seasons) {
       const seasonEpisodes = season.animeEpisodes || [];
-      seasonEpisodes.forEach(episode => {
-        acc.push({
-          href: `${encodedID}&season=${season.season}&episode=${episode.episode}`,
-          number: episode.episode,
-        });
-      });
-      if (season.season.toLowerCase() === "filme") {
-        films = seasonEpisodes.map(episode => ({
-          href: `${encodedID}&season=${season.season}&episode=${episode.episode}`,
-          number: episode.episode,
-        }));
-        // skip adding films to the main episodes array for now, will add them later
-        return [];
+      const isFilmSeason = String(season.season || "").toLowerCase() === "filme";
+      if (isFilmSeason && episodes.length > 0) {
+        continue;
       }
-      return acc;
-    }, []);
 
-    if (films.length > 0) {
-      episodes.push(...films);
+      seasonEpisodes.forEach(episode => {
+        episodes.push({
+          href: `${encodedID}&season=${season.season}&episode=${episode.episode}`,
+          number: useGlobalEpisodeNumbers && !isFilmSeason ? globalEpisodeNumber : episode.episode,
+        });
+        if (!isFilmSeason) {
+          globalEpisodeNumber += 1;
+        }
+      });
     }
 
 
