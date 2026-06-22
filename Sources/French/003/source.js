@@ -18,20 +18,20 @@ async function sendSupabaseLog(moduleName, actionType, dataPayload) {
             data: dataPayload
         };
 
-        const headers = {
+        const headers = { 
             "Content-Type": "application/json",
             "apikey": SUPABASE_ANON_KEY,
             "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
-            "Prefer": "return=minimal"
+            "Prefer": "return=minimal" 
         };
-
+        
         if (typeof fetchv2 !== 'undefined') {
             await fetchv2(`${SUPABASE_URL}/rest/v1/app_logs`, headers, "POST", JSON.stringify(payload));
         } else {
             await fetch(`${SUPABASE_URL}/rest/v1/app_logs`, { method: "POST", headers: headers, body: JSON.stringify(payload) });
         }
-    } catch (e) {
-        console.log(`[Tracker] 🚨 Erreur d'envoi vers Supabase : ${e.message}`);
+    } catch (e) { 
+        console.log(`[Tracker] 🚨 Erreur d'envoi vers Supabase : ${e.message}`); 
     }
 }
 
@@ -65,7 +65,7 @@ async function searchResults(keyword) {
 
         for (let i = 1; i < blocks.length; i++) {
             let block = blocks[i];
-
+            
             let hrefMatch = block.match(/href=["']([^"']+)["']/i);
             let titleMatch = block.match(/title=["']([^"']+)["']/i) || block.match(/alt=["']([^"']+)["']/i);
             let imgMatch = block.match(/data-src=["']([^"']+)["']/i) || block.match(/src=["']([^"']+)["']/i);
@@ -74,7 +74,7 @@ async function searchResults(keyword) {
             if (hrefMatch && titleMatch) {
                 let href = hrefMatch[1];
                 let title = titleMatch[1];
-
+                
                 if (href.includes('.css') || href.includes('.js') || href.includes('wp-') || title.includes('RSD') || !href.includes(BASE_URL)) {
                     continue;
                 }
@@ -82,7 +82,7 @@ async function searchResults(keyword) {
                 title = title.replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&#039;/g, "'").replace(/&#8211;/g, "-").trim();
                 let rawImage = imgMatch ? imgMatch[1] : "";
                 if (rawImage.startsWith('/')) rawImage = BASE_URL + rawImage;
-
+                
                 const monProxyVercel = "https://proxy-imaga-sora.kurzmathis4.workers.dev/?url=";
                 let image = rawImage ? `${monProxyVercel}${encodeURIComponent(rawImage)}` : `${BASE_URL}/wp-content/uploads/2021/04/voiranime-logo.png`;
 
@@ -90,25 +90,25 @@ async function searchResults(keyword) {
 
                 if (!results.find(r => r.href === href)) {
                     let item = { title: title, image: image, href: href };
-                    if (year) item.year = year;
+                    if (year) item.year = year; 
                     results.push(item);
                 }
             }
         }
-
+        
         console.log(`[Recherche] ✅ ${results.length} animes trouvés.`);
-        sendSupabaseLog("VoirAnime", "SEARCH", {
-            keyword: keyword,
+        sendSupabaseLog("VoirAnime", "SEARCH", { 
+            keyword: keyword, 
             results_count: results.length,
             top_results: results.slice(0, 3).map(r => r.title)
         });
 
         return JSON.stringify(results);
 
-    } catch (e) {
+    } catch (e) { 
         console.error(`[Recherche] 🚨 Erreur :`, e);
         sendSupabaseLog("VoirAnime", "ERROR", { keyword: keyword, error_message: String(e) });
-        return JSON.stringify([]);
+        return JSON.stringify([]); 
     }
 }
 
@@ -130,11 +130,11 @@ async function extractDetails(url) {
 
         let airdate = "N/A";
         const fullDateMatch = html.match(/(?:Start\s*date|End\s*date|Année\s*de\s*sortie|Année|Release|Sortie|Year)[^<]*<\/h5>[\s\S]{1,150}?<div[^>]*class=["'][^"']*summary-content[^"']*["'][^>]*>\s*([^<]+?)\s*<\/div>/i);
-
-        if (fullDateMatch && fullDateMatch[1]) { airdate = fullDateMatch[1].trim(); }
+        
+        if (fullDateMatch && fullDateMatch[1]) { airdate = fullDateMatch[1].trim(); } 
         else {
             const yearFallback = html.match(/(?:Start\s*date|End\s*date|Année\s*de\s*sortie|Année|Release|Sortie|Year)[\s\S]{1,150}?\b(19\d{2}|20\d{2})\b/i);
-            if (yearFallback && yearFallback[1]) { airdate = yearFallback[1]; }
+            if (yearFallback && yearFallback[1]) { airdate = yearFallback[1]; } 
             else {
                 const altMatch = html.match(/href=["'][^"']*(?:anime-release|release|year|\/annee\/)[^"']*["'][^>]*>\s*(19\d{2}|20\d{2})\s*<\/a>/i);
                 if (altMatch && altMatch[1]) { airdate = altMatch[1]; }
@@ -143,9 +143,9 @@ async function extractDetails(url) {
 
         console.log(`[Détails] ✅ Description et année (${airdate}) récupérées.`);
         return JSON.stringify([{ description, aliases: "Voiranime", airdate }]);
-    } catch (e) {
+    } catch (e) { 
         console.error(`[Détails] 🚨 Erreur :`, e);
-        return JSON.stringify([{ description: "Erreur de chargement", aliases: "Voiranime", airdate: "N/A" }]);
+        return JSON.stringify([{ description: "Erreur de chargement", aliases: "Voiranime", airdate: "N/A" }]); 
     }
 }
 
@@ -156,7 +156,7 @@ async function extractEpisodes(url) {
         const response = await soraFetch(url);
         let html = await response.text();
         let results = [];
-
+        
         const epRegex = /<li class=["'][^"']*wp-manga-chapter[^"']*["'][^>]*>[\s\S]*?<a[^>]+href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi;
         let match;
 
@@ -172,16 +172,16 @@ async function extractEpisodes(url) {
         results.sort((a, b) => a.number - b.number);
         console.log(`[Episodes] ✅ ${results.length} épisodes trouvés.`);
         return JSON.stringify(results);
-    } catch (e) {
+    } catch (e) { 
         console.error(`[Episodes] 🚨 Erreur :`, e);
-        return JSON.stringify([]);
+        return JSON.stringify([]); 
     }
 }
 
 // --- 4. LECTEUR (Tracker Ultra Détaillé avec Console.log & Filemoon) ---
 async function extractStreamUrl(url) {
     let extractionLogs = [];
-
+    
     // Fonction Helper pour écrire en même temps dans la console et dans Supabase
     function logDebug(msg) {
         console.log(`[Extrait Vidéo] ${msg}`);
@@ -197,7 +197,7 @@ async function extractStreamUrl(url) {
         const response = await soraFetch(url);
         const html = await response.text();
         logDebug(`✅ Code source récupéré (${html.length} octets).`);
-
+        
         let streams = [];
         let embedUrls = [];
         let failedLinks = [];
@@ -216,7 +216,7 @@ async function extractStreamUrl(url) {
         // 2️⃣ Recherche des redirections (data-redirect)
         const redirectRegex = /data-redirect=["']([^"']+\?host=[^"']+)["']/gi;
         let pagesToFetch = [];
-
+        
         while ((match = redirectRegex.exec(html)) !== null) {
             let redirectUrl = match[1].replace(/&amp;/g, '&');
             if (redirectUrl.startsWith('/')) redirectUrl = BASE_URL + redirectUrl;
@@ -269,7 +269,7 @@ async function extractStreamUrl(url) {
                     logDebug(`[Filemoon] Exécution de filemoonExtractor...`);
                     // 🌟 CORRECTION 1 : On passe l'URL parent (voir-anime.to/...) à l'extracteur
                     let fmResult = await filemoonExtractor(embedUrl, url, logDebug);
-
+                    
                     if (fmResult && fmResult.url) {
                         let qLabel = fmResult.quality ? ` [${fmResult.quality}]` : "";
                         const typeStr = fmResult.url.includes(".m3u8") ? "HLS" : "MP4";
@@ -301,7 +301,7 @@ async function extractStreamUrl(url) {
                             voeRes = await soraFetch(redirectMatch[1], { headers: { "Referer": BASE_URL } });
                             voeHtml = await voeRes.text();
                         }
-
+                        
                         logDebug(`[VOE] Tentative de décodage JSON...`);
                         const streamUrl = voeExtractor(voeHtml);
                         if (streamUrl) {
@@ -316,8 +316,8 @@ async function extractStreamUrl(url) {
                         failedLinks.push({ server_name: "VOE (Page inaccessible)", url: embedUrl });
                         logDebug(`[VOE] ❌ Page hors-ligne ou inaccessible.`);
                     }
-                } catch(e) {
-                    failedLinks.push({ server_name: "VOE (Crash)", url: embedUrl, error: e.message });
+                } catch(e) { 
+                    failedLinks.push({ server_name: "VOE (Crash)", url: embedUrl, error: e.message }); 
                     logDebug(`[VOE] 🚨 ERREUR CRITIQUE : ${e.message}`);
                 }
             }
@@ -327,22 +327,22 @@ async function extractStreamUrl(url) {
                 try {
                     const stRes = await soraFetch(embedUrl);
                     const stHtml = await stRes.text();
-
+                    
                     logDebug(`[Streamtape] Recherche du robotlink...`);
-
+                    
                     let directUrl = null;
-
+                    
                     // 🌟 L'ULTIME MÉTHODE : Streamtape met un FAUX lien dans la balise HTML pour piéger les bots (Erreur 500).
                     // Le VRAI lien est calculé en Javascript juste en dessous. On va exécuter ce calcul !
                     const robotLineMatch = stHtml.match(/document\.getElementById\(['"]robotlink['"]\)\.innerHTML\s*=\s*([^;]+)/i);
 
                     if (robotLineMatch) {
                         let expression = robotLineMatch[1].trim();
-
+                        
                         try {
                             // On évalue dynamiquement le calcul Javascript de Streamtape (ex: "lien" + ("lettres").substring(2))
                             let tokenStr = new Function("return " + expression)();
-
+                            
                             directUrl = tokenStr.startsWith('http') ? tokenStr : (tokenStr.startsWith('//') ? 'https:' + tokenStr : 'https://streamtape.com' + tokenStr);
                             logDebug(`[Streamtape] Lien calculé avec succès en contournant le piège HTML.`);
                         } catch(err) {
@@ -352,7 +352,7 @@ async function extractStreamUrl(url) {
 
                     if (directUrl) {
                         if (!directUrl.includes("&stream=1")) directUrl += "&stream=1";
-
+                        
                         logDebug(`[Streamtape] Lien intermédiaire reconstruit : ${directUrl}`);
                         logDebug(`[Streamtape] 🔄 Suivi de la redirection (Location) vers le fichier MP4...`);
 
@@ -362,7 +362,7 @@ async function extractStreamUrl(url) {
                                 headers: { "Referer": embedUrl, "User-Agent": "Mozilla/5.0" },
                                 method: "HEAD"
                             });
-
+                            
                             if (redirectReq && redirectReq.url && redirectReq.url !== directUrl) {
                                 directUrl = redirectReq.url;
                                 logDebug(`[Streamtape] 🟢 SUCCÈS ! Lien MP4 direct obtenu : ${directUrl.substring(0, 40)}...`);
@@ -374,16 +374,16 @@ async function extractStreamUrl(url) {
                         }
 
                         const typeStr = directUrl.includes(".m3u8") ? "HLS" : "MP4";
-                        streams.push({
-                            title: `Streamtape (${typeStr})`,
-                            streamUrl: directUrl,
-                            headers: { "Referer": "https://streamtape.com/", "User-Agent": "Mozilla/5.0" }
+                        streams.push({ 
+                            title: `Streamtape (${typeStr})`, 
+                            streamUrl: directUrl, 
+                            headers: { "Referer": "https://streamtape.com/", "User-Agent": "Mozilla/5.0" } 
                         });
                     } else {
                         failedLinks.push({ server_name: "Streamtape (Robotlink Introuvable)", url: embedUrl });
                         logDebug(`[Streamtape] ❌ Script robotlink introuvable (Anti-bot modifié).`);
                     }
-                } catch (e) {
+                } catch (e) { 
                     failedLinks.push({ server_name: "Streamtape (Crash)", url: embedUrl, error: e.message });
                     logDebug(`[Streamtape] 🚨 ERREUR CRITIQUE : ${e.message}`);
                 }
@@ -395,13 +395,13 @@ async function extractStreamUrl(url) {
                     const vidRes = await soraFetch(embedUrl, { headers: { "Referer": BASE_URL } });
                     const vidHtml = await vidRes.text();
                     const fileMatch = vidHtml.match(/file\s*:\s*["']([^"']+\.(?:m3u8|mp4)[^"']*)["']/i);
-
+                    
                     if (fileMatch) {
                         const typeStr = fileMatch[1].includes(".m3u8") ? "HLS" : "MP4";
-                        streams.push({
-                            title: `Vidmoly (${typeStr})`,
-                            streamUrl: fileMatch[1],
-                            headers: { "Referer": "https://vidmoly.to/", "Origin": "https://vidmoly.to" }
+                        streams.push({ 
+                            title: `Vidmoly (${typeStr})`, 
+                            streamUrl: fileMatch[1], 
+                            headers: { "Referer": "https://vidmoly.to/", "Origin": "https://vidmoly.to" } 
                         });
                         logDebug(`[Vidmoly] 🟢 SUCCÈS ! Flux final trouvé : ${fileMatch[1]}`);
                     } else {
@@ -419,7 +419,7 @@ async function extractStreamUrl(url) {
                 try {
                     const req = await soraFetch(embedUrl, { headers: { "Referer": BASE_URL } });
                     logDebug(`[Streamhide] Exécution de vidhideExtractor...`);
-                    let streamUrl = vidhideExtractor(await req.text());
+                    let streamUrl = vidhideExtractor(await req.text()); 
                     if (streamUrl) {
                         const typeStr = streamUrl.includes(".m3u8") ? "HLS" : "MP4";
                         streams.push({ title: `Streamhide (${typeStr})`, streamUrl: streamUrl, headers: { "Referer": embedUrl, "User-Agent": "Mozilla/5.0" } });
@@ -428,8 +428,8 @@ async function extractStreamUrl(url) {
                         failedLinks.push({ server_name: "Streamhide/F16px (Protégé ou Mort)", url: embedUrl });
                         logDebug(`[Streamhide] ❌ Impossible d'extraire la vidéo (peut-être DMCA/Supprimé).`);
                     }
-                } catch(e) {
-                    failedLinks.push({ server_name: "Streamhide (Crash)", url: embedUrl, error: e.message });
+                } catch(e) { 
+                    failedLinks.push({ server_name: "Streamhide (Crash)", url: embedUrl, error: e.message }); 
                     logDebug(`[Streamhide] 🚨 ERREUR CRITIQUE : ${e.message}`);
                 }
             }
@@ -440,7 +440,7 @@ async function extractStreamUrl(url) {
                     const yuRes = await soraFetch(embedUrl, { headers: { "Referer": BASE_URL } });
                     const yuHtml = await yuRes.text();
                     const yuMatch = yuHtml.match(/property=["']og:video["'][^>]+content=["']([^"']+)["']/i) || yuHtml.match(/file\s*:\s*["']([^"']+\.mp4[^"']*)["']/i);
-
+                    
                     if (yuMatch) {
                         let initialStreamUrl = yuMatch[1];
                         let finalStreamUrl = initialStreamUrl;
@@ -457,8 +457,8 @@ async function extractStreamUrl(url) {
                         failedLinks.push({ server_name: "YourUpload (Fichier Introuvable)", url: embedUrl });
                         logDebug(`[YourUpload] ❌ Code HTML ne contient aucun lien vidéo valide.`);
                     }
-                } catch(e) {
-                    failedLinks.push({ server_name: "YourUpload (Crash)", url: embedUrl, error: e.message });
+                } catch(e) { 
+                    failedLinks.push({ server_name: "YourUpload (Crash)", url: embedUrl, error: e.message }); 
                     logDebug(`[YourUpload] 🚨 ERREUR CRITIQUE : ${e.message}`);
                 }
             }
@@ -477,7 +477,7 @@ async function extractStreamUrl(url) {
                         failedLinks.push({ server_name: "Sibnet (MP4 Introuvable)", url: embedUrl });
                         logDebug(`[Sibnet] ❌ Aucun MP4 détecté dans le code source Windows-1251.`);
                     }
-                } catch (e) {
+                } catch (e) { 
                     failedLinks.push({ server_name: "Sibnet (Crash)", url: embedUrl, error: e.message });
                     logDebug(`[Sibnet] 🚨 ERREUR CRITIQUE : ${e.message}`);
                 }
@@ -491,18 +491,18 @@ async function extractStreamUrl(url) {
                     if (idMatch && idMatch[1]) {
                         const videoId = idMatch[1];
                         const apiRes = await soraFetch(`https://my.mail.ru/+/video/meta/${videoId}`);
-
+                        
                         if (apiRes) {
                             const apiJson = JSON.parse(await apiRes.text());
-
+                            
                             if (apiJson && apiJson.videos && apiJson.videos.length > 0) {
                                 for (let vid of apiJson.videos) {
                                     let directUrl = vid.url.startsWith('//') ? "https:" + vid.url : vid.url;
                                     const typeStr = directUrl.includes(".m3u8") ? "HLS" : "MP4";
-                                    streams.push({
-                                        title: `Mail.ru [${vid.key}] (${typeStr})`,
-                                        streamUrl: directUrl,
-                                        headers: { "Referer": "https://my.mail.ru/", "User-Agent": "Mozilla/5.0" }
+                                    streams.push({ 
+                                        title: `Mail.ru [${vid.key}] (${typeStr})`, 
+                                        streamUrl: directUrl, 
+                                        headers: { "Referer": "https://my.mail.ru/", "User-Agent": "Mozilla/5.0" } 
                                     });
                                 }
                                 logDebug(`[Mail.ru] 🟢 SUCCÈS ! Flux MP4 trouvé(s).`);
@@ -525,7 +525,7 @@ async function extractStreamUrl(url) {
                 try {
                     const req = await soraFetch(embedUrl, { headers: { "Referer": BASE_URL } });
                     const htmlContent = await req.text();
-
+                    
                     // 🌟 DÉTECTION INTELLIGENTE : Recherche de la signature Filemoon cachée
                     if (htmlContent.includes("Byse Frontend")) {
                         logDebug(`[MOTEUR] 🟢 Signature "Byse Frontend" détectée ! Clone Filemoon identifié.`);
@@ -560,12 +560,12 @@ async function extractStreamUrl(url) {
         }
 
         // Filtration des résultats finaux
-        let safeStreams = streams.filter(s =>
-            s.streamUrl.includes('.mp4') ||
-            s.streamUrl.includes('.m3u8') ||
+        let safeStreams = streams.filter(s => 
+            s.streamUrl.includes('.mp4') || 
+            s.streamUrl.includes('.m3u8') || 
             s.streamUrl.includes('streamtape.com')
         );
-
+        
         let uniqueStreams = [];
         let seenUrls = new Set();
         for (let s of safeStreams) {
@@ -577,8 +577,8 @@ async function extractStreamUrl(url) {
 
         // 📡 Logs vers Supabase pour l'historique
         if (failedLinks.length > 0) {
-            sendSupabaseLog("VoirAnime", "UNSUPPORTED_HOSTS", {
-                media_path: url,
+            sendSupabaseLog("VoirAnime", "UNSUPPORTED_HOSTS", { 
+                media_path: url, 
                 failed_count: failedLinks.length,
                 failed_links: failedLinks,
                 execution_time_ms: totalTime,
@@ -587,8 +587,8 @@ async function extractStreamUrl(url) {
         }
 
         if (uniqueStreams.length > 0) {
-            sendSupabaseLog("VoirAnime", "PLAYER", {
-                media_path: url,
+            sendSupabaseLog("VoirAnime", "PLAYER", { 
+                media_path: url, 
                 streams_found: uniqueStreams.length,
                 servers: uniqueStreams.map(s => ({ nom: s.title, lien: s.streamUrl })),
                 execution_time_ms: totalTime,
@@ -689,9 +689,9 @@ async function filemoonExtractor(url, parentUrl, logFn = console.log) {
     // 🌟 DÉTECTION 100% DYNAMIQUE DU DOMAINE MIROIR (Regex Infaillible)
     const domainMatch = url ? url.match(/https?:\/\/[^\/]+/i) : null;
     const embedOrigin = domainMatch ? domainMatch[0] : "https://filemoon.to";
-
+    
     logDebugLocal(`Origine du lecteur détectée automatiquement : ${embedOrigin}`);
-
+    
     logDebugLocal(`Récupération de la page embed pour extraire le fingerprint...`);
     const embedRes = await soraFetch(url, { headers: htmlHeaders, method: 'GET' });
     let embedHtml = "";
@@ -732,11 +732,11 @@ async function filemoonExtractor(url, parentUrl, logFn = console.log) {
         const tokenMatch = htmlToScan.match(/['"]?token['"]?\s*[:=]\s*['"]([^'"]+)['"]/i);
         const viewerIdMatch = htmlToScan.match(/['"]?viewer_id['"]?\s*[:=]\s*['"]([^'"]+)['"]/i);
         const deviceIdMatch = htmlToScan.match(/['"]?device_id['"]?\s*[:=]\s*['"]([^'"]+)['"]/i);
-
+        
         if (tokenMatch) fingerprint.token = tokenMatch[1];
         if (viewerIdMatch) fingerprint.viewer_id = viewerIdMatch[1];
         if (deviceIdMatch) fingerprint.device_id = deviceIdMatch[1];
-
+        
         logDebugLocal(`Fingerprint extrait : token=${fingerprint.token ? "OK" : "VIDE"} | viewer_id=${fingerprint.viewer_id ? "OK" : "VIDE"}`);
     } catch (e) {
         logDebugLocal(`⚠️ Impossible d'extraire le fingerprint : ${e.message}`);
@@ -760,7 +760,7 @@ async function filemoonExtractor(url, parentUrl, logFn = console.log) {
         logDebugLocal(`Appel API interne Filemoon (POST) : ${apiUrl}`);
         const response = await soraFetch(apiUrl, { headers: apiHeaders, method: 'POST', body: payload });
         const json = await response.json();
-
+        
         // 🌟 NOUVELLE SÉCURITÉ ICI
         if (!json || !json.playback) {
             logDebugLocal(`❌ L'API Filemoon n'a pas renvoyé les données (Vidéo supprimée/DMCA). Réponse: ${JSON.stringify(json)}`);
@@ -770,7 +770,7 @@ async function filemoonExtractor(url, parentUrl, logFn = console.log) {
         logDebugLocal(`Payload JSON reçu de l'API. Lancement du décrypteur...`);
         const decryptor = new FileMoonDecryptor(json, logDebugLocal);
         const decrypted = await decryptor.decrypt();
-
+        
         if (decrypted && decrypted.sources && decrypted.sources.length > 0) {
             let bestSource = decrypted.sources.sort((a, b) => (b.height || 0) - (a.height || 0))[0];
             if (bestSource && bestSource.url) {
@@ -778,7 +778,7 @@ async function filemoonExtractor(url, parentUrl, logFn = console.log) {
                 return { url: bestSource.url, quality: bestSource.label || "HD" };
             }
         }
-
+        
         logDebugLocal(`❌ Aucun flux stream trouvé après le déchiffrement.`);
         return null;
     } catch (error) {
@@ -788,17 +788,17 @@ async function filemoonExtractor(url, parentUrl, logFn = console.log) {
 }
 
 class FileMoonDecryptor {
-    constructor(data, logFn) {
-        this.d = data.playback;
+    constructor(data, logFn) { 
+        this.d = data.playback; 
         this.logLocal = logFn || console.log;
     }
-
+    
     async decrypt() {
         this.logLocal(`Analyse de l'encryption en cours...`);
         try {
             const phpEndpoint = 'https://api.jm26.net/decryptAESGCM/';
             this.logLocal(`Envoi de la requête de déchiffrement à JM26 Endpoint...`);
-
+            
             const response = await soraFetch(phpEndpoint, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -808,13 +808,13 @@ class FileMoonDecryptor {
                     iv: this.d.iv
                 })
             });
-
+            
             if(!response) return null;
             const resultText = await response.text();
             const result = JSON.parse(resultText);
-
+            
             if (!result.success) throw new Error(result.error || 'Déchiffrement JM26 refusé');
-
+            
             this.logLocal(`Déchiffrement réussi sur le serveur PHP.`);
             return result.data;
         } catch(e) {
@@ -833,9 +833,9 @@ function voeExtractor(html) {
         const obfuscatedJson = jsonScriptMatch[1].trim();
         let data;
         try { data = JSON.parse(obfuscatedJson); } catch (e) { return null; }
-
+        
         if (!Array.isArray(data) || typeof data[0] !== "string") return null;
-
+        
         let obfuscatedString = data[0];
         let step1 = voeRot13(obfuscatedString);
         let step2 = voeRemovePatterns(step1);
@@ -900,7 +900,7 @@ function vidhideExtractor(html) {
         let directMatch = html.match(/(https?:\/\/[^"'\s]+\.(?:m3u8|mp4)[^"'\s]*)/i);
         if (directMatch) {
             videoUrl = directMatch[1];
-        }
+        } 
         else if (html.includes('eval(function(p,a,c,k,e,d)')) {
             let packRegex = /eval\(function\(p,a,c,k,e,d\).*?\.split\('\|'\)\)\)/g;
             let packMatches = html.match(packRegex);

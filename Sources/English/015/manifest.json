@@ -1,26 +1,28 @@
 {
-  "id": "zangetsu_hianime",
-  "sourceName": "HiAnime (Zangetsu)",
-  "iconUrl": "",
-  "version": "1.0.7",
+  "sourceName": "123Anime",
+  "iconUrl": "https://123animehub.cc/assets/favicons/apple-touch-icon.png",
+  "author": {
+    "name": "50/50",
+    "icon": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ3122kQwublLkZ6rf1fEpUP79BxZOFmH9BSA&s"
+  },
+  "version": "1.0.1",
   "language": "English",
   "streamType": "HLS",
   "quality": "1080p",
-  "baseUrl": "https://hianime.to/",
+  "baseUrl": "https://123animehub.cc/",
+  "searchBaseUrl": "https://123animehub.cc/",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/015/source.js",
-  "softsub": true,
-  "asyncJS": true,
   "type": "anime",
-  "registry": "zangetsu",
-  "registries": [
-    "zangetsu"
-  ],
-  "manifestUrl": "https://raw.githubusercontent.com/Spyou/zangetsu-providers/main/index.json",
-  "status": "active",
-  "addedAt": "2026-06-14T10:25:39.985Z",
-  "note": "Ported from Zangetsu provider",
-  "author": {
-    "name": "Spyou",
-    "icon": ""
-  }
+  "asyncJS": true,
+  "softsub": true,
+  "downloadSupport": true,
+  "supportsMojuru": true,
+  "supportsDartotsu": true,
+  "supportsSora": true,
+  "supportsLuna": true,
+  "supportsAnymex": true,
+  "supportsTsumi": true,
+  "supportsHiyoku": true,
+  "supportsShirox": true,
+  "id": "jCtAp"
 }

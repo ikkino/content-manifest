@@ -515,20 +515,27 @@ async function extractStreamUrl(url) {
             };
         }
 
+        // Fetch all streams in parallel
+        const [
+            megaSubStream, megaDubStream,
+            vidSubStream,  vidDubStream,
+            kiwiStreams
+        ] = await Promise.allSettled([
+            fetchMegaplayStream(megaSub),
+            fetchMegaplayStream(megaDub),
+            fetchVidplayStream(vidplaySub),
+            fetchVidplayStream(vidplayDub),
+            Anikoto.extractKwikStream(url)
+        ]);
+
         const streams = [];
         let subtitles = "";
         let subtitlesHeaders = {};
         let allSubtitles = [];
 
-        const addStream = (s) => {
-            if (!s) return false;
-            if (Array.isArray(s)) {
-                const valid = s.filter(item => item && item.streamUrl);
-                if (!valid.length) return false;
-                streams.push(...valid);
-                return true;
-            }
-            if (!s.streamUrl) return false;
+        // Process Megaplay
+        if (megaSubStream.status === "fulfilled" && megaSubStream.value) {
+            const s = megaSubStream.value;
             streams.push({ title: s.title, streamUrl: s.streamUrl, headers: s.headers });
             if (!subtitles && s.subtitles) {
                 subtitles = s.subtitles;
@@ -537,48 +544,49 @@ async function extractStreamUrl(url) {
             if (s.allSubtitles?.length) {
                 allSubtitles.push(...s.allSubtitles);
             }
-            return true;
-        };
-
-        const withShortTimeout = async (promise, label, timeoutMs = 3500) => {
-            let timeoutId;
-            try {
-                return await Promise.race([
-                    promise,
-                    new Promise(resolve => {
-                        timeoutId = setTimeout(() => {
-                            console.warn("[extractStreamUrl] " + label + " timed out");
-                            resolve(null);
-                        }, timeoutMs);
-                    })
-                ]);
-            } catch (e) {
-                console.warn("[extractStreamUrl] " + label + " failed: " + e);
-                return null;
-            } finally {
-                if (timeoutId) clearTimeout(timeoutId);
+        }
+        if (megaDubStream.status === "fulfilled" && megaDubStream.value) {
+            const s = megaDubStream.value;
+            streams.push({ title: s.title, streamUrl: s.streamUrl, headers: s.headers });
+            if (!subtitles && s.subtitles) {
+                subtitles = s.subtitles;
+                subtitlesHeaders = s.subtitlesHeaders;
             }
-        };
-
-        const primaryTasks = [
-            ["Megaplay SUB", fetchMegaplayStream(megaSub)],
-            ["Vidplay SUB", fetchVidplayStream(vidplaySub)],
-            ["Megaplay DUB", fetchMegaplayStream(megaDub)],
-            ["Vidplay DUB", fetchVidplayStream(vidplayDub)]
-        ];
-
-        for (const [label, task] of primaryTasks) {
-            const stream = await withShortTimeout(task, label);
-            if (addStream(stream)) {
-                const result = JSON.stringify({ streams, subtitles, subtitlesHeaders, allSubtitles });
-                console.log("[extractStreamUrl] Fast result from " + label + ": " + result.substring(0, 300));
-                return result;
+            if (s.allSubtitles?.length) {
+                allSubtitles.push(...s.allSubtitles);
             }
         }
 
-        const kiwiStreams = await withShortTimeout(Anikoto.extractKwikStream(url), "Kiwi", 4500);
-        if (addStream(kiwiStreams)) {
-            console.log("[extractStreamUrl] Added " + streams.length + " Kiwi Hardsub streams");
+        // Process Vidplay
+        if (vidSubStream.status === "fulfilled" && vidSubStream.value) {
+            const s = vidSubStream.value;
+            streams.push({ title: s.title, streamUrl: s.streamUrl, headers: s.headers });
+            if (!subtitles && s.subtitles) {
+                subtitles = s.subtitles;
+                subtitlesHeaders = s.subtitlesHeaders;
+            }
+            if (s.allSubtitles?.length) {
+                allSubtitles.push(...s.allSubtitles);
+            }
+        }
+        if (vidDubStream.status === "fulfilled" && vidDubStream.value) {
+            const s = vidDubStream.value;
+            streams.push({ title: s.title, streamUrl: s.streamUrl, headers: s.headers });
+            if (!subtitles && s.subtitles) {
+                subtitles = s.subtitles;
+                subtitlesHeaders = s.subtitlesHeaders;
+            }
+            if (s.allSubtitles?.length) {
+                allSubtitles.push(...s.allSubtitles);
+            }
+        }
+
+        // Process Kwik streams
+        if (kiwiStreams.status === "fulfilled" && kiwiStreams.value) {
+            streams.push(...kiwiStreams.value);
+            console.log("[extractStreamUrl] Added " + kiwiStreams.value.length + " Kiwi Hardsub streams");
+        } else if (kiwiStreams.status === "rejected") {
+            console.warn("[extractStreamUrl] Kiwi extraction failed:", kiwiStreams.reason);
         }
 
         const result = JSON.stringify({ streams, subtitles, subtitlesHeaders, allSubtitles });
@@ -598,38 +606,11 @@ async function searchResults(keyword) {
         const items = await Anikoto.search(keyword);
         if (!items) return JSON.stringify([{ title: "Error", image: "", href: "" }]);
 
-        const normalizeTitle = (value) => String(value || "")
-            .toLowerCase()
-            .replace(/&amp;/g, "&")
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "")
-            .replace(/\((tv|ona|ova)\)/g, " ")
-            .replace(/[^a-z0-9]+/g, " ")
-            .replace(/\b(the|a|an)\b/g, " ")
-            .replace(/\s+/g, " ")
-            .trim();
-        const queryTitle = normalizeTitle(keyword);
-        const specialPattern = /\b(movie|film|special|recap|episode of|ova|ona|sp|fan letter|log:|the movie)\b/i;
-        const seriesPattern = /\((tv)\)|\bseason\b/i;
-
         const transformed = items.map(item => ({
             title: item.title || "Untitled",
             image: item.poster || "",
             href: "anime/" + item.session
-        })).sort((a, b) => {
-            const aTitle = normalizeTitle(a.title);
-            const bTitle = normalizeTitle(b.title);
-            const aExact = aTitle === queryTitle || aTitle === `${queryTitle} tv`;
-            const bExact = bTitle === queryTitle || bTitle === `${queryTitle} tv`;
-            if (aExact !== bExact) return aExact ? -1 : 1;
-            const aSeries = seriesPattern.test(a.title);
-            const bSeries = seriesPattern.test(b.title);
-            if (aSeries !== bSeries) return aSeries ? -1 : 1;
-            const aSpecial = specialPattern.test(a.title);
-            const bSpecial = specialPattern.test(b.title);
-            if (aSpecial !== bSpecial) return aSpecial ? 1 : -1;
-            return 0;
-        });
+        }));
 
         console.log("Transformed Results: " + JSON.stringify(transformed));
         return JSON.stringify(transformed);

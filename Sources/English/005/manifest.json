@@ -1,26 +1,26 @@
 {
-  "id": "zangetsu_animekai",
-  "sourceName": "AnimeKai (Zangetsu)",
-  "iconUrl": "",
-  "version": "1.1.2",
+  "sourceName": "AnimeHeaven",
+  "iconUrl": "https://animeheaven.me/ah_logo.png",
+  "author": {
+    "name": "50/50",
+    "icon": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ3122kQwublLkZ6rf1fEpUP79BxZOFmH9BSA&s"
+  },
+  "version": "1.0.6",
   "language": "English",
   "streamType": "HLS",
-  "quality": "1080p",
-  "baseUrl": "https://animekai.to/",
+  "quality": "720p",
+  "baseUrl": "https://animeheaven.me/",
+  "searchBaseUrl": "https://animeheaven.me/search.php?s=%s",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/005/source.js",
-  "softsub": true,
-  "asyncJS": true,
   "type": "anime",
-  "registry": "zangetsu",
-  "registries": [
-    "zangetsu"
-  ],
-  "manifestUrl": "https://raw.githubusercontent.com/Spyou/zangetsu-providers/main/index.json",
-  "status": "active",
-  "addedAt": "2026-06-14T10:25:50.353Z",
-  "note": "Ported from Zangetsu provider",
-  "author": {
-    "name": "Spyou",
-    "icon": ""
-  }
+  "asyncJS": true,
+  "note": "Website was recently hit by a DMCA, so not everything might work right away, please give them time to reupload anime!",
+  "supportsMojuru": true,
+  "supportsDartotsu": true,
+  "supportsSora": true,
+  "supportsLuna": true,
+  "supportsAnymex": true,
+  "supportsTsumi": true,
+  "supportsHiyoku": true,
+  "id": "Rf8D"
 }

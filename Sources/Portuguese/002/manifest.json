@@ -1,21 +1,28 @@
 {
-  "sourceName": "AniBunker",
-  "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/anibunker/icon.png",
+  "sourceName": "AniTube",
+  "iconUrl": "https://www.anitube.news/wp-content/uploads/cropped-Favicon6-192x192.png",
   "author": {
-    "name": "ibro",
-    "icon": "https://git.luna-app.eu/ibro/services/raw/branch/main/profile.jpg",
-    "url": "https://github.com/xibrox"
+    "name": "50/50",
+    "icon": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ3122kQwublLkZ6rf1fEpUP79BxZOFmH9BSA&s"
   },
-  "version": "1.0.10",
+  "version": "1.0.1",
   "language": "Portuguese",
-  "streamType": "MP4 & HLS",
+  "streamType": "HLS",
   "quality": "1080p",
-  "baseUrl": "https://anibunker.com/",
-  "searchBaseUrl": "https://anibunker.com/search?q=%s",
+  "baseUrl": "https://www.anitube.news/",
+  "searchBaseUrl": "https://www.anitube.news/",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Portuguese/002/source.js",
   "type": "anime",
-  "downloadSupport": true,
   "asyncJS": true,
-  "softsub": true,
-  "id": "B6vpy"
+  "softsub": false,
+  "downloadSupport": false,
+  "supportsMojuru": true,
+  "supportsDartotsu": true,
+  "supportsSora": true,
+  "supportsLuna": true,
+  "supportsAnymex": true,
+  "supportsTsumi": true,
+  "supportsHiyoku": true,
+  "supportsShirox": true,
+  "id": "BdWxr"
 }

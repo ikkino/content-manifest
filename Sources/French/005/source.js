@@ -11,15 +11,15 @@ const SUPABASE_ANON_KEY = "sb_publishable_F68CBjFVPh71U0SdD9BQJg_UJgL9-Fj";
 async function sendSupabaseLog(moduleName, actionType, dataPayload) {
     try {
         const payload = { module: moduleName, action: actionType, data: dataPayload };
-        const headers = {
+        const headers = { 
             "Content-Type": "application/json",
             "apikey": SUPABASE_ANON_KEY,
             "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
-            "Prefer": "return=minimal"
+            "Prefer": "return=minimal" 
         };
         await fetchv2(`${SUPABASE_URL}/rest/v1/app_logs`, headers, "POST", JSON.stringify(payload));
-    } catch (e) {
-        console.log(`[Tracker] 🚨 Erreur d'envoi vers Supabase : ${e.message}`);
+    } catch (e) { 
+        console.log(`[Tracker] 🚨 Erreur d'envoi vers Supabase : ${e.message}`); 
     }
 }
 
@@ -39,7 +39,7 @@ async function getDomainsList() {
         while ((match = domainRegex.exec(html)) !== null) {
             domains.push(match[1]);
         }
-
+        
         console.log(`[Domaines] ✅ Domaines trouvés : ${domains.join(', ')}`);
         return domains.length > 0 ? domains : ["anime-sama.to"];
     } catch (err) {
@@ -62,15 +62,15 @@ async function trySearch(domain, keyword) {
         const response = await fetchv2(fetchUrl, headers, "POST", `query=${encodeURIComponent(keyword)}`);
         const html = await response.text();
         const results = [];
-
+        
         const regex = /<a[^>]+href=["']([^"']+)["'][\s\S]*?<img[^>]+src=["']([^"']+)["'][\s\S]*?<h3[^>]*>(.*?)<\/h3>/gi;
         let match;
-
+        
         while ((match = regex.exec(html)) !== null) {
             let href = match[1].trim();
             let image = match[2].trim();
             let title = match[3].replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&#039;/g, "'").replace(/&#8211;/g, "-").trim();
-
+            
             if (href.startsWith('/')) href = `https://${domain}${href}`;
             if (image.startsWith('/')) image = `https://${domain}${image}`;
 
@@ -78,7 +78,7 @@ async function trySearch(domain, keyword) {
                 results.push({ title, image, href });
             }
         }
-
+        
         return { results: results };
     } catch (e) {
         console.log(`[Recherche AS] 🚨 Erreur sur ${domain} : ${e}`);
@@ -90,19 +90,19 @@ async function searchResults(keyword) {
     try {
         const domains = await getDomainsList();
         console.log(`[Recherche AS] 🔍 Démarrage de la recherche sur ${domains.length} domaines.`);
-
+        
         let finalResults = [];
 
         for (let i = 0; i < domains.length; i++) {
             let currentDomain = domains[i];
             console.log(`[Recherche AS] 📡 Vérification du radar pour : ${currentDomain}...`);
-
+            
             try {
                 const checkRes = await fetchv2(`https://anime-sama.pw/?check=${currentDomain}`, { "User-Agent": "Mozilla/5.0" }, "GET");
                 const checkData = JSON.parse(await checkRes.text());
                 if (checkData.code !== 200) {
                     console.log(`[Recherche AS] ⏭️ ${currentDomain} ignoré.`);
-                    continue;
+                    continue; 
                 }
             } catch (e) {}
 
@@ -111,13 +111,13 @@ async function searchResults(keyword) {
                 if (searchAttempt.results && searchAttempt.results.length > 0) {
                     console.log(`[Recherche AS] 🚀 Succès sur ${currentDomain} ! ${searchAttempt.results.length} résultats extraits.`);
                     finalResults = searchAttempt.results;
-                    break;
+                    break; 
                 }
             } catch (err) {}
         }
 
-        sendSupabaseLog("Anime-Sama", "SEARCH", {
-            keyword: keyword,
+        sendSupabaseLog("Anime-Sama", "SEARCH", { 
+            keyword: keyword, 
             results_count: finalResults.length,
             top_results: finalResults.slice(0, 3).map(r => r.title)
         });
@@ -139,8 +139,8 @@ async function extractDetails(url) {
         const html = await response.text();
 
         let description = "Pas de description disponible.";
-        let descMatch = html.match(/id=["']synopsis["'][^>]*>([\s\S]*?)<\//i) ||
-                          html.match(/class=["']synopsis["'][^>]*>([\s\S]*?)<\//i) ||
+        let descMatch = html.match(/id=["']synopsis["'][^>]*>([\s\S]*?)<\//i) || 
+                          html.match(/class=["']synopsis["'][^>]*>([\s\S]*?)<\//i) || 
                           html.match(/<p class=["']text-sm[^>]*>([\s\S]*?)<\/p>/i);
 
         if (descMatch && descMatch[1]) {
@@ -148,8 +148,8 @@ async function extractDetails(url) {
         }
 
         return JSON.stringify([{ description, aliases: "Anime-Sama" }]);
-    } catch (e) {
-        return JSON.stringify([{ description: "Erreur de chargement", aliases: "Anime-Sama" }]);
+    } catch (e) { 
+        return JSON.stringify([{ description: "Erreur de chargement", aliases: "Anime-Sama" }]); 
     }
 }
 
@@ -166,7 +166,7 @@ async function extractEpisodes(url) {
         const seasonRegex = /panneauAnime\s*\(\s*['"]([^'"]+)['"]\s*,\s*['"]([^'"]+)['"]\s*\)/gi;
         let match;
         let tabs = [];
-
+        
         while ((match = seasonRegex.exec(html)) !== null) {
             let name = match[1].trim();
             let path = match[2].trim();
@@ -185,7 +185,7 @@ async function extractEpisodes(url) {
                 let jsUrl = tab.url;
                 if (!jsUrl.endsWith('/')) jsUrl += '/';
                 jsUrl += "episodes.js";
-
+                
                 let jsRes = await fetchv2(jsUrl, headers, "GET");
                 let jsContent = await jsRes.text();
 
@@ -217,18 +217,18 @@ async function extractEpisodes(url) {
                     let cleanTabName = tab.name.replace(/\(?(VOSTFR|VF)\)?/i, '').trim();
                     let currentSeason = fallbackSeason;
                     let seasonMatch = cleanTabName.match(/saison\s*(\d+)/i);
-
+                    
                     if (seasonMatch) currentSeason = parseInt(seasonMatch[1]);
-                    else if (cleanTabName.toLowerCase().includes('film') || cleanTabName.toLowerCase().includes('oav')) currentSeason = 0;
+                    else if (cleanTabName.toLowerCase().includes('film') || cleanTabName.toLowerCase().includes('oav')) currentSeason = 0; 
 
                     for (let i = 0; i < maxEpisodes; i++) {
                         let separator = jsUrl.includes('?') ? '&' : '?';
                         let epHref = `${jsUrl}${separator}episode_index=${i}`;
                         let epTitle = maxEpisodes === 1 ? cleanTabName : `Épisode ${i + 1}`;
-
+                        
                         results.push({
                             title: epTitle, name: epTitle, href: epHref,
-                            number: i + 1, season: currentSeason
+                            number: i + 1, season: currentSeason     
                         });
                     }
                     if (!cleanTabName.toLowerCase().includes('film')) fallbackSeason++;
@@ -242,11 +242,11 @@ async function extractEpisodes(url) {
 // --- 4. LECTEUR ---
 async function extractStreamUrl(url) {
     console.log(`[Lecteur AS] 🎬 Démarrage pour : ${url}`);
-
+    
     try {
         let epIndex = 0;
         let jsUrl1 = url;
-
+        
         if (url.includes('episode_index=')) {
             let parts = url.split('episode_index=');
             epIndex = parseInt(parts[1]) || 0;
@@ -265,14 +265,14 @@ async function extractStreamUrl(url) {
                 { lang: "VA", url: jsUrl1.replace(`/${currentLang}/`, '/va/') }
             ];
         } else {
-            langsToFetch = [{ lang: "VOSTFR", url: jsUrl1 }];
+            langsToFetch = [{ lang: "VOSTFR", url: jsUrl1 }]; 
         }
 
         const headers = { "User-Agent": "Mozilla/5.0", "Referer": "https://anime-sama.to/" };
 
         let fetchPromises = langsToFetch.map(l => fetchv2(l.url, headers, "GET").then(r => r.text()).catch(() => ""));
         let contents = await Promise.all(fetchPromises);
-
+        
         let allEmbeds = [];
 
         function parseJsContent(jsText, langTag) {
@@ -311,7 +311,7 @@ async function extractStreamUrl(url) {
                     let voeRes = await fetchv2(embedUrl, { "Referer": "https://anime-sama.to/" }, "GET");
                     if (voeRes) {
                         let voeHtml = await voeRes.text();
-
+                        
                         // Fix Redirection VOE (Domain Hopping)
                         const redirectMatch = voeHtml.match(/window\.location\.href\s*=\s*["']([^"']+)["']/i);
                         if (redirectMatch && redirectMatch[1]) {
@@ -342,7 +342,7 @@ async function extractStreamUrl(url) {
                         extractedNames.push(`${prefix} Streamtape`);
                     }
                 } catch (e) {}
-            }
+            } 
             // 4. LECTEUR VIDMOLY
             else if (urlLower.includes("vidmoly")) {
                 try {
@@ -373,19 +373,19 @@ async function extractStreamUrl(url) {
                 console.log(`[Sibnet] 🔍 1/4 - Démarrage extraction sur : ${embedUrl}`);
                 try {
                     // 🌟 CORRECTION 1 : On force un User-Agent Desktop pour éviter la version mobile de Sibnet sur iOS
-                    const sibnetHeaders = {
+                    const sibnetHeaders = { 
                         "Referer": "https://anime-sama.to/",
                         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
                     };
                     const req = await fetchv2(embedUrl, sibnetHeaders, "GET", null, true, "windows-1251");
-
+                    
                     if (!req) {
                         console.log(`[Sibnet] 🚨 1/4 - ERREUR FATALE : La requête (fetchv2) a renvoyé NULL. (Problème de fetch réseau sur iOS ?)`);
                         continue;
                     }
-
+                    
                     const html = await req.text();
-
+                    
                     if (!html || html.length < 100) {
                          console.log(`[Sibnet] 🚨 2/4 - ERREUR : HTML reçu vide ou trop court (Taille: ${html ? html.length : 0}).`);
                          continue;
@@ -394,14 +394,14 @@ async function extractStreamUrl(url) {
                     }
 
                     // 🌟 CORRECTION 2 : Regex plus robuste (Supporte les .m3u8 et les URLs absolues)
-                    const srcMatch = html.match(/player\.src\s*\(\s*\[\s*\{\s*src\s*:\s*["']([^"']+)["']/i) ||
-                                     html.match(/src:\s*["']((?:https?:\/\/video\.sibnet\.ru)?\/v\/[^"']+\.(?:mp4|m3u8)[^"']*)["']/i) ||
+                    const srcMatch = html.match(/player\.src\s*\(\s*\[\s*\{\s*src\s*:\s*["']([^"']+)["']/i) || 
+                                     html.match(/src:\s*["']((?:https?:\/\/video\.sibnet\.ru)?\/v\/[^"']+\.(?:mp4|m3u8)[^"']*)["']/i) || 
                                      html.match(/["']((?:https?:\/\/video\.sibnet\.ru)?\/v\/[^"']+\.(?:mp4|m3u8)[^"']*)["']/i);
-
+                    
                     if (srcMatch) {
                         let streamUrl = srcMatch[1].startsWith("http") ? srcMatch[1] : "https://video.sibnet.ru" + srcMatch[1];
                         console.log(`[Sibnet] ✅ 3/4 - SRC trouvée par le Regex : ${streamUrl}`);
-
+                        
                         try {
                             console.log(`[Sibnet] 📡 4/4 - Tentative de résolution de la redirection (HEAD)...`);
                             const redirectReq = await fetchv2(streamUrl, {
@@ -409,7 +409,7 @@ async function extractStreamUrl(url) {
                                 // Certains iOS WKWebview bloquent si le User-Agent n'est pas "Mobile"
                                 "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Mobile/15E148 Safari/604.1"
                             }, "HEAD");
-
+                            
                             if (redirectReq && redirectReq.url && redirectReq.url !== streamUrl) {
                                 console.log(`[Sibnet] 🔄 Redirection confirmée vers : ${redirectReq.url}`);
                                 streamUrl = redirectReq.url;
@@ -420,10 +420,10 @@ async function extractStreamUrl(url) {
                             console.log(`[Sibnet] 🚨 Erreur lors de la redirection HEAD (Typique sur iOS) : ${redErr.message}. On force le lien d'origine.`);
                         }
 
-                        streams.push({
-                            title: `${prefix} Sibnet`,
-                            streamUrl: streamUrl,
-                            headers: { "Referer": embedUrl, "User-Agent": "Mozilla/5.0" }
+                        streams.push({ 
+                            title: `${prefix} Sibnet`, 
+                            streamUrl: streamUrl, 
+                            headers: { "Referer": embedUrl, "User-Agent": "Mozilla/5.0" } 
                         });
                         extractedNames.push(`${prefix} Sibnet`);
                         console.log(`[Sibnet] 🎉 SUCCÈS TOTAL : Sibnet ajouté aux flux.`);
@@ -442,14 +442,14 @@ async function extractStreamUrl(url) {
                     const html = await req.text();
 
                     if (html.includes('/vidhide/') || html.includes('eval(function(p,a,c,k,e,d)')) {
-                        let streamUrl = vidhideExtractor(html);
+                        let streamUrl = vidhideExtractor(html); 
                         if (streamUrl) {
                             let originMatch = embedUrl.match(/^(https?:\/\/[^\/]+)/i);
                             let originUrl = originMatch ? originMatch[1] + "/" : "https://vidhide.com/";
-                            streams.push({
-                                title: `${prefix} Vidhide`,
-                                streamUrl: streamUrl,
-                                headers: { "Referer": originUrl, "User-Agent": "Mozilla/5.0" }
+                            streams.push({ 
+                                title: `${prefix} Vidhide`, 
+                                streamUrl: streamUrl, 
+                                headers: { "Referer": originUrl, "User-Agent": "Mozilla/5.0" } 
                             });
                             extractedNames.push(`${prefix} Vidhide`);
                         }
@@ -471,7 +471,7 @@ async function extractStreamUrl(url) {
             if (!seenUrls.has(s.streamUrl)) { seenUrls.add(s.streamUrl); uniqueStreams.push(s); }
         }
 
-        sendSupabaseLog("Anime-Sama", "PLAYER", {
+        sendSupabaseLog("Anime-Sama", "PLAYER", { 
             anime_url: url, ep_number: epIndex + 1, streams_found: uniqueStreams.length, servers: extractedNames
         });
 
@@ -497,12 +497,12 @@ function voeExtractor(html) {
     try {
         const jsonScriptMatch = html.match(/<script[^>]+type=["']application\/json["'][^>]*>([\s\S]*?)<\/script>/i);
         if (!jsonScriptMatch) return null;
-
+        
         let data = JSON.parse(jsonScriptMatch[1].trim());
         let step1 = data[0].replace(/[a-zA-Z]/g, c => String.fromCharCode((c <= "Z" ? 90 : 122) >= (c = c.charCodeAt(0) + 13) ? c : c - 26));
-        let step2 = step1;
+        let step2 = step1; 
         ["@$", "^^", "~@", "%?", "*~", "!!", "#&"].forEach(pat => step2 = step2.split(pat).join(""));
-
+        
         const safeAtob = (b64) => {
             const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
             let str = String(b64).replace(/=+$/, '');
@@ -512,12 +512,12 @@ function voeExtractor(html) {
             }
             return output;
         };
-
+        
         let step3 = safeAtob(step2);
         let step4 = step3.split("").map((c) => String.fromCharCode(c.charCodeAt(0) - 3)).join("");
         let step5 = step4.split("").reverse().join("");
         let step6 = safeAtob(step5);
-
+        
         let result = JSON.parse(step6);
         return result.direct_access_url || (result.source && result.source.find(s => s.direct_access_url)?.direct_access_url) || null;
     } catch (e) { return null; }
@@ -530,11 +530,11 @@ function vidhideExtractor(html) {
         let directMatch = html.match(/(https?:\/\/[^"'\s]+\.(?:m3u8|mp4)[^"'\s]*)/i);
         if (directMatch) {
             videoUrl = directMatch[1];
-        }
+        } 
         else if (html.includes('eval(function(p,a,c,k,e,d)')) {
             let packRegex = /eval\(function\(p,a,c,k,e,d\).*?\.split\('\|'\)\)\)/g;
             let packMatches = html.match(packRegex);
-
+            
             if (packMatches) {
                 for (let packed of packMatches) {
                     let argsMatch = packed.match(/}\s*\(\s*(['"])(.*?)\1\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*(['"])(.*?)\5\.split\('\|'\)/);
@@ -543,15 +543,15 @@ function vidhideExtractor(html) {
                         let a = parseInt(argsMatch[3], 10);
                         let c = parseInt(argsMatch[4], 10);
                         let k = argsMatch[6].split('|');
-
+                        
                         let e = function(c) {
                             return (c < a ? '' : e(parseInt(c / a))) + ((c = c % a) > 35 ? String.fromCharCode(c + 29) : c.toString(36));
                         };
-
+                        
                         while (c--) {
                             if (k[c]) p = p.replace(new RegExp('\\b' + e(c) + '\\b', 'g'), k[c]);
                         }
-
+                        
                         let unpackedMatch = p.match(/(https?:\/\/[^"'\s]+\.(?:m3u8|mp4)[^"'\s]*)/i);
                         if (unpackedMatch) {
                             videoUrl = unpackedMatch[1];

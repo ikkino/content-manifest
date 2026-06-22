@@ -1,118 +1,142 @@
 async function searchResults(keyword) {
-    const regex = /<a href="([^"]*)" class="mse">[\s\S]*?<img src="([^"]*)" class="media-object">[\s\S]*?<h2>([^<]*?)<\/h2>/g;
     const results = [];
-    try {
-        const response = await fetchv2("https://www.animegg.org/search/?q=" + encodeURIComponent(keyword));
-        const html = await response.text();
+    const response = await fetchv2(`https://animenosub.to/?s=${keyword}`);
+    const html = await response.text();
 
-        let match;
-        while ((match = regex.exec(html)) !== null) {
-            results.push({
-                title: match[3].trim(),
-                image: match[2].trim(),
-                href: "https://www.animegg.org" + match[1].trim()
-            });
-        }
+    // Regex pattern to extract the title, image, and href from the article elements
+    const regex = /<article class="bs"[^>]*>.*?<a href="([^"]+)"[^>]*>.*?<img src="([^"]+)"[^>]*>.*?<h2[^>]*>(.*?)<\/h2>/gs;
 
-        return JSON.stringify(results);
-    } catch (err) {
-        return JSON.stringify([{
-            title: "Error",
-            image: "Error",
-            href: "Error"
-        }]);
+    let match;
+    while ((match = regex.exec(html)) !== null) {
+        results.push({
+            title: match[3].trim(),
+            image: match[2].trim(),
+            href: match[1].trim()
+        });
     }
+
+    return JSON.stringify(results);
 }
 
 async function extractDetails(url) {
-    try {
-        const response = await fetchv2(url);
-        const html = await response.text();
+    const results = [];
+    const response = await fetchv2(url);
+    const html = await response.text();
 
-        const descMatch = html.match(/<p class="ptext">(.*?)<\/p>/s);
-        const description = descMatch ? descMatch[1].trim() : "N/A";
+    const match = html.match(/<div class="entry-content"[^>]*>([\s\S]*?)<\/div>/);
 
-        return JSON.stringify([{
-            description: description,
-            aliases: "N/A",
-            airdate: "N/A"
-        }]);
-    } catch (err) {
-        return JSON.stringify([{
-            description: "Error",
-            aliases: "Error",
-            airdate: "Error"
-        }]);
+    let description = "N/A";
+    if (match) {
+        description = match[1]
+            .replace(/<[^>]+>/g, '')
+            .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(code))
+            .replace(/&quot;/g, '"')
+            .replace(/&apos;/g, "'")
+            .replace(/&amp;/g, "&")
+            .trim();
     }
+
+    results.push({
+        description: description,
+        aliases: 'N/A',
+        airdate: 'N/A'
+    });
+
+    return JSON.stringify(results);
 }
 
 async function extractEpisodes(url) {
     const results = [];
-    try {
-        const response = await fetchv2(url);
-        const html = await response.text();
+    const response = await fetchv2(url);
+    const html = await response.text();
 
-        const regex = /<a href="([^"]*)" class="anm_det_pop">[\s\S]*?<i class="anititle">(Episode (\d+)|Movie)<\/i>/g;
-        let match;
-        while ((match = regex.exec(html)) !== null) {
-            const href = "https://www.animegg.org" + match[1].trim();
-            let number;
-            if (match[2] === "Movie") {
-                number = 1;
-            } else {
-                number = parseInt(match[3], 10);
-            }
-            results.push({
-                href: href,
-                number: number
-            });
-        }
+    const regex = /<a href="([^"]+)">\s*<div class="epl-num">([\d.]+)<\/div>/g;
 
-        return JSON.stringify(results.reverse());
-    } catch (err) {
-        return JSON.stringify([{
-            href: "Error",
-            number: "Error"
-        }]);
+    let match;
+    while ((match = regex.exec(html)) !== null) {
+        results.push({
+            href: match[1].trim(),
+            number: parseFloat(match[2])
+        });
     }
+    results.reverse();
+    return JSON.stringify(results);
 }
+
 
 async function extractStreamUrl(url) {
     try {
         const response = await fetchv2(url);
         const html = await response.text();
-        const ulMatch = html.match(/<ul id="videos"[^>]*>(.*?)<\/ul>/s);
-        if (!ulMatch) return JSON.stringify({streams: [], subtitle: "none"});
-        const ulHtml = ulMatch[1];
-        const liRegex = /<li><a[^>]*data-id='(\d+)'[^>]*data-version="(subbed|dubbed)"[^>]*>/g;
-        const versions = [];
-        let liMatch;
-        while ((liMatch = liRegex.exec(ulHtml)) !== null) {
-            versions.push({id: liMatch[1], type: liMatch[2]});
+        const streams = [];
+
+        const optionRegex = /<option value="([^"]+)"[^>]*>\s*([^<]*Omega[^<]*)\s*<\/option>/gi;
+
+        let optionMatch;
+        while ((optionMatch = optionRegex.exec(html)) !== null) {
+            const base64Value = optionMatch[1];
+            const label = optionMatch[2].trim();
+
+            if (!base64Value) continue;
+
+            try {
+                const decodedHtml = atob(base64Value);
+                const iframeMatch = decodedHtml.match(/<iframe[^>]+src=["']([^"']+)["']/i);
+
+                if (iframeMatch) {
+                    let iframeUrl = iframeMatch[1];
+                    if (iframeUrl.startsWith("//")) iframeUrl = "https:" + iframeUrl;
+
+                    const responseTwo = await fetchv2(iframeUrl);
+                    const htmlTwo = await responseTwo.text();
+
+                    const m3u8Match = htmlTwo.match(/sources\s*:\s*\[\s*\{\s*file\s*:\s*['"]([^'"]+master\.m3u8[^'"]*)['"]/i) ||
+                                      htmlTwo.match(/file\s*:\s*['"]([^'"]+\.m3u8[^'"]*)['"]/i);
+
+                    if (m3u8Match) {
+                        streams.push({
+                            title: label,
+                            streamUrl: m3u8Match[1],
+                            headers: {
+                                "Referer": "https://vidmoly.biz/",
+                                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+                            }
+                        });
+                    }
+                }
+            } catch (innerErr) {
+            }
         }
-        const embedPromises = versions.map(async (ver) => {
-            const embedUrl = `https://www.animegg.org/embed/${ver.id}`;
-            const embedResponse = await fetchv2(embedUrl);
-            const embedHtml = await embedResponse.text();
-            const vsMatch = embedHtml.match(/(?:var|const|let) videoSources = (\[[\s\S]*?\]);/);
-            if (!vsMatch) return [];
-            const jsonString = vsMatch[1].replace(/([{,]\s*)([a-zA-Z_][a-zA-Z0-9_]*)\s*:/g, '$1"$2":');
-            const vsJson = JSON.parse(jsonString);
-            return vsJson.map(src => {
-                const quality = src.label;
-                const fileUrl = "https://www.animegg.org" + src.file;
-                const title = (ver.type === 'subbed' ? 'Sub' : 'Dub') + ' • ' + quality;
-                return {
-                    title: title,
-                    streamUrl: fileUrl,
-                    headers: { "Referer": "https://www.animegg.org/" }
-                };
-            });
+
+        return JSON.stringify({
+            streams: streams,
+            subtitle: ""
         });
-        const streamArrays = await Promise.all(embedPromises);
-        const streams = streamArrays.flat();
-        return JSON.stringify({streams: streams, subtitle: "none"});
     } catch (err) {
-        return JSON.stringify({streams: [], subtitle: "none"});
+        return JSON.stringify({
+            streams: [],
+            subtitle: ""
+        });
     }
+}
+
+function atob(input) {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+    let str = '';
+    let buffer = 0;
+    let bits = 0;
+    for (let i = 0; i < input.length; i++) {
+        const char = input.charAt(i);
+        if (char === '=') break;
+        const index = chars.indexOf(char);
+        if (index === -1) continue;
+        buffer = (buffer << 6) | index;
+        bits += 6;
+        if (bits >= 8) {
+            bits -= 8;
+            str += String.fromCharCode((buffer >> bits) & 0xFF);
+            buffer &= (1 << bits) - 1;
+        }
+    }
+    return str;
 }
