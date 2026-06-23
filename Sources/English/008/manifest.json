@@ -1,21 +1,24 @@
 {
-  "sourceName": "Anikuro",
-  "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/anikuro/icon.png",
+  "sourceName": "AniWorld (ENG SUB)",
+  "iconUrl": "https://git.luna-app.eu/Cufiy/sora-modules/raw/branch/main/modules/aniworld/aniworld.png",
   "author": {
-    "name": "ibro",
-    "icon": "https://git.luna-app.eu/ibro/services/raw/branch/main/profile.jpg",
-    "url": "https://github.com/xibrox"
+    "name": "Cufiy & Hamzo",
+    "icon": "https://files.catbox.moe/ttj4fc.gif",
+    "url": "https://github.com/JMcrafter26"
   },
-  "version": "1.1.8",
+  "version": "0.3.5",
   "language": "English",
   "streamType": "HLS",
-  "quality": "1080p",
-  "baseUrl": "https://anikuro.ru/",
-  "searchBaseUrl": "https://anikuro.ru/search?query=%s",
+  "quality": "720p",
+  "baseUrl": "https://google.com",
+  "searchBaseUrl": "https://aniworld.to/ajax/seriesSearch?keyword=%s",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/008/source.js",
-  "type": "anime",
-  "downloadSupport": true,
   "asyncJS": true,
-  "softsub": true,
-  "id": "jLYn4"
+  "streamAsyncJS": false,
+  "type": "anime",
+  "supportsMojuru": true,
+  "supportsSora": true,
+  "supportsLuna": true,
+  "supportsSoru": true,
+  "id": "jZdQ"
 }

@@ -1,178 +1,246 @@
 async function searchResults(keyword) {
-    const results = [];
     try {
-        const response = await fetchv2("https://123animehub.cc/search?keyword=" + encodeURIComponent(keyword));
-        const html = await response.text();
+        const encodedKeyword = encodeURIComponent(keyword);
+        const responseText = await soraFetch(`https://aniwaves.ru/filter?keyword=${encodedKeyword}`);
+        const html = await responseText.text();
 
-        const filmListMatch = html.match(/<div class="film-list">([\s\S]*?)<div class="clearfix"><\/div>/);
-        if (!filmListMatch) {
-            return JSON.stringify(results);
-        }
+        const regex = /<div\s+class="item\s*">[\s\S]*?<a\s+href="([^"]+)">[\s\S]*?<img\s+src="([^"]+)"[^>]*>[\s\S]*?<a\s+class="name\s+d-title"[^>]*>([^<]+)<\/a>/g;
 
-        const filmList = filmListMatch[1];
-        const itemRegex = /<div class="item">[\s\S]*?<a href="([^"]+)"[^>]*class="poster"[\s\S]*?<img[^>]*alt="([^"]+)"[^>]*src="([^"]+)"/g;
+        const results = [];
         let match;
-        while ((match = itemRegex.exec(filmList)) !== null) {
+
+        while ((match = regex.exec(html)) !== null) {
+            if (match[3].trim() === "Omiai Aite Wa Oshiego Tsuyokina Mondaiji") {
+                continue;
+            }
+
             results.push({
-                title: match[2].trim(),
-                image: "https://123animehub.cc" + match[3].trim(),
-                href: "https://123animehub.cc" + match[1].trim()
+                title: match[3].trim(),
+                image: match[2].trim(),
+                href: `https://aniwaves.ru${match[1].trim()}`
             });
         }
 
-        const normalizedKeyword = keyword.toLowerCase().replace(/\s+/g, " ").trim();
-        results.sort((a, b) => {
-            const titleA = a.title.toLowerCase().replace(/\s+\((dub|sub)\)$/i, "").trim();
-            const titleB = b.title.toLowerCase().replace(/\s+\((dub|sub)\)$/i, "").trim();
-            const exactA = titleA === normalizedKeyword ? 0 : 1;
-            const exactB = titleB === normalizedKeyword ? 0 : 1;
-            if (exactA !== exactB) return exactA - exactB;
-            return a.title.length - b.title.length;
-        });
-
         return JSON.stringify(results);
-    } catch (err) {
-        return JSON.stringify([{
-            title: "Error",
-            image: "Error",
-            href: "Error"
-        }]);
+    } catch (error) {
+        console.log('Fetch error in searchResults:', error);
+        return JSON.stringify([{ title: 'Error', image: '', href: '' }]);
     }
 }
 
 async function extractDetails(url) {
     try {
-        const response = await fetchv2(url);
-        const html = await response.text();
+        const responseText = await soraFetch(url);
+        const html = await responseText.text();
 
-        let description = "N/A";
-        let aliases = "N/A";
-        let airdate = "N/A";
+        // Description: match synopsis div, then find any div with class containing "content"
+        const descriptionMatch = html.match(/<div class="synopsis mb-3">[\s\S]*?<div[^>]*class="[^"]*content[^"]*"[^>]*>(.*?)<\/div>/);
+        let description = descriptionMatch ? descriptionMatch[1].trim() : 'No description available';
 
-        const descMatch = html.match(/<div class="desc">([\s\S]*?)<\/div>/);
-        if (descMatch) {
-            description = descMatch[1].replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
-        }
+        // Remove possible "Aired, ..." prefix (only on episode pages)
+        description = description.replace(/^Aired,\s+[^,]+,\s*/, '');
 
-        const aliasMatch = html.match(/<p class="alias">([^<]*)<\/p>/);
-        if (aliasMatch) {
-            aliases = aliasMatch[1].trim();
-        }
+        const aliasesMatch = html.match(/<div class="names font-italic mb-2">(.*?)<\/div>/);
+        const aliases = aliasesMatch ? aliasesMatch[1].trim() : 'No aliases available';
 
-        const airdateMatch = html.match(/<dt>Released:<\/dt>\s*<dd>\s*<a[^>]*>(\d+)<\/a>/);
-        if (airdateMatch) {
-            airdate = airdateMatch[1].trim();
-        }
+        const airdateMatch = html.match(/Date aired:\s*<span><span[^>]*>(.*?)<\/span>/);
+        const airdate = airdateMatch ? `Aired: ${airdateMatch[1].trim()}` : 'Aired: Unknown';
 
+        const transformedResults = [{
+            description,
+            aliases,
+            airdate
+        }];
+
+        return JSON.stringify(transformedResults);
+    } catch (error) {
+        console.log('Details error:', error);
         return JSON.stringify([{
-            description: description,
-            aliases: aliases,
-            airdate: airdate
-        }]);
-    } catch (err) {
-        return JSON.stringify([{
-            description: "Error",
-            aliases: "Error",
-            airdate: "Error"
+            description: 'Error loading description',
+            aliases: 'Duration: Unknown',
+            airdate: 'Aired/Released: Unknown'
         }]);
     }
 }
 
 async function extractEpisodes(url) {
-    const results = [];
     try {
-        const animeId = url.split('/').pop();
+        // Extract series slug from URLs like https://aniwaves.ru/watch/kimetsu-no-yaiba-77717
+        const slugMatch = url.match(/https:\/\/aniwaves\.ru\/watch\/([^\/]+)/);
+        if (!slugMatch) throw new Error("Invalid URL format");
+        const animeSlug = slugMatch[1];
 
-        const response = await fetchv2("https://123animehub.cc/ajax/film/sv?id=" + animeId);
-        const jsonData = await response.json();
-        const html = jsonData.html;
+        // First hyphen-separated word for fallback (e.g., "kimetsu")
+        const firstWordMatch = animeSlug.match(/^([^-]+)/);
+        const firstSlugWord = firstWordMatch ? firstWordMatch[1] : animeSlug;
 
-        const episodesMatch = html.match(/<ul class="episodes range"[^>]*>([\s\S]*?)<\/ul>/);
-        if (!episodesMatch) {
-            return JSON.stringify(results);
-        }
+        const responseText = await soraFetch(url);
+        const html = await responseText.text();
 
-        const episodesHTML = episodesMatch[1];
+        // Capture episode count: "Episodes: <span>26 / 26</span>" -> take first number
+        const episodesMatch = html.match(/Episodes:\s*<span>(\d+)/);
+        const episodesCount = episodesMatch ? parseInt(episodesMatch[1], 10) : 0;
 
-        const episodeRegex = /data-pop='(\d+)'/g;
-        let match;
-        const seenEpisodes = new Set();
+        const transformedResults = [];
 
-        while ((match = episodeRegex.exec(episodesHTML)) !== null) {
-            const episodeNum = parseInt(match[1], 10);
+        if (episodesCount > 0) {
+            for (let i = 1; i <= episodesCount; i++) {
+                transformedResults.push({
+                    href: `${url}/episode/${i}`,
+                    number: i
+                });
+            }
+        } else {
+            // Fallback search using the API
+            const apiUrl = `https://aniwaves.ru/filter?keyword=${encodeURIComponent(firstSlugWord)}`;
+            const searchResponse = await soraFetch(apiUrl);
+            const searchHtml = await searchResponse.text();
 
-            if (!seenEpisodes.has(episodeNum)) {
-                seenEpisodes.add(episodeNum);
-                results.push({
-                    href: animeId + "/" + episodeNum + "/vidstreaming.io",
-                    number: episodeNum
+            // Match a search result card: <a href="/watch/..." ...><span>Ep: 26</span>
+            const regex = new RegExp(
+                `<a\\s+[^>]*href="\\/watch\\/${animeSlug}"[^>]*>[\\s\\S]*?<span>Ep:\\s*(\\d+)<\\/span>`,
+                'i'
+            );
+            const epMatch = searchHtml.match(regex);
+            const fallbackCount = epMatch ? parseInt(epMatch[1], 10) : 0;
+
+            for (let i = 1; i <= fallbackCount; i++) {
+                transformedResults.push({
+                    href: `${url}/episode/${i}`,
+                    number: i
                 });
             }
         }
 
-        return JSON.stringify(results);
-    } catch (err) {
-        return JSON.stringify([{
-            href: "Error",
-            number: "Error"
-        }]);
+        return JSON.stringify(transformedResults);
+    } catch (error) {
+        console.log('Fetch error in extractEpisodes:', error);
+        return JSON.stringify([]);
     }
 }
 
-async function extractStreamUrl(ID) {
+async function extractStreamUrl(url) {
     try {
-        const response = await fetchv2("https://123animehub.cc/ajax/episode/info?epr=" + encodeURIComponent(ID));
-        const data = await response.json();
-        const target = data.target;
+        console.log("Input URL: " + url);
+        const match = url.match(/https:\/\/aniwaves\.ru\/watch\/([^\/]+)\/episode\/(\d+)/);
+        if (!match) throw new Error("Invalid URL format – expected /watch/SLUG/episode/NUM");
 
-        if (!target) throw new Error("No target in response: " + JSON.stringify(data));
+        const animeSlug = match[1];
+        const episodeNumber = match[2];
+        console.log("Anime slug: " + animeSlug + ", Episode: " + episodeNumber);
 
-        const responseTarget = await fetchv2(target);
-        const htmlTarget = await responseTarget.text();
-        const zrpart2Match = htmlTarget.match(/var\s+zrpart2\s*=\s*'([^']+)';/);
-        if (!zrpart2Match) throw new Error("zrpart2 not found");
-        const zrpart2 = zrpart2Match[1];
+        const idMatch = animeSlug.match(/(\d+)$/);
+        if (!idMatch) throw new Error("Could not extract show ID from slug");
+        const showId = idMatch[1];
+        console.log("Show ID: " + showId);
 
-        const originMatch = target.match(/^(https?:\/\/[^\/]+)/);
-        const origin = originMatch ? originMatch[1] : "";
+        const headers = { 'Referer': url };
 
-        const hsUrl = `${origin}/hs/${zrpart2}`;
-        const responseHs = await fetchv2(hsUrl);
-        const htmlHs = await responseHs.text();
-        const dataIdMatch = htmlHs.match(/id="mg-player"[^>]*data-id="([^"]+)"/);
-        if (!dataIdMatch) throw new Error("data-id not found");
-        const dataId = dataIdMatch[1];
+        // Step 1: Get server list (JSON -> extract result HTML)
+        const listUrl = "https://aniwaves.ru/ajax/server/list?servers=" + showId + "&eps=" + episodeNumber;
+        console.log("Fetching server list: " + listUrl);
+        const listResp = await soraFetch(listUrl, { headers });
+        if (!listResp) throw new Error("No response for server list");
+        const rawText = await listResp.text();
+        const listJson = JSON.parse(rawText);
+        const html = listJson.result;                     // the actual HTML
+        console.log("Server list HTML (first 500 chars): " + html.substring(0, 500));
 
-        const sourcesUrl = `${origin}/hs/getSources?id=${dataId}`;
-        const responseSources = await fetchv2(sourcesUrl);
-        const dataSources = await responseSources.json();
-        const headers = {
-            "Referer": origin + "/",
-            "Origin": origin,
-            "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1"
-        };
+        // Extract first sub link-id (overall first)
+        const subIdMatch = html.match(/data-link-id="([^"]+)"/);
+        console.log("Sub ID match: " + (subIdMatch ? subIdMatch[1] : "null"));
+        // Extract first dub link-id inside the dub block
+        const dubIdMatch = html.match(/<div class="type" data-type="dub">[\s\S]*?data-link-id="([^"]+)"/);
+        console.log("Dub ID match: " + (dubIdMatch ? dubIdMatch[1] : "null"));
 
-        if (Array.isArray(dataSources.sources)) {
-            return dataSources.sources.map((source, index) => {
-                const streamUrl = typeof source === "string" ? source : (source.file || source.url || source.streamUrl || source.stream);
-                return {
-                    title: source?.label || source?.title || `Server ${index + 1}`,
-                    streamUrl,
-                    headers
-                };
-            }).filter((source) => source.streamUrl);
+        const subUrls = [];
+        const dubUrls = [];
+
+        async function resolveM3u8(linkId, type) {
+            console.log("\n--- Resolving " + type + " stream for link ID: " + linkId + " ---");
+            try {
+                // Step 2: get embed URL
+                const srcUrl = "https://aniwaves.ru/ajax/sources?id=" + encodeURIComponent(linkId) + "&asi=0&autoPlay=0";
+                console.log("Fetching source: " + srcUrl);
+                const srcResp = await soraFetch(srcUrl, { headers });
+                if (!srcResp) { console.log("No response for source API"); return null; }
+                const srcText = await srcResp.text();
+                console.log("Source API response (first 500 chars): " + srcText.substring(0, 500));
+                const srcData = JSON.parse(srcText);
+                const embedUrl = srcData?.result?.url;
+                if (!embedUrl) { console.log("No embed URL in source response"); return null; }
+                console.log("Embed URL: " + embedUrl);
+
+                // Step 3: fetch embed page, extract data-id for getSources
+                console.log("Fetching embed page...");
+                const embedResp = await soraFetch(embedUrl, { headers });
+                if (!embedResp) { console.log("No response for embed page"); return null; }
+                const embedHtml = await embedResp.text();
+                console.log("Embed HTML (first 500 chars): " + embedHtml.substring(0, 500));
+                
+                // NEW: extract data-id from the player div
+                const dataIdMatch = embedHtml.match(/data-id="([^"]+)"/);
+                if (!dataIdMatch) { console.log("No data-id found in embed page"); return null; }
+                const sourceId = dataIdMatch[1];
+                console.log("getSources ID (data-id): " + sourceId);
+
+                // Step 4: call getSources
+                const getSrcUrl = "https://play.echovideo.ru/embed-1/getSources?id=" + sourceId;
+                console.log("Fetching getSources: " + getSrcUrl);
+                const getSrcResp = await soraFetch(getSrcUrl, { headers });
+                if (!getSrcResp) { console.log("No response for getSources"); return null; }
+                const getSrcText = await getSrcResp.text();
+                console.log("getSources response: " + getSrcText);
+                const srcData2 = JSON.parse(getSrcText);
+                const sources = srcData2?.sources;
+                if (!sources) { console.log("No 'sources' field in getSources response"); return null; }
+                console.log("Found M3U8: " + sources);
+                return sources;
+            } catch (e) {
+                console.log("Error resolving " + type + ": " + e);
+                return null;
+            }
         }
 
-        if (typeof dataSources.sources === "string") {
-            return { streamUrl: dataSources.sources, headers };
+        if (subIdMatch) {
+            const m3u8 = await resolveM3u8(subIdMatch[1], "SUB");
+            if (m3u8) subUrls.push(m3u8);
         }
 
-        return {
-            streamUrl: dataSources.sources?.file || dataSources.sources?.url || dataSources.sources?.streamUrl || dataSources.sources?.stream,
-            headers
-        };
-    } catch (err) {
-        console.log("Stream URL Error details:", err.message, err.stack);
-        return "https://error.org/";
+        if (dubIdMatch) {
+            const m3u8 = await resolveM3u8(dubIdMatch[1], "DUB");
+            if (m3u8) dubUrls.push(m3u8);
+        }
+
+        console.log("\nFinal SUB URLs: " + JSON.stringify(subUrls));
+        console.log("Final DUB URLs: " + JSON.stringify(dubUrls));
+
+        const streams = [];
+        if (subUrls[0]) streams.push({ title: "SUB", streamUrl: subUrls[0], headers: { 'Referer': url } });
+        if (dubUrls[0]) streams.push({ title: "DUB", streamUrl: dubUrls[0], headers: { 'Referer': url } });
+
+        const result = { streams, subtitles: "" };
+        console.log("Result: " + JSON.stringify(result));
+        return JSON.stringify(result);
+
+    } catch (error) {
+        console.log("Fetch error in extractStreamUrl: " + error);
+        const result = { streams: "", subtitles: "" };
+        console.log("Error result: " + JSON.stringify(result));
+        return JSON.stringify(result);
+    }
+}
+
+// extractStreamUrl(`https://aniwaves.ru/anime-watch/one-piece/ep-1`);
+
+async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
+    try {
+        return await fetchv2(url, options.headers ?? {}, options.method ?? 'GET', options.body ?? null);
+    } catch(e) {
+        try {
+            return await fetch(url, options);
+        } catch(error) {
+            return null;
+        }
     }
 }
