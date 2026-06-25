@@ -51,7 +51,6 @@ async function searchResults(keyword) {
             }
         });
         
-        console.log(JSON.stringify(results));
         return JSON.stringify(results);
     } catch (error) {
         console.log("Search error:", error);
@@ -83,7 +82,6 @@ async function extractDetails(url) {
             });
         }
         
-        console.log(JSON.stringify(details));
         return JSON.stringify(details);
     } catch (error) {
         console.log("Details error:", error);
@@ -128,7 +126,6 @@ async function extractEpisodes(url) {
             });
         }
         
-        console.log(JSON.stringify(episodes));
         return JSON.stringify(episodes);
     } catch (error) {
         console.log("Episodes error:", error);
