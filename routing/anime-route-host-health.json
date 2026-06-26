@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-06-26T08:38:17.665Z",
+  "hosts": {
+    "swiftstream.top": {
+      "lastFailureAt": "2026-06-26T08:38:17.665Z",
+      "lastFailure": "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top HTTP 500 media_host_error; host=swiftstream.top HTTP 400; host=swiftstream.top HTTP 400; host=swiftstream.top empty media response",
+      "failureCount": 3,
+      "consecutiveFailures": 3,
+      "cooldownUntil": "2026-06-27T08:39:45.303Z"
+    },
+    "cdn.mewstream.buzz": {
+      "lastFailureAt": "2026-06-26T08:38:17.665Z",
+      "lastFailure": "media probe failed: host=cdn.mewstream.buzz HTTP 403",
+      "failureCount": 10,
+      "consecutiveFailures": 10,
+      "cooldownUntil": "2026-06-27T08:41:00.723Z"
+    },
+    "s2.cinewave2.site": {
+      "lastFailureAt": "2026-06-26T08:38:17.665Z",
+      "lastFailure": "media probe failed: host=s2.cinewave2.site empty media response",
+      "failureCount": 1,
+      "consecutiveFailures": 1,
+      "cooldownUntil": "2026-06-26T14:40:34.180Z"
+    }
+  }
+}
