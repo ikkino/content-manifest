@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-27T08:13:55.521Z",
+  "generatedAt": "2026-06-28T09:48:45.915Z",
   "mediaRequested": 5,
   "categories": {
     "trendingNow": {
@@ -21,16 +21,16 @@
   "mediaChecked": 109,
   "modulesChecked": 3,
   "animeWithRoutes": 109,
-  "routeCount": 325,
-  "refreshedAnime": 0,
+  "routeCount": 323,
+  "refreshedAnime": 4,
   "mergeExisting": true,
-  "unresolvedAnime": 39,
-  "rejectedAttempts": 39,
+  "unresolvedAnime": 27,
+  "rejectedAttempts": 35,
   "rejectedAttemptSummary": {
     "byReason": {
       "search_no_usable_result": 13,
-      "media_probe_failed": 13,
-      "host_cooldown_active": 9,
+      "media_probe_failed": 12,
+      "host_cooldown_active": 6,
       "stream_timeout": 2,
       "implausible_match": 1,
       "media_probe_budget_exhausted": 1
@@ -46,19 +46,19 @@
         }
       },
       {
-        "sourceName": "Animetsu",
-        "count": 13,
-        "reasons": {
-          "host_cooldown_active": 9,
-          "media_probe_failed": 2,
-          "stream_timeout": 2
-        }
-      },
-      {
         "sourceName": "Senshi",
         "count": 13,
         "reasons": {
           "search_no_usable_result": 13
+        }
+      },
+      {
+        "sourceName": "Animetsu",
+        "count": 9,
+        "reasons": {
+          "stream_timeout": 2,
+          "media_probe_failed": 1,
+          "host_cooldown_active": 6
         }
       }
     ]
@@ -66,135 +66,15 @@
   "mediaProbeBudget": 24,
   "mediaProbesUsed": 24,
   "hostHealth": {
-    "successEvents": 0,
-    "failureEvents": 13,
-    "skippedByCooldown": 9,
+    "successEvents": 4,
+    "failureEvents": 12,
+    "skippedByCooldown": 6,
     "coolingDownHosts": 3
   },
   "failures": [
     {
-      "aniListId": 182205,
-      "title": "That Time I Got Reincarnated as a Slime Season 4",
-      "moduleId": "jGUEO",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "Animetsu",
-      "errors": [
-        "host cooldown active: swiftstream.top"
-      ]
-    },
-    {
-      "aniListId": 182205,
-      "title": "That Time I Got Reincarnated as a Slime Season 4",
-      "moduleId": "jR5U5",
-      "catalogPath": "Sources/English/003",
-      "sourceName": "Senshi",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 182205,
-      "title": "That Time I Got Reincarnated as a Slime Season 4",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Anikoto",
-      "errors": [
-        "media probe failed: host=cdn.mewstream.buzz empty media response"
-      ]
-    },
-    {
-      "aniListId": 21,
-      "title": "ONE PIECE",
-      "moduleId": "jGUEO",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "Animetsu",
-      "errors": [
-        "host cooldown active: swiftstream.top"
-      ]
-    },
-    {
-      "aniListId": 21,
-      "title": "ONE PIECE",
-      "moduleId": "jR5U5",
-      "catalogPath": "Sources/English/003",
-      "sourceName": "Senshi",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 21,
-      "title": "ONE PIECE",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Anikoto",
-      "errors": [
-        "media probe failed: host=cdn.mewstream.buzz empty media response"
-      ]
-    },
-    {
-      "aniListId": 147105,
-      "title": "Witch Hat Atelier",
-      "moduleId": "jGUEO",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "Animetsu",
-      "errors": [
-        "host cooldown active: swiftstream.top"
-      ]
-    },
-    {
-      "aniListId": 147105,
-      "title": "Witch Hat Atelier",
-      "moduleId": "jR5U5",
-      "catalogPath": "Sources/English/003",
-      "sourceName": "Senshi",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 147105,
-      "title": "Witch Hat Atelier",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Anikoto",
-      "errors": [
-        "media probe failed: host=cdn.mewstream.buzz empty media response"
-      ]
-    },
-    {
-      "aniListId": 199221,
-      "title": "Dr. STONE SCIENCE FUTURE Cour 3",
-      "moduleId": "jGUEO",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "Animetsu",
-      "errors": [
-        "media probe failed: host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response; host=swiftstream.top empty media response"
-      ]
-    },
-    {
-      "aniListId": 199221,
-      "title": "Dr. STONE SCIENCE FUTURE Cour 3",
-      "moduleId": "jR5U5",
-      "catalogPath": "Sources/English/003",
-      "sourceName": "Senshi",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 199221,
-      "title": "Dr. STONE SCIENCE FUTURE Cour 3",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Anikoto",
-      "errors": [
-        "media probe failed: host=cdn.mewstream.buzz empty media response"
-      ]
-    },
-    {
-      "aniListId": 169580,
-      "title": "I Made Friends with the Second Prettiest Girl in My Class",
+      "aniListId": 190143,
+      "title": "Agents of the Four Seasons: Dance of Spring",
       "moduleId": "jGUEO",
       "catalogPath": "Sources/English/001",
       "sourceName": "Animetsu",
@@ -203,8 +83,8 @@
       ]
     },
     {
-      "aniListId": 169580,
-      "title": "I Made Friends with the Second Prettiest Girl in My Class",
+      "aniListId": 190143,
+      "title": "Agents of the Four Seasons: Dance of Spring",
       "moduleId": "jR5U5",
       "catalogPath": "Sources/English/003",
       "sourceName": "Senshi",
@@ -213,8 +93,8 @@
       ]
     },
     {
-      "aniListId": 169580,
-      "title": "I Made Friends with the Second Prettiest Girl in My Class",
+      "aniListId": 190143,
+      "title": "Agents of the Four Seasons: Dance of Spring",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/004",
       "sourceName": "Anikoto",
