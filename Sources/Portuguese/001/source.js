@@ -42,8 +42,8 @@ async function extractDetails(url) {
         const match = regex.exec(html);
 
         const description = match ? match[1]
-            .replace(/&nbsp;/g, " ")
-            .replace(/\s+/g, " ")
+            .replace(/&nbsp;/g, " ") 
+            .replace(/\s+/g, " ")   
             .trim() : "N/A";
 
         return JSON.stringify([{
@@ -75,7 +75,7 @@ async function extractEpisodes(url) {
                 number: Math.round(parseFloat(match[2]))
             });
         }
-
+        
         return JSON.stringify(results.reverse());
     } catch (err) {
         return JSON.stringify([{
@@ -89,28 +89,28 @@ async function extractStreamUrl(url) {
     try {
         const response = await fetchv2(url);
         const html = await response.text();
-
+        
         const iframeRegex = /<iframe[^>]*src=["']\s*([^"']*anivideo\.net[^"']*?)\s*["'][^>]*>/i;
         const iframeMatch = html.match(iframeRegex);
-
+        
         if (!iframeMatch) {
             return "https://files.catbox.moe/avolvc.mp4";
         }
-
+        
         const apiUrl = iframeMatch[1];
-
+        
         const apiResponse = await fetchv2(apiUrl);
         const apiHtml = await apiResponse.text();
-
+        
         const m3u8Regex = /file:\s*['"]([^'"]*\.m3u8[^'"]*)['"]/i;
         const m3u8Match = apiHtml.match(m3u8Regex);
-
+        
         if (m3u8Match) {
             return m3u8Match[1];
         }
-
+        
         return "https://files.catbox.moe/avolvc.mp4";
-
+        
     } catch (err) {
         console.error('Error extracting stream URL:', err);
         return "https://files.catbox.moe/avolvc.mp4";

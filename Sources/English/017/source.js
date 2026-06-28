@@ -28,11 +28,11 @@ async function extractDetails(url) {
     let description = "N/A";
     if (match) {
         description = match[1]
-            .replace(/<[^>]+>/g, '')
-            .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(code))
-            .replace(/&quot;/g, '"')
-            .replace(/&apos;/g, "'")
-            .replace(/&amp;/g, "&")
+            .replace(/<[^>]+>/g, '') 
+            .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(code)) 
+            .replace(/&quot;/g, '"') 
+            .replace(/&apos;/g, "'") 
+            .replace(/&amp;/g, "&") 
             .trim();
     }
 
@@ -69,20 +69,20 @@ async function extractStreamUrl(url) {
         const response = await fetchv2(url);
         const html = await response.text();
         const streams = [];
-
+        
         const optionRegex = /<option value="([^"]+)"[^>]*>\s*([^<]*Omega[^<]*)\s*<\/option>/gi;
-
+        
         let optionMatch;
         while ((optionMatch = optionRegex.exec(html)) !== null) {
             const base64Value = optionMatch[1];
             const label = optionMatch[2].trim();
-
+            
             if (!base64Value) continue;
 
             try {
                 const decodedHtml = atob(base64Value);
                 const iframeMatch = decodedHtml.match(/<iframe[^>]+src=["']([^"']+)["']/i);
-
+                
                 if (iframeMatch) {
                     let iframeUrl = iframeMatch[1];
                     if (iframeUrl.startsWith("//")) iframeUrl = "https:" + iframeUrl;
@@ -90,9 +90,9 @@ async function extractStreamUrl(url) {
                     const responseTwo = await fetchv2(iframeUrl);
                     const htmlTwo = await responseTwo.text();
 
-                    const m3u8Match = htmlTwo.match(/sources\s*:\s*\[\s*\{\s*file\s*:\s*['"]([^'"]+master\.m3u8[^'"]*)['"]/i) ||
+                    const m3u8Match = htmlTwo.match(/sources\s*:\s*\[\s*\{\s*file\s*:\s*['"]([^'"]+master\.m3u8[^'"]*)['"]/i) || 
                                       htmlTwo.match(/file\s*:\s*['"]([^'"]+\.m3u8[^'"]*)['"]/i);
-
+                    
                     if (m3u8Match) {
                         streams.push({
                             title: label,

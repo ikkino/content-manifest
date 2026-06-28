@@ -37,7 +37,7 @@ async function extractDetails(url) {
         const details = [];
 
         const descriptionMatch = html.match(/<p class="small">([\s\S]*?)<\/p>/i);
-        const description = descriptionMatch
+        const description = descriptionMatch 
             ? descriptionMatch[1].replace(/<[^>]+>/g, '').trim()
             : 'N/A';
 
@@ -144,7 +144,7 @@ async function extractEpisodes(url) {
             });
         }
 
-        const isAscending = episodes.every((ep, i, arr) =>
+        const isAscending = episodes.every((ep, i, arr) => 
             i === 0 || arr[i - 1].number <= ep.number
         );
 
@@ -174,11 +174,11 @@ async function extractStreamUrl(url) {
 
         for (const pid of playerId) {
             const response = await soraFetch(
-                `https://anibunker.com/php/loader.php`,
-                {
-                    method: "POST",
-                    headers: { "Content-Type": "application/x-www-form-urlencoded", "Origin": "https://anibunker.com" },
-                    body: `player_id=${pid}&video_id=${videoId}&user_agent=Mozilla%2F5.0%20(Macintosh%3B%20Intel%20Mac%20OS%20X%2010.15%3B%20rv%3A141.0)%20Gecko%2F20100101%20Firefox%2F141.0`
+                `https://anibunker.com/php/loader.php`, 
+                { 
+                    method: "POST", 
+                    headers: { "Content-Type": "application/x-www-form-urlencoded", "Origin": "https://anibunker.com" }, 
+                    body: `player_id=${pid}&video_id=${videoId}&user_agent=Mozilla%2F5.0%20(Macintosh%3B%20Intel%20Mac%20OS%20X%2010.15%3B%20rv%3A141.0)%20Gecko%2F20100101%20Firefox%2F141.0` 
                 }
             );
 
@@ -205,11 +205,11 @@ async function extractStreamUrl(url) {
         return JSON.stringify(results);
 
         // const response = await soraFetch(
-        //     `https://anibunker.com/php/loader.php`,
-        //     {
-        //         method: "POST",
-        //         headers: { "Content-Type": "application/x-www-form-urlencoded", "Origin": "https://anibunker.com" },
-        //         body: `player_id=${playerId}&video_id=${videoId}&user_agent=Mozilla%2F5.0%20(Macintosh%3B%20Intel%20Mac%20OS%20X%2010.15%3B%20rv%3A141.0)%20Gecko%2F20100101%20Firefox%2F141.0`
+        //     `https://anibunker.com/php/loader.php`, 
+        //     { 
+        //         method: "POST", 
+        //         headers: { "Content-Type": "application/x-www-form-urlencoded", "Origin": "https://anibunker.com" }, 
+        //         body: `player_id=${playerId}&video_id=${videoId}&user_agent=Mozilla%2F5.0%20(Macintosh%3B%20Intel%20Mac%20OS%20X%2010.15%3B%20rv%3A141.0)%20Gecko%2F20100101%20Firefox%2F141.0` 
         //     }
         // );
         // const json = await response.json();
