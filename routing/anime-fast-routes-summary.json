@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-29T14:18:55.056Z",
+  "generatedAt": "2026-06-30T10:43:22.158Z",
   "mediaRequested": 5,
   "categories": {
     "trendingNow": {
@@ -21,28 +21,26 @@
   "mediaChecked": 109,
   "modulesChecked": 3,
   "animeWithRoutes": 109,
-  "routeCount": 321,
-  "refreshedAnime": 4,
+  "routeCount": 320,
+  "refreshedAnime": 3,
   "mergeExisting": true,
-  "unresolvedAnime": 27,
-  "rejectedAttempts": 35,
+  "unresolvedAnime": 30,
+  "rejectedAttempts": 36,
   "rejectedAttemptSummary": {
     "byReason": {
       "search_no_usable_result": 13,
-      "media_probe_failed": 12,
+      "media_probe_failed": 13,
       "host_cooldown_active": 6,
-      "stream_timeout": 2,
-      "implausible_match": 1,
-      "media_probe_budget_exhausted": 1
+      "implausible_match": 3,
+      "stream_timeout": 1
     },
     "topModules": [
       {
         "sourceName": "Anikoto",
         "count": 13,
         "reasons": {
-          "media_probe_failed": 11,
-          "implausible_match": 1,
-          "media_probe_budget_exhausted": 1
+          "media_probe_failed": 12,
+          "implausible_match": 1
         }
       },
       {
@@ -54,27 +52,28 @@
       },
       {
         "sourceName": "Animetsu",
-        "count": 9,
+        "count": 10,
         "reasons": {
-          "stream_timeout": 2,
+          "stream_timeout": 1,
           "media_probe_failed": 1,
-          "host_cooldown_active": 6
+          "host_cooldown_active": 6,
+          "implausible_match": 2
         }
       }
     ]
   },
   "mediaProbeBudget": 24,
-  "mediaProbesUsed": 24,
+  "mediaProbesUsed": 23,
   "hostHealth": {
-    "successEvents": 4,
-    "failureEvents": 12,
+    "successEvents": 3,
+    "failureEvents": 13,
     "skippedByCooldown": 6,
-    "coolingDownHosts": 3
+    "coolingDownHosts": 4
   },
   "failures": [
     {
-      "aniListId": 269,
-      "title": "Bleach",
+      "aniListId": 182300,
+      "title": "Wistoria: Wand and Sword Season 2",
       "moduleId": "jGUEO",
       "catalogPath": "Sources/English/001",
       "sourceName": "Animetsu",
@@ -83,8 +82,8 @@
       ]
     },
     {
-      "aniListId": 269,
-      "title": "Bleach",
+      "aniListId": 182300,
+      "title": "Wistoria: Wand and Sword Season 2",
       "moduleId": "jR5U5",
       "catalogPath": "Sources/English/003",
       "sourceName": "Senshi",
@@ -93,13 +92,13 @@
       ]
     },
     {
-      "aniListId": 269,
-      "title": "Bleach",
+      "aniListId": 182300,
+      "title": "Wistoria: Wand and Sword Season 2",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/004",
       "sourceName": "Anikoto",
       "errors": [
-        "media probe failed: host=s2.cinewave2.site empty media response"
+        "media probe failed: host=cdn.mewstream.buzz empty media response"
       ]
     },
     {
@@ -155,6 +154,36 @@
     {
       "aniListId": 195600,
       "title": "Daemons of the Shadow Realm",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/004",
+      "sourceName": "Anikoto",
+      "errors": [
+        "media probe failed: host=cdn.mewstream.buzz empty media response"
+      ]
+    },
+    {
+      "aniListId": 182205,
+      "title": "That Time I Got Reincarnated as a Slime Season 4",
+      "moduleId": "jGUEO",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "Animetsu",
+      "errors": [
+        "host cooldown active: swiftstream.top"
+      ]
+    },
+    {
+      "aniListId": 182205,
+      "title": "That Time I Got Reincarnated as a Slime Season 4",
+      "moduleId": "jR5U5",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "Senshi",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 182205,
+      "title": "That Time I Got Reincarnated as a Slime Season 4",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/004",
       "sourceName": "Anikoto",
@@ -229,7 +258,7 @@
       "catalogPath": "Sources/English/001",
       "sourceName": "Animetsu",
       "errors": [
-        "stream: extractStreamUrl timed out"
+        "host cooldown active: swiftstream.top"
       ]
     },
     {
@@ -259,7 +288,7 @@
       "catalogPath": "Sources/English/001",
       "sourceName": "Animetsu",
       "errors": [
-        "host cooldown active: swiftstream.top"
+        "implausible episode match: verified=23 available=23 expected<=24"
       ]
     },
     {
@@ -319,7 +348,7 @@
       "catalogPath": "Sources/English/001",
       "sourceName": "Animetsu",
       "errors": [
-        "host cooldown active: swiftstream.top"
+        "implausible episode match: verified=13 available=25 expected<=13"
       ]
     },
     {
@@ -339,7 +368,7 @@
       "catalogPath": "Sources/English/004",
       "sourceName": "Anikoto",
       "errors": [
-        "media probe budget exhausted: 24/24"
+        "media probe failed: host=s1.streamzone1.site empty media response"
       ]
     }
   ]
