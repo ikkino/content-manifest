@@ -1,780 +1,654 @@
+class Anilist {
+    static async search(keyword, filters = {}) {
+        const query = `query (
+                $search: String,
+                $page: Int,
+                $perPage: Int,
+                $sort: [MediaSort],
+                $genre_in: [String],
+                $tag_in: [String],
+                $type: MediaType,
+                $format: MediaFormat,
+                $status: MediaStatus,
+                $countryOfOrigin: CountryCode,
+                $isAdult: Boolean,
+                $season: MediaSeason,
+                $startDate_like: String,
+                $source: MediaSource,
+                $averageScore_greater: Int,
+                $averageScore_lesser: Int
+            ) {
+                Page(page: $page, perPage: $perPage) {
+                media(
+                    search: $search,
+                    type: $type,
+                    sort: $sort,
+                    genre_in: $genre_in,
+                    tag_in: $tag_in,
+                    format: $format,
+                    status: $status,
+                    countryOfOrigin: $countryOfOrigin,
+                    isAdult: $isAdult,
+                    season: $season,
+                    startDate_like: $startDate_like,
+                    source: $source,
+                    averageScore_greater: $averageScore_greater,
+                    averageScore_lesser: $averageScore_lesser
+                ) {
+                    id
+                    idMal
+                    averageScore
+                    title {
+                        romaji
+                        english
+                        native
+                    }
+                    episodes
+                    nextAiringEpisode {
+                        airingAt
+                        timeUntilAiring
+                        episode
+                    }
+                    status
+                    genres
+                    format
+                    description
+                    startDate {
+                        year
+                        month
+                        day
+                    }
+                    endDate {
+                        year
+                        month
+                        day
+                    }
+                    popularity
+                    coverImage {
+                        color
+                        large
+                        extraLarge
+                    }
+                }
+            }
+        }`;
 
-var __zangetsuFetch = fetchv2 || fetch;
-
-function htmlText(value) {
-  return String(value || "")
-    .replace(/<script[\s\S]*?<\/script>/gi, " ")
-    .replace(/<style[\s\S]*?<\/style>/gi, " ")
-    .replace(/<[^>]+>/g, " ")
-    .replace(/&nbsp;/g, " ")
-    .replace(/&amp;/g, "&")
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-function absUrl(url, base) {
-  if (!url) return "";
-  try { return new URL(url, base || "https://example.com/").toString(); }
-  catch (_) { return String(url); }
-}
-
-async function fetch(url, init) {
-  var response = await __zangetsuFetch(url, init || {});
-  if (typeof response === "string") {
-    return {
-      ok: true,
-      status: 200,
-      statusText: "OK",
-      body: response,
-      text: async function () { return response; },
-      json: async function () { return JSON.parse(response); }
-    };
-  }
-  var body = "";
-  try { body = await response.text(); } catch (_) { body = response.body || ""; }
-  return {
-    ok: response.ok !== false,
-    status: response.status || 200,
-    statusText: response.statusText || "",
-    headers: response.headers,
-    body: body,
-    text: async function () { return body; },
-    json: async function () { return JSON.parse(body); }
-  };
-}
-
-async function sha256Hex(text) {
-  throw new Error("Zangetsu crypto helper is not available in this Sora port");
-}
-
-function base64ToBytes(value) {
-  var binary = atob(value);
-  var out = [];
-  for (var i = 0; i < binary.length; i++) out.push(binary.charCodeAt(i));
-  return out;
-}
-
-function bytesToB64(bytes) {
-  var s = "";
-  for (var i = 0; i < bytes.length; i++) s += String.fromCharCode(bytes[i]);
-  return btoa(s);
-}
-
-async function aesCtrDecrypt() {
-  throw new Error("Zangetsu AES helper is not available in this Sora port");
-}
-
-async function extractVideo() {
-  throw new Error("Zangetsu extractVideo helper is not available in this Sora port");
-}
-
-
-// AnimeKai — anime source for the Zangetsu provider repo (anikai.cc, the
-// canonical AnimeKai). This targets the anikai.cc site family, NOT animekai.at
-// (a clone that wrongly chunks long series into "parts"). The whole point of
-// this rewrite is the FULL episode list for long series: anikai.cc renders
-// every episode anchor inline on the watch page, so One Piece returns ~1165 and
-// Naruto ~220 from a SINGLE page fetch — no pagination, no AJAX windowing.
-//
-// THE CHAIN (every hop verified live against www3.anikai.cc, June 2026):
-//
-//   search   GET /ajax/search?keyword=<q>         (HTML grid of .aitem cards)
-//            (the SSR /browser?keyword= also works but returns fewer cards.)
-//   home     GET /ajax/widget/<alias>?page=1       (same .aitem card grid)
-//            aliases: trending, recently-updated, most-popular, top-airing, ...
-//   popular  GET /browser?sort=most-popular        (.aitem grid)
-//   detail   GET /watch/<slug>                      ONE page carries everything:
-//              - <a class="title d-title" data-en data-jp itemprop="name">
-//              - <img itemprop="image" src="<poster>">
-//              - <div class="desc text-expand">synopsis</div>
-//              - a labelled <div class="detail"> block (Genres/Status/Studios/
-//                Premiered/Date aired/Country)
-//              - the FULL episode list as <a href="/watch/<slug>/ep-N"
-//                data-num="N" data-jp="<ep title>" data-sub data-dub data-hsub>
-//                anchors (1165 of them for One Piece) — we parse them all.
-//   video    The episode page (/watch/<slug>/ep-N — or the base /watch/<slug>,
-//            which IS ep-1) embeds language server groups:
-//              <div class="server-items lang-group" data-id="sub|hsub|dub">
-//                ... <... class="server-video" data-video="<EMBED_URL>"> ...
-//            We pick servers for the chosen language, then resolve each embed.
-//            Live embed hosts are MegaCloud/JWPlayer-style players that expose a
-//            PLAIN HLS master directly in the embed page HTML:
-//              bibiemb.xyz / vibeplayer.site -> `const src = "<master.m3u8>"`
-//              (NO decryption, NO /media/ call). The subtitle, when present, is
-//              the embed URL's own ?sub=/?caption_1=/?c1_file= query param.
-//            otakuhg.site / otakuvid.online are deprioritized (packed JWPlayer,
-//            harder to reverse) and playmogo.com is hard-Cloudflare-walled.
-//
-// CLOUDFLARE: anikai.cc sits behind Cloudflare. It currently answers plain
-// requests, but the challenge can switch on, so every anikai.cc request goes
-// through the native WebView solver via { browser: true }. IMPORTANT: when
-// browser:true is set we must NOT also send our own User-Agent — the bridge
-// forces the cf_clearance-matching UA, and a mismatched UA would 403. So
-// anikai.cc requests carry only Referer/Accept; the embed hosts (bibiemb,
-// vibeplayer, ...) are plain hosts and DO get our explicit UA + Referer.
-//
-// enc-dec.app / MegaUp decMega: NOT needed for the current live embed hosts
-// (they hand back a plain m3u8). A MegaUp fallback (/media/<id> -> dec-mega) is
-// implemented for resilience in case anikai rotates back to a megaup-family
-// embed, but it is last-resort behind the plain-m3u8 hosts.
-
-var SOURCE_ID = (typeof __SOURCE_ID !== 'undefined' && __SOURCE_ID)
-  ? String(__SOURCE_ID) : 'animekai';
-
-// anikai.cc redirects to the active numbered mirror (currently www3). We pin a
-// known-good mirror and fall back across the family if it stops resolving.
-var BASE = 'https://www3.anikai.cc';
-var MIRRORS = ['https://www3.anikai.cc', 'https://www1.anikai.cc',
-  'https://www2.anikai.cc', 'https://www4.anikai.cc', 'https://anikai.cc'];
-
-// UA for the EMBED hosts only (NOT anikai.cc — that uses the solver's UA).
-var EMBED_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:134.0) '
-  + 'Gecko/20100101 Firefox/134.0';
-
-// MegaUp-family hosts (used only by the last-resort decMega fallback).
-var MEGA_HOSTS = ['megaup.nl', 'megaup.live', 'megaup.cc', 'megaup22.online',
-  '4spromax.site'];
-
-function getInfo() {
-  return { name: 'AnimeKai', lang: 'en', baseUrl: BASE,
-    logo: BASE + '/favicon.ico', type: 'anime', version: '3.0.2' };
-}
-
-function _mode(opts) { return (opts && opts.category === 'dub') ? 'dub' : 'sub'; }
-
-// ── HTTP helpers ─────────────────────────────────────────────────────────────
-// anikai.cc request: route through the CF solver (browser:true) and DO NOT set
-// User-Agent (the bridge forces the cf_clearance-matching UA; a provider UA
-// would mismatch and 403). Only Referer/Accept are safe to send.
-function _kai(url, opts) {
-  opts = opts || {};
-  var headers = {
-    'Referer': opts.referer || (BASE + '/'),
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-    'Accept-Language': 'en-US,en;q=0.9'
-  };
-  if (opts.xhr) headers['X-Requested-With'] = 'XMLHttpRequest';
-  return fetch(url, {
-    method: 'GET', headers: headers, browser: true,
-    timeoutMs: opts.timeoutMs || 20000
-  }).then(function (r) { return r.body || ''; }).catch(function () { return ''; });
-}
-
-// Plain (non-anikai) host fetch: explicit UA + Referer.
-function _get(url, ref) {
-  return fetch(url, {
-    headers: { 'User-Agent': EMBED_UA, 'Referer': ref || (BASE + '/') },
-    timeoutMs: 20000
-  }).then(function (r) { return r.body || ''; }).catch(function () { return ''; });
-}
-
-function _attr(tag, name) {
-  var m = String(tag || '').match(new RegExp(name + '\\s*=\\s*"([^"]*)"', 'i'));
-  return m ? m[1] : '';
-}
-function _year(s) { var m = String(s || '').match(/(19|20)\d{2}/); return m ? m[0] : null; }
-
-// path of /watch/<slug> (drop /ep-N suffix, host, query, hash) → "watch/<slug>".
-function _slugFromHref(href) {
-  href = String(href || '').split('#')[0].split('?')[0];
-  href = href.replace(/^https?:\/\/[^\/]+/i, '');
-  // /watch/<slug>(/ep-N)? -> keep just /watch/<slug>
-  var m = href.match(/\/watch\/([a-z0-9][a-z0-9-]*)/i);
-  if (m) return 'watch/' + m[1];
-  return href.replace(/^\//, '').replace(/\/$/, '');
-}
-
-// ── card parsing ─────────────────────────────────────────────────────────────
-// Catalog cards are `<div class="aitem">` blocks:
-//   <a class="poster" href="/watch/<slug>(/ep-N)?"> <img (data-src|src)="<poster>">
-//   <a class="title d-title" data-jp data-en title>Title</a>
-//   <div class="info"> <span class="sub">..N</span> <span class="dub">..N</span> ...
-function _card(block) {
-  var poster = block.match(/<a[^>]+class="[^"]*\bposter\b[^"]*"[^>]*href="([^"]+)"/i)
-            || block.match(/href="([^"]+)"[^>]*class="[^"]*\bposter\b/i);
-  var href = poster ? poster[1] : '';
-  if (!href) {
-    var any = block.match(/href="(\/watch\/[^"]+)"/i);
-    href = any ? any[1] : '';
-  }
-  var slug = _slugFromHref(href);
-  if (!slug || slug.indexOf('watch/') !== 0) return null;
-
-  var titleTag = (block.match(/<a[^>]+class="[^"]*\btitle\b[^"]*"[^>]*>/i) || [])[0] || '';
-  var title = _attr(titleTag, 'data-en') || _attr(titleTag, 'title') || '';
-  var jp = _attr(titleTag, 'data-jp') || null;
-  if (!title) {
-    var inner = block.match(/<a[^>]+class="[^"]*\btitle\b[^"]*"[^>]*>([\s\S]*?)<\/a>/i);
-    title = inner ? htmlText(inner[1]) : '';
-  }
-  if (!title) {
-    var img = block.match(/<img[^>]+alt="([^"]+)"/i);
-    title = img ? img[1] : 'Untitled';
-  }
-
-  var imgM = block.match(/<img[^>]+(?:data-src|src)="([^"]+)"/i);
-  var cover = imgM ? imgM[1] : null;
-
-  var sub = parseInt((block.match(/class="sub"[\s\S]{0,120}?(\d+)\s*<\/span>/i) || [])[1] || '0', 10) || 0;
-  var dub = parseInt((block.match(/class="dub"[\s\S]{0,120}?(\d+)\s*<\/span>/i) || [])[1] || '0', 10) || 0;
-
-  return {
-    id: slug, title: title, englishTitle: title, japaneseTitle: jp,
-    cover: cover ? absUrl(cover, BASE) : null, url: slug, type: 'anime',
-    sourceId: SOURCE_ID, subCount: sub, dubCount: dub
-  };
-}
-function _cards(html) {
-  var out = [], seen = {};
-  var parts = String(html || '').split(/<div[^>]*class="[^"]*\baitem\b/i);
-  for (var i = 1; i < parts.length; i++) {
-    var c = _card('<div class="aitem' + parts[i].slice(0, 2600));
-    if (c && !seen[c.id]) { seen[c.id] = 1; out.push(c); }
-  }
-  return out;
-}
-
-// ── search / home / popular ──────────────────────────────────────────────────
-function search(query, page, opts) {
-  var q = String(query || '').trim();
-  if (q.length < 1) return Promise.resolve([]);
-  var p = parseInt(page, 10) || 1;
-  // anikai.cc's /ajax/search endpoint is DEAD (returns the literal body "404").
-  // The SSR /browser route IS the working search — spaces go as '+', cards are
-  // the same .aitem blocks the catalog uses.
-  var kw = encodeURIComponent(q).replace(/%20/g, '+');
-  var url = BASE + '/browser?keyword=' + kw + (p > 1 ? '&page=' + p : '');
-  return _kai(url)
-    .then(function (html) { return _cards(html); })
-    .catch(function () { return []; });
-}
-
-function popular(opts) {
-  return _kai(BASE + '/browser?sort=most-popular')
-    .then(function (html) { return _cards(html); })
-    .catch(function () { return []; });
-}
-
-// Home rows. anikai.cc's /ajax/widget endpoint only serves TWO distinct lists:
-// `trending`, and a single default grid that EVERY other alias (most-popular,
-// top-airing, recently-added, completed, …) returns identically — so those
-// aliases produced "5 rows, same anime, different headers". The plain /browser
-// catalog is a third, distinct list. We use those three and DEDUPE defensively:
-// if the site serves the same grid under two rows (leading card ids match), the
-// duplicate row is dropped — robust even if the default widget rotates.
-function getHome(opts) {
-  var jobs = [
-    { title: 'Trending',         url: BASE + '/ajax/widget/trending?page=1',         xhr: true },
-    { title: 'Recently Updated', url: BASE + '/ajax/widget/recently-updated?page=1', xhr: true },
-    { title: 'New on AnimeKai',  url: BASE + '/browser',                             xhr: false }
-  ];
-  return Promise.all(jobs.map(function (j) {
-    return _kai(j.url, { xhr: j.xhr })
-      .then(function (html) { return { title: j.title, items: _cards(html) }; })
-      .catch(function () { return { title: j.title, items: [] }; });
-  })).then(function (rows) {
-    var out = [], seenSig = {};
-    for (var i = 0; i < rows.length; i++) {
-      var r = rows[i];
-      if (!r.items.length) continue;
-      var sig = r.items.slice(0, 5).map(function (c) { return c.id; }).join(',');
-      if (seenSig[sig]) continue; // same grid as an earlier row → drop the dup
-      seenSig[sig] = 1;
-      out.push(r);
-    }
-    return out;
-  }).catch(function () { return []; });
-}
-
-// ── detail / episodes ────────────────────────────────────────────────────────
-// Episode URL carries the category as a /sub/ or /dub/ PATH SEGMENT (not a
-// prefix). The player's in-session Sub/Dub switch rewrites the first /(sub|dub)/
-// it finds in the url (the AllAnime convention) — so with the cat as a path
-// segment, flipping language works WITHOUT a Detail round-trip. The slug is
-// percent-encoded so it has no literal '/', keeping the cat the ONLY /sub//dub/
-// segment. getVideoSources rebuilds /watch/<slug>/ep-<num> from it; the legacy
-// 'cat|slug|num' form is still parsed for any cached urls.
-function _epUrl(cat, slug, num) {
-  return 'animekai://' + cat + '/' + encodeURIComponent(slug || '')
-    + '/' + encodeURIComponent(String(num));
-}
-
-// Labelled rows in the watch page's <div class="detail"> block:
-//   Genres: <span> <a>..</a><a>..</a> </span>   Status: <span>..</span>  etc.
-function _detailField(html, label) {
-  var re = new RegExp(label + '\\s*:?\\s*<\\/?[a-z]*>?\\s*<span[^>]*>([\\s\\S]{0,1200}?)<\\/span>', 'i');
-  var m = html.match(re);
-  if (m) return m[1];
-  // looser: the label text immediately followed by a <span> value
-  var re2 = new RegExp(label + '\\s*:?[\\s\\S]{0,40}?<span[^>]*>([\\s\\S]{0,1200}?)<\\/span>', 'i');
-  m = html.match(re2);
-  return m ? m[1] : '';
-}
-
-function _detailFromWatch(html, slug) {
-  var titleTag = (html.match(/<[a-z0-9]+[^>]*\bitemprop="name"[^>]*class="[^"]*\btitle\b[^"]*"[^>]*>/i)
-               || html.match(/<a[^>]+class="[^"]*\btitle\b[^"]*"[^>]*>/i) || [])[0] || '';
-  var title = _attr(titleTag, 'data-en') || _attr(titleTag, 'title') || '';
-  var jp = _attr(titleTag, 'data-jp') || null;
-  if (!title) {
-    var in1 = html.match(/itemprop="name"[^>]*>([^<]+)</i);
-    title = in1 ? htmlText(in1[1]) : slug.replace(/^watch\//, '').replace(/-/g, ' ');
-  }
-
-  var poster = (html.match(/<img[^>]+itemprop="image"[^>]+src="([^"]+)"/i)
-             || html.match(/<img[^>]+(?:data-src|src)="([^"]+)"[^>]*alt="[^"]*"/i) || [])[1] || null;
-
-  var desc = htmlText((html.match(/class="desc[^"]*"[^>]*>([\s\S]*?)<\/div>/i) || [])[1] || '');
-
-  var base = {
-    id: slug, title: title, englishTitle: title, japaneseTitle: jp,
-    cover: poster ? absUrl(poster, BASE) : null, url: slug,
-    description: desc, status: 'unknown', genres: [], studios: [],
-    type: 'anime', sourceId: SOURCE_ID, episodes: [], year: null,
-    malId: null, subCount: 0, dubCount: 0
-  };
-
-  var statusSeg = _detailField(html, 'Status');
-  var status = htmlText(statusSeg);
-  if (status) base.status = status.toLowerCase();
-
-  var airedSeg = _detailField(html, 'Premiered') || _detailField(html, 'Date aired')
-    || _detailField(html, 'Aired');
-  var year = _year(htmlText(airedSeg));
-  if (year) base.year = year;
-
-  var genreSeg = _detailField(html, 'Genres');
-  var genres = [], gm, gre = /<a[^>]*>([^<]+)<\/a>/gi;
-  while ((gm = gre.exec(genreSeg)) !== null) {
-    var g = htmlText(gm[1]).replace(/^,\s*/, '');
-    if (g) genres.push(g);
-  }
-  if (genres.length) base.genres = genres.slice(0, 10);
-
-  var studioSeg = _detailField(html, 'Studios');
-  var studios = [], sm, sre = /<a[^>]*>([^<]+)<\/a>/gi;
-  while ((sm = sre.exec(studioSeg)) !== null) {
-    var s = htmlText(sm[1]).replace(/^,\s*/, '');
-    if (s) studios.push(s);
-  }
-  if (studios.length) base.studios = studios.slice(0, 6);
-
-  // MAL id (drives tracker sync). The detail block has a "MAL:" row; some pages
-  // also expose a numeric mal id in a meta/link tag.
-  var malM = html.match(/myanimelist\.net\/anime\/(\d+)/i)
-          || html.match(/data-mal(?:-id)?="(\d+)"/i);
-  if (malM && parseInt(malM[1], 10) > 0) base.malId = parseInt(malM[1], 10);
-
-  return base;
-}
-
-// Parse EVERY episode anchor off the watch page. This is the whole point — the
-// full list is rendered inline (One Piece ~1165, Naruto ~220), so no pagination.
-// Each episode is:
-//   <a href="/watch/<slug>/ep-N" data-num="N" data-sub data-dub data-hsub ...>
-//     <num> <span data-jp="<episode title>">  <episode title>  </span>
-//   </a>
-// The display title lives in the CHILD <span data-jp="...">, not on the anchor.
-function _parseEpisodes(html, slug, cat) {
-  var eps = [], m, subN = 0, dubN = 0;
-  // capture the open <a> tag attrs (m[1]) AND the anchor inner content (m[2]).
-  var re = /<a\b([^>]*\bhref="\/watch\/[^"]*\/ep-[0-9.]+"[^>]*)>([\s\S]*?)<\/a>/gi;
-  while ((m = re.exec(html)) !== null) {
-    var tag = '<a ' + m[1] + '>';
-    var inner = m[2] || '';
-    var href = _attr(tag, 'href');
-    var numStr = _attr(tag, 'data-num');
-    var num = parseFloat(numStr);
-    if (!num && num !== 0) {
-      var hm = href.match(/\/ep-([0-9.]+)/i);
-      num = hm ? parseFloat(hm[1]) : NaN;
-    }
-    if (isNaN(num)) continue;
-    var hasSub = _attr(tag, 'data-sub') === '1' || _attr(tag, 'data-hsub') === '1';
-    var hasDub = _attr(tag, 'data-dub') === '1';
-    if (hasSub) subN++;
-    if (hasDub) dubN++;
-    // Title: child <span data-jp="..."> attribute first, else the span's text.
-    var t = (inner.match(/data-jp="([^"]*)"/i) || [])[1] || '';
-    if (!t) t = htmlText(inner.replace(/^\s*\d+\s*/, ''));
-    t = htmlText(t).replace(/^\d+\s+/, '');
-    // The site sometimes uses the bare number as placeholder text — treat as none.
-    if (/^\s*$/.test(t) || t === String(num) || /^episode\s*\d+$/i.test(t)) t = '';
-    eps.push({ num: num, title: t || null, hasSub: hasSub, hasDub: hasDub });
-  }
-  // de-dup by number, keep order, sort ascending.
-  var seen = {}, uniq = [];
-  for (var i = 0; i < eps.length; i++) {
-    if (seen[eps[i].num]) continue;
-    seen[eps[i].num] = 1; uniq.push(eps[i]);
-  }
-  uniq.sort(function (a, b) { return a.num - b.num; });
-
-  var out = [];
-  for (var k = 0; k < uniq.length; k++) {
-    var ep = uniq[k];
-    out.push({
-      id: cat + ':' + ep.num,
-      number: ep.num,
-      title: ep.title || ('Episode ' + ep.num),
-      url: _epUrl(cat, slug, ep.num)
-    });
-  }
-  return { episodes: out, subCount: subN, dubCount: dubN };
-}
-
-function getDetail(url, opts) {
-  var slug = _slugFromHref(String(url));
-  if (slug.indexOf('watch/') !== 0) slug = 'watch/' + slug.replace(/^\//, '');
-  var cat = _mode(opts);
-  var watchUrl = BASE + '/' + slug;
-  return _kai(watchUrl).then(function (html) {
-    if (!html) throw new Error('AnimeKai: empty watch page');
-    var base = _detailFromWatch(html, slug);
-    var ep = _parseEpisodes(html, slug, cat);
-    base.episodes = ep.episodes;
-    if (ep.subCount || ep.dubCount) { base.subCount = ep.subCount; base.dubCount = ep.dubCount; }
-    return base;
-  });
-}
-
-function getEpisodes(url, opts) {
-  return getDetail(url, opts).then(function (d) { return d.episodes; });
-}
-
-// ── video sources ────────────────────────────────────────────────────────────
-// episode url -> episode page -> server-items groups for the chosen language ->
-// resolve each embed to a plain m3u8 (+ subtitle from the embed's query param).
-function getVideoSources(episodeUrl) {
-  var raw = String(episodeUrl).replace('animekai://', '');
-  var cat = 'sub', slug = '', num = '';
-  if (raw.indexOf('|') > -1) {
-    // legacy form: cat|slug|num
-    var lp = raw.split('|');
-    cat = lp[0] || 'sub';
-    slug = lp[1] ? decodeURIComponent(lp[1]) : '';
-    num = lp[2] ? decodeURIComponent(lp[2]) : '';
-  } else {
-    // cat/slug/num — cat is the /sub//dub/ segment the player flips.
-    var pm = raw.match(/^(sub|dub|hsub|softsub)\/(.+)\/([0-9.]+)$/i);
-    if (pm) { cat = pm[1].toLowerCase(); slug = decodeURIComponent(pm[2]); num = pm[3]; }
-  }
-  if (slug.indexOf('watch/') !== 0) slug = 'watch/' + slug.replace(/^\//, '');
-  if (!num) return Promise.reject(new Error('AnimeKai: no episode number'));
-
-  var epPageUrl = BASE + '/' + slug + '/ep-' + num;
-
-  return _kai(epPageUrl, { referer: BASE + '/' + slug }).then(function (html) {
-    if (!html) throw new Error('AnimeKai: empty episode page');
-    var servers = _parseServers(html);
-    if (!servers.length) throw new Error('AnimeKai: no servers on episode page');
-
-    // Language preference: dub -> [dub]; sub -> prefer hard-sub, then soft-sub.
-    var langMap = {
-      sub: ['hsub', 'sub', 'softsub'],
-      dub: ['dub']
-    };
-    var wanted = langMap[cat] || ['hsub', 'sub'];
-    var pool = servers.filter(function (s) { return wanted.indexOf(s.lang) !== -1; });
-    if (!pool.length) pool = servers.slice();
-
-    // Subtitles aren't on the stream — anikai attaches them as the embed URL's
-    // own ?sub=/?caption_1= query param, and only SOME server variants carry it.
-    // Collect every subtitle present anywhere in this language group so we can
-    // attach it to whichever server we actually resolve.
-    var groupSubs = [], subSeen = {};
-    for (var si = 0; si < pool.length; si++) {
-      var es = _embedSubtitles(pool[si].videoUrl);
-      for (var ei = 0; ei < es.length; ei++) {
-        if (!subSeen[es[ei].url]) { subSeen[es[ei].url] = 1; groupSubs.push(es[ei]); }
-      }
-    }
-
-    // Prefer the plain-m3u8 hosts (bibiemb / vibeplayer) — they need no
-    // decryption. Deprioritize CF-walled / packed hosts. Break ties toward the
-    // embed variant that itself carries the subtitle param.
-    pool.sort(function (a, b) {
-      var d = _hostRank(b.videoUrl) - _hostRank(a.videoUrl);
-      if (d) return d;
-      return (_embedSubtitles(b.videoUrl).length ? 1 : 0)
-           - (_embedSubtitles(a.videoUrl).length ? 1 : 0);
-    });
-
-    return _resolvePool(pool, cat, 0, groupSubs);
-  });
-}
-
-// Score embed hosts: higher = try first (plain m3u8 in page = best).
-function _hostRank(u) {
-  u = String(u || '');
-  if (/bibiemb\.|vibeplayer\./i.test(u)) return 5;       // plain `const src` m3u8
-  if (/megaup|4spromax/i.test(u)) return 3;              // MegaUp -> decMega
-  if (/otakuhg|otakuvid/i.test(u)) return 2;             // packed JWPlayer
-  if (/playmogo/i.test(u)) return 1;                     // Cloudflare-walled
-  return 0;
-}
-
-// Try each server in turn; return the first that yields sources. `groupSubs` is
-// the subtitle set harvested across the whole language group (used as a fallback
-// when the resolved embed didn't carry its own subtitle param).
-function _resolvePool(pool, cat, idx, groupSubs) {
-  if (idx >= pool.length) return Promise.reject(new Error('AnimeKai: no playable source'));
-  var srv = pool[idx];
-  return _resolveEmbed(srv, cat, groupSubs).then(function (sources) {
-    if (sources && sources.length) return sources;
-    return _resolvePool(pool, cat, idx + 1, groupSubs);
-  }).catch(function () {
-    return _resolvePool(pool, cat, idx + 1, groupSubs);
-  });
-}
-
-// Parse <div class="server-items lang-group" data-id="LANG"> groups, each with
-// <... class="server-video" data-video="EMBED"> entries. Mirror Sozo's parser.
-function _parseServers(html) {
-  var out = [];
-  if (typeof html !== 'string') return out;
-  var groupRe = /<[a-z0-9]+[^>]*\bclass="[^"]*\bserver-items\b[^"]*"[^>]*\bdata-id="([^"]+)"[^>]*>/gi;
-  var groups = [], g;
-  while ((g = groupRe.exec(html)) !== null) {
-    groups.push({ lang: g[1].toLowerCase(), start: g.index + g[0].length });
-  }
-  for (var i = 0; i < groups.length; i++) {
-    var cur = groups[i];
-    var end = (i + 1 < groups.length) ? groups[i + 1].start : html.length;
-    var inner = html.slice(cur.start, end);
-    var srvRe = /<(?:span|div|li|a)\b([^>]*\bdata-video="([^"]+)"[^>]*)>([\s\S]*?)<\/(?:span|div|li|a)>/gi;
-    var s;
-    while ((s = srvRe.exec(inner)) !== null) {
-      var attrs = s[1];
-      var videoUrl = s[2];
-      if (!/\bserver(?:-video)?\b/.test(attrs)) continue;
-      var name = htmlText(s[3]) || 'Server';
-      out.push({ lang: cur.lang, name: name, videoUrl: videoUrl });
-    }
-  }
-  return out;
-}
-
-// Resolve one server embed → array of Zangetsu source objects. The embed's own
-// ?sub= param takes precedence; `groupSubs` fills in if it carried none.
-function _resolveEmbed(srv, cat, groupSubs) {
-  var embed = srv.videoUrl;
-  // An anikai /iframe/ wrapper unwraps to the real embed.
-  if (/anikai\.(?:to|cc)\/iframe\//i.test(embed)) {
-    return _kai(embed).then(function (h) {
-      var nested = (h.match(/<iframe[^>]+src="([^"]+)"/i) || [])[1];
-      if (nested) return _resolveByHost(absUrl(nested, embed), srv, cat, groupSubs);
-      return _resolveByHost(embed, srv, cat, groupSubs);
-    });
-  }
-  return _resolveByHost(embed, srv, cat, groupSubs);
-}
-
-function _resolveByHost(embed, srv, cat, groupSubs) {
-  if (/bibiemb\.|vibeplayer\./i.test(embed)) return _plainEmbed(embed, srv, cat, groupSubs);
-  if (/\/e2?\/[^?#/]+/.test(embed) && /megaup|4spromax/i.test(embed)) return _megaUp(embed, srv, cat, groupSubs);
-  // otakuhg/otakuvid/playmogo: best-effort generic m3u8 scrape.
-  return _plainEmbed(embed, srv, cat, groupSubs);
-}
-
-// Merge subtitle lists by url (left wins on duplicates).
-function _mergeSubs(a, b) {
-  var out = (a || []).slice(), seen = {};
-  for (var i = 0; i < out.length; i++) seen[out[i].url] = 1;
-  for (var k = 0; k < (b || []).length; k++) {
-    if (!seen[b[k].url]) { seen[b[k].url] = 1; out.push(b[k]); }
-  }
-  return out;
-}
-
-// Pull a subtitle URL out of the embed's own query string (anikai passes it as
-// ?sub= / ?caption_1= / ?c1_file=). Returns [] or one subtitle entry.
-function _embedSubtitles(embed) {
-  var m = embed.match(/[?&](?:sub|caption_1|c1_file|sub_file|subtitle)=([^&]+)/i);
-  if (!m) return [];
-  var u = m[1];
-  try { u = decodeURIComponent(u); } catch (e) { /* keep raw */ }
-  if (!/^https?:\/\//i.test(u)) return [];
-  var label = (embed.match(/[?&](?:sub_1|c1_label|caption_label)=([^&]+)/i) || [])[1] || 'English';
-  try { label = decodeURIComponent(label); } catch (e) {}
-  return [{ url: u, lang: label, label: label,
-    format: /\.srt(\?|$)/i.test(u) ? 'srt' : 'vtt', 'default': true }];
-}
-
-// bibiemb / vibeplayer: the master m3u8 is in the page as `const src = "..."`
-// (also matches a bare https://...master.m3u8). No decryption.
-function _plainEmbed(embed, srv, cat, groupSubs) {
-  var origin = (embed.match(/^(https?:\/\/[^\/]+)/i) || [])[1] || BASE;
-  return _get(embed, BASE + '/').then(function (html) {
-    var file = (html.match(/const\s+src\s*=\s*"([^"]+\.m3u8[^"]*)"/i)
-             || html.match(/(?:"file"|file)\s*:\s*"([^"]+\.m3u8[^"]*)"/i)
-             || html.match(/(https?:\/\/[^"'\s]+\.m3u8[^"'\s]*)/i) || [])[1];
-    if (!file) throw new Error('AnimeKai: no m3u8 in embed');
-    // Prefer this embed's own subtitle; fall back to the group's.
-    var subs = _embedSubtitles(embed);
-    if (!subs.length) subs = (groupSubs || []).slice();
-    // In-page tracks (rare) — merge.
-    var trkRe = /file\s*:\s*"([^"]+\.vtt[^"]*)"[\s\S]{0,80}?label\s*:\s*"([^"]*)"/gi, tm;
-    while ((tm = trkRe.exec(html)) !== null) {
-      subs.push({ url: tm[1], lang: tm[2] || 'Sub', label: tm[2] || 'Sub', format: 'vtt', 'default': false });
-    }
-    return _fanM3u8(file, origin, cat, subs);
-  });
-}
-
-// MegaUp fallback (only if anikai rotates back to a megaup-family embed):
-//   GET {host}/media/{id} -> { result: <cipher> } -> dec-mega -> { sources, tracks }.
-function _megaUp(embed, srv, cat, groupSubs) {
-  var idm = embed.match(/\/e2?\/([^?#/]+)/);
-  if (!idm) throw new Error('AnimeKai: bad mega id');
-  var id = idm[1];
-  var origHost = (embed.match(/^https?:\/\/([^\/]+)/i) || [])[1] || '';
-  origHost = origHost.replace(/^www\./, '');
-  var hosts = [], seen = {};
-  if (origHost) { hosts.push(origHost); seen[origHost] = 1; }
-  for (var i = 0; i < MEGA_HOSTS.length; i++) {
-    if (!seen[MEGA_HOSTS[i]]) { hosts.push(MEGA_HOSTS[i]); seen[MEGA_HOSTS[i]] = 1; }
-  }
-  function tryHost(j) {
-    if (j >= hosts.length) return Promise.reject(new Error('AnimeKai: mega hosts exhausted'));
-    var host = hosts[j];
-    return fetch('https://' + host + '/media/' + id, {
-      headers: {
-        'User-Agent': EMBED_UA, 'Accept': '*/*', 'Accept-Language': 'en-US,en;q=0.5',
-        'X-Requested-With': 'XMLHttpRequest',
-        'Referer': 'https://' + host + '/e/' + id, 'Origin': 'https://' + host
-      }, timeoutMs: 15000
-    }).then(function (r) {
-      var j2; try { j2 = JSON.parse(r.body || 'null'); } catch (e) { j2 = null; }
-      var cipher = j2 && j2.result;
-      if (!cipher) throw new Error('no result');
-      return _decMega(cipher, EMBED_UA).then(function (dec) {
-        var sources = (dec && dec.sources) || [];
-        var tracks = (dec && dec.tracks) || [];
-        if (!sources.length) throw new Error('no sources');
-        var subs = [];
-        for (var t = 0; t < tracks.length; t++) {
-          var tr = tracks[t];
-          if (!tr || !tr.file) continue;
-          if (tr.kind && tr.kind !== 'captions' && tr.kind !== 'subtitles') continue;
-          subs.push({ url: tr.file, lang: tr.label || 'Sub', label: tr.label || 'Sub',
-            format: /\.srt(\?|$)/i.test(tr.file) ? 'srt' : 'vtt', 'default': !!tr['default'] });
+        const variables = {
+            "page": 1,
+            "perPage": 50,
+            "sort": [
+                "SEARCH_MATCH",
+                "TITLE_ENGLISH_DESC",
+                "TITLE_ROMAJI_DESC"
+            ],
+            "search": keyword,
+            "type": "ANIME",
+            ...filters
         }
-        if (!subs.length) subs = (groupSubs || []).slice();
-        var file = sources[0].file;
-        var origin = 'https://' + host;
-        return _fanM3u8(file, origin, cat, subs);
-      });
-    }).catch(function () { return tryHost(j + 1); });
-  }
-  return tryHost(0);
-}
 
-// enc-dec.app dec-mega: decrypt a MegaUp media cipher. `agent` MUST equal the UA
-// used to fetch /media/ (server-side validates the UA). External dependency.
-function _decMega(cipher, agent) {
-  return fetch('https://enc-dec.app/api/dec-mega', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-    body: JSON.stringify({ text: cipher, agent: agent }),
-    timeoutMs: 15000
-  }).then(function (r) {
-    var j; try { j = JSON.parse(r.body || 'null'); } catch (e) { j = null; }
-    if (!j) throw new Error('AnimeKai: dec-mega bad response');
-    // service returns either {sources,tracks} or {result:{sources,tracks}}
-    if (j.sources || j.tracks) return j;
-    if (j.result && (j.result.sources || j.result.tracks)) return j.result;
-    if (typeof j.result === 'string') { try { return JSON.parse(j.result); } catch (e) {} }
-    return j;
-  });
-}
+        // console.log(filters, variables);
 
-// A master m3u8 → "auto" + one source per rendition (real quality menu). Falls
-// back to a single source if the master can't be read or isn't adaptive.
-function _fanM3u8(file, origin, cat, subs) {
-  var hdrs = { 'User-Agent': EMBED_UA, 'Referer': origin + '/', 'Origin': origin };
-  subs = subs || [];
-  subs.sort(function (a, b) { return (b['default'] ? 1 : 0) - (a['default'] ? 1 : 0); });
-  function mk(u, q) {
-    return { url: u, quality: q,
-      container: /\.m3u8(\?|$)/i.test(u) ? 'hls' : 'mp4',
-      headers: hdrs, kind: cat, audioLang: cat === 'dub' ? 'en' : 'ja',
-      subtitles: subs };
-  }
-  if (!/\.m3u8(\?|$)/i.test(file)) return Promise.resolve([mk(file, 'auto')]);
-  return _get(file, origin + '/').then(function (body) {
-    body = body || '';
-    var dir = file.replace(/[^/]*(\?.*)?$/, '');
-    var vs = [], m, re = /#EXT-X-STREAM-INF:[^\n]*?RESOLUTION=\d+x(\d+)[^\n]*\r?\n([^\r\n#]+)/gi;
-    while ((m = re.exec(body)) !== null) {
-      var h = parseInt(m[1], 10);
-      var uri = String(m[2]).replace(/^\s+|\s+$/g, '');
-      if (!uri) continue;
-      vs.push({ h: h, url: /^https?:/i.test(uri) ? uri : (dir + uri) });
+        return Anilist.anilistFetch(query, variables);
     }
-    vs.sort(function (a, b) { return b.h - a.h; });
-    var out = [mk(file, 'auto')];
-    for (var i = 0; i < vs.length; i++) out.push(mk(vs[i].url, vs[i].h + 'p'));
-    return out;
-  }).catch(function () { return [mk(file, 'auto')]; });
+
+    static async lookup(filters) {
+        const query = `query (
+                $id: Int,
+                $idMal: Int
+            ) {
+                Page(page: 1, perPage: 1) {
+                media(
+                    id: $id,
+                    idMal: $idMal
+                ) {
+                    id
+                    idMal
+                    averageScore
+                    title {
+                        romaji
+                        english
+                        native
+                    }
+                    episodes
+                    nextAiringEpisode {
+                        airingAt
+                        timeUntilAiring
+                        episode
+                    }
+                    status
+                    genres
+                    format
+                    description
+                    startDate {
+                        year
+                        month
+                        day
+                    }
+                    endDate {
+                        year
+                        month
+                        day
+                    }
+                    popularity
+                    coverImage {
+                        color
+                        large
+                        extraLarge
+                    }
+                }
+            }
+        }`;
+
+        const variables = {
+            "type": "ANIME",
+            ...filters
+        }
+
+        return Anilist.anilistFetch(query, variables);
+    }
+
+    static async getLatest(filters) {
+        let page = 0;
+        let hasNextPage = true;
+        const perPage = 50;
+        const currentDate = new Date();
+
+        filters.seasonYear = currentDate.getFullYear();
+        filters.season = Anilist.monthToSeason(currentDate.getMonth());
+
+        const results = [];
+
+        do {
+            page++;
+
+            const query = `query (
+                $page: Int,
+                $perPage: Int,
+                $sort: [MediaSort],
+                $type: MediaType,
+                $status: MediaStatus,
+                $isAdult: Boolean,
+                $seasonYear: Int,
+                $season: MediaSeason
+            ) {
+                Page(page: $page, perPage: $perPage) {
+                    media(
+                        type: $type,
+                        sort: $sort,
+                        status: $status,
+                        isAdult: $isAdult,
+                        seasonYear: $seasonYear,
+                        season: $season
+                    ) {
+                        id
+                        idMal
+                        averageScore
+                        title {
+                            romaji
+                            english
+                            native
+                        }
+                        episodes
+                        nextAiringEpisode {
+                            airingAt
+                            timeUntilAiring
+                            episode
+                        }
+                        status
+                        genres
+                        format
+                        description
+                        startDate {
+                            year
+                            month
+                            day
+                        }
+                        endDate {
+                            year
+                            month
+                            day
+                        }
+                        popularity
+                        coverImage {
+                            color
+                            large
+                            extraLarge
+                        }
+                    }
+                    pageInfo {
+                        hasNextPage
+                    }
+                }
+            }`;
+
+            const variables = {
+                "page": page,
+                "perPage": perPage,
+                "sort": [
+                    "POPULARITY_DESC"
+                ],
+                "type": "ANIME",
+                "status": "RELEASING",
+                ...filters
+            }
+
+            const fetchResults = await Anilist.anilistFetch(query, variables);
+            results.push(fetchResults);
+
+            if(fetchResults?.Page?.pageInfo?.hasNextPage !== true) {
+                hasNextPage = false;
+            }
+
+        } while(hasNextPage);
+
+        const mergedObject = { Page: { media: []}};
+
+        for(let page of results) {
+            mergedObject.Page.media = mergedObject.Page.media.concat(page.Page.media);
+        }
+
+        return mergedObject;
+    }
+
+    static async anilistFetch(query, variables) {
+        const url = 'https://graphql.anilist.co/';
+        const extraTimeoutMs = 250;
+
+        try {
+            const response = await soraFetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({
+                    query: query,
+                    variables: variables
+                })
+            });
+
+            if (response.status !== 200) {
+                if (response.status === 429) {
+                    console.info('=== RATE LIMIT EXCEEDED, SLEEPING AND RETRYING ===');
+                    const retryTimeout = response.headers.get('Retry-After');
+                    const timeout = Math.ceil((parseInt(retryTimeout))) * 1000 + extraTimeoutMs;
+                    await sleep(timeout);
+                    return await AnilistFetch(query, variables);
+
+                }
+
+                console.error('Error fetching Anilist data:', response.statusText);
+                return null;
+            }
+
+            const json = await response.json();
+            if (json?.errors) {
+                console.error('Error fetching Anilist data:', json.errors);
+            }
+
+            return json?.data;
+
+        } catch (error) {
+            console.error('Error fetching Anilist data:', error);
+            return null;
+        }
+    }
+
+    static convertAnilistDateToDateStr(dateObject) {
+        if (dateObject.year == null) {
+            return null;
+        }
+        if (dateObject.month == null || parseInt(dateObject.month) < 1) {
+            dateObject.month = 1;
+        }
+        if (dateObject.day == null || parseInt(dateObject.day) < 1) {
+            dateObject.day = 1;
+        }
+        return dateObject.year + "-" + (dateObject.month).toString().padStart(2, '0') + "-" + (dateObject.day).toString().padStart(2, '0');
+    }
+
+
+    // Yes it's stupid, but I kinda love it which is why I'm not optimizing this
+    static nextAnilistAirDateToCountdown(timestamp) {
+        if (timestamp == null) return null;
+
+        const airDate = new Date((timestamp * 1000));
+        const now = new Date();
+
+        if (now > airDate) return null;
+
+        let [days, hourRemainder] = (((airDate - now) / 1000) / 60 / 60 / 24).toString().split('.');
+        let [hours, minRemainder] = (parseFloat("0." + hourRemainder) * 24).toString().split('.');
+        let minutes = Math.ceil((parseFloat("0." + minRemainder) * 60));
+
+        return `Next episode will air in ${days} days, ${hours} hours and ${minutes} minutes at ${airDate.getFullYear()}-${(airDate.getMonth() + 1).toString().padStart(2, '0')}-${(airDate.getDate()).toString().padStart(2, '0')} ${airDate.getHours()}:${airDate.getMinutes()}`;
+    }
+
+    static monthToSeason(month) {
+        // Month is 0 indexed
+        const seasons = ['WINTER', 'SPRING', 'SUMMER', 'FALL'];
+        if(month == 11) return seasons[0];
+        if(month <= 1) return seasons[0];
+        if(month <= 4) return seasons[1];
+        if(month <= 7) return seasons[2];
+        return seasons[3];
+    }
 }
 
-// No per-source settings UI for AnimeKai.
-function getSettings() { return []; }
-
-
+function sleep(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 async function searchResults(keyword) {
-  var results = await search(keyword, 1, { category: "sub" });
-  return (Array.isArray(results) ? results : []).map(function (item) {
-    return {
-      title: item.title || item.name || "",
-      image: item.cover || item.image || item.poster || "",
-      href: item.url || item.id || item.href || ""
-    };
-  }).filter(function (item) { return item.href; });
+    try {
+        let aniData = null;
+
+        // --- AniList Search ---
+        if (keyword.startsWith('!anime') || keyword.startsWith('!a') || keyword.startsWith('!')) {
+            aniData = await Anilist.getLatest({ isAdult: false });
+        } else {
+            aniData = await Anilist.search(keyword, { isAdult: false });
+        }
+
+        let transformedResults = [];
+
+        if (aniData?.Page?.media?.length > 0) {
+            transformedResults = aniData.Page.media.map(result => ({
+                title:
+                    result.title.english ||
+                    result.title.romaji ||
+                    result.title.native ||
+                    "Untitled",
+                image:
+                    result.coverImage.extraLarge ||
+                    result.coverImage.large ||
+                    result.coverImage.medium ||
+                    "",
+                href: `anime/${result.id}`,
+            }));
+        }
+
+        console.log("Transformed Results: " + JSON.stringify(transformedResults));
+        return JSON.stringify(transformedResults);
+    } catch (error) {
+        console.log("Fetch error in searchResults: " + error);
+        return JSON.stringify([{ title: "Error", image: "", href: "" }]);
+    }
 }
 
-async function extractDetails(href) {
-  var details = await getDetail(href, { category: "sub" });
-  return [{
-    description: details.description || details.synopsis || "Not available",
-    aliases: details.englishTitle || details.title || "",
-    airdate: details.status || details.year || "",
-    image: details.cover || "",
-    provider: "animekai"
-  }];
+async function extractDetails(url) {
+    try {
+        if (url.includes('anime')) {
+            const match = url.match(/anime\/([^\/]+)/);
+            if (!match) throw new Error("Invalid URL format");
+
+            const animeId = parseInt(match[1]);
+
+            const aniData = await Anilist.lookup({ id: animeId });
+            const anime = aniData.Page.media[0];
+
+            const cleanDescription = anime.description
+                ? anime.description.replace(/<[^>]+>/g, '').trim()
+                : 'No description available';
+
+            const transformedResults = [{
+                description: cleanDescription,
+                aliases: `Duration: ${anime.episodes ? 24 + " minutes" : 'Unknown'}`, // default 24 mins per episode
+                airdate: `Aired: ${anime.startDate.year ? Anilist.convertAnilistDateToDateStr(anime.startDate) : 'Unknown'}`
+            }];
+
+            console.log(JSON.stringify(transformedResults));
+            return JSON.stringify(transformedResults);
+        } else {
+            throw new Error("Invalid URL format");
+        }
+    } catch (error) {
+        console.log('Details error: ' + error);
+        return JSON.stringify([{
+            description: 'Error loading description',
+            aliases: 'Duration: Unknown',
+            airdate: 'Aired/Released: Unknown'
+        }]);
+    }
 }
 
-async function extractEpisodes(href) {
-  var episodes = [];
-  if (typeof getEpisodes === "function") {
-    episodes = await getEpisodes(href, { category: "sub" });
-  } else {
-    var details = await getDetail(href, { category: "sub" });
-    episodes = details.episodes || [];
-  }
-  return (Array.isArray(episodes) ? episodes : []).map(function (episode, index) {
-    return {
-      number: episode.number || episode.episodeNumber || episode.episode || index + 1,
-      title: episode.title || "",
-      href: episode.url || episode.id || episode.href || ""
-    };
-  }).filter(function (episode) { return episode.href; });
+async function extractEpisodes(url) {
+    try {
+        if(url.includes('anime')) {
+            const match = url.match(/anime\/([^\/]+)/);
+            if (!match) throw new Error("Invalid URL format");
+
+            const animeId = parseInt(match[1]);
+            const aniData = await Anilist.lookup({ id: animeId });
+            const anime = aniData.Page.media[0];
+
+            console.log(anime);
+
+            if (!anime) return JSON.stringify([]);
+
+            const episodesCount = anime.episodes || (anime.nextAiringEpisode.episode - 1) || 1;
+            const episodesArray = [];
+            for (let i = 1; i <= episodesCount; i++) {
+                episodesArray.push({
+                    href: `anime/${animeId}/${i}`,
+                    number: i,
+                    title: `Episode ${i}`
+                });
+            }
+
+            console.log(episodesArray);
+            return JSON.stringify(episodesArray);
+        } else {
+            throw new Error("Invalid URL format");
+        }
+    } catch (error) {
+        console.log('Fetch error in extractEpisodes: ' + error);
+        return JSON.stringify([]);
+    }    
 }
 
-async function extractStreamUrl(href) {
-  var sources = await getVideoSources(href, { category: "sub" });
-  return (Array.isArray(sources) ? sources : []).map(function (source) {
-    return {
-      title: source.quality || source.title || source.server || "auto",
-      url: source.url || source.file || source.streamUrl || "",
-      headers: source.headers || {},
-      subtitles: source.subtitles || source.tracks || []
-    };
-  }).filter(function (source) { return source.url; });
+// searchResults("!trending");
+
+// searchResults("clannad");
+// extractDetails("tv/24835/1/1");
+// extractEpisodes("tv/24835/1/1");
+// extractStreamUrl("tv/24835/1/1");
+
+// extractDetails("anime/2167");
+// extractEpisodes("anime/2167");
+// extractStreamUrl("anime/130003/1");
+
+// searchResults("One piece");
+// extractEpisodes("anime/21");
+// extractStreamUrl("anime/21/1");
+
+async function extractStreamUrl(url) {
+    try {
+        const match = url.match(/(anime)\/(.+)/);
+        if (!match) throw new Error('Invalid URL format');
+        const [, type, path] = match;
+        const [anilistId, episodeNumber] = path.split('/');
+
+        const providers = [
+            "animepahe", "anikoto", "reanime", "animix", "allani", "senshi"
+        ];
+
+        const allStreams = [];
+        let allSubtitles = [];
+        let primarySubtitle = "";
+        let primaryHeaders = {};
+
+        const fetchProvider = async (provider) => {
+            const apiUrl = `https://anikuro.ru/api/getsources/?id=${anilistId}&lol=${provider}&ep=${episodeNumber}`;
+            console.log("[Anikuro] Fetching: " + apiUrl);
+
+            const resp = await soraFetch(apiUrl, {
+                headers: {
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
+                    "Accept": "application/json, text/plain, */*"
+                }
+            });
+
+            if (!resp || resp.status !== 200) {
+                console.warn(`[Anikuro] ${provider} failed with status: ${resp ? resp.status : "null"}`);
+                return null;
+            }
+
+            let json;
+            try {
+                if (typeof resp.json === "function") {
+                    json = await resp.json();
+                } else {
+                    const text = await resp.text();
+                    json = JSON.parse(text);
+                }
+            } catch (e) {
+                console.error(`[Anikuro] ${provider} JSON parse error:`, e);
+                return null;
+            }
+
+            const data = json?.data || json;
+            if (!data) {
+                console.warn(`[Anikuro] ${provider} returned empty data`);
+                return null;
+            }
+
+            return data;
+        };
+
+        const results = await Promise.allSettled(providers.map(p => fetchProvider(p)));
+
+        results.forEach((result, idx) => {
+            if (result.status !== "fulfilled" || !result.value) return;
+            const data = result.value;
+            const providerName = providers[idx];
+
+            // Try to get variants from providerResult (most providers use this)
+            let variants = data?.providerResult?.variants || [];
+
+            // If no variants, construct from top-level sub/dub manually
+            if (variants.length === 0) {
+                if (data.sub) {
+                    variants.push({
+                        variant: "sub",
+                        sources: data.sub.sources || [],
+                        subtitles: data.sub.subtitles || [],
+                        headers: data.sub.headers || {}
+                    });
+                }
+                if (data.dub) {
+                    variants.push({
+                        variant: "dub",
+                        sources: data.dub.sources || [],
+                        subtitles: data.dub.subtitles || [],
+                        headers: data.dub.headers || {}
+                    });
+                }
+            }
+
+            variants.forEach((variant) => {
+                const varType = variant.variant || "sub";
+                const headers = variant.headers || {};
+                const sources = variant.sources || [];
+
+                sources.forEach((source) => {
+                    if (source.quality === "Yt-mp4") return;
+
+                    const quality = source.quality || "default";
+                    // Use original URL if available, otherwise fall back to proxy
+                    let streamUrl = source.originalUrl || source.url;
+
+                    // Animepahe URL transformation (still applies to originalUrl)
+                    if (providerName === "animepahe" && streamUrl) {
+                        streamUrl = streamUrl
+                            .replace("/stream/", "/hls/")
+                            .replace("uwu.m3u8", "owo.m3u8");
+                    }
+
+                    // Build headers: use upstreamReferer as Referer if present
+                    const streamHeaders = { ...(source.headers || headers) };
+                    if (source.upstreamReferer) {
+                        streamHeaders["Referer"] = source.upstreamReferer;
+                    }
+
+                    allStreams.push({
+                        title: `${providerName} - ${varType.toUpperCase()} (${quality})`,
+                        streamUrl: streamUrl,
+                        headers: streamHeaders,
+                    });
+                });
+
+                // Collect subtitles (unchanged)
+                const subtitles = variant.subtitles || [];
+                subtitles.forEach((sub) => {
+                    allSubtitles.push({
+                        url: sub.url,
+                        label: sub.label || "Unknown",
+                        kind: "captions",
+                        headers: {}
+                    });
+                    if (!primarySubtitle && sub.label && sub.label.toLowerCase().includes("english") && sub.default) {
+                        primarySubtitle = sub.url;
+                        primaryHeaders = headers;
+                    }
+                });
+            });
+        });
+
+        // Sort: SUB first, then DUB
+        allStreams.sort((a, b) => {
+            const aIsSub = a.title.toLowerCase().includes("sub") ? 0 : 1;
+            const bIsSub = b.title.toLowerCase().includes("sub") ? 0 : 1;
+            if (aIsSub !== bIsSub) return aIsSub - bIsSub;
+            return a.title.localeCompare(b.title);
+        });
+
+        // Deduplicate subtitles
+        const seenUrls = new Set();
+        allSubtitles = allSubtitles.filter(sub => {
+            if (seenUrls.has(sub.url)) return false;
+            seenUrls.add(sub.url);
+            return true;
+        });
+
+        // Fallback primary subtitle
+        if (!primarySubtitle && allSubtitles.length > 0) {
+            const engSub = allSubtitles.find(s => s.label && s.label.toLowerCase().includes("english"));
+            primarySubtitle = engSub ? engSub.url : allSubtitles[0].url;
+            primaryHeaders = {};
+        }
+
+        const result = {
+            streams: allStreams,
+            subtitles: primarySubtitle,
+            subtitlesHeaders: primaryHeaders,
+            allSubtitles: allSubtitles
+        };
+
+        console.log('Result: ' + JSON.stringify(result).substring(0, 500));
+        return JSON.stringify(result);
+
+    } catch (error) {
+        console.log('Fetch error in extractStreamUrl: ' + error);
+        return JSON.stringify({ streams: [], subtitles: "", subtitlesHeaders: {}, allSubtitles: [] });
+    }
+}
+
+async function soraFetch(url, options = { headers: {}, method: 'GET', body: null, encoding: 'utf-8' }) {
+    try {
+        return await fetchv2(
+            url,
+            options.headers ?? {},
+            options.method ?? 'GET',
+            options.body ?? null,
+            true,
+            options.encoding ?? 'utf-8'
+        );
+    } catch(e) {
+        try {
+            return await fetch(url, options);
+        } catch(error) {
+            return null;
+        }
+    }
 }

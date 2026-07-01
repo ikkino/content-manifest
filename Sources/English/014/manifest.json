@@ -1,28 +1,26 @@
 {
-  "sourceName": "Otaku-Streamers",
-  "iconUrl": "https://files.catbox.moe/alcwg2.png",
-  "author": {
-    "name": "50/50",
-    "icon": "https://files.catbox.moe/741wp7.png"
-  },
-  "version": "1.0.0",
+  "id": "zangetsu_animekai",
+  "sourceName": "AnimeKai (Zangetsu)",
+  "iconUrl": "",
+  "version": "1.1.2",
   "language": "English",
   "streamType": "HLS",
   "quality": "1080p",
-  "baseUrl": "https://beta.otaku-streamers.com/",
-  "searchBaseUrl": "https://beta.otaku-streamers.com/",
+  "baseUrl": "https://animekai.to/",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/014/source.js",
-  "type": "anime",
-  "asyncJS": true,
   "softsub": true,
-  "downloadSupport": true,
-  "supportsSora": true,
-  "supportsLuna": true,
-  "supportsMojuru": true,
-  "supportsDartotsu": true,
-  "supportsAnymex": true,
-  "supportsTsumi": true,
-  "supportsHiyoku": true,
-  "supportsShirox": true,
-  "id": "jWwhj"
+  "asyncJS": true,
+  "type": "anime",
+  "registry": "zangetsu",
+  "registries": [
+    "zangetsu"
+  ],
+  "manifestUrl": "https://raw.githubusercontent.com/Spyou/zangetsu-providers/main/index.json",
+  "status": "active",
+  "addedAt": "2026-06-14T10:25:50.353Z",
+  "note": "Ported from Zangetsu provider",
+  "author": {
+    "name": "Spyou",
+    "icon": ""
+  }
 }

@@ -1,24 +1,27 @@
 {
-  "sourceName": "AniWorld (ENG SUB)",
-  "iconUrl": "https://git.luna-app.eu/Cufiy/sora-modules/raw/branch/main/modules/aniworld/aniworld.png",
+  "sourceName": "AnimeGG",
+  "iconUrl": "https://files.catbox.moe/caq4am.png",
   "author": {
-    "name": "Cufiy & Hamzo",
-    "icon": "https://files.catbox.moe/ttj4fc.gif",
-    "url": "https://github.com/JMcrafter26"
+    "name": "50/50",
+    "icon": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ3122kQwublLkZ6rf1fEpUP79BxZOFmH9BSA&s"
   },
-  "version": "0.3.5",
+  "version": "1.0.0",
   "language": "English",
-  "streamType": "HLS",
-  "quality": "720p",
-  "baseUrl": "https://google.com",
-  "searchBaseUrl": "https://aniworld.to/ajax/seriesSearch?keyword=%s",
+  "streamType": "mp4",
+  "quality": "1080p",
+  "baseUrl": "https://www.animegg.org/",
+  "searchBaseUrl": "https://www.animegg.org/",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/012/source.js",
-  "asyncJS": true,
-  "streamAsyncJS": false,
   "type": "anime",
-  "supportsMojuru": true,
+  "asyncJS": true,
+  "softsub": true,
+  "downloadSupport": true,
   "supportsSora": true,
   "supportsLuna": true,
-  "supportsSoru": true,
-  "id": "jZdQ"
+  "supportsMojuru": true,
+  "supportsDartotsu": true,
+  "supportsAnymex": true,
+  "supportsTsumi": true,
+  "supportsHiyoku": true,
+  "id": "jhWaO"
 }
