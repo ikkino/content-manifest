@@ -1,199 +1,313 @@
+// VidCore Media Source Module
+
 async function searchResults(keyword) {
-    const results = [];
-    const headers = {
-        'Referer': 'https://animetsu.live/',
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-    };
-
-    const encodedKeyword = encodeURIComponent(keyword);
-    const response = await fetchv2(`https://animetsu.live/v2/api/anime/search/?query=${encodedKeyword}`, headers);
-    const json = await response.json();
-
-    json.results.forEach(anime => {
-        const title = anime.title.english || anime.title.romaji || anime.title.native || "Unknown Title";
-        const image = anime.cover_image.large;
-        const href = `${anime.id}`;
-
-        if (title && href && image) {
-            results.push({
-                title: title,
-                image: image,
-                href: href
-            });
-        } else {
-            console.error("Missing or invalid data in search result item:", {
-                title,
-                href,
-                image
-            });
-        }
-    });
-
-    return JSON.stringify(results);
-}
-
-async function extractDetails(id) {
-    const results = [];
-    const headers = {
-        'Referer': 'https://animetsu.live/',
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-    };
-
-    const response = await fetchv2(`https://animetsu.live/v2/api/anime/info/${id}`, headers);
-    const json = await response.json();
-
-    const description = cleanHtmlSymbols(json.description) || "No description available"; 
-
-    results.push({
-        description: description.replace(/<br>/g, ''),
-        aliases: json.synonyms ? json.synonyms.join(', ') : 'N/A',
-        airdate: json.start_date || 'N/A'
-    });
-
-    return JSON.stringify(results);
-}
-
-async function extractEpisodes(id) {
-    const results = [];
-    const headers = {
-        'Referer': 'https://animetsu.live/',
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-    };
-
-    const response = await fetchv2(`https://animetsu.live/v2/api/anime/eps/${id}`, headers);
-    const json = await response.json();
-
-    for (const ep of json) {
-        results.push({
-            number: ep.ep_num,
-            href: `&id=${id}&num=${ep.ep_num}`
-        });
-    }
-
-    return JSON.stringify(results);
-}
-
-async function extractStreamUrl(slug) {
-    const headers = {
-        'Referer': 'https://animetsu.live/',
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-    };
-
-    const id = (slug.match(/[?&]id=([^&]+)/) || [])[1];
-    const num = (slug.match(/[?&]num=([^&]+)/) || [])[1];
-
-    const streams = [];
-
     try {
-        const serverListRes = await fetchv2(`https://animetsu.live/v2/api/anime/servers/${id}/${num}`, headers);
-        const serverList = await serverListRes.json();
+        let transformedResults = [];
 
-        const promises = [];
-        for (const server of serverList) {
-            for (const subType of ['sub', 'dub']) {
-                promises.push((async () => {
-                    try {
-                        const url = `https://animetsu.live/v2/api/anime/oppai/${id}/${num}?server=${server.id}&source_type=${subType}`;
-                        const res = await fetchv2(url, headers);
-                        const data = await res.json();
+        const keywordGroups = {
+            trending: ["!trending", "!hot", "!tr", "!!"],
+            topRatedMovie: ["!top-rated-movie", "!topmovie", "!tm", "??"],
+            topRatedTV: ["!top-rated-tv", "!toptv", "!tt", "::"],
+            popularMovie: ["!popular-movie", "!popmovie", "!pm", ";;"],
+            popularTV: ["!popular-tv", "!poptv", "!pt", "++"],
+        };
 
-                        if (data?.sources?.length) {
-                            for (const source of data.sources) {
-                                let streamUrl = `https://swiftstream.top/proxy${source.url}`;
-                                let quality = source.quality;
+        const skipTitleFilter = Object.values(keywordGroups).flat();
+        const shouldFilter = !matchesKeyword(keyword, skipTitleFilter);
 
-                                if (server.id === 'kite') {
-                                    try {
-                                        const m3u8Res = await fetchv2(streamUrl, headers);
-                                        const m3u8Content = await m3u8Res.text();
-                                        const lines = m3u8Content.split('\n').filter(line => line.trim() !== '');
-                                        const targetLine = lines.find(line => !line.startsWith('#'));
-                                        if (targetLine) {
-                                            streamUrl = `https://swiftstream.top/proxy/oppai/kite/${targetLine.trim()}`;
-                                        }
-                                        if (quality.toLowerCase() === 'master') {
-                                            quality = '1080p';
-                                        }
-                                    } catch (e) {
-                                        console.error("Error rewriting kite URL:", e);
-                                    }
-                                }
+        const encodedKeyword = encodeURIComponent(keyword);
+        let baseUrlTemplate = null;
 
-                                streams.push({
-                                    title: `${server.id} - ${quality} - ${subType.toUpperCase()}`,
-                                    streamUrl: streamUrl,
-                                    headers: headers
-                                });
-                            }
-                        }
-                    } catch (e) {
-                        console.error(`Error fetching streams for server ${server.id} (${subType}):`, e);
-                    }
-                })());
-            }
+        if (matchesKeyword(keyword, keywordGroups.trending)) {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/trending/all/week?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+        } else if (matchesKeyword(keyword, keywordGroups.topRatedMovie)) {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/top_rated?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+        } else if (matchesKeyword(keyword, keywordGroups.topRatedTV)) {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/top_rated?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+        } else if (matchesKeyword(keyword, keywordGroups.popularMovie)) {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/popular?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+        } else if (matchesKeyword(keyword, keywordGroups.popularTV)) {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/popular?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+        } else {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/search/multi?api_key=9801b6b0548ad57581d111ea690c85c8&query=${encodedKeyword}&include_adult=false&page=${page}`)}&simple=true`;
         }
 
-        await Promise.all(promises);
-    } catch (e) {
-        console.error("Error fetching server list:", e);
+        let dataResults = [];
+
+        if (baseUrlTemplate) {
+            const pagePromises = Array.from({ length: 5 }, (_, i) =>
+                soraFetch(baseUrlTemplate(i + 1)).then(r => r ? r.json() : { results: [] })
+            );
+            const pages = await Promise.all(pagePromises);
+            dataResults = pages.flatMap(p => p.results || []);
+        }
+
+        if (dataResults.length > 0) {
+            transformedResults = transformedResults.concat(
+                dataResults
+                    .map(result => {
+                        if (result.media_type === "movie" || result.title) {
+                            return {
+                                title: result.title || result.name || result.original_title || result.original_name || "Untitled",
+                                image: result.poster_path ? `https://image.tmdb.org/t/p/w500${result.poster_path}` : "",
+                                href: `movie/${result.id}`,
+                            };
+                        } else if (result.media_type === "tv" || result.name) {
+                            return {
+                                title: result.name || result.title || result.original_name || result.original_title || "Untitled",
+                                image: result.poster_path ? `https://image.tmdb.org/t/p/w500${result.poster_path}` : "",
+                                href: `tv/${result.id}/1/1`,
+                            };
+                        }
+                    })
+                    .filter(Boolean)
+                    .filter(r => !shouldFilter || r.title.toLowerCase().includes(keyword.toLowerCase()))
+            );
+        }
+
+        return JSON.stringify(transformedResults);
+    } catch (error) {
+        console.log("Fetch error in searchResults: " + error);
+        return JSON.stringify([{ title: "Error", image: "", href: "" }]);
     }
-
-    const serverOrder = { 'pahe': 1, 'meg': 2, 'kite': 3 };
-    const qualityOrder = (q) => {
-        if (q.includes('1080')) return 1;
-        if (q.includes('720')) return 2;
-        if (q.includes('480')) return 3;
-        if (q.includes('360')) return 4;
-        if (q.includes('master')) return 5;
-        return 6;
-    };
-
-    streams.sort((a, b) => {
-        const partsA = a.title.split(' - ');
-        const partsB = b.title.split(' - ');
-        
-        const sA = partsA[0].toLowerCase();
-        const sB = partsB[0].toLowerCase();
-        const qA = partsA[1].toLowerCase();
-        const qB = partsB[1].toLowerCase();
-
-        const qOrderA = qualityOrder(qA);
-        const qOrderB = qualityOrder(qB);
-
-        if (qOrderA !== qOrderB) return qOrderA - qOrderB;
-        
-        const sOrderA = serverOrder[sA] || 99;
-        const sOrderB = serverOrder[sB] || 99;
-        return sOrderA - sOrderB;
-    });
-
-    const finalStreams = streams.map((s, index) => ({
-        ...s,
-        title: `[Server ${index + 1}] ${s.title}`
-    }));
-
-    const final = {
-        streams: finalStreams,
-        subtitle: ""
-    };
-
-    return JSON.stringify(final);
 }
 
+function matchesKeyword(keyword, commands) {
+    const lower = keyword.toLowerCase();
+    return commands.some(cmd => lower.startsWith(cmd.toLowerCase()));
+}
 
+async function extractDetails(url) {
+    try {
+        if(url.includes('movie')) {
+            const match = url.match(/movie\/([^\/]+)/);
+            if (!match) throw new Error("Invalid URL format");
 
+            const movieId = match[1];
+            const responseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/${movieId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
+            const data = await responseText.json();
 
-function cleanHtmlSymbols(string) {
-    if (!string) return "";
+            const transformedResults = [{
+                description: data.overview || 'No description available',
+                aliases: `Duration: ${data.runtime ? data.runtime + " minutes" : 'Unknown'}`,
+                airdate: `Released: ${data.release_date ? data.release_date : 'Unknown'}`
+            }];
 
-    return string
-        .replace(/&#8217;/g, "'")
-        .replace(/&#8211;/g, "-")
-        .replace(/&#[0-9]+;/g, "")
-        .replace(/\r?\n|\r/g, " ")  
-        .replace(/\s+/g, " ")       
-        .replace(/<i[^>]*>(.*?)<\/i>/g, "$1")
-        .replace(/<b[^>]*>(.*?)<\/b>/g, "$1") 
-        .replace(/<[^>]+>/g, "")
-        .trim();                 
+            return JSON.stringify(transformedResults);
+        } else if(url.includes('tv')) {
+            const match = url.match(/tv\/([^\/]+)/);
+            if (!match) throw new Error("Invalid URL format");
+
+            const showId = match[1];
+            const responseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
+            const data = await responseText.json();
+
+            const transformedResults = [{
+                description: data.overview || 'No description available',
+                aliases: `Duration: ${data.episode_run_time && data.episode_run_time.length ? data.episode_run_time.join(', ') + " minutes" : 'Unknown'}`,
+                airdate: `Aired: ${data.first_air_date ? data.first_air_date : 'Unknown'}`
+            }];
+
+            return JSON.stringify(transformedResults);
+        } else {
+            throw new Error("Invalid URL format");
+        }
+    } catch (error) {
+        console.log('Details error: ' + error);
+        return JSON.stringify([{
+            description: 'Error loading description',
+            aliases: 'Duration: Unknown',
+            airdate: 'Aired/Released: Unknown'
+        }]);
+    }
+}
+
+async function extractEpisodes(url) {
+    try {
+        if(url.includes('movie')) {
+            const match = url.match(/movie\/([^\/]+)/);
+            if (!match) throw new Error("Invalid URL format");
+            const movieId = match[1];
+            
+            const movie = [
+                { href: `/movie/${movieId}`, number: 1, title: "Full Movie" }
+            ];
+            return JSON.stringify(movie);
+        } else if(url.includes('tv')) {
+            const match = url.match(/tv\/([^\/]+)\/([^\/]+)\/([^\/]+)/);
+            if (!match) throw new Error("Invalid URL format");
+            const showId = match[1];
+            
+            const showResponseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
+            const showData = await showResponseText.json();
+            
+            let allEpisodes = [];
+            for (const season of showData.seasons) {
+                const seasonNumber = season.season_number;
+                if(seasonNumber === 0) continue;
+                
+                const seasonResponseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}/season/${seasonNumber}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
+                const seasonData = await seasonResponseText.json();
+                
+                if (seasonData.episodes && seasonData.episodes.length) {
+                    const episodes = seasonData.episodes.map(episode => ({
+                        href: `/tv/${showId}/${seasonNumber}/${episode.episode_number}`,
+                        number: episode.episode_number,
+                        title: episode.name || ""
+                    }));
+                    allEpisodes = allEpisodes.concat(episodes);
+                }
+            }
+            return JSON.stringify(allEpisodes);
+        } else {
+            throw new Error("Invalid URL format");
+        }
+    } catch (error) {
+        console.log('Fetch error in extractEpisodes: ' + error);
+        return JSON.stringify([]);
+    }    
+}
+
+async function extractStreamUrl(ID) {
+    try {
+        let isMovie = ID.includes('movie');
+        let tmdbID, seasonNumber = "1", episodeNumber = "1";
+        let mediaType = "";
+        
+        if (isMovie) {
+            tmdbID = ID.replace('/movie/', '').replace('/', '');
+            mediaType = "movie";
+        } else if (ID.includes('tv')) {
+            const parts = ID.split('/'); 
+            tmdbID = parts[2];
+            seasonNumber = parts[3];
+            episodeNumber = parts[4];
+            mediaType = "tv";
+        } else {
+            return JSON.stringify({ streams: [] });
+        }
+
+        // Fetch page content
+        const targetPageUrl = mediaType === "movie"
+            ? `https://vidcore.net/movie/${tmdbID}/`
+            : `https://vidcore.net/tv/${tmdbID}/${seasonNumber}/${episodeNumber}/`;
+
+        const response = await soraFetch(targetPageUrl);
+        if (!response) throw new Error("Failed to fetch vidcore page");
+        const html = await response.text();
+
+        // Extract escaped text
+        const match = html.match(/\\"en\\":\\"(.*?)\\"/) || html.match(/"en":"(.*?)"/);
+        if (!match) throw new Error("Could not find payload text on vidcore page");
+        const text = match[1];
+
+        // Call enc-dec to get server list urls
+        const encVidcoreUrl = `https://enc-dec.app/api/enc-vidcore?text=${encodeURIComponent(text)}`;
+        const encRes = await soraFetch(encVidcoreUrl);
+        if (!encRes) throw new Error("Failed to call enc-vidcore API");
+        const encJson = await encRes.json();
+        const parts = encJson.result;
+
+        const { servers, stream, token } = parts;
+
+        const headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
+            "Referer": "https://vidcore.net/",
+            "X-Requested-With": "XMLHttpRequest",
+            "X-CSRF-Token": token
+        };
+
+        // Fetch servers list
+        const serversRes = await fetchv2(servers, headers, "POST", null);
+        const serversEncrypted = await serversRes.text();
+
+        // Decrypt servers list
+        const decRes = await fetchv2("https://enc-dec.app/api/dec-vidcore", { "Content-Type": "application/json" }, "POST", JSON.stringify({
+            text: serversEncrypted
+        }));
+        const decJson = await decRes.json();
+        const serversDecrypted = decJson.result || [];
+
+        let streamObjects = [];
+        let allSubtitles = [];
+
+        // Concurrently fetch streams from all servers
+        const serverPromises = serversDecrypted.map(async (server) => {
+            try {
+                const streamUrl = `${stream}/${server.data}`;
+                const streamRes = await fetchv2(streamUrl, headers, "POST", null);
+                const streamEncrypted = await streamRes.text();
+
+                const decStreamRes = await fetchv2("https://enc-dec.app/api/dec-vidcore", { "Content-Type": "application/json" }, "POST", JSON.stringify({
+                    text: streamEncrypted
+                }));
+                const decStreamJson = await decStreamRes.json();
+                const streamDecrypted = decStreamJson.result;
+
+                if (streamDecrypted && streamDecrypted.url) {
+                    return {
+                        name: server.name,
+                        url: streamDecrypted.url,
+                        tracks: streamDecrypted.tracks || []
+                    };
+                }
+            } catch (err) {
+                console.log(`Error fetching/decrypting stream for VidCore server ${server.name}: ` + err.message);
+            }
+            return null;
+        });
+
+        const results = await Promise.all(serverPromises);
+
+        results.forEach(res => {
+            if (!res) return;
+            streamObjects.push({
+                title: `[VidCore] ${res.name}`,
+                streamUrl: res.url,
+                headers: {
+                    "Referer": "https://vidcore.net/",
+                    "Origin": "https://vidcore.net"
+                }
+            });
+
+            res.tracks.forEach(track => {
+                if (track.file && !allSubtitles.some(existing => existing.url === track.file)) {
+                    allSubtitles.push({
+                        url: track.file,
+                        language: track.label || "English"
+                    });
+                }
+            });
+        });
+
+        const englishSubtitle = allSubtitles.find(sub => sub.language.toLowerCase() === 'english');
+        let subtitleUrl = englishSubtitle ? englishSubtitle.url : "";
+
+        return JSON.stringify({
+            streams: streamObjects,
+            subtitles: subtitleUrl
+        });
+    } catch (e) {
+        console.log("Error in extractStreamUrl: " + e.message);
+        return JSON.stringify({ streams: [], subtitles: "" });
+    }
+}
+
+async function soraFetch(url, options = { headers: {}, method: 'GET', body: null, encoding: 'utf-8' }) {
+    try {
+        return await fetchv2(
+            url,
+            options.headers ?? {},
+            options.method ?? 'GET',
+            options.body ?? null,
+            true,
+            options.encoding ?? 'utf-8'
+        );
+    } catch(e) {
+        try {
+            return await fetch(url, options);
+        } catch(error) {
+            return null;
+        }
+    }
 }
