@@ -1,165 +1,170 @@
-async function searchResults(keyword) {
-    const results = [];
+const ANIZONE_BASE = "https://anizone.to";
+
+function absoluteUrl(value) {
+  if (!value) return "";
+  const cleaned = String(value).replace(/&amp;/g, "&").trim();
+  if (/^\/\//.test(cleaned)) return "https:" + cleaned;
+  if (/^https?:\/\//i.test(cleaned)) return cleaned;
+  if (cleaned.startsWith("/")) return ANIZONE_BASE + cleaned;
+  return ANIZONE_BASE + "/" + cleaned;
+}
+
+function decodeEntities(value) {
+  return String(value ?? "")
+    .replace(/&amp;/g, "&")
+    .replace(/&quot;/g, '"')
+    .replace(/&#039;/g, "'")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/\\u([0-9a-fA-F]{4})/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)));
+}
+
+function stripTags(value) {
+  return decodeEntities(value)
+    .replace(/<script[\s\S]*?<\/script>/gi, " ")
+    .replace(/<style[\s\S]*?<\/style>/gi, " ")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function chooseTitle(block, fallback) {
+  const direct = block.match(/window\.getTitle\(this\.(?:anmTitles|epsTitles),\s*'([^']+)'/);
+  if (direct) return decodeEntities(direct[1]).trim();
+
+  const titleJson = block.match(/(?:anmTitles|epsTitles):\s*JSON\.parse\('([^']+)'\)/);
+  if (titleJson) {
     try {
-        const response = await fetchv2("https://123animehub.cc/search?keyword=" + encodeURIComponent(keyword));
-        const html = await response.text();
-
-        const filmListMatch = html.match(/<div class="film-list">([\s\S]*?)<div class="clearfix"><\/div>/);
-        if (!filmListMatch) {
-            return JSON.stringify(results);
-        }
-
-        const filmList = filmListMatch[1];
-        const itemRegex = /<div class="item">[\s\S]*?<a href="([^"]+)"[^>]*class="poster"[\s\S]*?<img[^>]*alt="([^"]+)"[^>]*src="([^"]+)"/g;
-        let match;
-        while ((match = itemRegex.exec(filmList)) !== null) {
-            results.push({
-                title: match[2].trim(),
-                image: "https://123animehub.cc" + match[3].trim(),
-                href: "https://123animehub.cc" + match[1].trim()
-            });
-        }
-
-        return JSON.stringify(results);
-    } catch (err) {
-        return JSON.stringify([{
-            title: "Error",
-            image: "Error",
-            href: "Error"
-        }]);
+      const titles = JSON.parse(decodeEntities(titleJson[1]));
+      const preferred = titles["1"] || titles["5"] || titles["8"];
+      if (preferred) return String(preferred).trim();
+      const ascii = Object.values(titles).find((title) => /^[\x20-\x7E]+$/.test(String(title)));
+      if (ascii) return String(ascii).trim();
+      const first = Object.values(titles)[0];
+      if (first) return String(first).trim();
+    } catch (error) {
+      console.log("AniZone title parse failed: " + error.message);
     }
+  }
+
+  const attrTitle = block.match(/\btitle="([^"]+)"/);
+  if (attrTitle && !attrTitle[1].includes("display")) return decodeEntities(attrTitle[1]).trim();
+  return fallback;
+}
+
+function cardBlockAround(html, index) {
+  const articleStart = html.lastIndexOf("<article", index);
+  const start = articleStart >= 0 ? articleStart : Math.max(0, index - 2200);
+  const articleEnd = html.indexOf("</article>", index);
+  const end = articleEnd > index ? articleEnd + 10 : Math.min(html.length, index + 1800);
+  return html.slice(start, end);
+}
+
+async function searchResults(keyword) {
+  try {
+    const response = await fetchv2(ANIZONE_BASE + "/anime?search=" + encodeURIComponent(keyword));
+    const html = await response.text();
+    const results = [];
+    const seen = new Set();
+    const hrefRegex = /href="(https:\/\/anizone\.to\/anime\/[a-z0-9]+|\/anime\/[a-z0-9]+)"/gi;
+    let match;
+
+    while ((match = hrefRegex.exec(html)) !== null) {
+      const href = absoluteUrl(match[1]);
+      if (seen.has(href)) continue;
+      seen.add(href);
+
+      const block = cardBlockAround(html, match.index);
+      const slug = href.split("/").filter(Boolean).pop() || "";
+      const title = chooseTitle(block, slug);
+      const image = absoluteUrl(block.match(/src="([^"]*\/images\/anime\/[^"]+)"/i)?.[1] || "");
+      if (title && href) results.push({ title, image, href });
+    }
+
+    return JSON.stringify(results.slice(0, 12));
+  } catch (error) {
+    console.log("AniZone search error: " + error.message);
+    return JSON.stringify([]);
+  }
 }
 
 async function extractDetails(url) {
-    try {
-        const response = await fetchv2(url);
-        const html = await response.text();
-
-        let description = "N/A";
-        let aliases = "N/A";
-        let airdate = "N/A";
-
-        const descMatch = html.match(/<div class="desc">([\s\S]*?)<\/div>/);
-        if (descMatch) {
-            description = descMatch[1].replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
-        }
-
-        const aliasMatch = html.match(/<p class="alias">([^<]*)<\/p>/);
-        if (aliasMatch) {
-            aliases = aliasMatch[1].trim();
-        }
-
-        const airdateMatch = html.match(/<dt>Released:<\/dt>\s*<dd>\s*<a[^>]*>(\d+)<\/a>/);
-        if (airdateMatch) {
-            airdate = airdateMatch[1].trim();
-        }
-
-        return JSON.stringify([{
-            description: description,
-            aliases: aliases,
-            airdate: airdate
-        }]);
-    } catch (err) {
-        return JSON.stringify([{
-            description: "Error",
-            aliases: "Error",
-            airdate: "Error"
-        }]);
-    }
+  try {
+    const response = await fetchv2(url);
+    const html = await response.text();
+    const title = stripTags(html.match(/<title>(.*?)\s+[\u2014-]\s+AniZone<\/title>/i)?.[1] || "") || "AniZone";
+    const image = absoluteUrl(html.match(/src="([^"]*\/images\/anime\/[^"]+)"/i)?.[1] || "");
+    const episodeCount = html.match(/>\s*(\d+)\s+Episodes?\s*</i)?.[1] || "";
+    const descriptionBlock = html.match(/<p[^>]*class="[^"]*(?:description|line-clamp)[^"]*"[^>]*>([\s\S]*?)<\/p>/i)?.[1] || "";
+    const description = stripTags(descriptionBlock) || (episodeCount ? episodeCount + " episodes available on AniZone." : "AniZone anime source.");
+    return JSON.stringify([{ description, aliases: title, airdate: "", image, episodeCount }]);
+  } catch (error) {
+    console.log("AniZone details error: " + error.message);
+    return JSON.stringify([{ description: "AniZone anime source.", aliases: "", airdate: "" }]);
+  }
 }
 
 async function extractEpisodes(url) {
-    const results = [];
-    try {
-        const animeId = url.split('/').pop();
+  try {
+    const response = await fetchv2(url);
+    const html = await response.text();
+    const episodes = [];
+    const seen = new Set();
+    const episodeRegex = /href="(https:\/\/anizone\.to\/anime\/[a-z0-9]+\/\d+|\/anime\/[a-z0-9]+\/\d+)"/gi;
+    let match;
 
-        const response = await fetchv2("https://123animehub.cc/ajax/film/sv?id=" + animeId);
-        const jsonData = await response.json();
-        const html = jsonData.html;
-
-        const episodesMatch = html.match(/<ul class="episodes range"[^>]*>([\s\S]*?)<\/ul>/);
-        if (!episodesMatch) {
-            return JSON.stringify(results);
-        }
-
-        const episodesHTML = episodesMatch[1];
-
-        const episodeRegex = /data-pop='(\d+)'/g;
-        let match;
-        const seenEpisodes = new Set();
-
-        while ((match = episodeRegex.exec(episodesHTML)) !== null) {
-            const episodeNum = parseInt(match[1], 10);
-
-            if (!seenEpisodes.has(episodeNum)) {
-                seenEpisodes.add(episodeNum);
-                results.push({
-                    href: animeId + "/" + episodeNum + "/vidstreaming.io",
-                    number: episodeNum
-                });
-            }
-        }
-
-        return JSON.stringify(results);
-    } catch (err) {
-        return JSON.stringify([{
-            href: "Error",
-            number: "Error"
-        }]);
+    while ((match = episodeRegex.exec(html)) !== null) {
+      const href = absoluteUrl(match[1]);
+      if (seen.has(href)) continue;
+      seen.add(href);
+      const number = Number(href.split("/").pop() || episodes.length + 1);
+      const block = cardBlockAround(html, match.index);
+      const subtitle = chooseTitle(block, "");
+      const title = subtitle && !/^episode\s*\d+$/i.test(subtitle) ? "Episode " + number + ": " + subtitle : "Episode " + number;
+      const image = absoluteUrl(block.match(/src="([^"]*(?:snapshot|teaser)\.webp)"/i)?.[1] || "");
+      episodes.push({ href, number, title, image });
     }
+
+    episodes.sort((a, b) => a.number - b.number);
+    return JSON.stringify(episodes);
+  } catch (error) {
+    console.log("AniZone episodes error: " + error.message);
+    return JSON.stringify([]);
+  }
 }
 
-async function extractStreamUrl(ID) {
-    try {
-        const response = await fetchv2("https://123animehub.cc/ajax/episode/info?epr=" + encodeURIComponent(ID));
-        const data = await response.json();
-        const target = data.target;
+async function extractStreamUrl(url) {
+  try {
+    const response = await fetchv2(url);
+    const html = await response.text();
+    const streamUrl = absoluteUrl(html.match(/<media-player[^>]+src="([^"]+\.m3u8[^"]*)"/i)?.[1] || "");
+    if (!streamUrl) return JSON.stringify({ streams: [] });
 
-        if (!target) throw new Error("No target in response: " + JSON.stringify(data));
-
-        const responseTarget = await fetchv2(target);
-        const htmlTarget = await responseTarget.text();
-        const zrpart2Match = htmlTarget.match(/var\s+zrpart2\s*=\s*'([^']+)';/);
-        if (!zrpart2Match) throw new Error("zrpart2 not found");
-        const zrpart2 = zrpart2Match[1];
-
-        const originMatch = target.match(/^(https?:\/\/[^\/]+)/);
-        const origin = originMatch ? originMatch[1] : "";
-
-        const hsUrl = `${origin}/hs/${zrpart2}`;
-        const responseHs = await fetchv2(hsUrl);
-        const htmlHs = await responseHs.text();
-        const dataIdMatch = htmlHs.match(/id="mg-player"[^>]*data-id="([^"]+)"/);
-        if (!dataIdMatch) throw new Error("data-id not found");
-        const dataId = dataIdMatch[1];
-
-        const sourcesUrl = `${origin}/hs/getSources?id=${dataId}`;
-        const responseSources = await fetchv2(sourcesUrl);
-        const dataSources = await responseSources.json();
-
-        let sourcesArray = [];
-        if (Array.isArray(dataSources)) {
-            sourcesArray = dataSources;
-        } else if (dataSources && Array.isArray(dataSources.sources)) {
-            sourcesArray = dataSources.sources;
-        } else if (dataSources && typeof dataSources.sources === "string") {
-            sourcesArray = [{ file: dataSources.sources, label: "Auto" }];
-        } else {
-            console.log("Unexpected dataSources format:", JSON.stringify(dataSources));
-        }
-
-        const streams = sourcesArray.map(source => ({
-            title: source.label || "Auto",
-            streamUrl: source.file || source.url || source.link,
-            headers: {
-                "Origin": "https://play2.echovideo.ru",
-                "Referer": "https://play2.echovideo.ru/"
-            }
-        }));
-
-        return JSON.stringify({ streams: streams });
-    } catch (err) {
-        console.log("Stream URL Error details:", err.message, err.stack);
-        return "https://error.org/";
+    const subtitles = [];
+    const trackRegex = /<track[^>]+src="?([^"\s>]+)"?[^>]*(?:label="([^"]*)")?[^>]*(?:srclang="([^"]*)")?[^>]*>/gi;
+    let track;
+    while ((track = trackRegex.exec(html)) !== null) {
+      subtitles.push({
+        url: absoluteUrl(track[1]),
+        label: decodeEntities(track[2] || track[3] || "Subtitle"),
+        language: track[3] || ""
+      });
     }
+
+    return JSON.stringify({
+      streams: [{
+        title: "AniZone HLS",
+        streamUrl,
+        url: streamUrl,
+        headers: {
+          "Referer": url,
+          "User-Agent": "Mozilla/5.0"
+        }
+      }],
+      subtitles
+    });
+  } catch (error) {
+    console.log("AniZone stream error: " + error.message);
+    return JSON.stringify({ streams: [] });
+  }
 }

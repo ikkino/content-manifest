@@ -1,56 +1,6 @@
-const scriptCache = {};
+//Thanks ibro for the TMDB search!
 
-const SOURCES = [
-    { name: "VidEasy", url: "https://git.luna-app.eu/50n50/sources/raw/branch/main/videasy/videasy.js" },
-    { name: "VidLink", url: "https://git.luna-app.eu/50n50/sources/raw/branch/main/vidlink/vidlink.js" },
-    { name: "VidFast", url: "https://git.luna-app.eu/50n50/sources/raw/branch/main/vidfast/vidfast.js" },
-    { name: "Hexa", url: "https://git.luna-app.eu/50n50/sources/raw/branch/main/hexa/hexa.js" },
-    { name: "VidCore", url: "https://git.luna-app.eu/50n50/sources/raw/branch/main/vidcore/vidcore.js" }
-];
-
-const SOURCE_NAMES = {
-    "VidEasy": "Alpha",
-    "VidLink": "Beta",
-    "VidFast": "Gamma",
-    "Hexa": "Delta",
-    "VidCore": "Epsilon"
-};
-
-const SOURCE_PRIORITY = {
-    "Alpha": 5,
-    "Beta": 4,
-    "Gamma": 3,
-    "Delta": 2,
-    "Epsilon": 1
-};
-
-async function getModule(name, url) {
-    if (scriptCache[name]) return scriptCache[name];
-    try {
-        const response = await soraFetch(url);
-        if (!response) throw new Error("Failed to fetch script");
-        const code = await response.text();
-
-        const wrappedCode = `
-        const soraFetch = arguments[0];
-        const fetchv2 = arguments[1];
-        const fetch = arguments[2];
-        return (async function() {
-            ${code}
-            return { extractStreamUrl };
-        })();
-        `;
-        const fn = new Function(wrappedCode);
-        const exports = await fn(soraFetch, fetchv2, fetch);
-        scriptCache[name] = exports;
-        return exports;
-    } catch (e) {
-        console.log(`Failed to load module ${name} from ${url}: ${e.message}`);
-        return null;
-    }
-}
-
-async function searchResults(query) {
+async function searchResults(keyword) {
     try {
         let transformedResults = [];
 
@@ -64,153 +14,31 @@ async function searchResults(query) {
 
         const skipTitleFilter = Object.values(keywordGroups).flat();
 
-        const shouldFilter = !matchesKeyword(query, skipTitleFilter);
+        const shouldFilter = !matchesKeyword(keyword, skipTitleFilter);
 
-        const encodedQuery = encodeURIComponent(query);
+        // --- TMDB Section ---
+        const encodedKeyword = encodeURIComponent(keyword);
         let baseUrlTemplate = null;
 
-        if (matchesKeyword(query, keywordGroups.trending)) {
+        if (matchesKeyword(keyword, keywordGroups.trending)) {
             baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/trending/all/week?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
-        } else if (matchesKeyword(query, keywordGroups.topRatedMovie)) {
+        } else if (matchesKeyword(keyword, keywordGroups.topRatedMovie)) {
             baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/top_rated?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
-        } else if (matchesKeyword(query, keywordGroups.topRatedTV)) {
+        } else if (matchesKeyword(keyword, keywordGroups.topRatedTV)) {
             baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/top_rated?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
-        } else if (matchesKeyword(query, keywordGroups.popularMovie)) {
+        } else if (matchesKeyword(keyword, keywordGroups.popularMovie)) {
             baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/popular?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
-        } else if (matchesKeyword(query, keywordGroups.popularTV)) {
+        } else if (matchesKeyword(keyword, keywordGroups.popularTV)) {
             baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/popular?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
         } else {
-            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/search/multi?api_key=9801b6b0548ad57581d111ea690c85c8&query=${encodedQuery}&include_adult=false&page=${page}`)}&simple=true`;
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/search/multi?api_key=9801b6b0548ad57581d111ea690c85c8&query=${encodedKeyword}&include_adult=false&page=${page}`)}&simple=true`;
         }
-
-        const fuzzyMatch = (query, title) => {
-            const q = query.toLowerCase().trim();
-            const t = title.toLowerCase().trim();
-
-            if (t === q) return 1000;
-
-            if (t.startsWith(q + ' ') || t.startsWith(q + ':') || t.startsWith(q + '-')) return 950;
-
-            const wordBoundaryRegex = new RegExp(`\\b${q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`);
-            if (wordBoundaryRegex.test(t)) return 900;
-
-            const qTokens = q.split(/\s+/).filter(token => token.length > 0);
-            const tTokens = t.split(/[\s\-:]+/).filter(token => token.length > 0);
-
-            const stopwords = new Set(['the', 'a', 'an', 'and', 'or', 'of', 'in', 'on', 'at', 'to', 'for', 'with']);
-
-            let score = 0;
-            let exactMatches = 0;
-            let partialMatches = 0;
-            let significantMatches = 0;
-
-            qTokens.forEach(qToken => {
-                const isStopword = stopwords.has(qToken);
-                let bestMatch = 0;
-                let hasExactMatch = false;
-
-                tTokens.forEach(tToken => {
-                    let matchScore = 0;
-
-                    if (tToken === qToken) {
-                        matchScore = isStopword ? 25 : 120;
-                        hasExactMatch = true;
-                        if (!isStopword) significantMatches++;
-                    }
-                    else if (qToken.includes(tToken) && tToken.length >= 3 && qToken.length <= tToken.length + 2) {
-                        matchScore = isStopword ? 8 : 40;
-                        if (!isStopword) significantMatches++;
-                    }
-                    else if (tToken.startsWith(qToken) && qToken.length >= 3) {
-                        matchScore = isStopword ? 12 : 70;
-                        if (!isStopword) significantMatches++;
-                    }
-                    else if (qToken.length >= 4 && tToken.length >= 4) {
-                        const dist = levenshteinDistance(qToken, tToken);
-                        const maxLen = Math.max(qToken.length, tToken.length);
-                        const similarity = 1 - (dist / maxLen);
-
-                        if (similarity > 0.8) {
-                            matchScore = Math.floor(similarity * 60);
-                            if (!isStopword) significantMatches++;
-                        }
-                    }
-
-                    bestMatch = Math.max(bestMatch, matchScore);
-                });
-
-                if (bestMatch > 0) {
-                    score += bestMatch;
-                    if (hasExactMatch) exactMatches++;
-                    else partialMatches++;
-                }
-            });
-
-            const significantTokens = qTokens.filter(t => !stopwords.has(t)).length;
-
-            const requiredMatches = Math.max(1, Math.ceil(significantTokens * 0.8));
-            if (significantMatches < requiredMatches) {
-                return 0;
-            }
-
-            if (exactMatches + partialMatches >= qTokens.length) {
-                score += 80;
-            }
-
-            score += exactMatches * 20;
-
-            const extraWords = tTokens.length - qTokens.length;
-            if (extraWords > 2) {
-                score -= (extraWords - 2) * 25;
-            }
-
-            let orderBonus = 0;
-            for (let i = 0; i < qTokens.length - 1; i++) {
-                const currentTokenIndex = tTokens.findIndex(t => t.includes(qTokens[i]));
-                const nextTokenIndex = tTokens.findIndex(t => t.includes(qTokens[i + 1]));
-
-                if (currentTokenIndex !== -1 && nextTokenIndex !== -1 && currentTokenIndex < nextTokenIndex) {
-                    orderBonus += 15;
-                }
-            }
-            score += orderBonus;
-
-            return Math.max(0, score);
-        };
-
-        const levenshteinDistance = (a, b) => {
-            const matrix = [];
-
-            for (let i = 0; i <= b.length; i++) {
-                matrix[i] = [i];
-            }
-
-            for (let j = 0; j <= a.length; j++) {
-                matrix[0][j] = j;
-            }
-
-            for (let i = 1; i <= b.length; i++) {
-                for (let j = 1; j <= a.length; j++) {
-                    if (b.charAt(i - 1) === a.charAt(j - 1)) {
-                        matrix[i][j] = matrix[i - 1][j - 1];
-                    } else {
-                        matrix[i][j] = Math.min(
-                            matrix[i - 1][j - 1] + 1,
-                            matrix[i][j - 1] + 1,
-                            matrix[i - 1][j] + 1
-                        );
-                    }
-                }
-            }
-
-            return matrix[b.length][a.length];
-        };
 
         let dataResults = [];
 
         if (baseUrlTemplate) {
-            const pagePromises = Array.from({ length: 10 }, (_, i) =>
-                soraFetch(baseUrlTemplate(i + 1)).then(r => r ? r.json() : { results: [] })
+            const pagePromises = Array.from({ length: 5 }, (_, i) =>
+                soraFetch(baseUrlTemplate(i + 1)).then(r => r.json())
             );
             const pages = await Promise.all(pagePromises);
             dataResults = pages.flatMap(p => p.results || []);
@@ -237,20 +65,11 @@ async function searchResults(query) {
                     .filter(Boolean)
                     .filter(result => result.title !== "Overflow")
                     .filter(result => result.title !== "My Marriage Partner Is My Student, a Cocky Troublemaker")
+                    .filter(r => !shouldFilter || r.title.toLowerCase().includes(keyword.toLowerCase()))
             );
         }
 
-        if (shouldFilter) {
-            const scoredResults = transformedResults.map(r => ({
-                ...r,
-                score: fuzzyMatch(query, r.title)
-            }));
-            transformedResults = scoredResults
-                .filter(r => r.score > 50)
-                .sort((a, b) => b.score - a.score)
-                .map(({ score, ...rest }) => rest);
-        }
-
+        console.log("Transformed Results: " + JSON.stringify(transformedResults));
         return JSON.stringify(transformedResults);
     } catch (error) {
         console.log("Fetch error in searchResults: " + error);
@@ -265,7 +84,7 @@ function matchesKeyword(keyword, commands) {
 
 async function extractDetails(url) {
     try {
-        if (url.includes('movie')) {
+        if(url.includes('movie')) {
             const match = url.match(/movie\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
 
@@ -280,7 +99,7 @@ async function extractDetails(url) {
             }];
 
             return JSON.stringify(transformedResults);
-        } else if (url.includes('tv')) {
+        } else if(url.includes('tv')) {
             const match = url.match(/tv\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
 
@@ -294,6 +113,7 @@ async function extractDetails(url) {
                 airdate: `Aired: ${data.first_air_date ? data.first_air_date : 'Unknown'}`
             }];
 
+            console.log(JSON.stringify(transformedResults));
             return JSON.stringify(transformedResults);
         } else {
             throw new Error("Invalid URL format");
@@ -310,31 +130,38 @@ async function extractDetails(url) {
 
 async function extractEpisodes(url) {
     try {
-        if (url.includes('movie')) {
+        if(url.includes('movie')) {
             const match = url.match(/movie\/([^\/]+)/);
+            
             if (!match) throw new Error("Invalid URL format");
+            
             const movieId = match[1];
-
+            
             const movie = [
                 { href: `/movie/${movieId}`, number: 1, title: "Full Movie" }
             ];
-            return JSON.stringify(movie);
-        } else if (url.includes('tv')) {
-            const match = url.match(/tv\/([^\/]+)\/([^\/]+)\/([^\/]+)/);
-            if (!match) throw new Error("Invalid URL format");
-            const showId = match[1];
 
+            console.log(movie);
+            return JSON.stringify(movie);
+        } else if(url.includes('tv')) {
+            const match = url.match(/tv\/([^\/]+)\/([^\/]+)\/([^\/]+)/);
+            
+            if (!match) throw new Error("Invalid URL format");
+            
+            const showId = match[1];
+            
             const showResponseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
             const showData = await showResponseText.json();
-
+            
             let allEpisodes = [];
             for (const season of showData.seasons) {
                 const seasonNumber = season.season_number;
-                if (seasonNumber === 0) continue;
 
+                if(seasonNumber === 0) continue;
+                
                 const seasonResponseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}/season/${seasonNumber}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
                 const seasonData = await seasonResponseText.json();
-
+                
                 if (seasonData.episodes && seasonData.episodes.length) {
                     const episodes = seasonData.episodes.map(episode => ({
                         href: `/tv/${showId}/${seasonNumber}/${episode.episode_number}`,
@@ -344,6 +171,8 @@ async function extractEpisodes(url) {
                     allEpisodes = allEpisodes.concat(episodes);
                 }
             }
+            
+            console.log(allEpisodes);
             return JSON.stringify(allEpisodes);
         } else {
             throw new Error("Invalid URL format");
@@ -351,130 +180,169 @@ async function extractEpisodes(url) {
     } catch (error) {
         console.log('Fetch error in extractEpisodes: ' + error);
         return JSON.stringify([]);
-    }
+    }    
+}
+
+function getQualityWeight(title) {
+    if (title.includes("2160p") || title.includes("4K")) return 2160;
+    if (title.includes("1080p")) return 1080;
+    if (title.includes("720p")) return 720;
+    if (title.includes("480p")) return 480;
+    if (title.includes("360p")) return 360;
+    if (title.includes("Auto")) return 1;
+    return 0;
 }
 
 async function extractStreamUrl(ID) {
-    try {
-        let defaultSubtitle = null;
-        if (ID.includes('movie')) {
-            const tmdbID = ID.split('/')[2];
-            const subResponse = await fetchv2(`https://sub.wyzie.ru/search?id=${tmdbID}&format=srt`).catch(() => null);
-            if (subResponse) {
-                const subtitles = await subResponse.json().catch(() => null);
-                if (Array.isArray(subtitles)) {
-                    defaultSubtitle = subtitles.find(sub => sub.language && sub.language.toLowerCase() === 'en')?.url || null;
+  try {
+    let isMovie = ID.includes('movie');
+    let tmdbID, seasonNumber = "1", episodeNumber = "1";
+    let mediaType = "";
+    
+    if (isMovie) {
+        tmdbID = ID.replace('/movie/', '');
+        mediaType = "movie";
+    } else if (ID.includes('tv')) {
+        const parts = ID.split('/'); 
+        tmdbID = parts[2];
+        seasonNumber = parts[3];
+        episodeNumber = parts[4];
+        mediaType = "tv";
+    } else {
+        return JSON.stringify({ streams: [] });
+    }
+
+    const tmdbUrl = `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/${mediaType}/${tmdbID}?api_key=ad301b7cc82ffe19273e55e4d4206885&append_to_response=external_ids&language=en`)}&simple=true`;
+    const response = await soraFetch(tmdbUrl);
+    if (!response) throw new Error("Failed to fetch TMDB details");
+    const tmdbData = await response.json();
+
+    const title = encodeURIComponent(tmdbData.title || tmdbData.name || "");
+    const releaseDate = tmdbData.release_date || tmdbData.first_air_date || "";
+    const year = releaseDate ? new Date(releaseDate).getFullYear() : "";
+    const imdbId = tmdbData.external_ids?.imdb_id || "";
+    const tmdbId = tmdbData.id;
+
+    const servers = [
+        { name: "Neon", endpoint: "mb-flix", flag: "🇺🇸" },
+        { name: "Yoru", endpoint: "cdn", flag: "🇺🇸" },
+        { name: "Tejo", endpoint: "tejo", flag: "🇺🇸" },
+        { name: "Jett", endpoint: "jett", flag: "🇺🇸" },
+        { name: "Cypher", endpoint: "downloader2", flag: "🇺🇸" },
+        { name: "Sage", endpoint: "1movies", flag: "🇺🇸" },
+        { name: "Breach", endpoint: "m4uhd", flag: "🇺🇸" },
+        { name: "Vyse", endpoint: "hdmovie", flag: "🇺🇸" },
+        { name: "Killjoy", endpoint: "meine", flag: "🇩🇪" },
+        { name: "Fade", endpoint: "hdmovie", flag: "🇮🇳" },
+        { name: "Omen", endpoint: "lamovie", flag: "🇲🇽" },
+        { name: "Raze", endpoint: "superflix", flag: "🇧🇷" }
+    ];
+
+    let streamObjects = [];
+    let allSubtitles = [];
+
+    const serverPromises = servers.map(async (server) => {
+        try {
+            const fullUrl = `https://api.videasy.to/${server.endpoint}/sources-with-title?title=${title}&mediaType=${mediaType}&year=${year}&episodeId=${episodeNumber}&seasonId=${seasonNumber}&tmdbId=${tmdbId}&imdbId=${imdbId}`;
+            
+            const fetchOpts = {
+                headers: {
+                    "Referer": "https://player.videasy.to/",
+                    "Origin": "https://player.videasy.to",
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
                 }
-            }
-        } else if (ID.includes('tv')) {
-            const parts = ID.split('/');
-            const tmdbID = parts[2];
-            const seasonNumber = parts[3];
-            const episodeNumber = parts[4];
-            const subResponse = await fetchv2(`https://sub.wyzie.ru/search?id=${tmdbID}&format=srt&season=${seasonNumber}&episode=${episodeNumber}`).catch(() => null);
-            if (subResponse) {
-                const subtitles = await subResponse.json().catch(() => null);
-                if (Array.isArray(subtitles)) {
-                    defaultSubtitle = subtitles.find(sub => sub.language && sub.language.toLowerCase() === 'en')?.url || null;
+            };
+            const responseTwo = await soraFetch(fullUrl, fetchOpts);
+            if (!responseTwo) return null;
+            
+            const encrypted = await responseTwo.text();
+            if (!encrypted || encrypted.includes("Attention Required") || encrypted.includes("Cloudflare")) return null;
+
+            const postData = JSON.stringify({
+                text: encrypted.trim(),
+                id: String(tmdbId)
+            });
+
+            const decryptHeaders = {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
+            };
+
+            const decryptedResponse = await fetchv2("https://enc-dec.app/api/dec-videasy", decryptHeaders, "POST", postData);
+            const decryptedData = await decryptedResponse.json();
+
+            if (decryptedData && decryptedData.status === 200 && decryptedData.result) {
+                let sources = decryptedData.result.sources || [];
+                if (server.name === "Vyse") {
+                    sources = sources.filter(e => e.quality === "English" || e.quality.includes("English"));
+                } else if (server.name === "Fade") {
+                    sources = sources.filter(e => e.quality === "Hindi" || e.quality.includes("Hindi"));
                 }
+
+                return {
+                    serverName: server.name,
+                    flag: server.flag,
+                    sources: sources,
+                    subtitles: decryptedData.result.subtitles || []
+                };
             }
+        } catch (err) {
+            console.log(`Error fetching/decrypting stream for server ${server.name}: ` + err.message);
         }
+        return null;
+    });
 
-        const promises = SOURCES.map(async (source) => {
-            try {
-                const mod = await getModule(source.name, source.url);
-                if (!mod) return null;
-                const resText = await mod.extractStreamUrl(ID);
-                return { source, data: JSON.parse(resText) };
-            } catch (err) {
-                console.log(`Error running ${source.name}: ` + err.message);
-                return null;
-            }
-        });
+    const results = await Promise.all(serverPromises);
 
-        const results = await Promise.all(promises);
+    results.forEach(res => {
+        if (!res) return;
+        const { serverName, flag, sources, subtitles } = res;
+        const nonHDRSources = sources.filter(s => !s.quality.includes("HDR"));
 
-        let allStreams = [];
-
-        results.forEach(res => {
-            if (!res || !res.data) return;
-            const sourceName = res.source.name;
-            const data = res.data;
-            const mappedName = SOURCE_NAMES[sourceName] || sourceName;
-
-            if (Array.isArray(data.streams)) {
-                data.streams.forEach(stream => {
-                    let origTitle = stream.title || "Default";
-                    
-                    let quality = "1080p";
-                    const qualityMatch = origTitle.match(/(4K|2160p|1080p|720p|480p|360p)/i);
-                    if (qualityMatch) {
-                        quality = qualityMatch[0].toLowerCase();
-                    } else if (origTitle.toLowerCase().includes("hd")) {
-                        quality = "720p";
+        nonHDRSources.forEach(src => {
+            if (!streamObjects.some(existing => existing.streamUrl === src.url)) {
+                streamObjects.push({
+                    title: `[${serverName}] ${flag} ${src.quality}`,
+                    streamUrl: src.url,
+                    headers: {
+                        "Origin": "https://player.videasy.to",
+                        "Referer": "https://player.videasy.to/",
+                        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
                     }
-                    
-                    const flagMatch = origTitle.match(/[\uD83C][\uDDE6-\uDDFF]/g);
-                    const emoji = (flagMatch && flagMatch.length >= 2) ? flagMatch.join('') : (origTitle.match(/[\uD83C][\uDDE6-\uDDFF][\uD83C][\uDDE6-\uDDFF]/) ? origTitle.match(/[\uD83C][\uDDE6-\uDDFF][\uD83C][\uDDE6-\uDDFF]/)[0] : "🇺🇸");
-                    
-                    const title = `${mappedName} ${quality.toUpperCase()} ${emoji}`;
-
-                    allStreams.push({
-                        title: title,
-                        streamUrl: stream.streamUrl || stream.url || stream,
-                        headers: stream.headers || (data.referer ? { "Referer": data.referer } : {}),
-                        sourceMapped: mappedName
-                    });
                 });
             }
         });
 
-        const seenUrls = new Set();
-        allStreams = allStreams.filter(stream => {
-            if (!stream.streamUrl) return false;
-            if (seenUrls.has(stream.streamUrl)) return false;
-            seenUrls.add(stream.streamUrl);
-            return true;
-        });
-
-        const getQualityWeight = (title) => {
-            const t = title.toLowerCase();
-            if (t.includes('4k') || t.includes('2160p')) return 4000;
-            if (t.includes('1080p') || t.includes('fhd')) return 1080;
-            if (t.includes('720p') || t.includes('hd')) return 720;
-            if (t.includes('480p') || t.includes('sd')) return 480;
-            if (t.includes('360p')) return 360;
-            return 0;
-        };
-
-        allStreams.sort((a, b) => {
-            const qualA = getQualityWeight(a.title);
-            const qualB = getQualityWeight(b.title);
-            if (qualA !== qualB) {
-                return qualB - qualA;
+        subtitles.forEach(sub => {
+            if (!allSubtitles.some(existing => existing.url === sub.url)) {
+                allSubtitles.push(sub);
             }
-            const prioA = SOURCE_PRIORITY[a.sourceMapped] || 0;
-            const prioB = SOURCE_PRIORITY[b.sourceMapped] || 0;
-            return prioB - prioA;
         });
+    });
 
-        const finalSubtitle = defaultSubtitle || "";
+    // Sort by quality weight descending
+    streamObjects.sort((a, b) => {
+        const weightA = getQualityWeight(a.title);
+        const weightB = getQualityWeight(b.title);
+        return weightB - weightA;
+    });
 
-        const output = {
-            streams: allStreams.map(({ title, streamUrl, headers }) => ({ title, streamUrl, headers })),
-            subtitles: finalSubtitle,
-            subtitle: finalSubtitle
-        };
+    const englishSubtitle = allSubtitles.find(sub => (sub.language || sub.lang)?.toLowerCase() === 'english');
+    let subtitleUrl = englishSubtitle ? englishSubtitle.url : "";
 
-        return JSON.stringify(output);
-    } catch (error) {
-        console.log('Checkmate stream URL error: ' + error);
-        return JSON.stringify({
-            streams: [],
-            subtitles: "",
-            subtitle: ""
-        });
+    if (subtitleUrl) {
+      subtitleUrl = `https://passthrough-worker.simplepostrequest.workers.dev/?url=${encodeURIComponent(subtitleUrl)}&type=vtt&referer=https%3A%2F%2Fplayer.videasy.to%2F`;
     }
+
+    return JSON.stringify({
+      streams: streamObjects,
+      subtitles: subtitleUrl
+    });
+  } catch (error) {
+    console.log('Fetch error in extractStreamUrl: ' + error);
+    return JSON.stringify({ streams: [], subtitles: "" });
+  }
 }
 
 async function soraFetch(url, options = { headers: {}, method: 'GET', body: null, encoding: 'utf-8' }) {
@@ -487,10 +355,10 @@ async function soraFetch(url, options = { headers: {}, method: 'GET', body: null
             true,
             options.encoding ?? 'utf-8'
         );
-    } catch (e) {
+    } catch(e) {
         try {
             return await fetch(url, options);
-        } catch (error) {
+        } catch(error) {
             return null;
         }
     }
