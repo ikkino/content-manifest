@@ -1,25 +1,28 @@
 {
-  "sourceName": "OneTouch TV",
-  "iconUrl": "https://onetouchtv.xyz/favicon.png",
+  "sourceName": "Animex",
+  "iconUrl": "https://animex.one/favicon.ico",
   "author": {
-    "name": "50/50",
-    "icon": "https://files.catbox.moe/741wp7.png"
+    "name": "StreamPlay"
   },
   "version": "1.0.0",
   "language": "English",
   "streamType": "HLS",
   "quality": "1080p",
-  "baseUrl": "https://s1.devcorp.me/",
-  "searchBaseUrl": "https://s1.devcorp.me/",
+  "baseUrl": "https://animex.one/",
+  "searchBaseUrl": "https://animex.one/",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/009/source.js",
-  "type": "shows/movies/anime",
+  "type": "anime",
   "asyncJS": true,
   "softsub": true,
   "downloadSupport": false,
   "supportsSora": true,
   "supportsLuna": true,
+  "supportsMojuru": true,
+  "supportsDartotsu": true,
+  "supportsAnymex": true,
   "supportsTsumi": true,
   "supportsHiyoku": true,
+  "supportsShirox": true,
   "supportsEclipse": true,
-  "id": "BmnXo"
+  "id": "animex-local"
 }

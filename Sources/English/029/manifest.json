@@ -1,21 +1,25 @@
 {
-  "sourceName": "Animepahe (SUB)",
-  "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/animepahe/icon.png",
+  "sourceName": "VidEasy",
+  "iconUrl": "https://www.videasy.net/logo.png",
   "author": {
-    "name": "ibro",
-    "icon": "https://git.luna-app.eu/ibro/services/raw/branch/main/profile.jpg",
-    "url": "https://github.com/xibrox"
+    "name": "50/50",
+    "icon": "https://files.catbox.moe/741wp7.png"
   },
-  "version": "1.2.7",
+  "version": "1.1.5",
   "language": "English",
   "streamType": "HLS",
-  "quality": "1080p",
-  "baseUrl": "https://animepahetv.to/",
-  "searchBaseUrl": "https://animepahetv.to/search?q=%s",
+  "quality": "4K",
+  "baseUrl": "https://player.videasy.net/",
+  "searchBaseUrl": "https://player.videasy.net/",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/029/source.js",
-  "type": "anime",
-  "downloadSupport": true,
+  "type": "shows/movies/anime",
   "asyncJS": true,
   "softsub": true,
-  "id": "mod_640849195"
+  "downloadSupport": false,
+  "supportsSora": true,
+  "supportsLuna": true,
+  "supportsTsumi": true,
+  "supportsHiyoku": true,
+  "supportsEclipse": true,
+  "id": "Bj8bP"
 }

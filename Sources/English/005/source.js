@@ -1,199 +1,109 @@
-async function searchResults(keyword) {
-    const results = [];
-    const headers = {
-        'Referer': 'https://animetsu.live/',
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-    };
+const ANIKAGE_BASE = "https://anikage.cc";
+const ANIKAGE_PROXY = "https://prox.anikage.cc";
 
-    const encodedKeyword = encodeURIComponent(keyword);
-    const response = await fetchv2(`https://animetsu.live/v2/api/anime/search/?query=${encodedKeyword}`, headers);
-    const json = await response.json();
-
-    json.results.forEach(anime => {
-        const title = anime.title.english || anime.title.romaji || anime.title.native || "Unknown Title";
-        const image = anime.cover_image.large;
-        const href = `${anime.id}`;
-
-        if (title && href && image) {
-            results.push({
-                title: title,
-                image: image,
-                href: href
-            });
-        } else {
-            console.error("Missing or invalid data in search result item:", {
-                title,
-                href,
-                image
-            });
-        }
-    });
-
-    return JSON.stringify(results);
-}
-
-async function extractDetails(id) {
-    const results = [];
-    const headers = {
-        'Referer': 'https://animetsu.live/',
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-    };
-
-    const response = await fetchv2(`https://animetsu.live/v2/api/anime/info/${id}`, headers);
-    const json = await response.json();
-
-    const description = cleanHtmlSymbols(json.description) || "No description available"; 
-
-    results.push({
-        description: description.replace(/<br>/g, ''),
-        aliases: json.synonyms ? json.synonyms.join(', ') : 'N/A',
-        airdate: json.start_date || 'N/A'
-    });
-
-    return JSON.stringify(results);
-}
-
-async function extractEpisodes(id) {
-    const results = [];
-    const headers = {
-        'Referer': 'https://animetsu.live/',
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-    };
-
-    const response = await fetchv2(`https://animetsu.live/v2/api/anime/eps/${id}`, headers);
-    const json = await response.json();
-
-    for (const ep of json) {
-        results.push({
-            number: ep.ep_num,
-            href: `&id=${id}&num=${ep.ep_num}`
-        });
+async function anikageJson(url) {
+  const response = await fetchv2(url, {
+    headers: {
+      "Accept": "application/json, text/plain, */*",
+      "Referer": ANIKAGE_BASE + "/",
+      "Origin": ANIKAGE_BASE
     }
-
-    return JSON.stringify(results);
+  });
+  if (!response.ok) throw new Error(`Anikage HTTP ${response.status}`);
+  return JSON.parse(await response.text());
 }
 
-async function extractStreamUrl(slug) {
-    const headers = {
-        'Referer': 'https://animetsu.live/',
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-    };
+function anikageTitle(item) {
+  return item?.title?.english || item?.title?.romaji || item?.title?.native || "Untitled";
+}
 
-    const id = (slug.match(/[?&]id=([^&]+)/) || [])[1];
-    const num = (slug.match(/[?&]num=([^&]+)/) || [])[1];
+function anikageHref(slug, extra) {
+  return JSON.stringify({ slug, ...(extra || {}) });
+}
 
-    const streams = [];
+function parseAnikageHref(href) {
+  try {
+    const parsed = JSON.parse(href);
+    if (parsed && parsed.slug) return parsed;
+  } catch (_) {}
+  return { slug: String(href || "").split("/").filter(Boolean).pop() };
+}
 
+async function searchResults(query) {
+  const url = `${ANIKAGE_BASE}/api/media/anime/advanced-search?per_page=25&page=1&query=${encodeURIComponent(query)}`;
+  const payload = await anikageJson(url);
+  const results = Array.isArray(payload?.results) ? payload.results : [];
+  return results.map((item) => ({
+    title: anikageTitle(item),
+    href: anikageHref(item.slug, { anilistId: item.anilistId }),
+    image: item?.coverImage?.extraLarge || item?.coverImage?.large || item?.coverImage?.medium || "",
+    source: "Anikage"
+  })).filter((item) => item.href);
+}
+
+async function extractDetails(href) {
+  const data = parseAnikageHref(href);
+  const payload = await anikageJson(`${ANIKAGE_BASE}/api/media/anime/${encodeURIComponent(data.slug)}`);
+  const anime = payload?.anime || payload;
+  return [{
+    title: anikageTitle(anime),
+    description: String(anime?.description || "").replace(/<[^>]+>/g, "").trim(),
+    image: anime?.coverImage?.extraLarge || anime?.coverImage?.large || "",
+    aliases: [anime?.title?.romaji, anime?.title?.english, anime?.title?.native].filter(Boolean).join(", "),
+    airdate: anime?.year ? String(anime.year) : ""
+  }];
+}
+
+async function extractEpisodes(href) {
+  const data = parseAnikageHref(href);
+  const payload = await anikageJson(`${ANIKAGE_BASE}/api/media/anime/${encodeURIComponent(data.slug)}/episodes`);
+  const episodes = Array.isArray(payload) ? payload : Array.isArray(payload?.episodes) ? payload.episodes : [];
+  return episodes
+    .map((episode) => ({
+      number: Number(episode.number || episode.episode),
+      title: episode.title || `Episode ${episode.number || episode.episode}`,
+      href: anikageHref(data.slug, { number: Number(episode.number || episode.episode), lang: "sub" }),
+      image: episode.img || "",
+      description: episode.description || "",
+      airdate: episode.airDate || ""
+    }))
+    .filter((episode) => Number.isFinite(episode.number) && episode.href)
+    .sort((lhs, rhs) => lhs.number - rhs.number);
+}
+
+async function extractStreamUrl(href) {
+  const data = parseAnikageHref(href);
+  const episode = Number(data.number || data.episode || 1);
+  const languages = data.lang ? [data.lang] : ["sub", "dub"];
+  const streams = [];
+
+  for (const lang of languages) {
+    let providers = [];
     try {
-        const serverListRes = await fetchv2(`https://animetsu.live/v2/api/anime/servers/${id}/${num}`, headers);
-        const serverList = await serverListRes.json();
+      const serverPayload = await anikageJson(`${ANIKAGE_BASE}/api/media/anime/${encodeURIComponent(data.slug)}/episodes/${episode}/servers?lang=${encodeURIComponent(lang)}`);
+      providers = (Array.isArray(serverPayload) ? serverPayload : [])
+        .map((item) => item.id)
+        .filter(Boolean);
+    } catch (_) {}
+    if (!providers.length) providers = ["megg", "miko", "anya", "verse", "neko"];
 
-        const promises = [];
-        for (const server of serverList) {
-            for (const subType of ['sub', 'dub']) {
-                promises.push((async () => {
-                    try {
-                        const url = `https://animetsu.live/v2/api/anime/oppai/${id}/${num}?server=${server.id}&source_type=${subType}`;
-                        const res = await fetchv2(url, headers);
-                        const data = await res.json();
-
-                        if (data?.sources?.length) {
-                            for (const source of data.sources) {
-                                let streamUrl = `https://swiftstream.top/proxy${source.url}`;
-                                let quality = source.quality;
-
-                                if (server.id === 'kite') {
-                                    try {
-                                        const m3u8Res = await fetchv2(streamUrl, headers);
-                                        const m3u8Content = await m3u8Res.text();
-                                        const lines = m3u8Content.split('\n').filter(line => line.trim() !== '');
-                                        const targetLine = lines.find(line => !line.startsWith('#'));
-                                        if (targetLine) {
-                                            streamUrl = `https://swiftstream.top/proxy/oppai/kite/${targetLine.trim()}`;
-                                        }
-                                        if (quality.toLowerCase() === 'master') {
-                                            quality = '1080p';
-                                        }
-                                    } catch (e) {
-                                        console.error("Error rewriting kite URL:", e);
-                                    }
-                                }
-
-                                streams.push({
-                                    title: `${server.id} - ${quality} - ${subType.toUpperCase()}`,
-                                    streamUrl: streamUrl,
-                                    headers: headers
-                                });
-                            }
-                        }
-                    } catch (e) {
-                        console.error(`Error fetching streams for server ${server.id} (${subType}):`, e);
-                    }
-                })());
-            }
+    for (const provider of providers) {
+      try {
+        const sourcePayload = await anikageJson(`${ANIKAGE_BASE}/api/media/anime/${encodeURIComponent(data.slug)}/episodes/${episode}/sources?lang=${encodeURIComponent(lang)}&provider=${encodeURIComponent(provider)}`);
+        const sources = Array.isArray(sourcePayload?.sources) ? sourcePayload.sources : [];
+        for (const source of sources) {
+          if (!source?.url) continue;
+          const kind = source.isM3U8 ? "m3u8" : "stream";
+          streams.push({
+            title: `Anikage ${provider} ${lang} ${source.quality || "auto"}`.trim(),
+            streamUrl: `${ANIKAGE_PROXY}/${kind}/${source.url}`,
+            headers: { "Referer": ANIKAGE_BASE + "/", "Origin": ANIKAGE_BASE }
+          });
         }
-
-        await Promise.all(promises);
-    } catch (e) {
-        console.error("Error fetching server list:", e);
+        if (streams.length) return streams;
+      } catch (_) {}
     }
+  }
 
-    const serverOrder = { 'pahe': 1, 'meg': 2, 'kite': 3 };
-    const qualityOrder = (q) => {
-        if (q.includes('1080')) return 1;
-        if (q.includes('720')) return 2;
-        if (q.includes('480')) return 3;
-        if (q.includes('360')) return 4;
-        if (q.includes('master')) return 5;
-        return 6;
-    };
-
-    streams.sort((a, b) => {
-        const partsA = a.title.split(' - ');
-        const partsB = b.title.split(' - ');
-        
-        const sA = partsA[0].toLowerCase();
-        const sB = partsB[0].toLowerCase();
-        const qA = partsA[1].toLowerCase();
-        const qB = partsB[1].toLowerCase();
-
-        const qOrderA = qualityOrder(qA);
-        const qOrderB = qualityOrder(qB);
-
-        if (qOrderA !== qOrderB) return qOrderA - qOrderB;
-        
-        const sOrderA = serverOrder[sA] || 99;
-        const sOrderB = serverOrder[sB] || 99;
-        return sOrderA - sOrderB;
-    });
-
-    const finalStreams = streams.map((s, index) => ({
-        ...s,
-        title: `[Server ${index + 1}] ${s.title}`
-    }));
-
-    const final = {
-        streams: finalStreams,
-        subtitle: ""
-    };
-
-    return JSON.stringify(final);
-}
-
-
-
-
-function cleanHtmlSymbols(string) {
-    if (!string) return "";
-
-    return string
-        .replace(/&#8217;/g, "'")
-        .replace(/&#8211;/g, "-")
-        .replace(/&#[0-9]+;/g, "")
-        .replace(/\r?\n|\r/g, " ")  
-        .replace(/\s+/g, " ")       
-        .replace(/<i[^>]*>(.*?)<\/i>/g, "$1")
-        .replace(/<b[^>]*>(.*?)<\/b>/g, "$1") 
-        .replace(/<[^>]+>/g, "")
-        .trim();                 
+  throw new Error("Anikage: no playable streams");
 }

@@ -1,128 +1,114 @@
-async function searchResults(keyword) {
-    const results = [];
-    try {
-        const response = await fetchv2("https://api3.devcorp.me/vod/search?page=1&keyword=" + encodeURIComponent(keyword.toLowerCase()));
-        const encrypted = await response.text();
+const ANIMEX_BASE = "https://animex.one";
+const ANIMEX_GRAPHQL = "https://graphql.animex.one/graphql";
+const ANIMEX_API = "https://pp.animex.one/rest/api";
 
-        const headers = { "Content-Type": "application/json" };
-        const postData = JSON.stringify({ text: encrypted });
-
-        const decryptedResponse = await fetchv2("https://enc-dec.app/api/dec-onetouchtv", headers, "POST", postData);
-        const decryptedData = await decryptedResponse.json();
-        console.log(JSON.stringify(decryptedData));
-        if (decryptedData.status === 200 && Array.isArray(decryptedData.result)) {
-            for (const item of decryptedData.result) {
-                results.push({
-                    title: item.title || "Unknown",
-                    image: item.image || "",
-                    href: item.id
-                });
-            }
-        }
-        console.log(results);
-        return JSON.stringify(results);
-    } catch (err) {
-        console.error(err);
-        return JSON.stringify([{ title: "Error", image: "Error", href: "Error" }]);
+async function animexJson(url, init) {
+  const response = await fetchv2(url, {
+    ...(init || {}),
+    headers: {
+      "Accept": "application/json, text/plain, */*",
+      "Content-Type": "application/json",
+      "Origin": ANIMEX_BASE,
+      "Referer": ANIMEX_BASE + "/",
+      ...((init || {}).headers || {})
     }
+  });
+  if (!response.ok) throw new Error(`Animex HTTP ${response.status}`);
+  return JSON.parse(await response.text());
 }
 
-async function extractDetails(ID) {
-    try {
-        const response = await fetchv2("https://api3.devcorp.me/web/vod/" + ID + "/detail");
-        const encrypted = await response.text();
-
-        const headers = { "Content-Type": "application/json" };
-        const postData = JSON.stringify({ text: encrypted });
-
-        const decryptedResponse = await fetchv2("https://enc-dec.app/api/dec-onetouchtv", headers, "POST", postData);
-        const decryptedText = await decryptedResponse.text();
-        const decryptedData = JSON.parse(decryptedText);
-
-        const result = decryptedData.result;
-
-        return JSON.stringify([{
-            description: result.description || "N/A",
-            aliases: Array.isArray(result.otherTitles) ? result.otherTitles.join(", ") : "N/A",
-            airdate: result.year || "N/A"
-        }]);
-    } catch (err) {
-        return JSON.stringify([{
-            description: "Error",
-            aliases: "Error",
-            airdate: "Error"
-        }]);
-    }
+async function animexGraphQL(query, variables) {
+  return animexJson(ANIMEX_GRAPHQL, {
+    method: "POST",
+    body: JSON.stringify({ query, variables: variables || {} })
+  });
 }
 
-async function extractEpisodes(ID) {
-    const results = [];
-    try {
-        const response = await fetchv2("https://api3.devcorp.me/web/vod/" + ID + "/detail");
-        const encrypted = await response.text();
+function animexTitle(item) {
+  return item?.titleEnglish || item?.titleRomaji || item?.titleNative || "Untitled";
+}
 
-        const headers = { "Content-Type": "application/json" };
-        const postData = JSON.stringify({ text: encrypted });
+function animexHref(item) {
+  return JSON.stringify({
+    id: item.id,
+    anilistId: item.anilistId || null,
+    malId: item.malId || null,
+    title: animexTitle(item),
+    format: item.format || ""
+  });
+}
 
-        const decryptedResponse = await fetchv2("https://enc-dec.app/api/dec-onetouchtv", headers, "POST", postData);
-        const decryptedText = await decryptedResponse.text();
-        const decryptedData = JSON.parse(decryptedText);
+function parseAnimexHref(href) {
+  try {
+    const parsed = JSON.parse(href);
+    if (parsed?.id) return parsed;
+  } catch (_) {}
+  return { id: String(href || ""), title: "" };
+}
 
-        const episodes = decryptedData.result.episodes || [];
+async function searchResults(query) {
+  const payload = await animexGraphQL(
+    "query FastSearch($query: String, $limit: Int) { catalogAnime(filter: { query: $query }, limit: $limit) { items { id anilistId malId titleRomaji titleEnglish format } } }",
+    { query, limit: 12 }
+  );
+  const items = payload?.data?.catalogAnime?.items || [];
+  return items.map((item) => ({
+    title: animexTitle(item),
+    href: animexHref(item),
+    image: "",
+    source: "Animex"
+  })).filter((item) => item.href);
+}
 
-        for (const ep of episodes) {
-            results.push({
-                href: ep.id,
-                number: parseInt(ep.episode, 10)
-            });
-        }
+async function extractDetails(href) {
+  const data = parseAnimexHref(href);
+  return [{
+    title: data.title || data.id,
+    description: `${data.title || "Animex anime"} from Animex catalog.`,
+    aliases: [data.title, data.anilistId ? `AniList ${data.anilistId}` : "", data.malId ? `MAL ${data.malId}` : ""].filter(Boolean).join(", "),
+    airdate: ""
+  }];
+}
 
-        return JSON.stringify(results.reverse());
-    } catch (err) {
-        return JSON.stringify([{ href: "Error", number: "Error" }]);
-    }
+async function extractEpisodes(href) {
+  const data = parseAnimexHref(href);
+  const servers = await animexJson(`${ANIMEX_API}/servers?id=${encodeURIComponent(data.id)}&epNum=1`, { method: "GET" });
+  const total = Number(servers?.episodeCount || servers?.episodes || servers?.totalEpisodes || 0);
+  const count = Number.isFinite(total) && total > 0 ? Math.min(total, 2000) : 60;
+  const episodes = [];
+  for (let index = 1; index <= count; index += 1) {
+    episodes.push({
+      number: index,
+      title: `Episode ${index}`,
+      href: JSON.stringify({ ...data, number: index })
+    });
+  }
+  return episodes;
 }
 
 async function extractStreamUrl(href) {
+  const data = parseAnimexHref(href);
+  const episode = Number(data.number || 1);
+  const servers = await animexJson(`${ANIMEX_API}/servers?id=${encodeURIComponent(data.id)}&epNum=${episode}`, { method: "GET" });
+  const candidates = [];
+  for (const provider of servers?.subProviders || []) candidates.push(["sub", provider]);
+  for (const provider of servers?.dubProviders || []) candidates.push(["dub", provider]);
+  candidates.sort((lhs, rhs) => Number(rhs[1]?.default === true) - Number(lhs[1]?.default === true));
+
+  for (const [type, provider] of candidates) {
+    if (!provider?.id) continue;
     try {
-        const parts = href.split("-episode-");
-        const id = parts[0];
-        const episodeNumber = parts[1];
+      const sourcePayload = await animexJson(`${ANIMEX_API}/sources?id=${encodeURIComponent(data.id)}&epNum=${episode}&type=${encodeURIComponent(type)}&providerId=${encodeURIComponent(provider.id)}`, { method: "GET" });
+      const streams = (sourcePayload?.sources || [])
+        .map((source) => ({
+          title: `Animex ${type} ${provider.id} ${source.quality || ""}`.trim(),
+          streamUrl: source.url,
+          headers: { "Referer": sourcePayload?.headers?.Referer || ANIMEX_BASE + "/" }
+        }))
+        .filter((item) => /^https?:\/\//i.test(item.streamUrl || ""));
+      if (streams.length) return streams;
+    } catch (_) {}
+  }
 
-        const response = await fetchv2("https://api3.devcorp.me/web/vod/" + id + "/episode/" + episodeNumber);
-        const encrypted = await response.text();
-
-        const headers = { "Content-Type": "application/json" };
-        const postData = JSON.stringify({ text: encrypted });
-
-        const decryptedResponse = await fetchv2("https://enc-dec.app/api/dec-onetouchtv", headers, "POST", postData);
-        const decryptedText = await decryptedResponse.text();
-        const decryptedData = JSON.parse(decryptedText);
-
-        const sources = decryptedData.result.sources;
-        const tracks = decryptedData.result.track;
-
-        const stream = sources.find(s => s.url.includes(".mp4") || s.url.includes(".m3u8"));
-        const subtitle = tracks.find(t => t.name && t.name.toLowerCase().includes("english"));
-        
-        return JSON.stringify({
-            streams: [{
-                title: "Default",
-                streamUrl: stream ? stream.url : "https://error.org/",
-                headers: stream ? stream.headers : {}
-            }],
-            subtitle: subtitle ? subtitle.file : null
-        });
-    } catch (err) {
-        return JSON.stringify({
-            streams: [{
-                title: "Error",
-                streamUrl: "https://error.org/",
-                headers: {}
-            }],
-            subtitle: null
-        });
-    }
+  throw new Error("Animex: no playable streams");
 }
-
-
