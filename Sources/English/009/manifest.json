@@ -1,21 +1,26 @@
 {
-  "sourceName": "FireAnime English (SUB)",
-  "iconUrl": "https://i.ibb.co/dJ1SN5ch/favicon.png",
-  "author": {
-    "name": "Cufiy & 50/50",
-    "icon": "https://files.catbox.moe/ttj4fc.gif"
-  },
-  "version": "1.1.7",
+  "id": "zangetsu_animekai",
+  "sourceName": "AnimeKai (Zangetsu)",
+  "iconUrl": "",
+  "version": "1.1.2",
   "language": "English",
   "streamType": "HLS",
   "quality": "1080p",
-  "baseUrl": "https://fireani.me/",
-  "searchBaseUrl": "https://fireani.me/api/anime/search?q=%s",
+  "baseUrl": "https://animekai.to/",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/009/source.js",
+  "softsub": true,
   "asyncJS": true,
   "type": "anime",
-  "supportsMojuru": true,
-  "supportsSora": true,
-  "supportsLuna": true,
-  "id": "8NDe"
+  "registry": "zangetsu",
+  "registries": [
+    "zangetsu"
+  ],
+  "manifestUrl": "https://raw.githubusercontent.com/Spyou/zangetsu-providers/main/index.json",
+  "status": "active",
+  "addedAt": "2026-06-14T10:25:50.353Z",
+  "note": "Ported from Zangetsu provider",
+  "author": {
+    "name": "Spyou",
+    "icon": ""
+  }
 }
