@@ -1,541 +1,586 @@
 {
-  "generatedAt": "2026-07-03T04:23:05.521Z",
-  "currentCatalogModules": 55,
+  "generatedAt": "2026-07-03T06:58:12.287Z",
+  "currentCatalogModules": 58,
   "upstreamDiscovered": 139,
-  "extraModules": 2,
-  "extraModulesDir": "/private/tmp/sora-daily-20260703T042115Z/mangayomi-import/Working",
-  "candidates": 179,
-  "groups": 117,
-  "exported": 58,
+  "extraModules": 6,
+  "extraModulesDir": "/private/tmp/sora-daily-20260703T065630Z/extra-modules",
+  "candidates": 185,
+  "groups": 120,
+  "exported": 61,
   "rejectedGroups": 59,
-  "previousRemoved": 1,
+  "previousRemoved": 0,
   "finalValidationRounds": [
     {
-      "files": 58,
+      "files": 61,
       "errors": [],
       "failures": []
     }
   ],
   "finalValidationRejected": [],
   "output": {
-    "sourcesDir": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources",
-    "statusOut": "/private/tmp/sora-daily-20260703T042115Z/catalog/module-status.json"
+    "sourcesDir": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources",
+    "statusOut": "/private/tmp/sora-daily-20260703T065630Z/catalog/module-status.json"
   },
   "modules": [
     {
-      "winnerKey": "luna:50n50/sources:https://git.luna-app.eu/50n50/sources/raw/branch/main/anoboye/anoboye.json:https://git.luna-app.eu/50n50/sources/raw/branch/main/anoboye/anoboye.js:mod_1749903395:initial",
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Chinese/001/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Chinese/001/source.js:mod_1436047481:initial",
       "catalogPath": "Sources/Chinese/001",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/Chinese/001/manifest.json",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/Chinese/001/manifest.json",
       "language": "Chinese",
       "rank": 1,
       "folder": "001",
       "sourceName": "Anoboye",
       "id": "mod_1749903395",
-      "registry": "luna:50n50/sources",
-      "origin": "luna:50n50/sources",
-      "manifestUrl": "https://git.luna-app.eu/50n50/sources/raw/branch/main/anoboye/anoboye.json",
+      "registry": "content-manifest",
+      "origin": "current",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Chinese/001/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Chinese/001/source.js",
-      "durationMs": 2233
+      "durationMs": 2266
     },
     {
-      "winnerKey": "cufiy:https://git.luna-app.eu/50n50/sources/raw/branch/main/senshi/senshi.json:https://git.luna-app.eu/50n50/sources/raw/branch/main/senshi/senshi.js:jR5U5:initial",
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/001/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/001/source.js:mod_1798967734:initial",
       "catalogPath": "Sources/English/001",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/English/001/manifest.json",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/English/001/manifest.json",
       "language": "English",
       "rank": 1,
       "folder": "001",
       "sourceName": "Senshi",
       "id": "jR5U5",
-      "registry": "cufiy",
-      "origin": "cufiy",
-      "manifestUrl": "https://git.luna-app.eu/50n50/sources/raw/branch/main/senshi/senshi.json",
+      "registry": "content-manifest",
+      "origin": "current",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/001/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/001/source.js",
-      "durationMs": 398
+      "durationMs": 457
     },
     {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/004/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/004/source.js:mod_1571279603:initial",
+      "winnerKey": "luna:50n50/sources:https://git.luna-app.eu/50n50/sources/raw/branch/main/animeland/animeland.json:https://git.luna-app.eu/50n50/sources/raw/branch/main/animeland/animeland.js:mod_942337115:initial",
       "catalogPath": "Sources/English/002",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/English/002/manifest.json",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/English/002/manifest.json",
       "language": "English",
       "rank": 2,
       "folder": "002",
+      "sourceName": "AnimeLand",
+      "id": "mod_942337115",
+      "registry": "luna:50n50/sources",
+      "origin": "luna:50n50/sources",
+      "manifestUrl": "https://git.luna-app.eu/50n50/sources/raw/branch/main/animeland/animeland.json",
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/002/source.js",
+      "durationMs": 504
+    },
+    {
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/002/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/002/source.js:mod_291415925:initial",
+      "catalogPath": "Sources/English/003",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/English/003/manifest.json",
+      "language": "English",
+      "rank": 3,
+      "folder": "003",
       "sourceName": "Anikoto",
       "id": "jF12G",
       "registry": "content-manifest",
       "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/004/manifest.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/002/source.js",
-      "durationMs": 463
-    },
-    {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/001/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/001/source.js:mod_1798967734:initial",
-      "catalogPath": "Sources/English/003",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/English/003/manifest.json",
-      "language": "English",
-      "rank": 3,
-      "folder": "003",
-      "sourceName": "AnimeLand",
-      "id": "mod_942337115",
-      "registry": "content-manifest",
-      "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/001/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/002/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/003/source.js",
-      "durationMs": 499
-    },
-    {
-      "winnerKey": "luna:ibro/services:https://git.luna-app.eu/ibro/services/raw/branch/main/animetsu/animetsu.json:https://git.luna-app.eu/ibro/services/raw/branch/main/animetsu/animetsu.js:mod_628113125:initial",
-      "catalogPath": "Sources/English/004",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/English/004/manifest.json",
-      "language": "English",
-      "rank": 4,
-      "folder": "004",
-      "sourceName": "Animetsu",
-      "id": "mod_628113125",
-      "registry": "luna:ibro/services",
-      "origin": "luna:ibro/services",
-      "manifestUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/animetsu/animetsu.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/004/source.js",
-      "durationMs": 397
+      "durationMs": 625
     },
     {
       "winnerKey": "cufiy:https://git.luna-app.eu/50n50/sources/raw/branch/main/animedefenders/animedefenders.json:https://git.luna-app.eu/50n50/sources/raw/branch/main/animedefenders/animedefenders.js:BNbnN:initial",
-      "catalogPath": "Sources/English/005",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/English/005/manifest.json",
+      "catalogPath": "Sources/English/004",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/English/004/manifest.json",
       "language": "English",
-      "rank": 5,
-      "folder": "005",
+      "rank": 4,
+      "folder": "004",
       "sourceName": "AnimeDefenders",
       "id": "BNbnN",
       "registry": "cufiy",
       "origin": "cufiy",
       "manifestUrl": "https://git.luna-app.eu/50n50/sources/raw/branch/main/animedefenders/animedefenders.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/005/source.js",
-      "durationMs": 359
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/004/source.js",
+      "durationMs": 394
     },
     {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/008/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/008/source.js:mod_163960337:initial",
+      "winnerKey": "cufiy:https://git.luna-app.eu/50n50/sources/raw/branch/main/gojowtf/gojowtf.json:https://git.luna-app.eu/50n50/sources/raw/branch/main/gojowtf/gojowtf.js:G7jX:initial",
+      "catalogPath": "Sources/English/005",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/English/005/manifest.json",
+      "language": "English",
+      "rank": 5,
+      "folder": "005",
+      "sourceName": "Animetsu",
+      "id": "G7jX",
+      "registry": "cufiy",
+      "origin": "cufiy",
+      "manifestUrl": "https://git.luna-app.eu/50n50/sources/raw/branch/main/gojowtf/gojowtf.json",
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/005/source.js",
+      "durationMs": 674
+    },
+    {
+      "winnerKey": "mangayomi:source.js:source.js:animekai-unoriginal-local:initial",
       "catalogPath": "Sources/English/006",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/English/006/manifest.json",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/English/006/manifest.json",
       "language": "English",
       "rank": 6,
       "folder": "006",
-      "sourceName": "Kisskh",
-      "id": "BSyfU",
-      "registry": "content-manifest",
-      "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/008/manifest.json",
+      "sourceName": "AnimeKai (Unoriginal)",
+      "id": "animekai-unoriginal-local",
+      "registry": "mangayomi",
+      "origin": "mangayomi",
+      "manifestUrl": "source.js",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/006/source.js",
-      "durationMs": 826
+      "durationMs": 354
     },
     {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/009/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/009/source.js:mod_1671512146:initial",
+      "winnerKey": "mangayomi:source.js:source.js:anikage-local:initial",
       "catalogPath": "Sources/English/007",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/English/007/manifest.json",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/English/007/manifest.json",
       "language": "English",
       "rank": 7,
       "folder": "007",
-      "sourceName": "FireAnime English (SUB)",
-      "id": "8NDe",
-      "registry": "content-manifest",
-      "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/009/manifest.json",
+      "sourceName": "Anikage",
+      "id": "anikage-local",
+      "registry": "mangayomi",
+      "origin": "mangayomi",
+      "manifestUrl": "source.js",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/007/source.js",
-      "durationMs": 1015
+      "durationMs": 416
     },
     {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/007/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/007/source.js:mod_1343591472:initial",
+      "winnerKey": "mangayomi:source.js:source.js:animesogo-local:initial",
       "catalogPath": "Sources/English/008",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/English/008/manifest.json",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/English/008/manifest.json",
       "language": "English",
       "rank": 8,
       "folder": "008",
-      "sourceName": "OneTouch TV",
-      "id": "BmnXo",
-      "registry": "content-manifest",
-      "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/007/manifest.json",
+      "sourceName": "AnimeSogo",
+      "id": "animesogo-local",
+      "registry": "mangayomi",
+      "origin": "mangayomi",
+      "manifestUrl": "source.js",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/008/source.js",
-      "durationMs": 1062
+      "durationMs": 535
     },
     {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/010/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/010/source.js:mod_477913576:initial",
+      "winnerKey": "cufiy:https://git.luna-app.eu/50n50/sources/raw/branch/main/onetouch/onetouch.json:https://git.luna-app.eu/50n50/sources/raw/branch/main/onetouch/onetouch.js:BmnXo:initial",
       "catalogPath": "Sources/English/009",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/English/009/manifest.json",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/English/009/manifest.json",
       "language": "English",
       "rank": 9,
       "folder": "009",
+      "sourceName": "OneTouch TV",
+      "id": "BmnXo",
+      "registry": "cufiy",
+      "origin": "cufiy",
+      "manifestUrl": "https://git.luna-app.eu/50n50/sources/raw/branch/main/onetouch/onetouch.json",
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/009/source.js",
+      "durationMs": 957
+    },
+    {
+      "winnerKey": "cufiy:https://git.luna-app.eu/50n50/sources/raw/branch/main/kisskh/kisskh.json:https://git.luna-app.eu/50n50/sources/raw/branch/main/kisskh/kisskh.js:BSyfU:initial",
+      "catalogPath": "Sources/English/010",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/English/010/manifest.json",
+      "language": "English",
+      "rank": 10,
+      "folder": "010",
+      "sourceName": "Kisskh",
+      "id": "BSyfU",
+      "registry": "cufiy",
+      "origin": "cufiy",
+      "manifestUrl": "https://git.luna-app.eu/50n50/sources/raw/branch/main/kisskh/kisskh.json",
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/010/source.js",
+      "durationMs": 983
+    },
+    {
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/009/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/009/source.js:mod_1671512146:initial",
+      "catalogPath": "Sources/English/011",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/English/011/manifest.json",
+      "language": "English",
+      "rank": 11,
+      "folder": "011",
       "sourceName": "AnimeKai (Zangetsu)",
       "id": "zangetsu_animekai",
       "registry": "content-manifest",
       "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/010/manifest.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/009/source.js",
-      "durationMs": 1601
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/009/manifest.json",
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/011/source.js",
+      "durationMs": 1048
+    },
+    {
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/007/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/007/source.js:mod_1343591472:initial",
+      "catalogPath": "Sources/English/012",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/English/012/manifest.json",
+      "language": "English",
+      "rank": 12,
+      "folder": "012",
+      "sourceName": "FireAnime English (SUB)",
+      "id": "8NDe",
+      "registry": "content-manifest",
+      "origin": "current",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/007/manifest.json",
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/012/source.js",
+      "durationMs": 1209
     },
     {
       "winnerKey": "cufiy:https://git.luna-app.eu/50n50/sources/raw/branch/main/otaku-streamers/otaku-streamers.json:https://git.luna-app.eu/50n50/sources/raw/branch/main/otaku-streamers/otaku-streamers.js:jWwhj:initial",
-      "catalogPath": "Sources/English/010",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/English/010/manifest.json",
+      "catalogPath": "Sources/English/013",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/English/013/manifest.json",
       "language": "English",
-      "rank": 10,
-      "folder": "010",
+      "rank": 13,
+      "folder": "013",
       "sourceName": "Otaku-Streamers",
       "id": "jWwhj",
       "registry": "cufiy",
       "origin": "cufiy",
       "manifestUrl": "https://git.luna-app.eu/50n50/sources/raw/branch/main/otaku-streamers/otaku-streamers.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/010/source.js",
-      "durationMs": 1687
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/013/source.js",
+      "durationMs": 1637
     },
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/012/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/012/source.js:mod_801950102:initial",
-      "catalogPath": "Sources/English/011",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/English/011/manifest.json",
+      "catalogPath": "Sources/English/014",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/English/014/manifest.json",
       "language": "English",
-      "rank": 11,
-      "folder": "011",
-      "sourceName": "AniNeko",
-      "id": "jWih3",
-      "registry": "content-manifest",
-      "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/012/manifest.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/011/source.js",
-      "durationMs": 1803
-    },
-    {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/013/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/013/source.js:mod_705601707:initial",
-      "catalogPath": "Sources/English/012",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/English/012/manifest.json",
-      "language": "English",
-      "rank": 12,
-      "folder": "012",
+      "rank": 14,
+      "folder": "014",
       "sourceName": "AniWorld (ENG SUB)",
       "id": "jZdQ",
       "registry": "content-manifest",
       "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/013/manifest.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/012/source.js",
-      "durationMs": 1942
-    },
-    {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/016/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/016/source.js:mod_933289838:initial",
-      "catalogPath": "Sources/English/013",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/English/013/manifest.json",
-      "language": "English",
-      "rank": 13,
-      "folder": "013",
-      "sourceName": "VidFast",
-      "id": "B0b0R",
-      "registry": "content-manifest",
-      "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/016/manifest.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/013/source.js",
-      "durationMs": 2086
-    },
-    {
-      "winnerKey": "cufiy:https://git.luna-app.eu/50n50/sources/raw/branch/main/animenosub/animenosub.json:https://git.luna-app.eu/50n50/sources/raw/branch/main/animenosub/animenosub.js:wM61:initial",
-      "catalogPath": "Sources/English/014",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/English/014/manifest.json",
-      "language": "English",
-      "rank": 14,
-      "folder": "014",
-      "sourceName": "AnimeNoSub",
-      "id": "wM61",
-      "registry": "cufiy",
-      "origin": "cufiy",
-      "manifestUrl": "https://git.luna-app.eu/50n50/sources/raw/branch/main/animenosub/animenosub.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/012/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/014/source.js",
-      "durationMs": 2236
+      "durationMs": 1708
     },
     {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/018/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/018/source.js:mod_346573840:initial",
+      "winnerKey": "cufiy:https://git.luna-app.eu/50n50/sources/raw/branch/main/anineko/anineko.json:https://git.luna-app.eu/50n50/sources/raw/branch/main/anineko/anineko.js:jWih3:initial",
       "catalogPath": "Sources/English/015",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/English/015/manifest.json",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/English/015/manifest.json",
       "language": "English",
       "rank": 15,
       "folder": "015",
-      "sourceName": "Anizone",
-      "id": "KXPn",
-      "registry": "content-manifest",
-      "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/018/manifest.json",
+      "sourceName": "AniNeko",
+      "id": "jWih3",
+      "registry": "cufiy",
+      "origin": "cufiy",
+      "manifestUrl": "https://git.luna-app.eu/50n50/sources/raw/branch/main/anineko/anineko.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/015/source.js",
-      "durationMs": 2104
-    },
-    {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/015/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/015/source.js:mod_574261971:initial",
-      "catalogPath": "Sources/English/016",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/English/016/manifest.json",
-      "language": "English",
-      "rank": 16,
-      "folder": "016",
-      "sourceName": "Anikuro",
-      "id": "jLYn4",
-      "registry": "content-manifest",
-      "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/015/manifest.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/016/source.js",
-      "durationMs": 2725
-    },
-    {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/019/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/019/source.js:mod_1160977969:initial",
-      "catalogPath": "Sources/English/017",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/English/017/manifest.json",
-      "language": "English",
-      "rank": 17,
-      "folder": "017",
-      "sourceName": "123Anime",
-      "id": "jCtAp",
-      "registry": "content-manifest",
-      "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/019/manifest.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/017/source.js",
-      "durationMs": 2799
-    },
-    {
-      "winnerKey": "cufiy:https://git.luna-app.eu/ibro/services/raw/branch/main/aniwave/aniwave.json:https://git.luna-app.eu/ibro/services/raw/branch/main/aniwave/aniwave.js:zc8g:initial",
-      "catalogPath": "Sources/English/018",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/English/018/manifest.json",
-      "language": "English",
-      "rank": 18,
-      "folder": "018",
-      "sourceName": "Aniwave",
-      "id": "zc8g",
-      "registry": "cufiy",
-      "origin": "cufiy",
-      "manifestUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/aniwave/aniwave.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/018/source.js",
-      "durationMs": 3421
-    },
-    {
-      "winnerKey": "cufiy:https://git.luna-app.eu/50n50/sources/raw/branch/main/anihq/anihq.json:https://git.luna-app.eu/50n50/sources/raw/branch/main/anihq/anihq.js:jBjEF:initial",
-      "catalogPath": "Sources/English/019",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/English/019/manifest.json",
-      "language": "English",
-      "rank": 19,
-      "folder": "019",
-      "sourceName": "AniHQ",
-      "id": "jBjEF",
-      "registry": "cufiy",
-      "origin": "cufiy",
-      "manifestUrl": "https://git.luna-app.eu/50n50/sources/raw/branch/main/anihq/anihq.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/019/source.js",
-      "durationMs": 4066
+      "durationMs": 1756
     },
     {
       "winnerKey": "cufiy:https://git.luna-app.eu/50n50/sources/raw/branch/main/hexa/hexa.json:https://git.luna-app.eu/50n50/sources/raw/branch/main/hexa/hexa.js:Bvc4f:initial",
-      "catalogPath": "Sources/English/020",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/English/020/manifest.json",
+      "catalogPath": "Sources/English/016",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/English/016/manifest.json",
       "language": "English",
-      "rank": 20,
-      "folder": "020",
+      "rank": 16,
+      "folder": "016",
       "sourceName": "Hexa",
       "id": "Bvc4f",
       "registry": "cufiy",
       "origin": "cufiy",
       "manifestUrl": "https://git.luna-app.eu/50n50/sources/raw/branch/main/hexa/hexa.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/020/source.js",
-      "durationMs": 4306
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/016/source.js",
+      "durationMs": 1823
     },
     {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/017/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/017/source.js:mod_1854125649:initial",
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/013/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/013/source.js:mod_705601707:initial",
+      "catalogPath": "Sources/English/017",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/English/017/manifest.json",
+      "language": "English",
+      "rank": 17,
+      "folder": "017",
+      "sourceName": "VidFast",
+      "id": "B0b0R",
+      "registry": "content-manifest",
+      "origin": "current",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/013/manifest.json",
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/017/source.js",
+      "durationMs": 2221
+    },
+    {
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/015/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/015/source.js:mod_574261971:initial",
+      "catalogPath": "Sources/English/018",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/English/018/manifest.json",
+      "language": "English",
+      "rank": 18,
+      "folder": "018",
+      "sourceName": "Anizone",
+      "id": "KXPn",
+      "registry": "content-manifest",
+      "origin": "current",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/015/manifest.json",
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/018/source.js",
+      "durationMs": 2103
+    },
+    {
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/014/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/014/source.js:mod_2081813780:initial",
+      "catalogPath": "Sources/English/019",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/English/019/manifest.json",
+      "language": "English",
+      "rank": 19,
+      "folder": "019",
+      "sourceName": "AnimeNoSub",
+      "id": "wM61",
+      "registry": "content-manifest",
+      "origin": "current",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/014/manifest.json",
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/019/source.js",
+      "durationMs": 2479
+    },
+    {
+      "winnerKey": "cufiy:https://git.luna-app.eu/50n50/sources/raw/branch/main/123anime/123anime.json:https://git.luna-app.eu/50n50/sources/raw/branch/main/123anime/123anime.js:jCtAp:initial",
+      "catalogPath": "Sources/English/020",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/English/020/manifest.json",
+      "language": "English",
+      "rank": 20,
+      "folder": "020",
+      "sourceName": "123Anime",
+      "id": "jCtAp",
+      "registry": "cufiy",
+      "origin": "cufiy",
+      "manifestUrl": "https://git.luna-app.eu/50n50/sources/raw/branch/main/123anime/123anime.json",
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/020/source.js",
+      "durationMs": 2496
+    },
+    {
+      "winnerKey": "cufiy:https://git.luna-app.eu/ibro/services/raw/branch/main/anikuro/anikuro.json:https://git.luna-app.eu/ibro/services/raw/branch/main/anikuro/anikuro.js:jLYn4:initial",
       "catalogPath": "Sources/English/021",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/English/021/manifest.json",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/English/021/manifest.json",
       "language": "English",
       "rank": 21,
       "folder": "021",
+      "sourceName": "Anikuro",
+      "id": "jLYn4",
+      "registry": "cufiy",
+      "origin": "cufiy",
+      "manifestUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/anikuro/anikuro.json",
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/021/source.js",
+      "durationMs": 2464
+    },
+    {
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/018/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/018/source.js:mod_346573840:initial",
+      "catalogPath": "Sources/English/022",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/English/022/manifest.json",
+      "language": "English",
+      "rank": 22,
+      "folder": "022",
+      "sourceName": "Aniwave",
+      "id": "zc8g",
+      "registry": "content-manifest",
+      "origin": "current",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/018/manifest.json",
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/022/source.js",
+      "durationMs": 3646
+    },
+    {
+      "winnerKey": "cufiy:https://git.luna-app.eu/50n50/sources/raw/branch/main/anihq/anihq.json:https://git.luna-app.eu/50n50/sources/raw/branch/main/anihq/anihq.js:jBjEF:initial",
+      "catalogPath": "Sources/English/023",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/English/023/manifest.json",
+      "language": "English",
+      "rank": 23,
+      "folder": "023",
+      "sourceName": "AniHQ",
+      "id": "jBjEF",
+      "registry": "cufiy",
+      "origin": "cufiy",
+      "manifestUrl": "https://git.luna-app.eu/50n50/sources/raw/branch/main/anihq/anihq.json",
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/023/source.js",
+      "durationMs": 4119
+    },
+    {
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/021/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/021/source.js:mod_1474931208:initial",
+      "catalogPath": "Sources/English/024",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/English/024/manifest.json",
+      "language": "English",
+      "rank": 24,
+      "folder": "024",
       "sourceName": "AnimeGG",
       "id": "jhWaO",
       "registry": "content-manifest",
       "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/017/manifest.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/021/source.js",
-      "durationMs": 7910
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/021/manifest.json",
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/024/source.js",
+      "durationMs": 8079
     },
     {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/025/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/025/source.js:mod_1084796148:initial",
-      "catalogPath": "Sources/English/022",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/English/022/manifest.json",
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/023/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/023/source.js:mod_195067530:initial",
+      "catalogPath": "Sources/English/025",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/English/025/manifest.json",
       "language": "English",
-      "rank": 22,
-      "folder": "022",
-      "sourceName": "HiAnime (Zangetsu)",
-      "id": "zangetsu_hianime",
-      "registry": "content-manifest",
-      "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/025/manifest.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/022/source.js",
-      "durationMs": 7621
-    },
-    {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/026/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/026/source.js:mod_422755661:initial",
-      "catalogPath": "Sources/English/023",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/English/023/manifest.json",
-      "language": "English",
-      "rank": 23,
-      "folder": "023",
+      "rank": 25,
+      "folder": "025",
       "sourceName": "AnimeHeaven",
       "id": "mangayomi_1744325818",
       "registry": "content-manifest",
       "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/026/manifest.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/023/source.js",
-      "durationMs": 798
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/023/manifest.json",
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/025/source.js",
+      "durationMs": 868
+    },
+    {
+      "winnerKey": "cufiy:https://git.luna-app.eu/50n50/sources/raw/branch/main/videasy/videasy.json:https://git.luna-app.eu/50n50/sources/raw/branch/main/videasy/videasy.js:Bj8bP:initial",
+      "catalogPath": "Sources/English/026",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/English/026/manifest.json",
+      "language": "English",
+      "rank": 26,
+      "folder": "026",
+      "sourceName": "VidEasy",
+      "id": "Bj8bP",
+      "registry": "cufiy",
+      "origin": "cufiy",
+      "manifestUrl": "https://git.luna-app.eu/50n50/sources/raw/branch/main/videasy/videasy.json",
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/026/source.js",
+      "durationMs": 10072
+    },
+    {
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/022/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/022/source.js:mod_1312484279:initial",
+      "catalogPath": "Sources/English/027",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/English/027/manifest.json",
+      "language": "English",
+      "rank": 27,
+      "folder": "027",
+      "sourceName": "HiAnime (Zangetsu)",
+      "id": "zangetsu_hianime",
+      "registry": "content-manifest",
+      "origin": "current",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/022/manifest.json",
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/027/source.js",
+      "durationMs": 9334
+    },
+    {
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/029/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/029/source.js:mod_650443792:initial",
+      "catalogPath": "Sources/English/028",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/English/028/manifest.json",
+      "language": "English",
+      "rank": 28,
+      "folder": "028",
+      "sourceName": "Animepahe (DUB)",
+      "id": "mod_95739450",
+      "registry": "content-manifest",
+      "origin": "current",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/029/manifest.json",
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/028/source.js",
+      "durationMs": 9099
+    },
+    {
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/028/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/028/source.js:mod_857108017:initial",
+      "catalogPath": "Sources/English/029",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/English/029/manifest.json",
+      "language": "English",
+      "rank": 29,
+      "folder": "029",
+      "sourceName": "Animepahe (SUB)",
+      "id": "mod_640849195",
+      "registry": "content-manifest",
+      "origin": "current",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/028/manifest.json",
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/029/source.js",
+      "durationMs": 9302
+    },
+    {
+      "winnerKey": "cufiy:https://git.luna-app.eu/50n50/sources/raw/branch/main/vidcore/vidcore.json:https://git.luna-app.eu/50n50/sources/raw/branch/main/vidcore/vidcore.js:jAc95:initial",
+      "catalogPath": "Sources/English/030",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/English/030/manifest.json",
+      "language": "English",
+      "rank": 30,
+      "folder": "030",
+      "sourceName": "VidCore",
+      "id": "jAc95",
+      "registry": "cufiy",
+      "origin": "cufiy",
+      "manifestUrl": "https://git.luna-app.eu/50n50/sources/raw/branch/main/vidcore/vidcore.json",
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/030/source.js",
+      "durationMs": 12390
     },
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/027/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/027/source.js:mod_1930307470:initial",
-      "catalogPath": "Sources/English/024",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/English/024/manifest.json",
+      "catalogPath": "Sources/English/031",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/English/031/manifest.json",
       "language": "English",
-      "rank": 24,
-      "folder": "024",
-      "sourceName": "VidEasy",
-      "id": "Bj8bP",
+      "rank": 31,
+      "folder": "031",
+      "sourceName": "AnimePahe",
+      "id": "jLCx0",
       "registry": "content-manifest",
       "origin": "current",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/027/manifest.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/024/source.js",
-      "durationMs": 10874
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/031/source.js",
+      "durationMs": 9373
     },
     {
       "winnerKey": "cufiy:https://git.luna-app.eu/50n50/sources/raw/branch/main/checkmate/checkmate.json:https://git.luna-app.eu/50n50/sources/raw/branch/main/checkmate/checkmate.js:B0r0H:initial",
-      "catalogPath": "Sources/English/025",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/English/025/manifest.json",
+      "catalogPath": "Sources/English/032",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/English/032/manifest.json",
       "language": "English",
-      "rank": 25,
-      "folder": "025",
+      "rank": 32,
+      "folder": "032",
       "sourceName": "Tsumi (詰み) - Literally Everything 2.0",
       "id": "B0r0H",
       "registry": "cufiy",
       "origin": "cufiy",
       "manifestUrl": "https://git.luna-app.eu/50n50/sources/raw/branch/main/checkmate/checkmate.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/025/source.js",
-      "durationMs": 13171
-    },
-    {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/021/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/021/source.js:mod_1474931208:initial",
-      "catalogPath": "Sources/English/026",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/English/026/manifest.json",
-      "language": "English",
-      "rank": 26,
-      "folder": "026",
-      "sourceName": "VidCore",
-      "id": "jAc95",
-      "registry": "content-manifest",
-      "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/021/manifest.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/026/source.js",
-      "durationMs": 13104
-    },
-    {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/029/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/029/source.js:mod_650443792:initial",
-      "catalogPath": "Sources/English/027",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/English/027/manifest.json",
-      "language": "English",
-      "rank": 27,
-      "folder": "027",
-      "sourceName": "AnimePahe",
-      "id": "jLCx0",
-      "registry": "content-manifest",
-      "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/029/manifest.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/027/source.js",
-      "durationMs": 9930
-    },
-    {
-      "winnerKey": "luna:ibro/services:https://git.luna-app.eu/ibro/services/raw/branch/main/animepahe/animepahe.json:https://git.luna-app.eu/ibro/services/raw/branch/main/animepahe/animepahe.js:mod_640849195:animepahe_tv_backend:https://git.luna-app.eu/ibro/services/raw/branch/main/anikoto/anikoto.js:repair_animepahe_tv_backend",
-      "catalogPath": "Sources/English/028",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/English/028/manifest.json",
-      "language": "English",
-      "rank": 28,
-      "folder": "028",
-      "sourceName": "Animepahe (SUB)",
-      "id": "mod_640849195",
-      "registry": "luna:ibro/services",
-      "origin": "luna:ibro/services",
-      "manifestUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/animepahe/animepahe.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/028/source.js",
-      "durationMs": 9511
-    },
-    {
-      "winnerKey": "luna:ibro/services:https://git.luna-app.eu/ibro/services/raw/branch/main/animepahe/animepaheDub.json:https://git.luna-app.eu/ibro/services/raw/branch/main/animepahe/animepaheDub.js:mod_95739450:animepahe_tv_backend:https://git.luna-app.eu/ibro/services/raw/branch/main/anikoto/anikoto.js:repair_animepahe_tv_backend",
-      "catalogPath": "Sources/English/029",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/English/029/manifest.json",
-      "language": "English",
-      "rank": 29,
-      "folder": "029",
-      "sourceName": "Animepahe (DUB)",
-      "id": "mod_95739450",
-      "registry": "luna:ibro/services",
-      "origin": "luna:ibro/services",
-      "manifestUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/animepahe/animepaheDub.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/029/source.js",
-      "durationMs": 10110
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/032/source.js",
+      "durationMs": 19570
     },
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/030/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/030/source.js:mod_543154778:initial",
-      "catalogPath": "Sources/English/030",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/English/030/manifest.json",
+      "catalogPath": "Sources/English/033",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/English/033/manifest.json",
       "language": "English",
-      "rank": 30,
-      "folder": "030",
+      "rank": 33,
+      "folder": "033",
       "sourceName": "Aether",
       "id": "jGSkn",
       "registry": "content-manifest",
       "origin": "current",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/030/manifest.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/030/source.js",
-      "durationMs": 32051
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/033/source.js",
+      "durationMs": 31246
     },
     {
       "winnerKey": "mangayomi:https://raw.githubusercontent.com/Mallyd11/mangayomi-anime-extensions/refs/heads/main/javascript/anime/src/en/justanime.js:https://raw.githubusercontent.com/Mallyd11/mangayomi-anime-extensions/refs/heads/main/javascript/anime/src/en/justanime.js:mangayomi_892345671:initial",
-      "catalogPath": "Sources/English/031",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/English/031/manifest.json",
+      "catalogPath": "Sources/English/034",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/English/034/manifest.json",
       "language": "English",
-      "rank": 31,
-      "folder": "031",
+      "rank": 34,
+      "folder": "034",
       "sourceName": "JustAnime",
       "id": "mangayomi_892345671",
       "registry": "mangayomi",
       "origin": "mangayomi",
       "manifestUrl": "https://raw.githubusercontent.com/Mallyd11/mangayomi-anime-extensions/refs/heads/main/javascript/anime/src/en/justanime.js",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/031/source.js",
-      "durationMs": 45262
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/034/source.js",
+      "durationMs": 45211
     },
     {
-      "winnerKey": "cufiy:https://git.luna-app.eu/MXFia19/sources/raw/branch/main/nakanime/nakanime.json:https://git.luna-app.eu/MXFia19/sources/raw/branch/main/nakanime/nakanime.js:jgRx2:initial",
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/002/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/002/source.js:mod_2038029131:initial",
       "catalogPath": "Sources/French/001",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/French/001/manifest.json",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/French/001/manifest.json",
       "language": "French",
       "rank": 1,
       "folder": "001",
+      "sourceName": "Movix",
+      "id": "jF2Hq",
+      "registry": "content-manifest",
+      "origin": "current",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/002/manifest.json",
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/001/source.js",
+      "durationMs": 1416
+    },
+    {
+      "winnerKey": "cufiy:https://git.luna-app.eu/MXFia19/sources/raw/branch/main/nakanime/nakanime.json:https://git.luna-app.eu/MXFia19/sources/raw/branch/main/nakanime/nakanime.js:jgRx2:initial",
+      "catalogPath": "Sources/French/002",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/French/002/manifest.json",
+      "language": "French",
+      "rank": 2,
+      "folder": "002",
       "sourceName": "Nakanime",
       "id": "jgRx2",
       "registry": "cufiy",
       "origin": "cufiy",
       "manifestUrl": "https://git.luna-app.eu/MXFia19/sources/raw/branch/main/nakanime/nakanime.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/001/source.js",
-      "durationMs": 1449
-    },
-    {
-      "winnerKey": "cufiy:https://git.luna-app.eu/MXFia19/sources/raw/branch/main/movix/movix.json:https://git.luna-app.eu/MXFia19/sources/raw/branch/main/movix/movix.js:jF2Hq:initial",
-      "catalogPath": "Sources/French/002",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/French/002/manifest.json",
-      "language": "French",
-      "rank": 2,
-      "folder": "002",
-      "sourceName": "Movix",
-      "id": "jF2Hq",
-      "registry": "cufiy",
-      "origin": "cufiy",
-      "manifestUrl": "https://git.luna-app.eu/MXFia19/sources/raw/branch/main/movix/movix.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/002/source.js",
-      "durationMs": 1509
+      "durationMs": 1408
     },
     {
       "winnerKey": "cufiy:https://git.luna-app.eu/MXFia19/sources/raw/branch/main/anime-ultra/anime-ultra.json:https://git.luna-app.eu/MXFia19/sources/raw/branch/main/anime-ultra/anime-ultra.js:jbgew:initial",
       "catalogPath": "Sources/French/003",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/French/003/manifest.json",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/French/003/manifest.json",
       "language": "French",
       "rank": 3,
       "folder": "003",
@@ -545,12 +590,12 @@
       "origin": "cufiy",
       "manifestUrl": "https://git.luna-app.eu/MXFia19/sources/raw/branch/main/anime-ultra/anime-ultra.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/003/source.js",
-      "durationMs": 2017
+      "durationMs": 1968
     },
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/004/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/004/source.js:mod_977074487:initial",
       "catalogPath": "Sources/French/004",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/French/004/manifest.json",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/French/004/manifest.json",
       "language": "French",
       "rank": 4,
       "folder": "004",
@@ -560,72 +605,72 @@
       "origin": "current",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/004/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/004/source.js",
-      "durationMs": 3398
+      "durationMs": 3621
     },
     {
-      "winnerKey": "cufiy:https://git.luna-app.eu/MXFia19/sources/raw/branch/main/purstream/purstream.json:https://gitlab.com/mxfia19-group/module-sora/-/raw/main/purstream/purstream.js?ref_type=heads:jbdrT:initial",
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/005/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/005/source.js:mod_1810341000:initial",
       "catalogPath": "Sources/French/005",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/French/005/manifest.json",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/French/005/manifest.json",
       "language": "French",
       "rank": 5,
       "folder": "005",
       "sourceName": "Purstream",
       "id": "jbdrT",
-      "registry": "cufiy",
-      "origin": "cufiy",
-      "manifestUrl": "https://git.luna-app.eu/MXFia19/sources/raw/branch/main/purstream/purstream.json",
+      "registry": "content-manifest",
+      "origin": "current",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/005/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/005/source.js",
-      "durationMs": 3737
+      "durationMs": 4312
     },
     {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/006/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/006/source.js:mod_302789191:initial",
+      "winnerKey": "cufiy:https://git.luna-app.eu/MXFia19/sources/raw/branch/main/anime-sama/anime-sama.json:https://gitlab.com/mxfia19-group/module-sora/-/raw/main/anime-sama/anime-sama.js?ref_type=heads:jbZ7D:initial",
       "catalogPath": "Sources/French/006",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/French/006/manifest.json",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/French/006/manifest.json",
       "language": "French",
       "rank": 6,
       "folder": "006",
       "sourceName": "Anime-Sama",
       "id": "jbZ7D",
-      "registry": "content-manifest",
-      "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/006/manifest.json",
+      "registry": "cufiy",
+      "origin": "cufiy",
+      "manifestUrl": "https://git.luna-app.eu/MXFia19/sources/raw/branch/main/anime-sama/anime-sama.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/006/source.js",
-      "durationMs": 9667
+      "durationMs": 9235
     },
     {
-      "winnerKey": "cufiy:https://git.luna-app.eu/Cufiy/sora-modules/raw/branch/main/modules/fireanime/fireanime_DUB.json:https://git.luna-app.eu/Cufiy/sora-modules/raw/branch/main/modules/fireanime/js/fireanime_DUB.js:vMrF:initial",
+      "winnerKey": "cufiy:https://git.luna-app.eu/Cufiy/sora-modules/raw/branch/main/modules/fireanime/fireanime_SUB.json:https://git.luna-app.eu/Cufiy/sora-modules/raw/branch/main/modules/fireanime/js/fireanime_SUB.js:Q2pA:initial",
       "catalogPath": "Sources/German/001",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/German/001/manifest.json",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/German/001/manifest.json",
       "language": "German",
       "rank": 1,
       "folder": "001",
-      "sourceName": "FireAnime DUB",
-      "id": "vMrF",
+      "sourceName": "FireAnime SUB",
+      "id": "Q2pA",
       "registry": "cufiy",
       "origin": "cufiy",
-      "manifestUrl": "https://git.luna-app.eu/Cufiy/sora-modules/raw/branch/main/modules/fireanime/fireanime_DUB.json",
+      "manifestUrl": "https://git.luna-app.eu/Cufiy/sora-modules/raw/branch/main/modules/fireanime/fireanime_SUB.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/001/source.js",
-      "durationMs": 995
+      "durationMs": 1142
     },
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/001/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/001/source.js:mod_789816160:initial",
       "catalogPath": "Sources/German/002",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/German/002/manifest.json",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/German/002/manifest.json",
       "language": "German",
       "rank": 2,
       "folder": "002",
-      "sourceName": "FireAnime SUB",
-      "id": "Q2pA",
+      "sourceName": "FireAnime DUB",
+      "id": "vMrF",
       "registry": "content-manifest",
       "origin": "current",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/001/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/002/source.js",
-      "durationMs": 1201
+      "durationMs": 1403
     },
     {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/004/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/004/source.js:mod_1017504291:initial",
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/003/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/003/source.js:mod_490047518:initial",
       "catalogPath": "Sources/German/003",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/German/003/manifest.json",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/German/003/manifest.json",
       "language": "German",
       "rank": 3,
       "folder": "003",
@@ -633,29 +678,29 @@
       "id": "LFud",
       "registry": "content-manifest",
       "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/004/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/003/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/003/source.js",
-      "durationMs": 1779
+      "durationMs": 1739
     },
     {
-      "winnerKey": "cufiy:https://git.luna-app.eu/Cufiy/sora-modules/raw/branch/main/modules/aniworld/AniWorldGerSub.json:https://git.luna-app.eu/Cufiy/sora-modules/raw/branch/main/modules/aniworld/v2/AniWorldGerSub_v2.js:LmuM:initial",
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/004/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/004/source.js:mod_1017504291:initial",
       "catalogPath": "Sources/German/004",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/German/004/manifest.json",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/German/004/manifest.json",
       "language": "German",
       "rank": 4,
       "folder": "004",
       "sourceName": "AniWorld (GER SUB)",
       "id": "LmuM",
-      "registry": "cufiy",
-      "origin": "cufiy",
-      "manifestUrl": "https://git.luna-app.eu/Cufiy/sora-modules/raw/branch/main/modules/aniworld/AniWorldGerSub.json",
+      "registry": "content-manifest",
+      "origin": "current",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/004/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/004/source.js",
-      "durationMs": 1870
+      "durationMs": 2022
     },
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Greek/001/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Greek/001/source.js:mod_1370902822:initial",
       "catalogPath": "Sources/Greek/001",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/Greek/001/manifest.json",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/Greek/001/manifest.json",
       "language": "Greek",
       "rank": 1,
       "folder": "001",
@@ -665,12 +710,12 @@
       "origin": "current",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Greek/001/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Greek/001/source.js",
-      "durationMs": 5066
+      "durationMs": 5147
     },
     {
       "winnerKey": "cufiy:https://git.luna-app.eu/50n50/sources/raw/branch/main/nimegami/nimegami.json:https://git.luna-app.eu/50n50/sources/raw/branch/main/nimegami/nimegami.js:BJsBk:initial",
       "catalogPath": "Sources/Indonesian/001",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/Indonesian/001/manifest.json",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/Indonesian/001/manifest.json",
       "language": "Indonesian",
       "rank": 1,
       "folder": "001",
@@ -680,12 +725,12 @@
       "origin": "cufiy",
       "manifestUrl": "https://git.luna-app.eu/50n50/sources/raw/branch/main/nimegami/nimegami.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Indonesian/001/source.js",
-      "durationMs": 2624
+      "durationMs": 2753
     },
     {
       "winnerKey": "cufiy:https://git.luna-app.eu/sobet/sources/raw/branch/main/AnimeUnity/module.json:https://git.luna-app.eu/sobet/sources/raw/branch/main/AnimeUnity/animeunity.js:6TxU:initial",
       "catalogPath": "Sources/Italian/001",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/Italian/001/manifest.json",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/Italian/001/manifest.json",
       "language": "Italian",
       "rank": 1,
       "folder": "001",
@@ -695,12 +740,12 @@
       "origin": "cufiy",
       "manifestUrl": "https://git.luna-app.eu/sobet/sources/raw/branch/main/AnimeUnity/module.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Italian/001/source.js",
-      "durationMs": 1122
+      "durationMs": 1236
     },
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Italian/002/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Italian/002/source.js:mod_1293973989:initial",
       "catalogPath": "Sources/Italian/002",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/Italian/002/manifest.json",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/Italian/002/manifest.json",
       "language": "Italian",
       "rank": 2,
       "folder": "002",
@@ -710,12 +755,12 @@
       "origin": "current",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Italian/002/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Italian/002/source.js",
-      "durationMs": 1511
+      "durationMs": 1537
     },
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Multi/001/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Multi/001/source.js:mod_1314519251:initial",
       "catalogPath": "Sources/Multi/001",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/Multi/001/manifest.json",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/Multi/001/manifest.json",
       "language": "Multi",
       "rank": 1,
       "folder": "001",
@@ -725,27 +770,27 @@
       "origin": "current",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Multi/001/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Multi/001/source.js",
-      "durationMs": 477
+      "durationMs": 386
     },
     {
-      "winnerKey": "cufiy:https://git.luna-app.eu/50n50/sources/raw/branch/main/animesdigital/animesdigital.json:https://git.luna-app.eu/50n50/sources/raw/branch/main/animesdigital/animesdigital.js:BQgz4:initial",
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Portuguese/001/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Portuguese/001/source.js:mod_1582804401:initial",
       "catalogPath": "Sources/Portuguese/001",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/Portuguese/001/manifest.json",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/Portuguese/001/manifest.json",
       "language": "Portuguese",
       "rank": 1,
       "folder": "001",
       "sourceName": "AnimesDigital",
       "id": "BQgz4",
-      "registry": "cufiy",
-      "origin": "cufiy",
-      "manifestUrl": "https://git.luna-app.eu/50n50/sources/raw/branch/main/animesdigital/animesdigital.json",
+      "registry": "content-manifest",
+      "origin": "current",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Portuguese/001/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Portuguese/001/source.js",
-      "durationMs": 453
+      "durationMs": 619
     },
     {
       "winnerKey": "cufiy:https://git.luna-app.eu/50n50/sources/raw/branch/main/anitube/anitube.json:https://git.luna-app.eu/50n50/sources/raw/branch/main/anitube/anitube.js:BdWxr:initial",
       "catalogPath": "Sources/Portuguese/002",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/Portuguese/002/manifest.json",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/Portuguese/002/manifest.json",
       "language": "Portuguese",
       "rank": 2,
       "folder": "002",
@@ -755,12 +800,12 @@
       "origin": "cufiy",
       "manifestUrl": "https://git.luna-app.eu/50n50/sources/raw/branch/main/anitube/anitube.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Portuguese/002/source.js",
-      "durationMs": 851
+      "durationMs": 1286
     },
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Portuguese/003/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Portuguese/003/source.js:mod_1432299217:initial",
       "catalogPath": "Sources/Portuguese/003",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/Portuguese/003/manifest.json",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/Portuguese/003/manifest.json",
       "language": "Portuguese",
       "rank": 3,
       "folder": "003",
@@ -770,12 +815,12 @@
       "origin": "current",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Portuguese/003/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Portuguese/003/source.js",
-      "durationMs": 3199
+      "durationMs": 1826
     },
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Russian/001/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Russian/001/source.js:mod_539148115:initial",
       "catalogPath": "Sources/Russian/001",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/Russian/001/manifest.json",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/Russian/001/manifest.json",
       "language": "Russian",
       "rank": 1,
       "folder": "001",
@@ -785,12 +830,12 @@
       "origin": "current",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Russian/001/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Russian/001/source.js",
-      "durationMs": 1049
+      "durationMs": 1126
     },
     {
       "winnerKey": "cufiy:https://git.luna-app.eu/50n50/sources/raw/branch/main/animelib/animelib.json:https://git.luna-app.eu/50n50/sources/raw/branch/main/animelib/animelib.js:BVuJ9:initial",
       "catalogPath": "Sources/Russian/002",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/Russian/002/manifest.json",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/Russian/002/manifest.json",
       "language": "Russian",
       "rank": 2,
       "folder": "002",
@@ -800,57 +845,57 @@
       "origin": "cufiy",
       "manifestUrl": "https://git.luna-app.eu/50n50/sources/raw/branch/main/animelib/animelib.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Russian/002/source.js",
-      "durationMs": 7591
+      "durationMs": 6924
     },
     {
-      "winnerKey": "luna:50n50/sources:https://git.luna-app.eu/50n50/sources/raw/branch/main/animesrbija/animesrbija.json:https://git.luna-app.eu/50n50/sources/raw/branch/main/animesrbija/animesrbija.js:mod_1824970871:initial",
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Serbian/001/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Serbian/001/source.js:mod_1793171950:initial",
       "catalogPath": "Sources/Serbian/001",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/Serbian/001/manifest.json",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/Serbian/001/manifest.json",
       "language": "Serbian",
       "rank": 1,
       "folder": "001",
       "sourceName": "AnimeSRBIJA",
       "id": "mod_1824970871",
-      "registry": "luna:50n50/sources",
-      "origin": "luna:50n50/sources",
-      "manifestUrl": "https://git.luna-app.eu/50n50/sources/raw/branch/main/animesrbija/animesrbija.json",
+      "registry": "content-manifest",
+      "origin": "current",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Serbian/001/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Serbian/001/source.js",
-      "durationMs": 706
+      "durationMs": 818
     },
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/002/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/002/source.js:mod_1898613263:initial",
       "catalogPath": "Sources/Spanish/001",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/Spanish/001/manifest.json",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/Spanish/001/manifest.json",
       "language": "Spanish",
       "rank": 1,
       "folder": "001",
-      "sourceName": "AnimeAV1",
-      "id": "mod_1833550373",
-      "registry": "content-manifest",
-      "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/002/manifest.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/001/source.js",
-      "durationMs": 812
-    },
-    {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/001/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/001/source.js:mod_391061454:initial",
-      "catalogPath": "Sources/Spanish/002",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/Spanish/002/manifest.json",
-      "language": "Spanish",
-      "rank": 2,
-      "folder": "002",
       "sourceName": "Latanime",
       "id": "3LZT",
       "registry": "content-manifest",
       "origin": "current",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/002/manifest.json",
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/001/source.js",
+      "durationMs": 734
+    },
+    {
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/001/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/001/source.js:mod_391061454:initial",
+      "catalogPath": "Sources/Spanish/002",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/Spanish/002/manifest.json",
+      "language": "Spanish",
+      "rank": 2,
+      "folder": "002",
+      "sourceName": "AnimeAV1",
+      "id": "mod_1833550373",
+      "registry": "content-manifest",
+      "origin": "current",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/001/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/002/source.js",
-      "durationMs": 790
+      "durationMs": 791
     },
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/003/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/003/source.js:mod_888802224:initial",
       "catalogPath": "Sources/Spanish/003",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/Spanish/003/manifest.json",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/Spanish/003/manifest.json",
       "language": "Spanish",
       "rank": 3,
       "folder": "003",
@@ -860,12 +905,12 @@
       "origin": "current",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/003/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/003/source.js",
-      "durationMs": 6414
+      "durationMs": 2574
     },
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/004/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/004/source.js:mod_618749585:initial",
       "catalogPath": "Sources/Spanish/004",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/Spanish/004/manifest.json",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/Spanish/004/manifest.json",
       "language": "Spanish",
       "rank": 4,
       "folder": "004",
@@ -875,92 +920,67 @@
       "origin": "current",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/004/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/004/source.js",
-      "durationMs": 6022
+      "durationMs": 6424
     },
     {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/005/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/005/source.js:mod_2126301394:initial",
+      "winnerKey": "cufiy:https://raw.githubusercontent.com/alexrica/sora-modules/refs/heads/main/jkanime/module.json:https://raw.githubusercontent.com/alexrica/sora-modules/refs/heads/main/jkanime/script.js:jOo8B:initial",
       "catalogPath": "Sources/Spanish/005",
-      "manifestPath": "/private/tmp/sora-daily-20260703T042115Z/catalog/Sources/Spanish/005/manifest.json",
+      "manifestPath": "/private/tmp/sora-daily-20260703T065630Z/catalog/Sources/Spanish/005/manifest.json",
       "language": "Spanish",
       "rank": 5,
       "folder": "005",
       "sourceName": "JKanime",
       "id": "jOo8B",
-      "registry": "content-manifest",
-      "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/005/manifest.json",
+      "registry": "cufiy",
+      "origin": "cufiy",
+      "manifestUrl": "https://raw.githubusercontent.com/alexrica/sora-modules/refs/heads/main/jkanime/module.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/005/source.js",
-      "durationMs": 13516
+      "durationMs": 13017
     }
   ],
   "rejected": [
+    {
+      "key": "1tamilcrow:tamil",
+      "sourceName": "1TamilCrow",
+      "language": "Tamil",
+      "candidates": [
+        {
+          "id": "BttON",
+          "sourceName": "1TamilCrow",
+          "language": "Tamil",
+          "registry": "cufiy",
+          "origin": "cufiy",
+          "manifestUrl": "https://git.luna-app.eu/50n50/sources/raw/branch/main/1tamilcrow/1tamilcrow.json",
+          "scriptUrl": "https://git.luna-app.eu/50n50/sources/raw/branch/main/1tamilcrow/1tamilcrow.js",
+          "repair": null,
+          "label": "initial",
+          "status": "needs_fix",
+          "failureKind": "search_result_mismatch",
+          "durationMs": 1263,
+          "errors": [
+            "search returned no title match for \"one piece\""
+          ],
+          "attempts": [],
+          "health": {
+            "base": {
+              "url": "https://www.1tamilcrow.net/",
+              "status": 200,
+              "ok": true,
+              "contentType": "text/html; charset=UTF-8",
+              "bytes": 114912,
+              "hasData": true,
+              "reason": "ok"
+            },
+            "endpoints": []
+          }
+        }
+      ]
+    },
     {
       "key": "allanime:english",
       "sourceName": "AllAnime",
       "language": "English",
       "candidates": [
-        {
-          "id": "mod_1985465385",
-          "sourceName": "AllAnime",
-          "language": "English",
-          "registry": "content-manifest",
-          "origin": "current",
-          "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/011/manifest.json",
-          "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/011/source.js",
-          "repair": null,
-          "label": "initial",
-          "status": "needs_fix",
-          "failureKind": "stream_resolution_failed_in_test_harness",
-          "durationMs": 3773,
-          "errors": [
-            "stream: extractStreamUrl returned an unusable result",
-            "stream: extractStreamUrl returned an unusable result",
-            "stream: extractStreamUrl returned an unusable result",
-            "stream: extractStreamUrl returned an unusable result",
-            "stream: extractStreamUrl returned an unusable result"
-          ],
-          "attempts": [],
-          "health": {
-            "base": {
-              "url": "https://allmanga.to/",
-              "status": 200,
-              "ok": true,
-              "contentType": "text/html; charset=utf-8",
-              "bytes": 5516,
-              "hasData": true,
-              "reason": "ok"
-            },
-            "endpoints": [
-              {
-                "url": "https://api.allanime.day/api",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 5804,
-                "hasData": false,
-                "reason": "http_403"
-              },
-              {
-                "url": "https://allanime.day/",
-                "ok": false,
-                "hasData": false,
-                "reason": "fetch failed"
-              },
-              {
-                "url": "https://allanime.day${decoded.startsWith(",
-                "ok": false,
-                "hasData": false,
-                "reason": "fetch failed"
-              },
-              {
-                "url": "https://allanime.to/",
-                "ok": false,
-                "hasData": false,
-                "reason": "fetch failed"
-              }
-            ]
-          }
-        },
         {
           "id": "jpL6F",
           "sourceName": "AllAnime",
@@ -973,7 +993,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "stream_resolution_failed_in_test_harness",
-          "durationMs": 1282,
+          "durationMs": 2624,
           "errors": [
             "stream: extractStreamUrl returned an unusable result",
             "stream: extractStreamUrl returned an unusable result",
@@ -1035,12 +1055,12 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "stream_resolution_failed_in_test_harness",
-          "durationMs": 2496,
+          "durationMs": 2248,
           "errors": [
             "stream: extractStreamUrl returned an unusable result",
             "stream: extractStreamUrl returned an unusable result",
             "stream: extractStreamUrl returned an unusable result",
-            "episodes: extractEpisodes returned an unusable result",
+            "stream: extractStreamUrl returned an unusable result",
             "stream: extractStreamUrl returned an unusable result"
           ],
           "attempts": [],
@@ -1070,43 +1090,6 @@
       ]
     },
     {
-      "key": "1tamilcrow:tamil",
-      "sourceName": "1TamilCrow",
-      "language": "Tamil",
-      "candidates": [
-        {
-          "id": "BttON",
-          "sourceName": "1TamilCrow",
-          "language": "Tamil",
-          "registry": "cufiy",
-          "origin": "cufiy",
-          "manifestUrl": "https://git.luna-app.eu/50n50/sources/raw/branch/main/1tamilcrow/1tamilcrow.json",
-          "scriptUrl": "https://git.luna-app.eu/50n50/sources/raw/branch/main/1tamilcrow/1tamilcrow.js",
-          "repair": null,
-          "label": "initial",
-          "status": "needs_fix",
-          "failureKind": "search_result_mismatch",
-          "durationMs": 1419,
-          "errors": [
-            "search returned no title match for \"one piece\""
-          ],
-          "attempts": [],
-          "health": {
-            "base": {
-              "url": "https://www.1tamilcrow.net/",
-              "status": 200,
-              "ok": true,
-              "contentType": "text/html; charset=UTF-8",
-              "bytes": 114966,
-              "hasData": true,
-              "reason": "ok"
-            },
-            "endpoints": []
-          }
-        }
-      ]
-    },
-    {
       "key": "anidb:english",
       "sourceName": "AniDB",
       "language": "English",
@@ -1123,7 +1106,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 103,
+          "durationMs": 138,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -1215,7 +1198,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "search_result_mismatch",
-          "durationMs": 3198,
+          "durationMs": 3075,
           "errors": [
             "search returned no title match for \"one piece\""
           ],
@@ -1226,7 +1209,7 @@
               "status": 200,
               "ok": true,
               "contentType": "text/html; charset=utf-8",
-              "bytes": 75889,
+              "bytes": 75789,
               "hasData": true,
               "reason": "ok"
             },
@@ -1261,7 +1244,7 @@
           "label": "repair_derived_manifest_js_url",
           "status": "needs_fix",
           "failureKind": "search_result_mismatch",
-          "durationMs": 3187,
+          "durationMs": 3006,
           "errors": [
             "search returned no title match for \"one piece\""
           ],
@@ -1279,7 +1262,7 @@
               "status": 200,
               "ok": true,
               "contentType": "text/html; charset=utf-8",
-              "bytes": 75889,
+              "bytes": 75789,
               "hasData": true,
               "reason": "ok"
             },
@@ -1315,7 +1298,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "stream_resolution_failed_in_test_harness",
-          "durationMs": 11279,
+          "durationMs": 11659,
           "errors": [
             "stream: extractStreamUrl returned an unusable result",
             "stream: extractStreamUrl returned an unusable result",
@@ -1330,7 +1313,7 @@
               "status": 200,
               "ok": true,
               "contentType": "text/html; charset=UTF-8",
-              "bytes": 381816,
+              "bytes": 381814,
               "hasData": true,
               "reason": "ok"
             },
@@ -1340,7 +1323,7 @@
                 "status": 200,
                 "ok": true,
                 "contentType": "text/html; charset=UTF-8",
-                "bytes": 381816,
+                "bytes": 381814,
                 "hasData": true,
                 "reason": "ok"
               },
@@ -1392,7 +1375,7 @@
           "label": "repair_patch_known_source_issues",
           "status": "needs_fix",
           "failureKind": "stream_resolution_failed_in_test_harness",
-          "durationMs": 11266,
+          "durationMs": 11205,
           "errors": [
             "stream: extractStreamUrl returned an unusable result",
             "stream: extractStreamUrl returned an unusable result",
@@ -1414,7 +1397,7 @@
               "status": 200,
               "ok": true,
               "contentType": "text/html; charset=UTF-8",
-              "bytes": 381816,
+              "bytes": 381814,
               "hasData": true,
               "reason": "ok"
             },
@@ -1424,7 +1407,7 @@
                 "status": 200,
                 "ok": true,
                 "contentType": "text/html; charset=UTF-8",
-                "bytes": 381816,
+                "bytes": 381814,
                 "hasData": true,
                 "reason": "ok"
               },
@@ -1477,7 +1460,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "search_result_mismatch",
-          "durationMs": 494,
+          "durationMs": 588,
           "errors": [
             "search returned no title match for \"one piece\""
           ],
@@ -1569,7 +1552,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 16698,
+          "durationMs": 18765,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -1667,7 +1650,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "search_result_mismatch",
-          "durationMs": 4625,
+          "durationMs": 4604,
           "errors": [
             "search returned no title match for \"one piece\""
           ],
@@ -1735,7 +1718,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "search_result_mismatch",
-          "durationMs": 1770,
+          "durationMs": 1733,
           "errors": [
             "search returned no title match for \"one piece\""
           ],
@@ -1746,7 +1729,7 @@
               "status": 200,
               "ok": true,
               "contentType": "text/html; charset=UTF-8",
-              "bytes": 108918,
+              "bytes": 109525,
               "hasData": true,
               "reason": "ok"
             },
@@ -1782,7 +1765,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 435,
+          "durationMs": 348,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -1937,7 +1920,7 @@
           "label": "repair_mangayomi_dart_url_refresh_1",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 88,
+          "durationMs": 97,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -2020,7 +2003,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 3087,
+          "durationMs": 1504,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -2088,7 +2071,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "search_result_mismatch",
-          "durationMs": 530,
+          "durationMs": 536,
           "errors": [
             "search returned no title match for \"one piece\""
           ],
@@ -2134,7 +2117,7 @@
           "label": "repair_derived_manifest_js_url",
           "status": "needs_fix",
           "failureKind": "search_result_mismatch",
-          "durationMs": 294,
+          "durationMs": 290,
           "errors": [
             "search returned no title match for \"one piece\""
           ],
@@ -2188,7 +2171,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "search_result_mismatch",
-          "durationMs": 870,
+          "durationMs": 872,
           "errors": [
             "search returned no title match for \"one piece\""
           ],
@@ -2199,7 +2182,7 @@
               "status": 200,
               "ok": true,
               "contentType": "text/html; charset=utf-8",
-              "bytes": 73508,
+              "bytes": 73870,
               "hasData": true,
               "reason": "ok"
             },
@@ -2235,7 +2218,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 845,
+          "durationMs": 824,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -2246,7 +2229,7 @@
               "status": 200,
               "ok": true,
               "contentType": "text/html",
-              "bytes": 148643,
+              "bytes": 147060,
               "hasData": true,
               "reason": "ok"
             },
@@ -2256,7 +2239,7 @@
                 "status": 200,
                 "ok": true,
                 "contentType": "text/html; charset=UTF-8",
-                "bytes": 95026,
+                "bytes": 95023,
                 "hasData": true,
                 "reason": "ok"
               }
@@ -2282,7 +2265,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "script_unavailable",
-          "durationMs": 101,
+          "durationMs": 102,
           "errors": [
             "script_load: HTTP 404 Not Found"
           ],
@@ -2327,7 +2310,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 902,
+          "durationMs": 529,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -2383,7 +2366,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "stream_resolution_failed_in_test_harness",
-          "durationMs": 4433,
+          "durationMs": 1612,
           "errors": [
             "stream: extractStreamUrl returned an unusable result",
             "stream: extractStreamUrl returned an unusable result",
@@ -2515,7 +2498,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 1334,
+          "durationMs": 824,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -2562,7 +2545,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 863,
+          "durationMs": 32322,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -2583,18 +2566,18 @@
                 "status": 200,
                 "ok": true,
                 "contentType": "text/html; charset=UTF-8",
-                "bytes": 119513,
+                "bytes": 102145,
                 "hasData": true,
                 "reason": "ok"
               },
               {
                 "url": "https://coflix.cc/wp-json/apiflix/v1/series/${postId}/${season}",
-                "status": 200,
-                "ok": true,
+                "status": 502,
+                "ok": false,
                 "contentType": "text/html; charset=UTF-8",
-                "bytes": 119513,
-                "hasData": true,
-                "reason": "ok"
+                "bytes": 6414,
+                "hasData": false,
+                "reason": "http_502"
               }
             ]
           }
@@ -2618,7 +2601,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "stream_resolution_failed_in_test_harness",
-          "durationMs": 640,
+          "durationMs": 669,
           "errors": [
             "stream: extractStreamUrl returned an unusable result",
             "stream: extractStreamUrl returned an unusable result",
@@ -2631,7 +2614,7 @@
               "status": 200,
               "ok": true,
               "contentType": "text/html; charset=utf-8",
-              "bytes": 360539,
+              "bytes": 361653,
               "hasData": true,
               "reason": "ok"
             },
@@ -2641,7 +2624,7 @@
                 "status": 200,
                 "ok": true,
                 "contentType": "text/html; charset=utf-8",
-                "bytes": 360539,
+                "bytes": 361653,
                 "hasData": true,
                 "reason": "ok"
               },
@@ -2682,7 +2665,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 116,
+          "durationMs": 121,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -2693,7 +2676,7 @@
               "status": 200,
               "ok": true,
               "contentType": "text/html; charset=UTF-8",
-              "bytes": 273458,
+              "bytes": 273485,
               "hasData": true,
               "reason": "ok"
             },
@@ -2712,7 +2695,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 130,
+          "durationMs": 147,
           "errors": [
             "search: Cannot read properties of null (reading 'text')"
           ],
@@ -2723,7 +2706,7 @@
               "status": 200,
               "ok": true,
               "contentType": "text/html; charset=UTF-8",
-              "bytes": 273435,
+              "bytes": 273798,
               "hasData": true,
               "reason": "ok"
             },
@@ -2749,7 +2732,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "search_result_mismatch",
-          "durationMs": 858,
+          "durationMs": 769,
           "errors": [
             "search returned no title match for \"one piece\""
           ],
@@ -2760,7 +2743,7 @@
               "status": 200,
               "ok": true,
               "contentType": "text/html; charset=UTF-8",
-              "bytes": 115998,
+              "bytes": 119648,
               "hasData": true,
               "reason": "ok"
             },
@@ -2786,7 +2769,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 583,
+          "durationMs": 706,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -2797,7 +2780,7 @@
               "status": 200,
               "ok": true,
               "contentType": "text/html; charset=UTF-8",
-              "bytes": 137407,
+              "bytes": 139295,
               "hasData": true,
               "reason": "ok"
             },
@@ -2833,7 +2816,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "search_result_mismatch",
-          "durationMs": 153,
+          "durationMs": 587,
           "errors": [
             "search returned no title match for \"one piece\""
           ],
@@ -2844,7 +2827,7 @@
               "status": 200,
               "ok": true,
               "contentType": "text/html; charset=UTF-8",
-              "bytes": 362209,
+              "bytes": 353250,
               "hasData": true,
               "reason": "ok"
             },
@@ -2876,7 +2859,7 @@
           "label": "repair_patch_known_source_issues",
           "status": "needs_fix",
           "failureKind": "search_result_mismatch",
-          "durationMs": 1,
+          "durationMs": 0,
           "errors": [
             "search returned no title match for \"one piece\""
           ],
@@ -2894,7 +2877,7 @@
               "status": 200,
               "ok": true,
               "contentType": "text/html; charset=UTF-8",
-              "bytes": 362209,
+              "bytes": 353250,
               "hasData": true,
               "reason": "ok"
             },
@@ -2927,7 +2910,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "script_unavailable",
-          "durationMs": 142,
+          "durationMs": 147,
           "errors": [
             "script_load: HTTP 404 Not Found"
           ],
@@ -2946,7 +2929,7 @@
               "status": 200,
               "ok": true,
               "contentType": "text/html; charset=utf-8",
-              "bytes": 34227,
+              "bytes": 34574,
               "hasData": true,
               "reason": "ok"
             },
@@ -2971,7 +2954,7 @@
           "label": "repair_derived_manifest_js_url",
           "status": "needs_fix",
           "failureKind": "search_result_mismatch",
-          "durationMs": 9805,
+          "durationMs": 8844,
           "errors": [
             "search returned no title match for \"one piece\""
           ],
@@ -2989,7 +2972,7 @@
               "status": 200,
               "ok": true,
               "contentType": "text/html; charset=utf-8",
-              "bytes": 34227,
+              "bytes": 34574,
               "hasData": true,
               "reason": "ok"
             },
@@ -3015,7 +2998,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 49312,
+          "durationMs": 45384,
           "errors": [
             "search: searchResults timed out"
           ],
@@ -3137,7 +3120,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 5851,
+          "durationMs": 630,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -3148,7 +3131,7 @@
               "status": 200,
               "ok": true,
               "contentType": "text/html; charset=utf-8",
-              "bytes": 27183,
+              "bytes": 472,
               "hasData": true,
               "reason": "ok"
             },
@@ -3174,7 +3157,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "stream_resolution_failed_in_test_harness",
-          "durationMs": 980,
+          "durationMs": 827,
           "errors": [
             "stream: extractStreamUrl returned an unusable result",
             "stream: extractStreamUrl returned an unusable result",
@@ -3253,7 +3236,7 @@
           "label": "repair_mangayomi_dart_url_refresh_1",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 34820,
+          "durationMs": 38084,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -3337,7 +3320,7 @@
           "label": "repair_mangayomi_dart_url_refresh_2",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 33283,
+          "durationMs": 36589,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -3420,7 +3403,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 578,
+          "durationMs": 669,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -3431,7 +3414,7 @@
               "status": 200,
               "ok": true,
               "contentType": "text/html",
-              "bytes": 594436,
+              "bytes": 595855,
               "hasData": true,
               "reason": "ok"
             },
@@ -3441,7 +3424,7 @@
                 "status": 200,
                 "ok": true,
                 "contentType": "text/html",
-                "bytes": 594436,
+                "bytes": 595854,
                 "hasData": true,
                 "reason": "ok"
               },
@@ -3450,7 +3433,7 @@
                 "status": 200,
                 "ok": true,
                 "contentType": "text/html",
-                "bytes": 594436,
+                "bytes": 595855,
                 "hasData": true,
                 "reason": "ok"
               },
@@ -3459,7 +3442,7 @@
                 "status": 200,
                 "ok": true,
                 "contentType": "text/html",
-                "bytes": 594434,
+                "bytes": 595855,
                 "hasData": true,
                 "reason": "ok"
               },
@@ -3468,7 +3451,7 @@
                 "status": 200,
                 "ok": true,
                 "contentType": "text/html",
-                "bytes": 594435,
+                "bytes": 595855,
                 "hasData": true,
                 "reason": "ok"
               }
@@ -3494,7 +3477,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "search_result_mismatch",
-          "durationMs": 2772,
+          "durationMs": 2722,
           "errors": [
             "search returned no title match for \"one piece\""
           ],
@@ -3508,7 +3491,7 @@
                   "status": 200,
                   "ok": true,
                   "contentType": "text/html; charset=UTF-8",
-                  "bytes": 356952,
+                  "bytes": 367595,
                   "hasData": false,
                   "reason": "parked_domain"
                 },
@@ -3518,7 +3501,7 @@
                     "status": 200,
                     "ok": true,
                     "contentType": "text/html; charset=UTF-8",
-                    "bytes": 296693,
+                    "bytes": 296695,
                     "hasData": false,
                     "reason": "parked_domain"
                   }
@@ -3532,7 +3515,7 @@
               "status": 200,
               "ok": true,
               "contentType": "text/html; charset=UTF-8",
-              "bytes": 356952,
+              "bytes": 367595,
               "hasData": false,
               "reason": "parked_domain"
             },
@@ -3542,7 +3525,7 @@
                 "status": 200,
                 "ok": true,
                 "contentType": "text/html; charset=UTF-8",
-                "bytes": 296693,
+                "bytes": 296695,
                 "hasData": false,
                 "reason": "parked_domain"
               }
@@ -3568,7 +3551,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "stream_resolution_failed_in_test_harness",
-          "durationMs": 131150,
+          "durationMs": 135251,
           "errors": [
             "stream: Cannot read properties of null (reading 'json')",
             "stream: Cannot read properties of null (reading 'json')",
@@ -3646,7 +3629,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "search_result_mismatch",
-          "durationMs": 8989,
+          "durationMs": 9277,
           "errors": [
             "search returned no title match for \"one piece\""
           ],
@@ -3657,7 +3640,7 @@
               "status": 200,
               "ok": true,
               "contentType": "text/html; charset=UTF-8",
-              "bytes": 242955,
+              "bytes": 237962,
               "hasData": true,
               "reason": "ok"
             },
@@ -3683,7 +3666,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 450,
+          "durationMs": 459,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -3757,7 +3740,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 296,
+          "durationMs": 313,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -3813,7 +3796,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 45279,
+          "durationMs": 45465,
           "errors": [
             "search: searchResults timed out"
           ],
@@ -3935,7 +3918,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "stream_resolution_failed_in_test_harness",
-          "durationMs": 4553,
+          "durationMs": 2100,
           "errors": [
             "stream: extractStreamUrl returned an unusable result",
             "stream: extractStreamUrl returned an unusable result",
@@ -4009,7 +3992,7 @@
           "label": "repair_manifest_scriptUrl",
           "status": "needs_fix",
           "failureKind": "stream_resolution_failed_in_test_harness",
-          "durationMs": 1290,
+          "durationMs": 1337,
           "errors": [
             "stream: extractStreamUrl returned an unusable result",
             "stream: extractStreamUrl returned an unusable result",
@@ -4090,7 +4073,7 @@
           "label": "repair_derived_manifest_js_url",
           "status": "needs_fix",
           "failureKind": "stream_resolution_failed_in_test_harness",
-          "durationMs": 1168,
+          "durationMs": 1364,
           "errors": [
             "stream: extractStreamUrl returned an unusable result",
             "stream: extractStreamUrl returned an unusable result",
@@ -4172,7 +4155,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "search_result_mismatch",
-          "durationMs": 2408,
+          "durationMs": 2714,
           "errors": [
             "search returned no title match for \"one piece\""
           ],
@@ -4183,7 +4166,7 @@
               "status": 200,
               "ok": true,
               "contentType": "text/html; charset=utf-8",
-              "bytes": 214652,
+              "bytes": 214628,
               "hasData": true,
               "reason": "ok"
             },
@@ -4228,7 +4211,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "episodes_failed",
-          "durationMs": 294,
+          "durationMs": 278,
           "errors": [
             "episodes: Cannot read properties of undefined (reading 'map')"
           ],
@@ -4284,7 +4267,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 149947,
+          "durationMs": 148891,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -4332,7 +4315,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "stream_resolution_failed_in_test_harness",
-          "durationMs": 9350,
+          "durationMs": 7700,
           "errors": [
             "stream: extractStreamUrl returned an unusable result",
             "stream: extractStreamUrl returned an unusable result",
@@ -4347,7 +4330,7 @@
               "status": 200,
               "ok": true,
               "contentType": "text/html; charset=utf-8",
-              "bytes": 492136,
+              "bytes": 492389,
               "hasData": true,
               "reason": "ok"
             },
@@ -4366,7 +4349,7 @@
                 "status": 200,
                 "ok": true,
                 "contentType": "text/html; charset=utf-8",
-                "bytes": 54094,
+                "bytes": 54093,
                 "hasData": true,
                 "reason": "ok"
               },
@@ -4410,7 +4393,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 13632,
+          "durationMs": 11105,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -4508,7 +4491,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "stream_resolution_failed_in_test_harness",
-          "durationMs": 4304,
+          "durationMs": 3947,
           "errors": [
             "stream: extractStreamUrl returned an unusable result",
             "stream: extractStreamUrl returned an unusable result",
@@ -4559,7 +4542,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "search_result_mismatch",
-          "durationMs": 798,
+          "durationMs": 775,
           "errors": [
             "search returned no title match for \"one piece\""
           ],
@@ -4639,7 +4622,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 45434,
+          "durationMs": 45548,
           "errors": [
             "search: searchResults timed out"
           ],
@@ -4711,7 +4694,7 @@
           "label": "repair_mangayomi_dart_url_refresh_1",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 45010,
+          "durationMs": 45011,
           "errors": [
             "search: searchResults timed out"
           ],
@@ -4792,7 +4775,7 @@
           "label": "repair_mangayomi_dart_url_refresh_2",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 45010,
+          "durationMs": 45014,
           "errors": [
             "search: searchResults timed out"
           ],
@@ -4873,7 +4856,7 @@
           "label": "repair_mangayomi_dart_url_refresh_3",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 45011,
+          "durationMs": 45010,
           "errors": [
             "search: searchResults timed out"
           ],
@@ -4953,7 +4936,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "search_result_mismatch",
-          "durationMs": 823,
+          "durationMs": 757,
           "errors": [
             "search returned no title match for \"one piece\""
           ],
@@ -4989,7 +4972,7 @@
           "label": "repair_derived_manifest_js_url",
           "status": "needs_fix",
           "failureKind": "search_result_mismatch",
-          "durationMs": 329,
+          "durationMs": 339,
           "errors": [
             "search returned no title match for \"one piece\""
           ],
@@ -5033,7 +5016,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 2204,
+          "durationMs": 2694,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -5044,7 +5027,7 @@
               "status": 200,
               "ok": true,
               "contentType": "text/html; charset=UTF-8",
-              "bytes": 812726,
+              "bytes": 812722,
               "hasData": true,
               "reason": "ok"
             },
@@ -5054,7 +5037,7 @@
                 "status": 200,
                 "ok": true,
                 "contentType": "text/html; charset=UTF-8",
-                "bytes": 737792,
+                "bytes": 737788,
                 "hasData": true,
                 "reason": "ok"
               },
@@ -5063,7 +5046,7 @@
                 "status": 200,
                 "ok": true,
                 "contentType": "text/html; charset=UTF-8",
-                "bytes": 855181,
+                "bytes": 855177,
                 "hasData": true,
                 "reason": "ok"
               },
@@ -5072,7 +5055,7 @@
                 "status": 200,
                 "ok": true,
                 "contentType": "text/html; charset=UTF-8",
-                "bytes": 740408,
+                "bytes": 740404,
                 "hasData": true,
                 "reason": "ok"
               }
@@ -5098,7 +5081,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "stream_resolution_failed_in_test_harness",
-          "durationMs": 6397,
+          "durationMs": 5906,
           "errors": [
             "stream: extractStreamUrl returned an unusable result",
             "stream: extractStreamUrl returned an unusable result",
@@ -5176,7 +5159,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "details_failed",
-          "durationMs": 135649,
+          "durationMs": 135648,
           "errors": [
             "details: extractDetails timed out",
             "details: extractDetails timed out",
@@ -5306,7 +5289,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 1201,
+          "durationMs": 1190,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -5380,7 +5363,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 13907,
+          "durationMs": 15382,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -5478,7 +5461,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "stream_resolution_failed_in_test_harness",
-          "durationMs": 41963,
+          "durationMs": 41003,
           "errors": [
             "stream: extractStreamUrl returned an unusable result",
             "stream: extractStreamUrl returned an unusable result",
@@ -5538,7 +5521,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 381,
+          "durationMs": 476,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -5648,7 +5631,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "stream_resolution_failed_in_test_harness",
-          "durationMs": 13768,
+          "durationMs": 15391,
           "errors": [
             "stream: extractStreamUrl returned an unusable result",
             "stream: extractStreamUrl returned an unusable result",
@@ -5726,7 +5709,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "stream_resolution_failed_in_test_harness",
-          "durationMs": 6499,
+          "durationMs": 6936,
           "errors": [
             "stream: extractStreamUrl returned an unusable result",
             "stream: extractStreamUrl returned an unusable result",
@@ -5804,7 +5787,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 16933,
+          "durationMs": 17228,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -5878,7 +5861,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "stream_resolution_failed_in_test_harness",
-          "durationMs": 138258,
+          "durationMs": 139280,
           "errors": [
             "stream: extractStreamUrl returned an unusable result",
             "stream: extractStreamUrl returned an unusable result",
@@ -5998,7 +5981,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "search_result_mismatch",
-          "durationMs": 12674,
+          "durationMs": 6861,
           "errors": [
             "search returned no title match for \"one piece\""
           ],
@@ -6009,7 +5992,7 @@
               "status": 200,
               "ok": true,
               "contentType": "text/html; charset=utf-8",
-              "bytes": 60857,
+              "bytes": 61476,
               "hasData": true,
               "reason": "ok"
             },
@@ -6019,7 +6002,7 @@
                 "status": 200,
                 "ok": true,
                 "contentType": "text/html; charset=utf-8",
-                "bytes": 29024,
+                "bytes": 28997,
                 "hasData": true,
                 "reason": "ok"
               }
@@ -6045,7 +6028,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "stream_resolution_failed_in_test_harness",
-          "durationMs": 134937,
+          "durationMs": 137740,
           "errors": [
             "stream: Cannot read properties of null (reading 'ok')",
             "stream: Cannot read properties of null (reading 'ok')",
@@ -6165,7 +6148,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "search_result_mismatch",
-          "durationMs": 684,
+          "durationMs": 672,
           "errors": [
             "search returned no title match for \"one piece\""
           ],
@@ -6223,7 +6206,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 883,
+          "durationMs": 1068,
           "errors": [
             "search: searchResults returned an unusable result"
           ],
@@ -6234,7 +6217,7 @@
               "status": 200,
               "ok": true,
               "contentType": "text/html; charset=utf-8",
-              "bytes": 646871,
+              "bytes": 646355,
               "hasData": true,
               "reason": "ok"
             },
@@ -6296,7 +6279,7 @@
           "label": "repair_derived_manifest_js_url",
           "status": "needs_fix",
           "failureKind": "search_result_mismatch",
-          "durationMs": 460,
+          "durationMs": 434,
           "errors": [
             "search returned no title match for \"one piece\""
           ],
@@ -6352,182 +6335,5 @@
       ]
     }
   ],
-  "removals": [
-    {
-      "sourceName": "AllAnime",
-      "id": "mod_1985465385",
-      "language": "English",
-      "confirmed": true,
-      "reason": [
-        {
-          "id": "mod_1985465385",
-          "sourceName": "AllAnime",
-          "language": "English",
-          "registry": "content-manifest",
-          "origin": "current",
-          "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/011/manifest.json",
-          "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/011/source.js",
-          "repair": null,
-          "label": "initial",
-          "status": "needs_fix",
-          "failureKind": "stream_resolution_failed_in_test_harness",
-          "durationMs": 3773,
-          "errors": [
-            "stream: extractStreamUrl returned an unusable result",
-            "stream: extractStreamUrl returned an unusable result",
-            "stream: extractStreamUrl returned an unusable result",
-            "stream: extractStreamUrl returned an unusable result",
-            "stream: extractStreamUrl returned an unusable result"
-          ],
-          "attempts": [],
-          "health": {
-            "base": {
-              "url": "https://allmanga.to/",
-              "status": 200,
-              "ok": true,
-              "contentType": "text/html; charset=utf-8",
-              "bytes": 5516,
-              "hasData": true,
-              "reason": "ok"
-            },
-            "endpoints": [
-              {
-                "url": "https://api.allanime.day/api",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 5804,
-                "hasData": false,
-                "reason": "http_403"
-              },
-              {
-                "url": "https://allanime.day/",
-                "ok": false,
-                "hasData": false,
-                "reason": "fetch failed"
-              },
-              {
-                "url": "https://allanime.day${decoded.startsWith(",
-                "ok": false,
-                "hasData": false,
-                "reason": "fetch failed"
-              },
-              {
-                "url": "https://allanime.to/",
-                "ok": false,
-                "hasData": false,
-                "reason": "fetch failed"
-              }
-            ]
-          }
-        },
-        {
-          "id": "jpL6F",
-          "sourceName": "AllAnime",
-          "language": "English",
-          "registry": "cufiy",
-          "origin": "cufiy",
-          "manifestUrl": "https://git.luna-app.eu/50n50/sources/raw/branch/main/allanime/allanime.json",
-          "scriptUrl": "https://git.luna-app.eu/50n50/sources/raw/branch/main/allanime/allanime.js",
-          "repair": null,
-          "label": "initial",
-          "status": "needs_fix",
-          "failureKind": "stream_resolution_failed_in_test_harness",
-          "durationMs": 1282,
-          "errors": [
-            "stream: extractStreamUrl returned an unusable result",
-            "stream: extractStreamUrl returned an unusable result",
-            "stream: extractStreamUrl returned an unusable result",
-            "stream: extractStreamUrl returned an unusable result",
-            "stream: extractStreamUrl returned an unusable result"
-          ],
-          "attempts": [],
-          "health": {
-            "base": {
-              "url": "https://allmanga.to/",
-              "status": 200,
-              "ok": true,
-              "contentType": "text/html; charset=utf-8",
-              "bytes": 5516,
-              "hasData": true,
-              "reason": "ok"
-            },
-            "endpoints": [
-              {
-                "url": "https://api.allanime.day/api",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 5804,
-                "hasData": false,
-                "reason": "http_403"
-              },
-              {
-                "url": "https://allanime.day/",
-                "ok": false,
-                "hasData": false,
-                "reason": "fetch failed"
-              },
-              {
-                "url": "https://allanime.day${decoded.startsWith(",
-                "ok": false,
-                "hasData": false,
-                "reason": "fetch failed"
-              },
-              {
-                "url": "https://allanime.to/",
-                "ok": false,
-                "hasData": false,
-                "reason": "fetch failed"
-              }
-            ]
-          }
-        },
-        {
-          "id": "mod_1007434235",
-          "sourceName": "AllAnime",
-          "language": "English",
-          "registry": "luna:ibro/services",
-          "origin": "luna:ibro/services",
-          "manifestUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/allmanga/allmanga.json",
-          "scriptUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/allmanga/allmanga.js",
-          "repair": null,
-          "label": "initial",
-          "status": "needs_fix",
-          "failureKind": "stream_resolution_failed_in_test_harness",
-          "durationMs": 2496,
-          "errors": [
-            "stream: extractStreamUrl returned an unusable result",
-            "stream: extractStreamUrl returned an unusable result",
-            "stream: extractStreamUrl returned an unusable result",
-            "episodes: extractEpisodes returned an unusable result",
-            "stream: extractStreamUrl returned an unusable result"
-          ],
-          "attempts": [],
-          "health": {
-            "base": {
-              "url": "https://mp4upload.com/",
-              "status": 200,
-              "ok": true,
-              "contentType": "text/html; charset=UTF-8",
-              "bytes": 12668,
-              "hasData": true,
-              "reason": "ok"
-            },
-            "endpoints": [
-              {
-                "url": "https://api.allanime.day/api",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 5804,
-                "hasData": false,
-                "reason": "http_403"
-              }
-            ]
-          }
-        }
-      ]
-    }
-  ]
+  "removals": []
 }

@@ -1,374 +1,70 @@
-class Anilist {
-    static async search(keyword, filters = {}) {
-        const query = `query (
-                $search: String,
-                $page: Int,
-                $perPage: Int,
-                $sort: [MediaSort],
-                $genre_in: [String],
-                $tag_in: [String],
-                $type: MediaType,
-                $format: MediaFormat,
-                $status: MediaStatus,
-                $countryOfOrigin: CountryCode,
-                $isAdult: Boolean,
-                $season: MediaSeason,
-                $startDate_like: String,
-                $source: MediaSource,
-                $averageScore_greater: Int,
-                $averageScore_lesser: Int
-            ) {
-                Page(page: $page, perPage: $perPage) {
-                media(
-                    search: $search,
-                    type: $type,
-                    sort: $sort,
-                    genre_in: $genre_in,
-                    tag_in: $tag_in,
-                    format: $format,
-                    status: $status,
-                    countryOfOrigin: $countryOfOrigin,
-                    isAdult: $isAdult,
-                    season: $season,
-                    startDate_like: $startDate_like,
-                    source: $source,
-                    averageScore_greater: $averageScore_greater,
-                    averageScore_lesser: $averageScore_lesser
-                ) {
-                    id
-                    idMal
-                    averageScore
-                    title {
-                        romaji
-                        english
-                        native
-                    }
-                    episodes
-                    nextAiringEpisode {
-                        airingAt
-                        timeUntilAiring
-                        episode
-                    }
-                    status
-                    genres
-                    format
-                    description
-                    startDate {
-                        year
-                        month
-                        day
-                    }
-                    endDate {
-                        year
-                        month
-                        day
-                    }
-                    popularity
-                    coverImage {
-                        color
-                        large
-                        extraLarge
-                    }
-                }
-            }
-        }`;
-
-        const variables = {
-            "page": 1,
-            "perPage": 50,
-            "sort": [
-                "SEARCH_MATCH",
-                "TITLE_ENGLISH_DESC",
-                "TITLE_ROMAJI_DESC"
-            ],
-            "search": keyword,
-            "type": "ANIME",
-            ...filters
-        }
-
-        // console.log(filters, variables);
-
-        return Anilist.anilistFetch(query, variables);
-    }
-
-    static async lookup(filters) {
-        const query = `query (
-                $id: Int,
-                $idMal: Int
-            ) {
-                Page(page: 1, perPage: 1) {
-                media(
-                    id: $id,
-                    idMal: $idMal
-                ) {
-                    id
-                    idMal
-                    averageScore
-                    title {
-                        romaji
-                        english
-                        native
-                    }
-                    episodes
-                    nextAiringEpisode {
-                        airingAt
-                        timeUntilAiring
-                        episode
-                    }
-                    status
-                    genres
-                    format
-                    description
-                    startDate {
-                        year
-                        month
-                        day
-                    }
-                    endDate {
-                        year
-                        month
-                        day
-                    }
-                    popularity
-                    coverImage {
-                        color
-                        large
-                        extraLarge
-                    }
-                }
-            }
-        }`;
-
-        const variables = {
-            "type": "ANIME",
-            ...filters
-        }
-
-        return Anilist.anilistFetch(query, variables);
-    }
-
-    static async getLatest(filters) {
-        let page = 0;
-        let hasNextPage = true;
-        const perPage = 50;
-        const currentDate = new Date();
-
-        filters.seasonYear = currentDate.getFullYear();
-        filters.season = Anilist.monthToSeason(currentDate.getMonth());
-
-        const results = [];
-
-        do {
-            page++;
-
-            const query = `query (
-                $page: Int,
-                $perPage: Int,
-                $sort: [MediaSort],
-                $type: MediaType,
-                $status: MediaStatus,
-                $isAdult: Boolean,
-                $seasonYear: Int,
-                $season: MediaSeason
-            ) {
-                Page(page: $page, perPage: $perPage) {
-                    media(
-                        type: $type,
-                        sort: $sort,
-                        status: $status,
-                        isAdult: $isAdult,
-                        seasonYear: $seasonYear,
-                        season: $season
-                    ) {
-                        id
-                        idMal
-                        averageScore
-                        title {
-                            romaji
-                            english
-                            native
-                        }
-                        episodes
-                        nextAiringEpisode {
-                            airingAt
-                            timeUntilAiring
-                            episode
-                        }
-                        status
-                        genres
-                        format
-                        description
-                        startDate {
-                            year
-                            month
-                            day
-                        }
-                        endDate {
-                            year
-                            month
-                            day
-                        }
-                        popularity
-                        coverImage {
-                            color
-                            large
-                            extraLarge
-                        }
-                    }
-                    pageInfo {
-                        hasNextPage
-                    }
-                }
-            }`;
-
-            const variables = {
-                "page": page,
-                "perPage": perPage,
-                "sort": [
-                    "POPULARITY_DESC"
-                ],
-                "type": "ANIME",
-                "status": "RELEASING",
-                ...filters
-            }
-
-            const fetchResults = await Anilist.anilistFetch(query, variables);
-            results.push(fetchResults);
-
-            if(fetchResults?.Page?.pageInfo?.hasNextPage !== true) {
-                hasNextPage = false;
-            }
-
-        } while(hasNextPage);
-
-        const mergedObject = { Page: { media: []}};
-
-        for(let page of results) {
-            mergedObject.Page.media = mergedObject.Page.media.concat(page.Page.media);
-        }
-
-        return mergedObject;
-    }
-
-    static async anilistFetch(query, variables) {
-        const url = 'https://graphql.anilist.co/';
-        const extraTimeoutMs = 250;
-
-        try {
-            const response = await soraFetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                },
-                body: JSON.stringify({
-                    query: query,
-                    variables: variables
-                })
-            });
-
-            if (response.status !== 200) {
-                if (response.status === 429) {
-                    console.info('=== RATE LIMIT EXCEEDED, SLEEPING AND RETRYING ===');
-                    const retryTimeout = response.headers.get('Retry-After');
-                    const timeout = Math.ceil((parseInt(retryTimeout))) * 1000 + extraTimeoutMs;
-                    await sleep(timeout);
-                    return await AnilistFetch(query, variables);
-
-                }
-
-                console.error('Error fetching Anilist data:', response.statusText);
-                return null;
-            }
-
-            const json = await response.json();
-            if (json?.errors) {
-                console.error('Error fetching Anilist data:', json.errors);
-            }
-
-            return json?.data;
-
-        } catch (error) {
-            console.error('Error fetching Anilist data:', error);
-            return null;
-        }
-    }
-
-    static convertAnilistDateToDateStr(dateObject) {
-        if (dateObject.year == null) {
-            return null;
-        }
-        if (dateObject.month == null || parseInt(dateObject.month) < 1) {
-            dateObject.month = 1;
-        }
-        if (dateObject.day == null || parseInt(dateObject.day) < 1) {
-            dateObject.day = 1;
-        }
-        return dateObject.year + "-" + (dateObject.month).toString().padStart(2, '0') + "-" + (dateObject.day).toString().padStart(2, '0');
-    }
-
-
-    // Yes it's stupid, but I kinda love it which is why I'm not optimizing this
-    static nextAnilistAirDateToCountdown(timestamp) {
-        if (timestamp == null) return null;
-
-        const airDate = new Date((timestamp * 1000));
-        const now = new Date();
-
-        if (now > airDate) return null;
-
-        let [days, hourRemainder] = (((airDate - now) / 1000) / 60 / 60 / 24).toString().split('.');
-        let [hours, minRemainder] = (parseFloat("0." + hourRemainder) * 24).toString().split('.');
-        let minutes = Math.ceil((parseFloat("0." + minRemainder) * 60));
-
-        return `Next episode will air in ${days} days, ${hours} hours and ${minutes} minutes at ${airDate.getFullYear()}-${(airDate.getMonth() + 1).toString().padStart(2, '0')}-${(airDate.getDate()).toString().padStart(2, '0')} ${airDate.getHours()}:${airDate.getMinutes()}`;
-    }
-
-    static monthToSeason(month) {
-        // Month is 0 indexed
-        const seasons = ['WINTER', 'SPRING', 'SUMMER', 'FALL'];
-        if(month == 11) return seasons[0];
-        if(month <= 1) return seasons[0];
-        if(month <= 4) return seasons[1];
-        if(month <= 7) return seasons[2];
-        return seasons[3];
-    }
-}
-
-function sleep(ms) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-}
+// Hexa Media Source Module
 
 async function searchResults(keyword) {
     try {
-        let aniData = null;
-
-        // --- AniList Search ---
-        if (keyword.startsWith('!anime') || keyword.startsWith('!a') || keyword.startsWith('!')) {
-            aniData = await Anilist.getLatest({ isAdult: false });
-        } else {
-            aniData = await Anilist.search(keyword, { isAdult: false });
-        }
-
         let transformedResults = [];
 
-        if (aniData?.Page?.media?.length > 0) {
-            transformedResults = aniData.Page.media.map(result => ({
-                title:
-                    result.title.english ||
-                    result.title.romaji ||
-                    result.title.native ||
-                    "Untitled",
-                image:
-                    result.coverImage.extraLarge ||
-                    result.coverImage.large ||
-                    result.coverImage.medium ||
-                    "",
-                href: `anime/${result.id}`,
-            }));
+        const keywordGroups = {
+            trending: ["!trending", "!hot", "!tr", "!!"],
+            topRatedMovie: ["!top-rated-movie", "!topmovie", "!tm", "??"],
+            topRatedTV: ["!top-rated-tv", "!toptv", "!tt", "::"],
+            popularMovie: ["!popular-movie", "!popmovie", "!pm", ";;"],
+            popularTV: ["!popular-tv", "!poptv", "!pt", "++"],
+        };
+
+        const skipTitleFilter = Object.values(keywordGroups).flat();
+        const shouldFilter = !matchesKeyword(keyword, skipTitleFilter);
+
+        const encodedKeyword = encodeURIComponent(keyword);
+        let baseUrlTemplate = null;
+
+        if (matchesKeyword(keyword, keywordGroups.trending)) {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/trending/all/week?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+        } else if (matchesKeyword(keyword, keywordGroups.topRatedMovie)) {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/top_rated?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+        } else if (matchesKeyword(keyword, keywordGroups.topRatedTV)) {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/top_rated?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+        } else if (matchesKeyword(keyword, keywordGroups.popularMovie)) {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/popular?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+        } else if (matchesKeyword(keyword, keywordGroups.popularTV)) {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/popular?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+        } else {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/search/multi?api_key=9801b6b0548ad57581d111ea690c85c8&query=${encodedKeyword}&include_adult=false&page=${page}`)}&simple=true`;
         }
 
-        console.log("Transformed Results: " + JSON.stringify(transformedResults));
+        let dataResults = [];
+
+        if (baseUrlTemplate) {
+            const pagePromises = Array.from({ length: 5 }, (_, i) =>
+                soraFetch(baseUrlTemplate(i + 1)).then(r => r ? r.json() : { results: [] })
+            );
+            const pages = await Promise.all(pagePromises);
+            dataResults = pages.flatMap(p => p.results || []);
+        }
+
+        if (dataResults.length > 0) {
+            transformedResults = transformedResults.concat(
+                dataResults
+                    .map(result => {
+                        if (result.media_type === "movie" || result.title) {
+                            return {
+                                title: result.title || result.name || result.original_title || result.original_name || "Untitled",
+                                image: result.poster_path ? `https://image.tmdb.org/t/p/w500${result.poster_path}` : "",
+                                href: `movie/${result.id}`,
+                            };
+                        } else if (result.media_type === "tv" || result.name) {
+                            return {
+                                title: result.name || result.title || result.original_name || result.original_title || "Untitled",
+                                image: result.poster_path ? `https://image.tmdb.org/t/p/w500${result.poster_path}` : "",
+                                href: `tv/${result.id}/1/1`,
+                            };
+                        }
+                    })
+                    .filter(Boolean)
+                    .filter(r => !shouldFilter || r.title.toLowerCase().includes(keyword.toLowerCase()))
+            );
+        }
+
         return JSON.stringify(transformedResults);
     } catch (error) {
         console.log("Fetch error in searchResults: " + error);
@@ -376,28 +72,42 @@ async function searchResults(keyword) {
     }
 }
 
+function matchesKeyword(keyword, commands) {
+    const lower = keyword.toLowerCase();
+    return commands.some(cmd => lower.startsWith(cmd.toLowerCase()));
+}
+
 async function extractDetails(url) {
     try {
-        if (url.includes('anime')) {
-            const match = url.match(/anime\/([^\/]+)/);
+        if(url.includes('movie')) {
+            const match = url.match(/movie\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
 
-            const animeId = parseInt(match[1]);
-
-            const aniData = await Anilist.lookup({ id: animeId });
-            const anime = aniData.Page.media[0];
-
-            const cleanDescription = anime.description
-                ? anime.description.replace(/<[^>]+>/g, '').trim()
-                : 'No description available';
+            const movieId = match[1];
+            const responseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/${movieId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
+            const data = await responseText.json();
 
             const transformedResults = [{
-                description: cleanDescription,
-                aliases: `Duration: ${anime.episodes ? 24 + " minutes" : 'Unknown'}`, // default 24 mins per episode
-                airdate: `Aired: ${anime.startDate.year ? Anilist.convertAnilistDateToDateStr(anime.startDate) : 'Unknown'}`
+                description: data.overview || 'No description available',
+                aliases: `Duration: ${data.runtime ? data.runtime + " minutes" : 'Unknown'}`,
+                airdate: `Released: ${data.release_date ? data.release_date : 'Unknown'}`
             }];
 
-            console.log(JSON.stringify(transformedResults));
+            return JSON.stringify(transformedResults);
+        } else if(url.includes('tv')) {
+            const match = url.match(/tv\/([^\/]+)/);
+            if (!match) throw new Error("Invalid URL format");
+
+            const showId = match[1];
+            const responseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
+            const data = await responseText.json();
+
+            const transformedResults = [{
+                description: data.overview || 'No description available',
+                aliases: `Duration: ${data.episode_run_time && data.episode_run_time.length ? data.episode_run_time.join(', ') + " minutes" : 'Unknown'}`,
+                airdate: `Aired: ${data.first_air_date ? data.first_air_date : 'Unknown'}`
+            }];
+
             return JSON.stringify(transformedResults);
         } else {
             throw new Error("Invalid URL format");
@@ -414,30 +124,41 @@ async function extractDetails(url) {
 
 async function extractEpisodes(url) {
     try {
-        if(url.includes('anime')) {
-            const match = url.match(/anime\/([^\/]+)/);
+        if(url.includes('movie')) {
+            const match = url.match(/movie\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
-
-            const animeId = parseInt(match[1]);
-            const aniData = await Anilist.lookup({ id: animeId });
-            const anime = aniData.Page.media[0];
-
-            console.log(anime);
-
-            if (!anime) return JSON.stringify([]);
-
-            const episodesCount = anime.episodes || (anime.nextAiringEpisode.episode - 1) || 1;
-            const episodesArray = [];
-            for (let i = 1; i <= episodesCount; i++) {
-                episodesArray.push({
-                    href: `anime/${animeId}/${i}`,
-                    number: i,
-                    title: `Episode ${i}`
-                });
+            const movieId = match[1];
+            
+            const movie = [
+                { href: `/movie/${movieId}`, number: 1, title: "Full Movie" }
+            ];
+            return JSON.stringify(movie);
+        } else if(url.includes('tv')) {
+            const match = url.match(/tv\/([^\/]+)\/([^\/]+)\/([^\/]+)/);
+            if (!match) throw new Error("Invalid URL format");
+            const showId = match[1];
+            
+            const showResponseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
+            const showData = await showResponseText.json();
+            
+            let allEpisodes = [];
+            for (const season of showData.seasons) {
+                const seasonNumber = season.season_number;
+                if(seasonNumber === 0) continue;
+                
+                const seasonResponseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}/season/${seasonNumber}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
+                const seasonData = await seasonResponseText.json();
+                
+                if (seasonData.episodes && seasonData.episodes.length) {
+                    const episodes = seasonData.episodes.map(episode => ({
+                        href: `/tv/${showId}/${seasonNumber}/${episode.episode_number}`,
+                        number: episode.episode_number,
+                        title: episode.name || ""
+                    }));
+                    allEpisodes = allEpisodes.concat(episodes);
+                }
             }
-
-            console.log(episodesArray);
-            return JSON.stringify(episodesArray);
+            return JSON.stringify(allEpisodes);
         } else {
             throw new Error("Invalid URL format");
         }
@@ -447,190 +168,93 @@ async function extractEpisodes(url) {
     }    
 }
 
-// searchResults("!trending");
+function generateHexKey() {
+    let hex = "";
+    const chars = "0123456789abcdef";
+    for (let i = 0; i < 64; i++) {
+        hex += chars[Math.floor(Math.random() * 16)];
+    }
+    return hex;
+}
 
-// searchResults("clannad");
-// extractDetails("tv/24835/1/1");
-// extractEpisodes("tv/24835/1/1");
-// extractStreamUrl("tv/24835/1/1");
-
-// extractDetails("anime/2167");
-// extractEpisodes("anime/2167");
-// extractStreamUrl("anime/130003/1");
-
-// searchResults("One piece");
-// extractEpisodes("anime/21");
-// extractStreamUrl("anime/21/1");
-
-async function extractStreamUrl(url) {
+async function extractStreamUrl(ID) {
     try {
-        const match = url.match(/(anime)\/(.+)/);
-        if (!match) throw new Error('Invalid URL format');
-        const [, type, path] = match;
-        const [anilistId, episodeNumber] = path.split('/');
-
-        const providers = [
-            "animepahe", "anikoto", "reanime", "animix", "allani", "senshi"
-        ];
-
-        const allStreams = [];
-        let allSubtitles = [];
-        let primarySubtitle = "";
-        let primaryHeaders = {};
-
-        const fetchProvider = async (provider) => {
-            const apiUrl = `https://anikuro.ru/api/getsources/?id=${anilistId}&lol=${provider}&ep=${episodeNumber}`;
-            console.log("[Anikuro] Fetching: " + apiUrl);
-
-            const resp = await soraFetch(apiUrl, {
-                headers: {
-                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
-                    "Accept": "application/json, text/plain, */*"
-                }
-            });
-
-            if (!resp || resp.status !== 200) {
-                console.warn(`[Anikuro] ${provider} failed with status: ${resp ? resp.status : "null"}`);
-                return null;
-            }
-
-            let json;
-            try {
-                if (typeof resp.json === "function") {
-                    json = await resp.json();
-                } else {
-                    const text = await resp.text();
-                    json = JSON.parse(text);
-                }
-            } catch (e) {
-                console.error(`[Anikuro] ${provider} JSON parse error:`, e);
-                return null;
-            }
-
-            const data = json?.data || json;
-            if (!data) {
-                console.warn(`[Anikuro] ${provider} returned empty data`);
-                return null;
-            }
-
-            return data;
-        };
-
-        const results = await Promise.allSettled(providers.map(p => fetchProvider(p)));
-
-        results.forEach((result, idx) => {
-            if (result.status !== "fulfilled" || !result.value) return;
-            const data = result.value;
-            const providerName = providers[idx];
-
-            // Try to get variants from providerResult (most providers use this)
-            let variants = data?.providerResult?.variants || [];
-
-            // If no variants, construct from top-level sub/dub manually
-            if (variants.length === 0) {
-                if (data.sub) {
-                    variants.push({
-                        variant: "sub",
-                        sources: data.sub.sources || [],
-                        subtitles: data.sub.subtitles || [],
-                        headers: data.sub.headers || {}
-                    });
-                }
-                if (data.dub) {
-                    variants.push({
-                        variant: "dub",
-                        sources: data.dub.sources || [],
-                        subtitles: data.dub.subtitles || [],
-                        headers: data.dub.headers || {}
-                    });
-                }
-            }
-
-            variants.forEach((variant) => {
-                const varType = variant.variant || "sub";
-                const headers = variant.headers || {};
-                const sources = variant.sources || [];
-
-                sources.forEach((source) => {
-                    if (source.quality === "Yt-mp4") return;
-
-                    const quality = source.quality || "default";
-                    // Use original URL if available, otherwise fall back to proxy
-                    let streamUrl = source.originalUrl || source.url;
-
-                    // Animepahe URL transformation (still applies to originalUrl)
-                    if (providerName === "animepahe" && streamUrl) {
-                        streamUrl = streamUrl
-                            .replace("/stream/", "/hls/")
-                            .replace("uwu.m3u8", "owo.m3u8");
-                    }
-
-                    // Build headers: use upstreamReferer as Referer if present
-                    const streamHeaders = { ...(source.headers || headers) };
-                    if (source.upstreamReferer) {
-                        streamHeaders["Referer"] = source.upstreamReferer;
-                    }
-
-                    allStreams.push({
-                        title: `${providerName} - ${varType.toUpperCase()} (${quality})`,
-                        streamUrl: streamUrl,
-                        headers: streamHeaders,
-                    });
-                });
-
-                // Collect subtitles (unchanged)
-                const subtitles = variant.subtitles || [];
-                subtitles.forEach((sub) => {
-                    allSubtitles.push({
-                        url: sub.url,
-                        label: sub.label || "Unknown",
-                        kind: "captions",
-                        headers: {}
-                    });
-                    if (!primarySubtitle && sub.label && sub.label.toLowerCase().includes("english") && sub.default) {
-                        primarySubtitle = sub.url;
-                        primaryHeaders = headers;
-                    }
-                });
-            });
-        });
-
-        // Sort: SUB first, then DUB
-        allStreams.sort((a, b) => {
-            const aIsSub = a.title.toLowerCase().includes("sub") ? 0 : 1;
-            const bIsSub = b.title.toLowerCase().includes("sub") ? 0 : 1;
-            if (aIsSub !== bIsSub) return aIsSub - bIsSub;
-            return a.title.localeCompare(b.title);
-        });
-
-        // Deduplicate subtitles
-        const seenUrls = new Set();
-        allSubtitles = allSubtitles.filter(sub => {
-            if (seenUrls.has(sub.url)) return false;
-            seenUrls.add(sub.url);
-            return true;
-        });
-
-        // Fallback primary subtitle
-        if (!primarySubtitle && allSubtitles.length > 0) {
-            const engSub = allSubtitles.find(s => s.label && s.label.toLowerCase().includes("english"));
-            primarySubtitle = engSub ? engSub.url : allSubtitles[0].url;
-            primaryHeaders = {};
+        let isMovie = ID.includes('movie');
+        let tmdbID, seasonNumber = "1", episodeNumber = "1";
+        let mediaType = "";
+        
+        if (isMovie) {
+            tmdbID = ID.replace('/movie/', '').replace('/', '');
+            mediaType = "movie";
+        } else if (ID.includes('tv')) {
+            const parts = ID.split('/'); 
+            tmdbID = parts[2];
+            seasonNumber = parts[3];
+            episodeNumber = parts[4];
+            mediaType = "tv";
+        } else {
+            return JSON.stringify({ streams: [] });
         }
 
-        const result = {
-            streams: allStreams,
-            subtitles: primarySubtitle,
-            subtitlesHeaders: primaryHeaders,
-            allSubtitles: allSubtitles
+        // Generate key
+        const key = generateHexKey();
+
+        // Get challenge token
+        const encHexaRes = await soraFetch("https://enc-dec.app/api/enc-hexa");
+        if (!encHexaRes) throw new Error("Failed to get challenge token");
+        const encHexaJson = await encHexaRes.json();
+        const token = encHexaJson.result.token;
+
+        // Build target url
+        const targetUrl = mediaType === "movie" 
+            ? `https://theemoviedb.hexa.su/api/tmdb/movie/${tmdbID}/images`
+            : `https://theemoviedb.hexa.su/api/tmdb/tv/${tmdbID}/season/${seasonNumber}/episode/${episodeNumber}/images`;
+
+        const response = await soraFetch(targetUrl, {
+            headers: {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
+                "Referer": "https://hexa.su/",
+                "Accept": "text/plain",
+                "X-Fingerprint-Lite": "e9136c41504646444",
+                "X-Api-Key": key,
+                "X-Cap-Token": token
+            }
+        });
+        if (!response) throw new Error("Failed to fetch encrypted source data");
+        const encryptedText = await response.text();
+
+        // Decrypt
+        const decHeaders = {
+            "Content-Type": "application/json"
         };
+        const postData = JSON.stringify({
+            text: encryptedText,
+            key: key
+        });
+        const decryptedResponse = await fetchv2("https://enc-dec.app/api/dec-hexa", decHeaders, "POST", postData);
+        const decryptedJson = await decryptedResponse.json();
 
-        console.log('Result: ' + JSON.stringify(result).substring(0, 500));
-        return JSON.stringify(result);
+        if (decryptedJson.status !== 200 || !decryptedJson.result) {
+            throw new Error(decryptedJson.error || "Decryption failed");
+        }
 
-    } catch (error) {
-        console.log('Fetch error in extractStreamUrl: ' + error);
-        return JSON.stringify({ streams: [], subtitles: "", subtitlesHeaders: {}, allSubtitles: [] });
+        const sources = decryptedJson.result.sources || [];
+        const streamObjects = sources.map(src => ({
+            title: `[Hexa] ${src.server}`,
+            streamUrl: src.url,
+            headers: {
+                "Referer": "https://hexa.su/",
+                "Origin": "https://hexa.su"
+            }
+        }));
+
+        return JSON.stringify({
+            streams: streamObjects,
+            subtitles: ""
+        });
+    } catch (e) {
+        console.log("Error in extractStreamUrl: " + e.message);
+        return JSON.stringify({ streams: [], subtitles: "" });
     }
 }
 
