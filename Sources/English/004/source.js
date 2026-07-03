@@ -1,34 +1,18 @@
 async function searchResults(keyword) {
-    const baseUrl = "https://w7.animeland.tv";
     const results = [];
+    const postData = `{"searchTerm":"${keyword}","page":1,"limit":100}`;
     try {
-        const response = await fetchv2(baseUrl + "/?s=" + encodeURIComponent(keyword));
-        const html = await response.text();
+        const response = await fetchv2("https://senshi.live/anime/filter", { "Content-Type": "application/json", "Referer": "https://senshi.live/" }, "POST", postData);
+        const data = await response.json();
 
-        const regex = /<a href="([^"]+)"[^>]*>\s*<img[^>]*src="([^"]*)"[^>]*alt="([^"]*)"/g;
-
-        let match;
-        while ((match = regex.exec(html)) !== null) {
-            let href = match[1].trim();
-            let image = match[2].trim();
-            let title = match[3].trim();
-
-            if (href.startsWith("/")) {
-                href = baseUrl + href;
+        if (data.data && Array.isArray(data.data)) {
+            for (const item of data.data) {
+                results.push({
+                    title: item.title,
+                    image: "https://senshi.live" + item.anime_picture,
+                    href: "https://senshi.live/anime/" + item.id
+                });
             }
-            if (image.startsWith("/")) {
-                image = baseUrl + image;
-            }
-
-            if (href === baseUrl + "/" || href.includes("kissanimes.net")) {
-                continue;
-            }
-
-            results.push({
-                href,
-                image,
-                title
-            });
         }
 
         return JSON.stringify(results);
@@ -44,17 +28,12 @@ async function searchResults(keyword) {
 async function extractDetails(url) {
     try {
         const response = await fetchv2(url);
-        const html = await response.text();
-
-        const regex = /<div class="Anime Info">\s*<\/div>\s*([\s\S]*?)<\/div>/i;
-        const match = html.match(regex);
-
-        const description = match ? match[1].trim() : "N/A";
+        const data = await response.json();
 
         return JSON.stringify([{
-            description: description,
-            aliases: "N/A",
-            airdate: "N/A"
+            description: data.ani_description,
+            aliases: data.synonyms,
+            airdate: data.created_at
         }]);
     } catch (err) {
         return JSON.stringify([{
@@ -66,34 +45,22 @@ async function extractDetails(url) {
 }
 
 async function extractEpisodes(url) {
+    const ID = url.split("/").pop();
     const results = [];
     try {
-        const response = await fetchv2(url);
-        const html = await response.text();
+        const response = await fetchv2("https://senshi.live/episodes/" + ID, {"Referer": "https://senshi.live/"});
+        const data = await response.json();
 
-        const regex = /<li class="play"><a[^>]*href="([^"]+)"[^>]*>([^<]*)<\/a><\/li>/g;
-
-        let match;
-        while ((match = regex.exec(html)) !== null) {
-            const href = match[1].trim();
-            const text = match[2].trim();
-
-            let number = null;
-            const urlMatch = href.match(/-episode-(\d+)/i);
-            if (urlMatch) {
-                number = parseInt(urlMatch[1], 10);
-            } else {
-                const textMatch = text.match(/Episode\s*(\d+)/i);
-                if (textMatch) number = parseInt(textMatch[1], 10);
+        if (Array.isArray(data)) {
+            for (const ep of data) {
+                results.push({
+                    href: "https://senshi.live/episode-embeds/" + ep.mal_id + "/" + ep.ep_id,
+                    number: ep.ep_id
+                });
             }
-
-            results.push({
-                href,
-                number
-            });
         }
 
-        return JSON.stringify(results.reverse());
+        return JSON.stringify(results);
     } catch (err) {
         return JSON.stringify([{
             href: "Error",
@@ -104,19 +71,31 @@ async function extractEpisodes(url) {
 
 async function extractStreamUrl(url) {
     try {
-        const response = await fetchv2(url);
-        const html = await response.text();
-        const match = html.match(/file=([a-zA-Z0-9]+\.html)/);
-        if (match) {
-            const filename = match[1];
-            console.log('Filename:' + filename);
-            const videoUrl = `https://animesource.me/cache/${filename}.mp4`;
-            console.log('Video URL:' + videoUrl);
-            return videoUrl;
+        const response = await fetchv2(url, {"Referer": "https://senshi.live/"});
+        const data = await response.json();
+
+        const streams = [];
+        const count = {};
+        for (const item of data) {
+            const status = item.status;
+            if (!count[status]) count[status] = 0;
+            count[status]++;
+            const title = count[status] > 1 ? `${status} ${count[status]}` : status;
+            streams.push({
+                title: title,
+                streamUrl: item.url,
+                headers: { "Referer": "https://senshi.live/" }
+            });
         }
 
+        return JSON.stringify({
+            streams: streams,
+            subtitle: ""
+        });
     } catch (err) {
-        console.error("Error:" + err);
-        return null;
+        return JSON.stringify({
+            streams: [],
+            subtitle: ""
+        });
     }
 }

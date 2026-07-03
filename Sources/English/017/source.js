@@ -1,165 +1,142 @@
 async function searchResults(keyword) {
     const results = [];
-    try {
-        const response = await fetchv2("https://123animehub.cc/search?keyword=" + encodeURIComponent(keyword));
-        const html = await response.text();
+    const response = await fetchv2(`https://animenosub.to/?s=${keyword}`);
+    const html = await response.text();
 
-        const filmListMatch = html.match(/<div class="film-list">([\s\S]*?)<div class="clearfix"><\/div>/);
-        if (!filmListMatch) {
-            return JSON.stringify(results);
-        }
+    // Regex pattern to extract the title, image, and href from the article elements
+    const regex = /<article class="bs"[^>]*>.*?<a href="([^"]+)"[^>]*>.*?<img src="([^"]+)"[^>]*>.*?<h2[^>]*>(.*?)<\/h2>/gs;
 
-        const filmList = filmListMatch[1];
-        const itemRegex = /<div class="item">[\s\S]*?<a href="([^"]+)"[^>]*class="poster"[\s\S]*?<img[^>]*alt="([^"]+)"[^>]*src="([^"]+)"/g;
-        let match;
-        while ((match = itemRegex.exec(filmList)) !== null) {
-            results.push({
-                title: match[2].trim(),
-                image: "https://123animehub.cc" + match[3].trim(),
-                href: "https://123animehub.cc" + match[1].trim()
-            });
-        }
-
-        return JSON.stringify(results);
-    } catch (err) {
-        return JSON.stringify([{
-            title: "Error",
-            image: "Error",
-            href: "Error"
-        }]);
+    let match;
+    while ((match = regex.exec(html)) !== null) {
+        results.push({
+            title: match[3].trim(),
+            image: match[2].trim(),
+            href: match[1].trim()
+        });
     }
+
+    return JSON.stringify(results);
 }
 
 async function extractDetails(url) {
-    try {
-        const response = await fetchv2(url);
-        const html = await response.text();
+    const results = [];
+    const response = await fetchv2(url);
+    const html = await response.text();
 
-        let description = "N/A";
-        let aliases = "N/A";
-        let airdate = "N/A";
+    const match = html.match(/<div class="entry-content"[^>]*>([\s\S]*?)<\/div>/);
 
-        const descMatch = html.match(/<div class="desc">([\s\S]*?)<\/div>/);
-        if (descMatch) {
-            description = descMatch[1].replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
-        }
-
-        const aliasMatch = html.match(/<p class="alias">([^<]*)<\/p>/);
-        if (aliasMatch) {
-            aliases = aliasMatch[1].trim();
-        }
-
-        const airdateMatch = html.match(/<dt>Released:<\/dt>\s*<dd>\s*<a[^>]*>(\d+)<\/a>/);
-        if (airdateMatch) {
-            airdate = airdateMatch[1].trim();
-        }
-
-        return JSON.stringify([{
-            description: description,
-            aliases: aliases,
-            airdate: airdate
-        }]);
-    } catch (err) {
-        return JSON.stringify([{
-            description: "Error",
-            aliases: "Error",
-            airdate: "Error"
-        }]);
+    let description = "N/A";
+    if (match) {
+        description = match[1]
+            .replace(/<[^>]+>/g, '') 
+            .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(code)) 
+            .replace(/&quot;/g, '"') 
+            .replace(/&apos;/g, "'") 
+            .replace(/&amp;/g, "&") 
+            .trim();
     }
+
+    results.push({
+        description: description,
+        aliases: 'N/A',
+        airdate: 'N/A'
+    });
+
+    return JSON.stringify(results);
 }
 
 async function extractEpisodes(url) {
     const results = [];
+    const response = await fetchv2(url);
+    const html = await response.text();
+
+    const regex = /<a href="([^"]+)">\s*<div class="epl-num">([\d.]+)<\/div>/g;
+
+    let match;
+    while ((match = regex.exec(html)) !== null) {
+        results.push({
+            href: match[1].trim(),
+            number: parseFloat(match[2])
+        });
+    }
+    results.reverse();
+    return JSON.stringify(results);
+}
+
+
+async function extractStreamUrl(url) {
     try {
-        const animeId = url.split('/').pop();
+        const response = await fetchv2(url);
+        const html = await response.text();
+        const streams = [];
+        
+        const optionRegex = /<option value="([^"]+)"[^>]*>\s*([^<]*Omega[^<]*)\s*<\/option>/gi;
+        
+        let optionMatch;
+        while ((optionMatch = optionRegex.exec(html)) !== null) {
+            const base64Value = optionMatch[1];
+            const label = optionMatch[2].trim();
+            
+            if (!base64Value) continue;
 
-        const response = await fetchv2("https://123animehub.cc/ajax/film/sv?id=" + animeId);
-        const jsonData = await response.json();
-        const html = jsonData.html;
+            try {
+                const decodedHtml = atob(base64Value);
+                const iframeMatch = decodedHtml.match(/<iframe[^>]+src=["']([^"']+)["']/i);
+                
+                if (iframeMatch) {
+                    let iframeUrl = iframeMatch[1];
+                    if (iframeUrl.startsWith("//")) iframeUrl = "https:" + iframeUrl;
 
-        const episodesMatch = html.match(/<ul class="episodes range"[^>]*>([\s\S]*?)<\/ul>/);
-        if (!episodesMatch) {
-            return JSON.stringify(results);
-        }
+                    const responseTwo = await fetchv2(iframeUrl);
+                    const htmlTwo = await responseTwo.text();
 
-        const episodesHTML = episodesMatch[1];
-
-        const episodeRegex = /data-pop='(\d+)'/g;
-        let match;
-        const seenEpisodes = new Set();
-
-        while ((match = episodeRegex.exec(episodesHTML)) !== null) {
-            const episodeNum = parseInt(match[1], 10);
-
-            if (!seenEpisodes.has(episodeNum)) {
-                seenEpisodes.add(episodeNum);
-                results.push({
-                    href: animeId + "/" + episodeNum + "/vidstreaming.io",
-                    number: episodeNum
-                });
+                    const m3u8Match = htmlTwo.match(/sources\s*:\s*\[\s*\{\s*file\s*:\s*['"]([^'"]+master\.m3u8[^'"]*)['"]/i) || 
+                                      htmlTwo.match(/file\s*:\s*['"]([^'"]+\.m3u8[^'"]*)['"]/i);
+                    
+                    if (m3u8Match) {
+                        streams.push({
+                            title: label,
+                            streamUrl: m3u8Match[1],
+                            headers: {
+                                "Referer": "https://vidmoly.biz/",
+                                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+                            }
+                        });
+                    }
+                }
+            } catch (innerErr) {
             }
         }
 
-        return JSON.stringify(results);
+        return JSON.stringify({
+            streams: streams,
+            subtitle: ""
+        });
     } catch (err) {
-        return JSON.stringify([{
-            href: "Error",
-            number: "Error"
-        }]);
+        return JSON.stringify({
+            streams: [],
+            subtitle: ""
+        });
     }
 }
 
-async function extractStreamUrl(ID) {
-    try {
-        const response = await fetchv2("https://123animehub.cc/ajax/episode/info?epr=" + encodeURIComponent(ID));
-        const data = await response.json();
-        const target = data.target;
-
-        if (!target) throw new Error("No target in response: " + JSON.stringify(data));
-
-        const responseTarget = await fetchv2(target);
-        const htmlTarget = await responseTarget.text();
-        const zrpart2Match = htmlTarget.match(/var\s+zrpart2\s*=\s*'([^']+)';/);
-        if (!zrpart2Match) throw new Error("zrpart2 not found");
-        const zrpart2 = zrpart2Match[1];
-
-        const originMatch = target.match(/^(https?:\/\/[^\/]+)/);
-        const origin = originMatch ? originMatch[1] : "";
-
-        const hsUrl = `${origin}/hs/${zrpart2}`;
-        const responseHs = await fetchv2(hsUrl);
-        const htmlHs = await responseHs.text();
-        const dataIdMatch = htmlHs.match(/id="mg-player"[^>]*data-id="([^"]+)"/);
-        if (!dataIdMatch) throw new Error("data-id not found");
-        const dataId = dataIdMatch[1];
-
-        const sourcesUrl = `${origin}/hs/getSources?id=${dataId}`;
-        const responseSources = await fetchv2(sourcesUrl);
-        const dataSources = await responseSources.json();
-
-        let sourcesArray = [];
-        if (Array.isArray(dataSources)) {
-            sourcesArray = dataSources;
-        } else if (dataSources && Array.isArray(dataSources.sources)) {
-            sourcesArray = dataSources.sources;
-        } else if (dataSources && typeof dataSources.sources === "string") {
-            sourcesArray = [{ file: dataSources.sources, label: "Auto" }];
-        } else {
-            console.log("Unexpected dataSources format:", JSON.stringify(dataSources));
+function atob(input) {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+    let str = '';
+    let buffer = 0;
+    let bits = 0;
+    for (let i = 0; i < input.length; i++) {
+        const char = input.charAt(i);
+        if (char === '=') break;
+        const index = chars.indexOf(char);
+        if (index === -1) continue;
+        buffer = (buffer << 6) | index;
+        bits += 6;
+        if (bits >= 8) {
+            bits -= 8;
+            str += String.fromCharCode((buffer >> bits) & 0xFF);
+            buffer &= (1 << bits) - 1;
         }
-
-        const streams = sourcesArray.map(source => ({
-            title: source.label || "Auto",
-            streamUrl: source.file || source.url || source.link,
-            headers: {
-                "Origin": "https://play2.echovideo.ru",
-                "Referer": "https://play2.echovideo.ru/"
-            }
-        }));
-
-        return JSON.stringify({ streams: streams });
-    } catch (err) {
-        console.log("Stream URL Error details:", err.message, err.stack);
-        return "https://error.org/";
     }
+    return str;
 }

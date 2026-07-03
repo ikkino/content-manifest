@@ -1,29 +1,24 @@
 {
-  "sourceName": "Otaku-Streamers",
-  "iconUrl": "https://files.catbox.moe/alcwg2.png",
+  "sourceName": "AniWorld (ENG SUB)",
+  "iconUrl": "https://git.luna-app.eu/Cufiy/sora-modules/raw/branch/main/modules/aniworld/aniworld.png",
   "author": {
-    "name": "50/50",
-    "icon": "https://files.catbox.moe/741wp7.png"
+    "name": "Cufiy & Hamzo",
+    "icon": "https://files.catbox.moe/ttj4fc.gif",
+    "url": "https://github.com/JMcrafter26"
   },
-  "version": "1.0.0",
+  "version": "0.3.5",
   "language": "English",
   "streamType": "HLS",
-  "quality": "1080p",
-  "baseUrl": "https://beta.otaku-streamers.com/",
-  "searchBaseUrl": "https://beta.otaku-streamers.com/",
+  "quality": "720p",
+  "baseUrl": "https://google.com",
+  "searchBaseUrl": "https://aniworld.to/ajax/seriesSearch?keyword=%s",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/015/source.js",
-  "type": "anime",
   "asyncJS": true,
-  "softsub": true,
-  "downloadSupport": true,
+  "streamAsyncJS": false,
+  "type": "anime",
+  "supportsMojuru": true,
   "supportsSora": true,
   "supportsLuna": true,
-  "supportsMojuru": true,
-  "supportsDartotsu": true,
-  "supportsAnymex": true,
-  "supportsTsumi": true,
-  "supportsHiyoku": true,
-  "supportsShirox": true,
-  "supportsEclipse": true,
-  "id": "jWwhj"
+  "supportsSoru": true,
+  "id": "jZdQ"
 }
