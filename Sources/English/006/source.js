@@ -1,141 +1,114 @@
-async function searchResults(keyword) {
-    const results = [];
-    try {
-        const response = await fetchv2("https://eng.animeapps.top/api/search2.php?keyword=" + encodeURIComponent(keyword) + "&page=1&limit=200");
-        const json = await response.json();
+const ANIMEX_BASE = "https://animex.one";
+const ANIMEX_GRAPHQL = "https://graphql.animex.one/graphql";
+const ANIMEX_API = "https://pp.animex.one/rest/api";
 
-        if (json.status === "success" && json.data) {
-            json.data.forEach(item => {
-                let title = item.postname.trim();
-                title = title.replace(/\s*\(Uncensored\)\s*$/i, '');
-                title = title.replace(/\s*BD\s*$/i, '');
-                title = title.trim();
-
-                results.push({
-                    title: title,
-                    image: item.ani_cover_large,
-                    href: "https://anibd.app/" + item.postid + "?anilist=" + item.anilist
-                });
-            });
-        }
-
-        return JSON.stringify(results);
-    } catch (err) {
-        return JSON.stringify([{
-            title: "Error",
-            image: "Error",
-            href: "Error"
-        }]);
+async function animexJson(url, init) {
+  const response = await fetchv2(url, {
+    ...(init || {}),
+    headers: {
+      "Accept": "application/json, text/plain, */*",
+      "Content-Type": "application/json",
+      "Origin": ANIMEX_BASE,
+      "Referer": ANIMEX_BASE + "/",
+      ...((init || {}).headers || {})
     }
+  });
+  if (!response.ok) throw new Error(`Animex HTTP ${response.status}`);
+  return JSON.parse(await response.text());
 }
 
-async function extractDetails(url) {
-    try {
-        const html = await (await fetchv2(url)).text();
-        const match = html.match(/<div class="full-description">[\s\S]*?<h4[^>]*>Synopsis<\/h4>([\s\S]*?)<\/div>/);
-        let description = "N/A";
-        if (match && match[1]) {
-            description = match[1]
-                .replace(/<p[^>]*>/g, '').replace(/<\/p>/g, ' ').replace(/<br\s*\/?>/gi, ' ')
-                .replace(/<[^>]*>/g, '').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"')
-                .replace(/&amp;/g, '&').replace(/&#39;/g, "'").replace(/&nbsp;/g, ' ')
-                .replace(/\(Source:.*?\)\s*/gi, '').replace(/\s+/g, ' ').trim();
-        }
-        return JSON.stringify([{ description, aliases: "N/A", airdate: "N/A" }]);
-    } catch (err) {
-        return JSON.stringify([{ description: "Error", aliases: "Error", airdate: "Error" }]);
-    }
+async function animexGraphQL(query, variables) {
+  return animexJson(ANIMEX_GRAPHQL, {
+    method: "POST",
+    body: JSON.stringify({ query, variables: variables || {} })
+  });
 }
 
-async function extractEpisodes(url) {
-    try {
-        const postid = url.match(/(\d+)/)?.[1];
-        if (!postid) return JSON.stringify([]);
-
-        let anilist = url.match(/anilist=([\d]+)/)?.[1];
-        if (!anilist) {
-            const html = await (await fetchv2(url)).text();
-            anilist = html.match(/const\s+EP_ID\s*=\s*["'](\d+)["']/)?.[1];
-        }
-        if (!anilist) return JSON.stringify([]);
-
-        const json = await (await fetchv2("https://epeng.animeapps.top/api2.php?epid=" + anilist)).json();
-        const results = [];
-        if (Array.isArray(json)) {
-            json.forEach(server => {
-                server.server_data?.forEach(ep => {
-                    results.push({
-                        number: parseInt(ep.name, 10),
-                        href: "https://epeng.animeapps.top/apilink.php?data=" + ep.link
-                    });
-                });
-            });
-        }
-        return JSON.stringify(results);
-    } catch (err) {
-        return JSON.stringify([]);
-    }
+function animexTitle(item) {
+  return item?.titleEnglish || item?.titleRomaji || item?.titleNative || "Untitled";
 }
 
-async function extractStreamUrl(url) {
+function animexHref(item) {
+  return JSON.stringify({
+    id: item.id,
+    anilistId: item.anilistId || null,
+    malId: item.malId || null,
+    title: animexTitle(item),
+    format: item.format || ""
+  });
+}
+
+function parseAnimexHref(href) {
+  try {
+    const parsed = JSON.parse(href);
+    if (parsed?.id) return parsed;
+  } catch (_) {}
+  return { id: String(href || ""), title: "" };
+}
+
+async function searchResults(query) {
+  const payload = await animexGraphQL(
+    "query FastSearch($query: String, $limit: Int) { catalogAnime(filter: { query: $query }, limit: $limit) { items { id anilistId malId titleRomaji titleEnglish format } } }",
+    { query, limit: 12 }
+  );
+  const items = payload?.data?.catalogAnime?.items || [];
+  return items.map((item) => ({
+    title: animexTitle(item),
+    href: animexHref(item),
+    image: "",
+    source: "Animex"
+  })).filter((item) => item.href);
+}
+
+async function extractDetails(href) {
+  const data = parseAnimexHref(href);
+  return [{
+    title: data.title || data.id,
+    description: `${data.title || "Animex anime"} from Animex catalog.`,
+    aliases: [data.title, data.anilistId ? `AniList ${data.anilistId}` : "", data.malId ? `MAL ${data.malId}` : ""].filter(Boolean).join(", "),
+    airdate: ""
+  }];
+}
+
+async function extractEpisodes(href) {
+  const data = parseAnimexHref(href);
+  const servers = await animexJson(`${ANIMEX_API}/servers?id=${encodeURIComponent(data.id)}&epNum=1`, { method: "GET" });
+  const total = Number(servers?.episodeCount || servers?.episodes || servers?.totalEpisodes || 0);
+  const count = Number.isFinite(total) && total > 0 ? Math.min(total, 2000) : 60;
+  const episodes = [];
+  for (let index = 1; index <= count; index += 1) {
+    episodes.push({
+      number: index,
+      title: `Episode ${index}`,
+      href: JSON.stringify({ ...data, number: index })
+    });
+  }
+  return episodes;
+}
+
+async function extractStreamUrl(href) {
+  const data = parseAnimexHref(href);
+  const episode = Number(data.number || 1);
+  const servers = await animexJson(`${ANIMEX_API}/servers?id=${encodeURIComponent(data.id)}&epNum=${episode}`, { method: "GET" });
+  const candidates = [];
+  for (const provider of servers?.subProviders || []) candidates.push(["sub", provider]);
+  for (const provider of servers?.dubProviders || []) candidates.push(["dub", provider]);
+  candidates.sort((lhs, rhs) => Number(rhs[1]?.default === true) - Number(lhs[1]?.default === true));
+
+  for (const [type, provider] of candidates) {
+    if (!provider?.id) continue;
     try {
-        const response = await fetchv2(url);
-        const text = await response.text();
+      const sourcePayload = await animexJson(`${ANIMEX_API}/sources?id=${encodeURIComponent(data.id)}&epNum=${episode}&type=${encodeURIComponent(type)}&providerId=${encodeURIComponent(provider.id)}`, { method: "GET" });
+      const streams = (sourcePayload?.sources || [])
+        .map((source) => ({
+          title: `Animex ${type} ${provider.id} ${source.quality || ""}`.trim(),
+          streamUrl: source.url,
+          headers: { "Referer": sourcePayload?.headers?.Referer || ANIMEX_BASE + "/" }
+        }))
+        .filter((item) => /^https?:\/\//i.test(item.streamUrl || ""));
+      if (streams.length) return streams;
+    } catch (_) {}
+  }
 
-        let servers = [];
-        try {
-            servers = JSON.parse(text);
-        } catch (e) {
-            console.log("Failed to parse JSON:", e.message);
-        }
-
-        const headers = {
-            "Referer": "https://anibd.app/"
-        };
-
-        const promises = (Array.isArray(servers) ? servers : []).map(async (server) => {
-            try {
-                const res = await fetchv2(server.link, headers);
-                const html = await res.text();
-
-                const match = html.match(/(?:videoUrl|url):\s*['"]([^'"]+)['"]/);
-                if (match) {
-                    let streamUrl = match[1];
-                    if (!streamUrl.startsWith("http")) {
-                        if (streamUrl.startsWith("/")) {
-                            const originMatch = server.link.match(/^(https?:\/\/[^\/]+)/);
-                            streamUrl = (originMatch ? originMatch[1] : "") + streamUrl;
-                        } else {
-                            const baseUrl = server.link.substring(0, server.link.lastIndexOf("/") + 1);
-                            streamUrl = baseUrl + streamUrl;
-                        }
-                    }
-                    return {
-                        title: server.server || "Server",
-                        streamUrl: streamUrl
-                    };
-                } else {
-                    console.log("Regex /(?:videoUrl|url):/ failed to match on server HTML");
-                }
-            } catch (err) {
-                console.log("Error processing server:", err.message);
-            }
-            return null;
-        });
-
-        const results = await Promise.all(promises);
-        const streams = results.filter(s => s !== null);
-
-        return JSON.stringify({
-            type: "servers",
-            streams: streams,
-            subtitle: null
-        });
-    } catch (err) {
-        return JSON.stringify({
-            type: "servers",
-            streams: [],
-            subtitle: null
-        });
-    }
+  throw new Error("Animex: no playable streams");
 }

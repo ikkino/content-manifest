@@ -1,21 +1,29 @@
 {
-  "sourceName": "Anizone",
-  "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/anizone/icon.png",
+  "sourceName": "AllAnime",
+  "iconUrl": "https://allmanga.to/android-icon-192x192.png",
   "author": {
-    "name": "ibro",
-    "icon": "https://git.luna-app.eu/ibro/services/raw/branch/main/profile.jpg",
-    "url": "https://github.com/xibrox"
+    "name": "50/50",
+    "icon": "https://files.catbox.moe/741wp7.png"
   },
-  "version": "1.0.7",
+  "version": "1.0.0",
   "language": "English",
   "streamType": "HLS",
   "quality": "1080p",
-  "baseUrl": "https://anizone.to",
-  "searchBaseUrl": "https://anizone.to/anime?search=%s",
+  "baseUrl": "https://allmanga.to/",
+  "searchBaseUrl": "https://allmanga.to/",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/019/source.js",
   "type": "anime",
-  "note": "Use default (Apple Player) or external player to watch the streams (e.g. VLC).",
   "asyncJS": true,
   "softsub": true,
-  "id": "KXPn"
+  "downloadSupport": true,
+  "supportsSora": true,
+  "supportsLuna": true,
+  "supportsMojuru": true,
+  "supportsDartotsu": true,
+  "supportsAnymex": true,
+  "supportsTsumi": true,
+  "supportsHiyoku": true,
+  "supportsShirox": true,
+  "supportsEclipse": true,
+  "id": "jpL6F"
 }

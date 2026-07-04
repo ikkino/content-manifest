@@ -1,600 +1,443 @@
-//Thanks ibro for the TMDB search!
+
+var __zangetsuFetch = fetchv2 || fetch;
+
+function htmlText(value) {
+  return String(value || "")
+    .replace(/<script[\s\S]*?<\/script>/gi, " ")
+    .replace(/<style[\s\S]*?<\/style>/gi, " ")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function absUrl(url, base) {
+  if (!url) return "";
+  try { return new URL(url, base || "https://example.com/").toString(); }
+  catch (_) { return String(url); }
+}
+
+async function fetch(url, init) {
+  var response = await __zangetsuFetch(url, init || {});
+  if (typeof response === "string") {
+    return {
+      ok: true,
+      status: 200,
+      statusText: "OK",
+      body: response,
+      text: async function () { return response; },
+      json: async function () { return JSON.parse(response); }
+    };
+  }
+  var body = "";
+  try { body = await response.text(); } catch (_) { body = response.body || ""; }
+  return {
+    ok: response.ok !== false,
+    status: response.status || 200,
+    statusText: response.statusText || "",
+    headers: response.headers,
+    body: body,
+    text: async function () { return body; },
+    json: async function () { return JSON.parse(body); }
+  };
+}
+
+async function sha256Hex(text) {
+  throw new Error("Zangetsu crypto helper is not available in this Sora port");
+}
+
+function base64ToBytes(value) {
+  var binary = atob(value);
+  var out = [];
+  for (var i = 0; i < binary.length; i++) out.push(binary.charCodeAt(i));
+  return out;
+}
+
+function bytesToB64(bytes) {
+  var s = "";
+  for (var i = 0; i < bytes.length; i++) s += String.fromCharCode(bytes[i]);
+  return btoa(s);
+}
+
+async function aesCtrDecrypt() {
+  throw new Error("Zangetsu AES helper is not available in this Sora port");
+}
+
+async function extractVideo() {
+  throw new Error("Zangetsu extractVideo helper is not available in this Sora port");
+}
+
+
+// HiAnime — anime source for the Zangetsu provider repo (hianimes.se).
+//
+// hianimes.se is a Next.js front-end over a JSON API at animedata.cfd. The API
+// hands us episode "player" links (animeplay.cfd / megaplay.buzz); MegaPlay's
+// getSources returns a PLAIN m3u8 + subtitle tracks (no decryption needed), so
+// the chain is entirely API/JSON + one regex hop for the player file id:
+//   search/home/detail/episodes (animedata.cfd/api)  ->  episode player link
+//   ->  megaplay.buzz data-id  ->  /stream/getSources?id=  ->  m3u8 + subs.
+
+var SOURCE_ID = (typeof __SOURCE_ID !== 'undefined' && __SOURCE_ID)
+  ? String(__SOURCE_ID) : 'hianime';
+
+var API = 'https://animedata.cfd/api';
+var SITE = 'https://hianimes.se';
+var UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
+  + '(KHTML, like Gecko) Chrome/120.0 Safari/537.36';
+
+function getInfo() {
+  return { name: 'HiAnime', lang: 'en', baseUrl: SITE,
+    logo: SITE + '/favicon.ico', type: 'anime', version: '1.0.7' };
+}
+
+function _mode(opts) { return (opts && opts.category === 'dub') ? 'dub' : 'sub'; }
+
+function _api(path) {
+  return fetch(API + path, { headers: { 'User-Agent': UA, 'Referer': SITE + '/' } })
+    .then(function (r) { var j; try { j = JSON.parse(r.body || 'null'); } catch (e) { j = null; } return j; })
+    .catch(function () { return null; });
+}
+function _get(url, ref) {
+  return fetch(url, { headers: { 'User-Agent': UA, 'Referer': ref || SITE + '/' } })
+    .then(function (r) { return r.body || ''; }).catch(function () { return ''; });
+}
+function _year(s) { var m = String(s || '').match(/(19|20)\d{2}/); return m ? m[0] : null; }
+
+// The /episodes endpoint returns only the first 100; `?start=N` returns the
+// rest (uncapped). Page through until we've collected `total` episodes so long
+// anime (One Piece, Naruto, ...) aren't capped at 100.
+function _allEpisodes(id) {
+  return _api('/episodes/' + encodeURIComponent(id)).then(function (e) {
+    var all = (e && e.episodes) || [];
+    var total = (e && typeof e.total === 'number') ? e.total : all.length;
+    function finish() {
+      all.sort(function (x, y) { return (x.episodeNumber || 0) - (y.episodeNumber || 0); });
+      return all;
+    }
+    function more(depth) {
+      if (all.length >= total || depth > 40) return finish();
+      var start = all.length + 1;
+      return _api('/episodes/' + encodeURIComponent(id) + '?start=' + start).then(function (e2) {
+        var batch = (e2 && e2.episodes) || [];
+        var have = {};
+        for (var i = 0; i < all.length; i++) have[all[i].episodeNumber] = 1;
+        var added = 0;
+        for (var k = 0; k < batch.length; k++) {
+          var ep = batch[k];
+          if (ep && !have[ep.episodeNumber]) { all.push(ep); added++; }
+        }
+        if (added === 0) return finish();
+        return more(depth + 1);
+      }).catch(function () { return finish(); });
+    }
+    return more(0);
+  }).catch(function () { return []; });
+}
+function _genres(a) {
+  var g = a.genres || [];
+  return g.map(function (x) { return typeof x === 'string' ? x : (x && (x.name || x.title)); })
+          .filter(Boolean).slice(0, 6);
+}
+
+// ── Episode thumbnails (Kitsu, keyed by the anime's mal_id) ──────────────────
+// The API gives no per-episode image, so the app falls back to the series
+// poster. Kitsu has broad per-episode thumbnails (incl. older anime) and is
+// reachable where TMDB is ISP-blocked. Map mal_id -> Kitsu id, then page its
+// episodes. Strictly best-effort: any failure leaves the poster fallback and
+// never affects playback. Returns { episodeNumber: thumbnailUrl }.
+function _kitsuStills(malId) {
+  if (!malId) return Promise.resolve({});
+  var H = { 'Accept': 'application/vnd.api+json', 'User-Agent': UA };
+  var mapUrl = 'https://kitsu.io/api/edge/mappings?filter%5BexternalSite%5D=myanimelist/anime'
+    + '&filter%5BexternalId%5D=' + encodeURIComponent(malId) + '&include=item';
+  return fetch(mapUrl, { headers: H, timeoutMs: 8000 }).then(function (r) {
+    var j; try { j = JSON.parse(r.body || 'null'); } catch (e) { return {}; }
+    var inc = (j && j.included) || [];
+    var kid = null;
+    for (var i = 0; i < inc.length; i++) {
+      if (inc[i] && inc[i].type === 'anime') { kid = inc[i].id; break; }
+    }
+    if (!kid) return {};
+    var map = {};
+    function page(off, depth) {
+      if (depth > 8) return map;
+      var u = 'https://kitsu.io/api/edge/anime/' + kid +
+        '/episodes?page%5Blimit%5D=20&page%5Boffset%5D=' + off;
+      return fetch(u, { headers: H, timeoutMs: 8000 }).then(function (r2) {
+        var d; try { d = JSON.parse(r2.body || 'null'); } catch (e) { return map; }
+        var eps = (d && d.data) || [];
+        for (var k = 0; k < eps.length; k++) {
+          var at = eps[k].attributes || {};
+          var th = at.thumbnail && at.thumbnail.original;
+          if (at.number != null && th) map[at.number] = th;
+        }
+        if (eps.length < 20) return map;
+        return page(off + 20, depth + 1);
+      }).catch(function () { return map; });
+    }
+    return page(0, 0);
+  }).catch(function () { return {}; });
+}
+
+// One API anime object → a Zangetsu card. Detail is keyed by a slug; home/detail
+// objects expose `slug` (string), search results expose `slugs` (array).
+function _slugOf(a) {
+  if (a.slug) return a.slug;
+  if (Array.isArray(a.slugs) && a.slugs.length) return a.slugs[0];
+  if (typeof a.slugs === 'string') return a.slugs;
+  return null;
+}
+function _card(a) {
+  if (!a) return null;
+  var inner = a.anime || a; // home rows sometimes wrap the anime
+  var slug = inner && _slugOf(inner);
+  if (!slug) return null;
+  return {
+    id: slug, title: inner.English || inner.title || inner.Japanese || 'Untitled',
+    englishTitle: inner.English || null, cover: inner.image || inner.landScapeImage || null,
+    url: slug, type: 'anime', sourceId: SOURCE_ID,
+    subCount: inner.totalSub || inner.totalSubbed || 0,
+    dubCount: inner.totalDub || inner.totalDubbed || 0
+  };
+}
+function _cards(list) {
+  var out = []; list = list || [];
+  for (var i = 0; i < list.length; i++) { var c = _card(list[i]); if (c) out.push(c); }
+  return out;
+}
+
+// Search is a POST to /search with a JSON {title} body; returns an array.
+function search(query, page, opts) {
+  var q = String(query || '').trim();
+  if (q.length < 2) return Promise.resolve([]);
+  return fetch(API + '/search', {
+    method: 'POST',
+    headers: { 'User-Agent': UA, 'Referer': SITE + '/', 'Content-Type': 'application/json' },
+    body: JSON.stringify({ title: q })
+  }).then(function (r) {
+    var j; try { j = JSON.parse(r.body || 'null'); } catch (e) { j = null; }
+    var list = Array.isArray(j) ? j : ((j && (j.animes || j.results || j.data)) || []);
+    return _cards(list);
+  }).catch(function () { return []; });
+}
+
+// Each /home row is either an array (featured) or an {animes:[...]} object
+// (trending/popular/...) — normalise to the underlying list.
+function _rowItems(v) {
+  if (Array.isArray(v)) return v;
+  if (v && Array.isArray(v.animes)) return v.animes;
+  if (v && Array.isArray(v.results)) return v.results;
+  if (v && Array.isArray(v.data)) return v.data;
+  return [];
+}
+
+function getHome(opts) {
+  return _api('/home').then(function (j) {
+    if (!j) return [];
+    var rows = [
+      { title: 'Trending', key: 'trending' },
+      { title: 'Popular', key: 'popular' },
+      { title: 'Currently Airing', key: 'currentlyAiring' },
+      { title: 'Latest', key: 'latestAnime' },
+      { title: 'Recently Completed', key: 'finishedAiring' }
+    ];
+    var out = rows.map(function (r) { return { title: r.title, items: _cards(_rowItems(j[r.key])) }; })
+                  .filter(function (r) { return r.items.length; });
+    // The app uses the FIRST section as the hero carousel, so make sure it has
+    // several items: lead with the featured spotlight, then trending.
+    var feat = _cards(_rowItems(j.featured));
+    if (out.length) {
+      var seen = {}, merged = [];
+      feat.concat(out[0].items).forEach(function (c) { if (c && !seen[c.id]) { seen[c.id] = 1; merged.push(c); } });
+      out[0] = { title: out[0].title, items: merged };
+    } else if (feat.length) {
+      out = [{ title: 'Spotlight', items: feat }];
+    }
+    return out;
+  }).catch(function () { return []; });
+}
+
+// Episode url packs the chosen category + its player link, resolved lazily.
+function _epUrl(cat, playerUrl) { return 'hianime://' + cat + '|' + encodeURIComponent(playerUrl || ''); }
+
+function getDetail(url, opts) {
+  var slug = String(url);
+  var cat = _mode(opts);
+  return _api('/anime/' + encodeURIComponent(slug)).then(function (j) {
+    var a = (j && (j.anime || j)) || {};
+    var id = a._id;
+    var base = {
+      id: slug, title: a.English || a.title || slug, englishTitle: a.English || null,
+      cover: a.image || a.landScapeImage || null, url: slug,
+      description: htmlText(a.synopsis || ''), status: a.Status || 'unknown',
+      genres: _genres(a), studios: [], type: 'anime', sourceId: SOURCE_ID,
+      episodes: [], year: _year(a.Aired),
+      // MAL id drives tracker sync (AniList/MAL/Simkl) in the app.
+      malId: (a.mal_id != null) ? parseInt(a.mal_id, 10) : null,
+      // The detail object uses totalSub/totalDub (NOT totalSubbed/totalDubbed);
+      // overridden below with exact counts from the episode links.
+      subCount: a.totalSub || a.totalSubbed || 0,
+      dubCount: a.totalDub || a.totalDubbed || 0
+    };
+    if (!id) return base;
+    return _allEpisodes(id).then(function (eps) {
+      if (!eps.length && a.episodes) eps = a.episodes;
+      // Exact sub/dub availability comes from the episodes' link sets — this
+      // drives the player's Sub/Dub toggle and the download sheet's chips.
+      var subN = 0, dubN = 0;
+      for (var ci = 0; ci < eps.length; ci++) {
+        var lk = (eps[ci] && eps[ci].link) || {};
+        if (lk.sub && lk.sub.length) subN++;
+        if (lk.dub && lk.dub.length) dubN++;
+      }
+      if (eps.length) { base.subCount = subN; base.dubCount = dubN; }
+      var out = [];
+      for (var i = 0; i < eps.length; i++) {
+        var ep = eps[i];
+        var link = (ep.link && ep.link[cat]) || [];
+        var player = link[0];
+        if (!player) continue; // no stream for this category
+        var n = ep.episodeNumber != null ? ep.episodeNumber : (i + 1);
+        out.push({ id: cat + ':' + n, number: n,
+          title: ep.title || ('Episode ' + n), url: _epUrl(cat, player) });
+      }
+      base.episodes = out;
+      // Best-effort: fill in real episode stills from Jikan by mal_id. Never
+      // blocks or changes ids/numbers/urls — only adds `thumbnail` where found.
+      return _kitsuStills(a.mal_id).then(function (stills) {
+        if (stills) {
+          for (var k = 0; k < out.length; k++) {
+            var still = stills[out[k].number];
+            if (still) out[k].thumbnail = still;
+          }
+        }
+        return base;
+      }).catch(function () { return base; });
+    }).catch(function () { return base; });
+  });
+}
+
+function getEpisodes(url, opts) { return getDetail(url, opts).then(function (d) { return d.episodes; }); }
+
+// player link → MegaPlay file id → getSources (plain m3u8 + subtitle tracks).
+function getVideoSources(episodeUrl) {
+  var raw = String(episodeUrl).replace('hianime://', '');
+  var cut = raw.indexOf('|');
+  var cat = cut > -1 ? raw.slice(0, cut) : 'sub';
+  var player = cut > -1 ? decodeURIComponent(raw.slice(cut + 1)) : '';
+  if (!player) return Promise.reject(new Error('HiAnime: no player link'));
+
+  return _get(player, SITE + '/').then(function (html) {
+    // animeplay.cfd wraps an iframe to the real megaplay player; megaplay links
+    // are already the player page.
+    var mega = player;
+    var ifr = (html.match(/<iframe[^>]+src="([^"]*megaplay[^"]*)"/i) ||
+               html.match(/<iframe[^>]+src="([^"]+)"/i) || [])[1];
+    if (ifr && ifr.indexOf('megaplay') !== -1) mega = absUrl(ifr, player);
+
+    var pagePromise = (mega === player) ? Promise.resolve(html) : _get(mega, player);
+    return pagePromise.then(function (mhtml) {
+      var dataId = (mhtml.match(/data-id="(\d+)"/i) || [])[1];
+      if (!dataId) throw new Error('HiAnime: no MegaPlay id');
+      var base = (mega.match(/^(https?:\/\/[^/]+)/) || [])[1] || 'https://megaplay.buzz';
+      return fetch(base + '/stream/getSources?id=' + dataId, {
+        headers: { 'User-Agent': UA, 'Referer': mega, 'X-Requested-With': 'XMLHttpRequest' }
+      }).then(function (r) {
+        var j; try { j = JSON.parse(r.body || 'null'); } catch (e) { throw new Error('HiAnime: bad getSources'); }
+        var s = j && j.sources;
+        var file = s ? (s.file || (s[0] && s[0].file)) : null;
+        if (!file) throw new Error('HiAnime: no stream file');
+        var subs = [];
+        var tracks = (j && j.tracks) || [];
+        for (var i = 0; i < tracks.length; i++) {
+          var t = tracks[i];
+          if (!t || !t.file) continue;
+          if (t.kind && t.kind !== 'captions' && t.kind !== 'subtitles') continue;
+          subs.push({ url: t.file, lang: t.label || 'Sub', label: t.label || 'Sub',
+            format: /\.srt(\?|$)/i.test(t.file) ? 'srt' : 'vtt', 'default': !!t['default'] });
+        }
+        var hdrs = { 'User-Agent': UA, 'Referer': base + '/', 'Origin': base };
+        var mk = function (u, q) {
+          return { url: u, quality: q, container: /\.m3u8(\?|$)/i.test(u) ? 'hls' : 'mp4',
+            headers: hdrs, kind: cat, audioLang: cat === 'dub' ? 'en' : 'ja', subtitles: subs };
+        };
+        if (!/\.m3u8(\?|$)/i.test(file)) return [mk(file, 'auto')];
+        // Adaptive master playlist → expose each rendition so the player shows a
+        // real quality menu (plus "auto" for adaptive switching).
+        return fetch(file, { headers: { 'User-Agent': UA, 'Referer': base + '/' } }).then(function (mr) {
+          var body = mr.body || '';
+          var dir = file.replace(/[^/]*(\?.*)?$/, '');
+          var vs = [], m, re = /#EXT-X-STREAM-INF:[^\n]*?RESOLUTION=\d+x(\d+)[^\n]*\r?\n([^\r\n#]+)/gi;
+          while ((m = re.exec(body)) !== null) {
+            var h = parseInt(m[1], 10);
+            var uri = String(m[2]).replace(/^\s+|\s+$/g, '');
+            if (!uri) continue;
+            vs.push({ h: h, url: /^https?:/i.test(uri) ? uri : (dir + uri) });
+          }
+          vs.sort(function (a, b) { return b.h - a.h; });
+          var out = [mk(file, 'auto')];
+          for (var i = 0; i < vs.length; i++) out.push(mk(vs[i].url, vs[i].h + 'p'));
+          return out;
+        }).catch(function () { return [mk(file, 'auto')]; });
+      });
+    });
+  });
+}
+
+
 
 async function searchResults(keyword) {
-    try {
-        let transformedResults = [];
-
-        const keywordGroups = {
-            trending: ["!trending", "!hot", "!tr", "!!"],
-            topRatedMovie: ["!top-rated-movie", "!topmovie", "!tm", "??"],
-            topRatedTV: ["!top-rated-tv", "!toptv", "!tt", "::"],
-            popularMovie: ["!popular-movie", "!popmovie", "!pm", ";;"],
-            popularTV: ["!popular-tv", "!poptv", "!pt", "++"],
-        };
-
-        const skipTitleFilter = Object.values(keywordGroups).flat();
-
-        const shouldFilter = !matchesKeyword(keyword, skipTitleFilter);
-
-        const encodedKeyword = encodeURIComponent(keyword);
-        let baseUrlTemplate = null;
-
-        if (matchesKeyword(keyword, keywordGroups.trending)) {
-            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/trending/all/week?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
-        } else if (matchesKeyword(keyword, keywordGroups.topRatedMovie)) {
-            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/top_rated?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
-        } else if (matchesKeyword(keyword, keywordGroups.topRatedTV)) {
-            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/top_rated?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
-        } else if (matchesKeyword(keyword, keywordGroups.popularMovie)) {
-            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/popular?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
-        } else if (matchesKeyword(keyword, keywordGroups.popularTV)) {
-            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/popular?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
-        } else {
-            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/search/multi?api_key=9801b6b0548ad57581d111ea690c85c8&query=${encodedKeyword}&include_adult=false&page=${page}`)}&simple=true`;
-        }
-
-        let dataResults = [];
-
-        if (baseUrlTemplate) {
-            const pagePromises = Array.from({ length: 5 }, (_, i) =>
-                soraFetch(baseUrlTemplate(i + 1)).then(r => r.json())
-            );
-            const pages = await Promise.all(pagePromises);
-            dataResults = pages.flatMap(p => p.results || []);
-        }
-
-        if (dataResults.length > 0) {
-            transformedResults = transformedResults.concat(
-                dataResults
-                    .map(result => {
-                        if (result.media_type === "movie" || result.title) {
-                            return {
-                                title: result.title || result.name || result.original_title || result.original_name || "Untitled",
-                                image: result.poster_path ? `https://image.tmdb.org/t/p/w500${result.poster_path}` : "",
-                                href: `movie/${result.id}`,
-                            };
-                        } else if (result.media_type === "tv" || result.name) {
-                            return {
-                                title: result.name || result.title || result.original_name || result.original_title || "Untitled",
-                                image: result.poster_path ? `https://image.tmdb.org/t/p/w500${result.poster_path}` : "",
-                                href: `tv/${result.id}/1/1`,
-                            };
-                        }
-                    })
-                    .filter(Boolean)
-                    .filter(result => result.title !== "Overflow")
-                    .filter(result => result.title !== "My Marriage Partner Is My Student, a Cocky Troublemaker")
-                    .filter(r => !shouldFilter || r.title.toLowerCase().includes(keyword.toLowerCase()))
-            );
-        }
-
-        console.log("Transformed Results: " + JSON.stringify(transformedResults));
-        return JSON.stringify(transformedResults);
-    } catch (error) {
-        console.log("Fetch error in searchResults: " + error);
-        return JSON.stringify([{ title: "Error", image: "", href: "" }]);
-    }
-}
-
-function matchesKeyword(keyword, commands) {
-    const lower = keyword.toLowerCase();
-    return commands.some(cmd => lower.startsWith(cmd.toLowerCase()));
-}
-
-async function extractDetails(url) {
-    try {
-        if (url.includes('movie')) {
-            const match = url.match(/movie\/([^\/]+)/);
-            if (!match) throw new Error("Invalid URL format");
-
-            const movieId = match[1];
-            const responseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/${movieId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
-            const data = await responseText.json();
-
-            const transformedResults = [{
-                description: data.overview || 'No description available',
-                aliases: `Duration: ${data.runtime ? data.runtime + " minutes" : 'Unknown'}`,
-                airdate: `Released: ${data.release_date ? data.release_date : 'Unknown'}`
-            }];
-
-            return JSON.stringify(transformedResults);
-        } else if (url.includes('tv')) {
-            const match = url.match(/tv\/([^\/]+)/);
-            if (!match) throw new Error("Invalid URL format");
-
-            const showId = match[1];
-            const responseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
-            const data = await responseText.json();
-
-            const transformedResults = [{
-                description: data.overview || 'No description available',
-                aliases: `Duration: ${data.episode_run_time && data.episode_run_time.length ? data.episode_run_time.join(', ') + " minutes" : 'Unknown'}`,
-                airdate: `Aired: ${data.first_air_date ? data.first_air_date : 'Unknown'}`
-            }];
-
-            console.log(JSON.stringify(transformedResults));
-            return JSON.stringify(transformedResults);
-        } else {
-            throw new Error("Invalid URL format");
-        }
-    } catch (error) {
-        console.log('Details error: ' + error);
-        return JSON.stringify([{
-            description: 'Error loading description',
-            aliases: 'Duration: Unknown',
-            airdate: 'Aired/Released: Unknown'
-        }]);
-    }
-}
-
-async function extractEpisodes(url) {
-    try {
-        if (url.includes('movie')) {
-            const match = url.match(/movie\/([^\/]+)/);
-
-            if (!match) throw new Error("Invalid URL format");
-
-            const movieId = match[1];
-
-            const movie = [
-                { href: `/movie/${movieId}`, number: 1, title: "Full Movie" }
-            ];
-
-            console.log(movie);
-            return JSON.stringify(movie);
-        } else if (url.includes('tv')) {
-            const match = url.match(/tv\/([^\/]+)\/([^\/]+)\/([^\/]+)/);
-
-            if (!match) throw new Error("Invalid URL format");
-
-            const showId = match[1];
-
-            const showResponseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
-            const showData = await showResponseText.json();
-
-            let allEpisodes = [];
-            for (const season of showData.seasons) {
-                const seasonNumber = season.season_number;
-
-                if (seasonNumber === 0) continue;
-
-                const seasonResponseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}/season/${seasonNumber}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
-                const seasonData = await seasonResponseText.json();
-
-                if (seasonData.episodes && seasonData.episodes.length) {
-                    const episodes = seasonData.episodes.map(episode => ({
-                        href: `/tv/${showId}/${seasonNumber}/${episode.episode_number}`,
-                        number: episode.episode_number,
-                        title: episode.name || ""
-                    }));
-                    allEpisodes = allEpisodes.concat(episodes);
-                }
-            }
-
-            console.log(allEpisodes);
-            return JSON.stringify(allEpisodes);
-        } else {
-            throw new Error("Invalid URL format");
-        }
-    } catch (error) {
-        console.log('Fetch error in extractEpisodes: ' + error);
-        return JSON.stringify([]);
-    }
-}
-
-async function extractStreamUrl(ID) {
-    const startTime = Date.now();
-
-    if (ID.includes('movie')) {
-        const tmdbID = ID.replace('/movie/', '');
-        const headersOne = {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI2NTQ0MWU0MTg4NjhhMWI0NDZiM2I0Mzg1MmE4OWQ2NyIsIm5iZiI6MTYzMDg4NDI0My40NzMsInN1YiI6IjYxMzU1MTkzZmQ0YTk2MDA0NDVkMTJjNiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.Hm0W-hUx-7ph-ASvk2TpMxZbMtwVa5DEXWcgNgcqXJM",
-            "Referer": "https://player.smashystream.com/",
-            "Origin": "https://player.smashystream.com",
-            "X-Requested-With": "XMLHttpRequest",
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/"
-        };
-        const tmdbResponse = await fetchv2(`https://api.themoviedb.org/3/movie/${tmdbID}?append_to_response=external_ids`, headersOne);
-        const tmdbData = await tmdbResponse.json();
-        const imdbID = tmdbData.imdb_id;
-
-        const streamResponse = await ilovefeet(imdbID, false, null, null, 'm3u8');
-
-        const streams = [];
-
-        if (streamResponse && streamResponse.defaultUrl) {
-            streams.push("1080p", streamResponse.defaultUrl);
-        }
-
-        if (streamResponse && streamResponse.vFastUrl) {
-            const fourKResult = await ilovearmpits(streamResponse.vFastUrl);
-            if (fourKResult.available && fourKResult.url) {
-                streams.push("4K", fourKResult.url);
-            }
-        }
-
-        const final = {
-            streams,
-            subtitles: streamResponse.subtitles || "None"
-        };
-
-        const endTime = Date.now();
-        const elapsed = ((endTime - startTime) / 1000).toFixed(2);
-        console.log(`Stream fetched in ${elapsed}s`);
-
-        console.log(JSON.stringify(final));
-        return JSON.stringify(final);
-    } else if (ID.includes('tv')) {
-        const parts = ID.split('/');
-        const tmdbID = parts[2];
-        const seasonNumber = parts[3];
-        const episodeNumber = parts[4];
-        console.log(`TMDB ID: ${tmdbID}, Season: ${seasonNumber}, Episode: ${episodeNumber}`);
-        const headersOne = {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI2NTQ0MWU0MTg4NjhhMWI0NDZiM2I0Mzg1MmE4OWQ2NyIsIm5iZiI6MTYzMDg4NDI0My40NzMsInN1YiI6IjYxMzU1MTkzZmQ0YTk2MDA0NDVkMTJjNiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.Hm0W-hUx-7ph-ASvk2TpMxZbMtwVa5DEXWcgNgcqXJM",
-            "Referer": "https://player.smashystream.com/",
-            "Origin": "https://player.smashystream.com",
-            "X-Requested-With": "XMLHttpRequest",
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/"
-        };
-        const tmdbResponse = await fetchv2(`https://api.themoviedb.org/3/tv/${tmdbID}?append_to_response=external_ids`, headersOne);
-        const tmdbData = await tmdbResponse.json();
-        const imdbID = tmdbData.external_ids.imdb_id;
-
-        const streamResponse = await ilovefeet(imdbID, true, seasonNumber, episodeNumber, 'm3u8');
-
-        const streams = [];
-
-        if (streamResponse && streamResponse.defaultUrl) {
-            streams.push("1080p", streamResponse.defaultUrl);
-        }
-
-        if (streamResponse && streamResponse.vFastUrl) {
-            const fourKResult = await ilovearmpits(streamResponse.vFastUrl);
-            if (fourKResult.available && fourKResult.url) {
-                streams.push("4K", fourKResult.url);
-            }
-        }
-
-        const final = {
-            streams,
-            subtitles: streamResponse.subtitles || "None"
-        };
-
-        const endTime = Date.now();
-        const elapsed = ((endTime - startTime) / 1000).toFixed(2);
-        console.log(`Stream fetched in ${elapsed}s`);
-
-        console.log(JSON.stringify(final));
-        return JSON.stringify(final);
-    }
-}
-
-async function soraFetch(url, options = { headers: {}, method: 'GET', body: null, encoding: 'utf-8' }) {
-    try {
-        return await fetchv2(
-            url,
-            options.headers ?? {},
-            options.method ?? 'GET',
-            options.body ?? null,
-            true,
-            options.encoding ?? 'utf-8'
-        );
-    } catch (e) {
-        try {
-            return await fetch(url, options);
-        } catch (error) {
-            return null;
-        }
-    }
-}
-
-async function ilovearmpits(m3u8Url) {
-    try {
-        const headers = {
-            "Accept": "*/*",
-            "User-Agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Mobile Safari/537.36",
-            "Referer": "https://vidfast.pro/",
-            "X-Requested-With": "XMLHttpRequest"
-        };
-
-        const response = await fetchv2(m3u8Url, headers);
-        const playlistContent = await response.text();
-
-        const has4K = playlistContent.includes('RESOLUTION=3840x2160');
-
-        if (!has4K) {
-            console.log(`4K Check for ${m3u8Url}: NO`);
-            return { available: false, url: null };
-        }
-
-        const lines = playlistContent.split('\n');
-        let fourKPath = null;
-        let fourKCount = 0;
-
-        for (let i = 0; i < lines.length; i++) {
-            if (lines[i].includes('RESOLUTION=3840x2160')) {
-                fourKCount++;
-                if (fourKCount === 2 && i + 1 < lines.length) {
-                    fourKPath = lines[i + 1].trim();
-                    break;
-                }
-            }
-        }
-
-        if (!fourKPath && fourKCount === 1) {
-            for (let i = 0; i < lines.length; i++) {
-                if (lines[i].includes('RESOLUTION=3840x2160')) {
-                    if (i + 1 < lines.length) {
-                        fourKPath = lines[i + 1].trim();
-                        break;
-                    }
-                }
-            }
-        }
-
-        if (!fourKPath) {
-            console.log('4K resolution found but could not extract path');
-            return { available: false, url: null };
-        }
-
-        let baseUrl = '';
-        if (m3u8Url.startsWith('https://')) {
-            const afterProtocol = m3u8Url.substring(8);
-            const hostEnd = afterProtocol.indexOf('/');
-            const host = hostEnd !== -1 ? afterProtocol.substring(0, hostEnd) : afterProtocol;
-            baseUrl = 'https://' + host;
-        } else if (m3u8Url.startsWith('http://')) {
-            const afterProtocol = m3u8Url.substring(7);
-            const hostEnd = afterProtocol.indexOf('/');
-            const host = hostEnd !== -1 ? afterProtocol.substring(0, hostEnd) : afterProtocol;
-            baseUrl = 'http://' + host;
-        }
-
-        const full4KUrl = fourKPath.startsWith('http') ? fourKPath : `${baseUrl}${fourKPath}`;
-
-        return { available: true, url: full4KUrl };
-    } catch (error) {
-        console.log('Error checking 4K availability: ' + error);
-        return { available: false, url: null };
-    }
-}
-
-async function ilovefeet(imdbId, isSeries = false, season = null, episode = null, preferredFormat = null) {
-    let baseUrl;
-    if (isSeries) {
-        baseUrl = `https://vidfast.pro/tv/${imdbId}/${season}/${episode}`;
-    } else {
-        baseUrl = `https://vidfast.pro/movie/${imdbId}`;
-    }
-
-    const headers = {
-        "Accept": "*/*",
-        "User-Agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Mobile Safari/537.36",
-        "Referer": baseUrl,
-        "X-Requested-With": "XMLHttpRequest"
-    };
-
-    console.log(`Requesting Base URL: ${baseUrl}`);
-    const pageResponse = await fetchv2(baseUrl, headers);
-    const pageText = await pageResponse.text();
-
-    let match = pageText.match(/\\"en\\":\\"([^"]+)\\"/) ||
-        pageText.match(/"en":"([^"]+)"/) ||
-        pageText.match(/'en':'([^']+)'/) ||
-        pageText.match(/["']en["']:\s*["']([^"']+)["']/);
-
-    if (!match) {
-        throw new Error('Could not find data in page');
-    }
-    const rawData = match[1];
-    console.log("Raw Data extracted:", rawData);
-
-    const apiUrl = `https://enc-dec.app/api/enc-vidfast?text=${encodeURIComponent(rawData)}&version=1`;
-    console.log(`Requesting Decrypt API: ${apiUrl}`);
-    const apiResponse = await soraFetch(apiUrl);
-    const apiData = await apiResponse.json();
-    console.log("API Data from enc-dec.app:", JSON.stringify(apiData));
-
-    if (apiData.status !== 200 || !apiData.result) {
-        throw new Error('Failed to decrypt data via enc-dec.app API');
-    }
-
-    const apiServers = apiData.result.servers;
-    const streamBase = apiData.result.stream;
-    const csrfToken = apiData.result.token;
-
-    if (csrfToken) {
-        headers["X-CSRF-Token"] = csrfToken;
-    }
-
-    console.log(`Requesting Servers URL: ${apiServers}`);
-    const serversResponse = await soraFetch(apiServers, { method: 'POST', headers: headers });
-    const serversEncrypted = await serversResponse.text();
-
-    const decServersResponse = await soraFetch('https://enc-dec.app/api/dec-vidfast', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: serversEncrypted, version: "1" })
-    });
-    const decServersData = await decServersResponse.json();
-
-    if (decServersData.status !== 200 || !decServersData.result) {
-        throw new Error('Failed to decrypt servers data via enc-dec.app API');
-    }
-    const serverList = decServersData.result;
-
-    if (!serverList || serverList.length === 0) {
-        throw new Error('No servers available');
-    }
-
-    const testServer = async (serverObj, index) => {
-        const server = serverObj.data;
-        const apiStream = streamBase + '/' + server;
-
-        try {
-            console.log(`Requesting Stream URL for server ${index}: ${apiStream}`);
-            const streamResponse = await soraFetch(apiStream, { method: 'POST', headers: headers });
-
-            const streamEncrypted = await streamResponse.text();
-
-            const decStreamResponse = await soraFetch('https://enc-dec.app/api/dec-vidfast', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ text: streamEncrypted, version: "1" })
-            });
-            const decStreamData = await decStreamResponse.json();
-
-            if (decStreamData.status !== 200 || !decStreamData.result) {
-                throw new Error(`Server ${index} failed to decrypt stream`);
-            }
-
-            let data = decStreamData.result;
-
-            if (!data.url) {
-                throw new Error(`Server ${index} has no URL`);
-            }
-
-            const format = data.url.includes('.m3u8') ? 'm3u8' : data.url.includes('.mpd') ? 'mpd' : 'unknown';
-
-            const hasEnglishSubs = data.tracks && Array.isArray(data.tracks) &&
-                data.tracks.some(track => track.label && track.label.toLowerCase().includes('english') && track.file);
-
-
-            if (preferredFormat === 'm3u8' && format === 'm3u8' && hasEnglishSubs) {
-                return { index, server, success: true, format, data, preferred: true, hasSubtitles: true };
-            }
-
-            if (preferredFormat === 'm3u8' && format === 'm3u8') {
-                return { index, server, success: true, format, data, preferred: true, hasSubtitles: false };
-            }
-
-            return { index, server, success: true, format, data, preferred: false, hasSubtitles: hasEnglishSubs };
-
-        } catch (error) {
-            throw new Error(`Server ${index} failed: ${error.message}`);
-        }
-    };
-
-    let selectedServer = null;
-    let vFastServer = null;
-
-    try {
-        if (preferredFormat === 'm3u8') {
-            const serverPromises = serverList.map((serverObj, index) => testServer(serverObj, index));
-
-            const raceForSubtitles = new Promise((resolve, reject) => {
-                let completedCount = 0;
-                let firstWorkingServer = null;
-
-                serverPromises.forEach(promise => {
-                    promise.then(result => {
-                        completedCount++;
-
-                        if (result.hasSubtitles) {
-                            console.log(`Found server ${result.index} with subtitles, stopping other requests`);
-                            resolve(result);
-                            return;
-                        }
-
-                        if (!firstWorkingServer && result.format === 'm3u8') {
-                            firstWorkingServer = result;
-                        }
-
-                        if (completedCount === serverPromises.length) {
-                            if (firstWorkingServer) {
-                                console.log(`No servers with subtitles found, using fallback server ${firstWorkingServer.index}`);
-                                resolve(firstWorkingServer);
-                            } else {
-                                reject(new Error('No working m3u8 servers found'));
-                            }
-                        }
-                    }).catch(() => {
-                        completedCount++;
-
-                        if (completedCount === serverPromises.length) {
-                            if (firstWorkingServer) {
-                                console.log(`No servers with subtitles found, using fallback server ${firstWorkingServer.index}`);
-                                resolve(firstWorkingServer);
-                            } else {
-                                reject(new Error('No working m3u8 servers found'));
-                            }
-                        }
-                    });
-                });
-            });
-
-            let vFastPromise = Promise.resolve(null);
-            const vFastServerObj = serverList.find(server => server.name === 'vFast');
-            if (vFastServerObj) {
-                const vFastIndex = serverList.indexOf(vFastServerObj);
-                vFastPromise = serverPromises[vFastIndex].catch(error => {
-                    console.log('vFast server failed: ' + error.message);
-                    return null;
-                });
-            } else {
-                console.log('vFast server not found in server list');
-            }
-
-            const [selected, vFastResult] = await Promise.all([raceForSubtitles, vFastPromise]);
-            selectedServer = selected;
-            vFastServer = vFastResult;
-
-        } else {
-            const serverPromises = serverList.map((serverObj, index) => testServer(serverObj, index));
-            selectedServer = await Promise.any(serverPromises);
-
-            console.log(`Found working server ${selectedServer.index} with format ${selectedServer.format}`);
-        }
-    } catch (error) {
-        console.log('All servers failed:' + error);
-        throw new Error('No working servers found');
-    }
-
-    const workingServers = [selectedServer];
-
-    if (preferredFormat === 'm3u8' && selectedServer.format === 'mpd') {
-        selectedServer.data.url = selectedServer.data.url.replace('.mpd', '.m3u8');
-        selectedServer.format = 'm3u8';
-    }
-
-    let finalUrl = selectedServer.data.url;
-
-    let englishSubtitles = null;
-    try {
-        if (selectedServer.data.tracks && Array.isArray(selectedServer.data.tracks)) {
-            const englishTrack = selectedServer.data.tracks.find(track =>
-                track.label && track.label.toLowerCase().includes('english') && track.file
-            );
-            if (englishTrack) {
-                englishSubtitles = englishTrack.file;
-            } else {
-                console.log('No English subtitle track found in tracks array');
-            }
-        } else {
-            console.log('No tracks array found in server response');
-        }
-    } catch (error) {
-        console.log('Error extracting subtitles:' + error);
-    }
-
+  var results = await search(keyword, 1, { category: "sub" });
+  return (Array.isArray(results) ? results : []).map(function (item) {
     return {
-        defaultUrl: selectedServer.data.url,
-        vFastUrl: vFastServer ? vFastServer.data.url : null,
-        referer: baseUrl,
-        format: selectedServer.format,
-        subtitles: englishSubtitles,
-        fullData: selectedServer.data,
-        vFastData: vFastServer ? vFastServer.data : null,
-        serverStats: {
-            total: serverList.length,
-            working: vFastServer ? 2 : 1,
-            failed: serverList.length - (vFastServer ? 2 : 1),
-            selectedServerIndex: selectedServer.index,
-            vFastServerIndex: vFastServer ? vFastServer.index : null
-        }
+      title: item.title || item.name || "",
+      image: item.cover || item.image || item.poster || "",
+      href: item.url || item.id || item.href || ""
     };
+  }).filter(function (item) { return item.href; });
 }
 
+async function extractDetails(href) {
+  var details = await getDetail(href, { category: "sub" });
+  return [{
+    description: details.description || details.synopsis || "Not available",
+    aliases: details.englishTitle || details.title || "",
+    airdate: details.status || details.year || "",
+    image: details.cover || "",
+    provider: "hianime"
+  }];
+}
+
+async function extractEpisodes(href) {
+  var episodes = [];
+  if (typeof getEpisodes === "function") {
+    episodes = await getEpisodes(href, { category: "sub" });
+  } else {
+    var details = await getDetail(href, { category: "sub" });
+    episodes = details.episodes || [];
+  }
+  return (Array.isArray(episodes) ? episodes : []).map(function (episode, index) {
+    return {
+      number: episode.number || episode.episodeNumber || episode.episode || index + 1,
+      title: episode.title || "",
+      href: episode.url || episode.id || episode.href || ""
+    };
+  }).filter(function (episode) { return episode.href; });
+}
+
+async function extractStreamUrl(href) {
+  var sources = await getVideoSources(href, { category: "sub" });
+  return (Array.isArray(sources) ? sources : []).map(function (source) {
+    return {
+      title: source.quality || source.title || source.server || "auto",
+      url: source.url || source.file || source.streamUrl || "",
+      headers: source.headers || {},
+      subtitles: source.subtitles || source.tracks || []
+    };
+  }).filter(function (source) { return source.url; });
+}

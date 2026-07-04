@@ -1,18 +1,22 @@
 async function searchResults(keyword) {
-    const postData = `op=title_search&q=${encodeURIComponent(keyword)}`;
-    const headers = await getDefaultHeaders();
     const results = [];
     try {
-        const response = await fetchv2("https://beta.otaku-streamers.com/a.php", headers, "POST", postData);
-        const data = await response.json();
+        const response = await fetchv2("https://123animehub.cc/search?keyword=" + encodeURIComponent(keyword));
+        const html = await response.text();
 
-        if (data && data.content) {
-            data.content.forEach(item => {
-                results.push({
-                    title: item.title,
-                    image: item.cover,
-                    href: item.url
-                });
+        const filmListMatch = html.match(/<div class="film-list">([\s\S]*?)<div class="clearfix"><\/div>/);
+        if (!filmListMatch) {
+            return JSON.stringify(results);
+        }
+
+        const filmList = filmListMatch[1];
+        const itemRegex = /<div class="item">[\s\S]*?<a href="([^"]+)"[^>]*class="poster"[\s\S]*?<img[^>]*alt="([^"]+)"[^>]*src="([^"]+)"/g;
+        let match;
+        while ((match = itemRegex.exec(filmList)) !== null) {
+            results.push({
+                title: match[2].trim(),
+                image: "https://123animehub.cc" + match[3].trim(),
+                href: "https://123animehub.cc" + match[1].trim()
             });
         }
 
@@ -27,18 +31,33 @@ async function searchResults(keyword) {
 }
 
 async function extractDetails(url) {
-    const headers = await getDefaultHeaders();
     try {
-        const response = await fetchv2(url, headers);
+        const response = await fetchv2(url);
         const html = await response.text();
 
-        const descriptionMatch = html.match(/<div class="tp-synopsis">[\s\S]*?<p>([\s\S]*?)<\/p>/i);
-        const description = descriptionMatch ? descriptionMatch[1].replace(/<br\s*\/?>/gi, "\n").replace(/<\/?[^>]+(>|$)/g, "").trim() : "N/A";
+        let description = "N/A";
+        let aliases = "N/A";
+        let airdate = "N/A";
+
+        const descMatch = html.match(/<div class="desc">([\s\S]*?)<\/div>/);
+        if (descMatch) {
+            description = descMatch[1].replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
+        }
+
+        const aliasMatch = html.match(/<p class="alias">([^<]*)<\/p>/);
+        if (aliasMatch) {
+            aliases = aliasMatch[1].trim();
+        }
+
+        const airdateMatch = html.match(/<dt>Released:<\/dt>\s*<dd>\s*<a[^>]*>(\d+)<\/a>/);
+        if (airdateMatch) {
+            airdate = airdateMatch[1].trim();
+        }
 
         return JSON.stringify([{
             description: description,
-            aliases: "N/A",
-            airdate: "N/A"
+            aliases: aliases,
+            airdate: airdate
         }]);
     } catch (err) {
         return JSON.stringify([{
@@ -50,21 +69,37 @@ async function extractDetails(url) {
 }
 
 async function extractEpisodes(url) {
-    const headers = await getDefaultHeaders();
     const results = [];
     try {
-        const response = await fetchv2(url, headers);
-        const html = await response.text();
+        const animeId = url.split('/').pop();
 
-        const regex = /<a href="(.*?)" class="tp-ep-row" data-no="(.*?)">/g;
-        let match;
-        while ((match = regex.exec(html)) !== null) {
-            results.push({
-                href: match[1].trim(),
-                number: parseInt(match[2], 10)
-            });
+        const response = await fetchv2("https://123animehub.cc/ajax/film/sv?id=" + animeId);
+        const jsonData = await response.json();
+        const html = jsonData.html;
+
+        const episodesMatch = html.match(/<ul class="episodes range"[^>]*>([\s\S]*?)<\/ul>/);
+        if (!episodesMatch) {
+            return JSON.stringify(results);
         }
-        results.reverse();
+
+        const episodesHTML = episodesMatch[1];
+
+        const episodeRegex = /data-pop='(\d+)'/g;
+        let match;
+        const seenEpisodes = new Set();
+
+        while ((match = episodeRegex.exec(episodesHTML)) !== null) {
+            const episodeNum = parseInt(match[1], 10);
+
+            if (!seenEpisodes.has(episodeNum)) {
+                seenEpisodes.add(episodeNum);
+                results.push({
+                    href: animeId + "/" + episodeNum + "/vidstreaming.io",
+                    number: episodeNum
+                });
+            }
+        }
+
         return JSON.stringify(results);
     } catch (err) {
         return JSON.stringify([{
@@ -74,25 +109,57 @@ async function extractEpisodes(url) {
     }
 }
 
-async function extractStreamUrl(url) {
-    const headers = await getDefaultHeaders();
+async function extractStreamUrl(ID) {
     try {
-        const response = await fetchv2(url, headers);
-        const html = await response.text();
+        const response = await fetchv2("https://123animehub.cc/ajax/episode/info?epr=" + encodeURIComponent(ID));
+        const data = await response.json();
+        const target = data.target;
 
-        const streamMatch = html.match(/<source src="(.*?)" type=".*?"\/>/i);
-        return streamMatch ? streamMatch[1] : "https://error.org/";
+        if (!target) throw new Error("No target in response: " + JSON.stringify(data));
+
+        const responseTarget = await fetchv2(target);
+        const htmlTarget = await responseTarget.text();
+        const zrpart2Match = htmlTarget.match(/var\s+zrpart2\s*=\s*'([^']+)';/);
+        if (!zrpart2Match) throw new Error("zrpart2 not found");
+        const zrpart2 = zrpart2Match[1];
+
+        const originMatch = target.match(/^(https?:\/\/[^\/]+)/);
+        const origin = originMatch ? originMatch[1] : "";
+
+        const hsUrl = `${origin}/hs/${zrpart2}`;
+        const responseHs = await fetchv2(hsUrl);
+        const htmlHs = await responseHs.text();
+        const dataIdMatch = htmlHs.match(/id="mg-player"[^>]*data-id="([^"]+)"/);
+        if (!dataIdMatch) throw new Error("data-id not found");
+        const dataId = dataIdMatch[1];
+
+        const sourcesUrl = `${origin}/hs/getSources?id=${dataId}`;
+        const responseSources = await fetchv2(sourcesUrl);
+        const dataSources = await responseSources.json();
+
+        let sourcesArray = [];
+        if (Array.isArray(dataSources)) {
+            sourcesArray = dataSources;
+        } else if (dataSources && Array.isArray(dataSources.sources)) {
+            sourcesArray = dataSources.sources;
+        } else if (dataSources && typeof dataSources.sources === "string") {
+            sourcesArray = [{ file: dataSources.sources, label: "Auto" }];
+        } else {
+            console.log("Unexpected dataSources format:", JSON.stringify(dataSources));
+        }
+
+        const streams = sourcesArray.map(source => ({
+            title: source.label || "Auto",
+            streamUrl: source.file || source.url || source.link,
+            headers: {
+                "Origin": "https://play2.echovideo.ru",
+                "Referer": "https://play2.echovideo.ru/"
+            }
+        }));
+
+        return JSON.stringify({ streams: streams });
     } catch (err) {
+        console.log("Stream URL Error details:", err.message, err.stack);
         return "https://error.org/";
     }
-}
-
-async function getDefaultHeaders() {
-    const session = await fetchv2("https://ilovefeet.simplepostrequest.workers.dev/session");
-    const sessionKey = await session.text();
-    return {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
-        "Cookie": `bb_betasessionhash=${sessionKey}`
-    };
 }
