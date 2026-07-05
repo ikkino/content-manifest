@@ -1,24 +1,26 @@
 {
-  "sourceName": "AniWorld (ENG SUB)",
-  "iconUrl": "https://git.luna-app.eu/Cufiy/sora-modules/raw/branch/main/modules/aniworld/aniworld.png",
-  "author": {
-    "name": "Cufiy & Hamzo",
-    "icon": "https://files.catbox.moe/ttj4fc.gif",
-    "url": "https://github.com/JMcrafter26"
-  },
-  "version": "0.3.5",
+  "id": "zangetsu_hianime",
+  "sourceName": "HiAnime (Zangetsu)",
+  "iconUrl": "",
+  "version": "1.0.7",
   "language": "English",
   "streamType": "HLS",
-  "quality": "720p",
-  "baseUrl": "https://google.com",
-  "searchBaseUrl": "https://aniworld.to/ajax/seriesSearch?keyword=%s",
+  "quality": "1080p",
+  "baseUrl": "https://hianime.to/",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/017/source.js",
+  "softsub": true,
   "asyncJS": true,
-  "streamAsyncJS": false,
   "type": "anime",
-  "supportsMojuru": true,
-  "supportsSora": true,
-  "supportsLuna": true,
-  "supportsSoru": true,
-  "id": "jZdQ"
+  "registry": "zangetsu",
+  "registries": [
+    "zangetsu"
+  ],
+  "manifestUrl": "https://raw.githubusercontent.com/Spyou/zangetsu-providers/main/index.json",
+  "status": "active",
+  "addedAt": "2026-06-14T10:25:39.985Z",
+  "note": "Ported from Zangetsu provider",
+  "author": {
+    "name": "Spyou",
+    "icon": ""
+  }
 }
