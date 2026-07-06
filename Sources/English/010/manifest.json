@@ -1,26 +1,28 @@
 {
-  "id": "zangetsu_animekai",
-  "sourceName": "AnimeKai (Zangetsu)",
-  "iconUrl": "",
-  "version": "1.1.2",
+  "sourceName": "Animex",
+  "iconUrl": "https://animex.one/favicon.ico",
+  "author": {
+    "name": "StreamPlay"
+  },
+  "version": "1.0.0",
   "language": "English",
   "streamType": "HLS",
   "quality": "1080p",
-  "baseUrl": "https://animekai.to/",
+  "baseUrl": "https://animex.one/",
+  "searchBaseUrl": "https://animex.one/",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/010/source.js",
-  "softsub": true,
-  "asyncJS": true,
   "type": "anime",
-  "registry": "zangetsu",
-  "registries": [
-    "zangetsu"
-  ],
-  "manifestUrl": "https://raw.githubusercontent.com/Spyou/zangetsu-providers/main/index.json",
-  "status": "active",
-  "addedAt": "2026-06-14T10:25:50.353Z",
-  "note": "Ported from Zangetsu provider",
-  "author": {
-    "name": "Spyou",
-    "icon": ""
-  }
+  "asyncJS": true,
+  "softsub": true,
+  "downloadSupport": false,
+  "supportsSora": true,
+  "supportsLuna": true,
+  "supportsMojuru": true,
+  "supportsDartotsu": true,
+  "supportsAnymex": true,
+  "supportsTsumi": true,
+  "supportsHiyoku": true,
+  "supportsShirox": true,
+  "supportsEclipse": true,
+  "id": "animex-local"
 }
