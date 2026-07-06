@@ -1,22 +1,26 @@
 {
-  "sourceName": "VidLink",
-  "iconUrl": "https://vidlink.pro/favicon.ico",
-  "author": {
-    "name": "Local Repair"
-  },
-  "version": "1.0.1",
+  "id": "zangetsu_hianime",
+  "sourceName": "HiAnime (Zangetsu)",
+  "iconUrl": "",
+  "version": "1.0.7",
   "language": "English",
-  "streamType": "MP4",
+  "streamType": "HLS",
   "quality": "1080p",
-  "baseUrl": "https://vidlink.pro/",
-  "searchBaseUrl": "https://vidlink.pro/",
+  "baseUrl": "https://hianime.to/",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/022/source.js",
-  "type": "anime",
-  "asyncJS": true,
   "softsub": true,
-  "downloadSupport": false,
-  "supportsSora": true,
-  "supportsLuna": true,
-  "supportsShirox": true,
-  "id": "vidlink-local"
+  "asyncJS": true,
+  "type": "anime",
+  "registry": "zangetsu",
+  "registries": [
+    "zangetsu"
+  ],
+  "manifestUrl": "https://raw.githubusercontent.com/Spyou/zangetsu-providers/main/index.json",
+  "status": "active",
+  "addedAt": "2026-06-14T10:25:39.985Z",
+  "note": "Ported from Zangetsu provider",
+  "author": {
+    "name": "Spyou",
+    "icon": ""
+  }
 }
