@@ -1,26 +1,29 @@
 {
-  "id": "zangetsu_animekai",
-  "sourceName": "AnimeKai (Zangetsu)",
-  "iconUrl": "",
-  "version": "1.1.2",
-  "language": "English",
-  "streamType": "HLS",
-  "quality": "1080p",
-  "baseUrl": "https://animekai.to/",
-  "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/016/source.js",
-  "softsub": true,
-  "asyncJS": true,
-  "type": "anime",
-  "registry": "zangetsu",
-  "registries": [
-    "zangetsu"
-  ],
-  "manifestUrl": "https://raw.githubusercontent.com/Spyou/zangetsu-providers/main/index.json",
-  "status": "active",
-  "addedAt": "2026-06-14T10:25:50.353Z",
-  "note": "Ported from Zangetsu provider",
+  "sourceName": "AnimeLand",
+  "iconUrl": "https://w7.animeland.tv/wp-content/themes/twentytwelve/SAO2.ico",
   "author": {
-    "name": "Spyou",
-    "icon": ""
-  }
+    "name": "50/50",
+    "icon": "https://files.catbox.moe/741wp7.png"
+  },
+  "version": "1.0.0",
+  "language": "English",
+  "streamType": "mp4",
+  "quality": "1080p",
+  "baseUrl": "https://w7.animeland.tv/",
+  "searchBaseUrl": "https://w7.animeland.tv/",
+  "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/016/source.js",
+  "type": "anime",
+  "asyncJS": true,
+  "softsub": false,
+  "downloadSupport": true,
+  "supportsMojuru": true,
+  "supportsDartotsu": true,
+  "supportsSora": true,
+  "supportsLuna": true,
+  "supportsAnymex": true,
+  "supportsTsumi": true,
+  "supportsHiyoku": true,
+  "supportsShirox": true,
+  "supportsEclipse": true,
+  "id": "mod_942337115"
 }

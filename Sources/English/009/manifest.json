@@ -1,21 +1,21 @@
 {
-  "sourceName": "FireAnime English (SUB)",
-  "iconUrl": "https://i.ibb.co/dJ1SN5ch/favicon.png",
+  "sourceName": "Anikoto",
+  "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/anikoto/icon.png",
   "author": {
-    "name": "Cufiy & 50/50",
-    "icon": "https://files.catbox.moe/ttj4fc.gif"
+    "name": "ibro",
+    "icon": "https://git.luna-app.eu/ibro/services/raw/branch/main/profile.jpg",
+    "url": "https://github.com/xibrox"
   },
-  "version": "1.1.7",
+  "version": "1.0.18",
   "language": "English",
   "streamType": "HLS",
   "quality": "1080p",
-  "baseUrl": "https://fireani.me/",
-  "searchBaseUrl": "https://fireani.me/api/anime/search?q=%s",
+  "baseUrl": "https://anikototv.to/",
+  "searchBaseUrl": "https://anikototv.to/search?query=%s",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/009/source.js",
-  "asyncJS": true,
   "type": "anime",
-  "supportsMojuru": true,
-  "supportsSora": true,
-  "supportsLuna": true,
-  "id": "8NDe"
+  "downloadSupport": true,
+  "asyncJS": true,
+  "softsub": true,
+  "id": "jF12G"
 }

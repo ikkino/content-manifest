@@ -1,33 +1,43 @@
 {
-  "generatedAt": "2026-07-08T06:40:19.745Z",
-  "mediaRequested": 25,
+  "generatedAt": "2026-07-08T07:44:56.185Z",
+  "mediaRequested": 60,
   "categories": {
     "trendingNow": {
-      "requested": 25,
-      "mediaChecked": 25,
-      "animeWithRoutes": 25
+      "requested": 60,
+      "mediaChecked": 45,
+      "animeWithRoutes": 45
     },
     "popularThisSeason": {
-      "requested": 25,
-      "mediaChecked": 18,
-      "animeWithRoutes": 18
+      "requested": 60,
+      "mediaChecked": 37,
+      "animeWithRoutes": 37
     },
     "popularAllTime": {
-      "requested": 25,
-      "mediaChecked": 25,
-      "animeWithRoutes": 25
+      "requested": 60,
+      "mediaChecked": 50,
+      "animeWithRoutes": 50
     }
   },
-  "mediaChecked": 57,
-  "modulesChecked": 10,
-  "animeWithRoutes": 57,
-  "routeCount": 250,
+  "mediaChecked": 109,
+  "modulesChecked": 18,
+  "animeWithRoutes": 109,
+  "routeCount": 525,
   "failures": [
     {
+      "aniListId": 178789,
+      "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/002",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "implausible episode match: verified=1 available=1 expected<=2"
+      ]
+    },
+    {
       "aniListId": 210031,
       "title": "You and I Are Polar Opposites Season 2",
       "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/020",
+      "catalogPath": "Sources/English/016",
       "sourceName": "AnimeLand",
       "errors": [
         "search: searchResults returned an unusable result"
@@ -37,7 +47,7 @@
       "aniListId": 178789,
       "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
       "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/020",
+      "catalogPath": "Sources/English/016",
       "sourceName": "AnimeLand",
       "errors": [
         "search: searchResults returned an unusable result"
@@ -46,9 +56,29 @@
     {
       "aniListId": 178789,
       "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
-      "moduleId": "jhWaO",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "AnimeGG",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/009",
+      "sourceName": "Anikoto",
+      "errors": [
+        "implausible episode match: verified=2 available=12 expected<=2"
+      ]
+    },
+    {
+      "aniListId": 210031,
+      "title": "You and I Are Polar Opposites Season 2",
+      "moduleId": "vidlink-local",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "VidLink",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 178789,
+      "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
+      "moduleId": "vidlink-local",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "VidLink",
       "errors": [
         "search: searchResults returned an unusable result"
       ]
@@ -57,7 +87,7 @@
       "aniListId": 210031,
       "title": "You and I Are Polar Opposites Season 2",
       "moduleId": "jhWaO",
-      "catalogPath": "Sources/English/002",
+      "catalogPath": "Sources/English/006",
       "sourceName": "AnimeGG",
       "errors": [
         "stream: extractStreamUrl returned an unusable result"
@@ -66,8 +96,28 @@
     {
       "aniListId": 210031,
       "title": "You and I Are Polar Opposites Season 2",
+      "moduleId": "BNbnN",
+      "catalogPath": "Sources/English/008",
+      "sourceName": "AnimeDefenders",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 178789,
+      "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
+      "moduleId": "jhWaO",
+      "catalogPath": "Sources/English/006",
+      "sourceName": "AnimeGG",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 210031,
+      "title": "You and I Are Polar Opposites Season 2",
       "moduleId": "animex-local",
-      "catalogPath": "Sources/English/005",
+      "catalogPath": "Sources/English/007",
       "sourceName": "Animex",
       "errors": [
         "implausible episode match: verified=1 available=60 expected<=1"
@@ -77,7 +127,7 @@
       "aniListId": 178789,
       "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
       "moduleId": "animex-local",
-      "catalogPath": "Sources/English/005",
+      "catalogPath": "Sources/English/007",
       "sourceName": "Animex",
       "errors": [
         "implausible episode match: verified=2 available=60 expected<=2"
@@ -86,38 +136,8 @@
     {
       "aniListId": 210031,
       "title": "You and I Are Polar Opposites Season 2",
-      "moduleId": "BNbnN",
-      "catalogPath": "Sources/English/006",
-      "sourceName": "AnimeDefenders",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 178789,
-      "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Anikoto",
-      "errors": [
-        "implausible episode match: verified=2 available=12 expected<=2"
-      ]
-    },
-    {
-      "aniListId": 178789,
-      "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
       "moduleId": "8NDe",
-      "catalogPath": "Sources/English/009",
-      "sourceName": "FireAnime English (SUB)",
-      "errors": [
-        "implausible episode match: verified=2 available=24 expected<=2"
-      ]
-    },
-    {
-      "aniListId": 210031,
-      "title": "You and I Are Polar Opposites Season 2",
-      "moduleId": "8NDe",
-      "catalogPath": "Sources/English/009",
+      "catalogPath": "Sources/English/010",
       "sourceName": "FireAnime English (SUB)",
       "errors": [
         "implausible episode match: verified=1 available=12 expected<=1"
@@ -126,18 +146,128 @@
     {
       "aniListId": 178789,
       "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
-      "moduleId": "BmnXo",
+      "moduleId": "8NDe",
       "catalogPath": "Sources/English/010",
+      "sourceName": "FireAnime English (SUB)",
+      "errors": [
+        "implausible episode match: verified=2 available=24 expected<=2"
+      ]
+    },
+    {
+      "aniListId": 210031,
+      "title": "You and I Are Polar Opposites Season 2",
+      "moduleId": "jZdQ",
+      "catalogPath": "Sources/English/013",
+      "sourceName": "AniWorld (ENG SUB)",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 178789,
+      "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
+      "moduleId": "jZdQ",
+      "catalogPath": "Sources/English/013",
+      "sourceName": "AniWorld (ENG SUB)",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 178789,
+      "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
+      "moduleId": "jCtAp",
+      "catalogPath": "Sources/English/015",
+      "sourceName": "123Anime",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 178789,
+      "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
+      "moduleId": "zangetsu_hianime",
+      "catalogPath": "Sources/English/018",
+      "sourceName": "HiAnime (Zangetsu)",
+      "errors": [
+        "stream: HiAnime: no MegaPlay id"
+      ]
+    },
+    {
+      "aniListId": 210031,
+      "title": "You and I Are Polar Opposites Season 2",
+      "moduleId": "zangetsu_hianime",
+      "catalogPath": "Sources/English/018",
+      "sourceName": "HiAnime (Zangetsu)",
+      "errors": [
+        "stream: HiAnime: no MegaPlay id"
+      ]
+    },
+    {
+      "aniListId": 210031,
+      "title": "You and I Are Polar Opposites Season 2",
+      "moduleId": "zangetsu_animekai",
+      "catalogPath": "Sources/English/017",
+      "sourceName": "AnimeKai (Zangetsu)",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 210031,
+      "title": "You and I Are Polar Opposites Season 2",
+      "moduleId": "jCtAp",
+      "catalogPath": "Sources/English/015",
+      "sourceName": "123Anime",
+      "errors": [
+        "stored route too slow: 2617ms > 2200ms"
+      ]
+    },
+    {
+      "aniListId": 178789,
+      "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
+      "moduleId": "zangetsu_animekai",
+      "catalogPath": "Sources/English/017",
+      "sourceName": "AnimeKai (Zangetsu)",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 210031,
+      "title": "You and I Are Polar Opposites Season 2",
+      "moduleId": "mod_640849195",
+      "catalogPath": "Sources/English/019",
+      "sourceName": "Animepahe (SUB)",
+      "errors": [
+        "implausible episode match: verified=1 available=12 expected<=1"
+      ]
+    },
+    {
+      "aniListId": 195600,
+      "title": "Daemons of the Shadow Realm",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/002",
       "sourceName": "OneTouch TV",
       "errors": [
-        "implausible episode match: verified=1 available=1 expected<=2"
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 195600,
+      "title": "Daemons of the Shadow Realm",
+      "moduleId": "vidlink-local",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "VidLink",
+      "errors": [
+        "implausible episode match: verified=13 available=24 expected<=13"
       ]
     },
     {
       "aniListId": 195600,
       "title": "Daemons of the Shadow Realm",
       "moduleId": "jhWaO",
-      "catalogPath": "Sources/English/002",
+      "catalogPath": "Sources/English/006",
       "sourceName": "AnimeGG",
       "errors": [
         "implausible episode match: verified=12 available=10 expected<=13"
@@ -146,28 +276,48 @@
     {
       "aniListId": 195600,
       "title": "Daemons of the Shadow Realm",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/020",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 195600,
-      "title": "Daemons of the Shadow Realm",
       "moduleId": "animex-local",
-      "catalogPath": "Sources/English/005",
+      "catalogPath": "Sources/English/007",
       "sourceName": "Animex",
       "errors": [
         "implausible episode match: verified=13 available=60 expected<=13"
       ]
     },
     {
+      "aniListId": 178789,
+      "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
+      "moduleId": "mod_640849195",
+      "catalogPath": "Sources/English/019",
+      "sourceName": "Animepahe (SUB)",
+      "errors": [
+        "implausible episode match: verified=2 available=12 expected<=2"
+      ]
+    },
+    {
+      "aniListId": 21,
+      "title": "ONE PIECE",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/002",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "implausible episode match: verified=8 available=8 expected<=1168"
+      ]
+    },
+    {
+      "aniListId": 195600,
+      "title": "Daemons of the Shadow Realm",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/016",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
       "aniListId": 21,
       "title": "ONE PIECE",
       "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/020",
+      "catalogPath": "Sources/English/016",
       "sourceName": "AnimeLand",
       "errors": [
         "implausible episode match: verified=1061 available=900 expected<=1168"
@@ -176,8 +326,18 @@
     {
       "aniListId": 21,
       "title": "ONE PIECE",
+      "moduleId": "vidlink-local",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "VidLink",
+      "errors": [
+        "implausible episode match: verified=1 available=1 expected<=1168"
+      ]
+    },
+    {
+      "aniListId": 21,
+      "title": "ONE PIECE",
       "moduleId": "BNbnN",
-      "catalogPath": "Sources/English/006",
+      "catalogPath": "Sources/English/008",
       "sourceName": "AnimeDefenders",
       "errors": [
         "implausible episode match: verified=1 available=1 expected<=1168"
@@ -187,7 +347,7 @@
       "aniListId": 21,
       "title": "ONE PIECE",
       "moduleId": "animex-local",
-      "catalogPath": "Sources/English/005",
+      "catalogPath": "Sources/English/007",
       "sourceName": "Animex",
       "errors": [
         "implausible episode match: verified=60 available=60 expected<=1168"
@@ -196,18 +356,8 @@
     {
       "aniListId": 21,
       "title": "ONE PIECE",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/010",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "implausible episode match: verified=8 available=8 expected<=1168"
-      ]
-    },
-    {
-      "aniListId": 21,
-      "title": "ONE PIECE",
       "moduleId": "8NDe",
-      "catalogPath": "Sources/English/009",
+      "catalogPath": "Sources/English/010",
       "sourceName": "FireAnime English (SUB)",
       "errors": [
         "implausible episode match: verified=197 available=1218 expected<=1168"
@@ -216,9 +366,109 @@
     {
       "aniListId": 195600,
       "title": "Daemons of the Shadow Realm",
-      "moduleId": "jWih3",
-      "catalogPath": "Sources/English/011",
-      "sourceName": "AniNeko",
+      "moduleId": "jCtAp",
+      "catalogPath": "Sources/English/015",
+      "sourceName": "123Anime",
+      "errors": [
+        "stored route too slow: 2432ms > 2200ms"
+      ]
+    },
+    {
+      "aniListId": 21,
+      "title": "ONE PIECE",
+      "moduleId": "jhWaO",
+      "catalogPath": "Sources/English/006",
+      "sourceName": "AnimeGG",
+      "errors": [
+        "episodes: extractEpisodes timed out"
+      ]
+    },
+    {
+      "aniListId": 195600,
+      "title": "Daemons of the Shadow Realm",
+      "moduleId": "zangetsu_hianime",
+      "catalogPath": "Sources/English/018",
+      "sourceName": "HiAnime (Zangetsu)",
+      "errors": [
+        "stream: HiAnime: no MegaPlay id"
+      ]
+    },
+    {
+      "aniListId": 195600,
+      "title": "Daemons of the Shadow Realm",
+      "moduleId": "zc8g",
+      "catalogPath": "Sources/English/014",
+      "sourceName": "Aniwave",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 195600,
+      "title": "Daemons of the Shadow Realm",
+      "moduleId": "zangetsu_animekai",
+      "catalogPath": "Sources/English/017",
+      "sourceName": "AnimeKai (Zangetsu)",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 21,
+      "title": "ONE PIECE",
+      "moduleId": "jZdQ",
+      "catalogPath": "Sources/English/013",
+      "sourceName": "AniWorld (ENG SUB)",
+      "errors": [
+        "implausible episode match: verified=197 available=1219 expected<=1168"
+      ]
+    },
+    {
+      "aniListId": 21,
+      "title": "ONE PIECE",
+      "moduleId": "jCtAp",
+      "catalogPath": "Sources/English/015",
+      "sourceName": "123Anime",
+      "errors": [
+        "implausible episode match: verified=50 available=50 expected<=1168"
+      ]
+    },
+    {
+      "aniListId": 21,
+      "title": "ONE PIECE",
+      "moduleId": "zc8g",
+      "catalogPath": "Sources/English/014",
+      "sourceName": "Aniwave",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 21,
+      "title": "ONE PIECE",
+      "moduleId": "zangetsu_animekai",
+      "catalogPath": "Sources/English/017",
+      "sourceName": "AnimeKai (Zangetsu)",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 21,
+      "title": "ONE PIECE",
+      "moduleId": "zangetsu_hianime",
+      "catalogPath": "Sources/English/018",
+      "sourceName": "HiAnime (Zangetsu)",
+      "errors": [
+        "episodes: extractEpisodes timed out"
+      ]
+    },
+    {
+      "aniListId": 195600,
+      "title": "Daemons of the Shadow Realm",
+      "moduleId": "mod_640849195",
+      "catalogPath": "Sources/English/019",
+      "sourceName": "Animepahe (SUB)",
       "errors": [
         "stream: extractStreamUrl timed out"
       ]
@@ -226,8 +476,28 @@
     {
       "aniListId": 200637,
       "title": "The 100 Girlfriends Who Really, Really, Really, Really, REALLY Love You Season 3",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/002",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 200637,
+      "title": "The 100 Girlfriends Who Really, Really, Really, Really, REALLY Love You Season 3",
+      "moduleId": "vidlink-local",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "VidLink",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 200637,
+      "title": "The 100 Girlfriends Who Really, Really, Really, Really, REALLY Love You Season 3",
       "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/020",
+      "catalogPath": "Sources/English/016",
       "sourceName": "AnimeLand",
       "errors": [
         "search: searchResults returned an unusable result"
@@ -237,7 +507,7 @@
       "aniListId": 200637,
       "title": "The 100 Girlfriends Who Really, Really, Really, Really, REALLY Love You Season 3",
       "moduleId": "jhWaO",
-      "catalogPath": "Sources/English/002",
+      "catalogPath": "Sources/English/006",
       "sourceName": "AnimeGG",
       "errors": [
         "search: searchResults returned an unusable result"
@@ -247,27 +517,97 @@
       "aniListId": 200637,
       "title": "The 100 Girlfriends Who Really, Really, Really, Really, REALLY Love You Season 3",
       "moduleId": "animex-local",
-      "catalogPath": "Sources/English/005",
+      "catalogPath": "Sources/English/007",
       "sourceName": "Animex",
       "errors": [
         "implausible episode match: verified=1 available=60 expected<=1"
       ]
     },
     {
-      "aniListId": 195600,
-      "title": "Daemons of the Shadow Realm",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/010",
-      "sourceName": "OneTouch TV",
+      "aniListId": 200637,
+      "title": "The 100 Girlfriends Who Really, Really, Really, Really, REALLY Love You Season 3",
+      "moduleId": "jWwhj",
+      "catalogPath": "Sources/English/012",
+      "sourceName": "Otaku-Streamers",
       "errors": [
         "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 200637,
+      "title": "The 100 Girlfriends Who Really, Really, Really, Really, REALLY Love You Season 3",
+      "moduleId": "8NDe",
+      "catalogPath": "Sources/English/010",
+      "sourceName": "FireAnime English (SUB)",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 200637,
+      "title": "The 100 Girlfriends Who Really, Really, Really, Really, REALLY Love You Season 3",
+      "moduleId": "jZdQ",
+      "catalogPath": "Sources/English/013",
+      "sourceName": "AniWorld (ENG SUB)",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 21,
+      "title": "ONE PIECE",
+      "moduleId": "mod_640849195",
+      "catalogPath": "Sources/English/019",
+      "sourceName": "Animepahe (SUB)",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 200637,
+      "title": "The 100 Girlfriends Who Really, Really, Really, Really, REALLY Love You Season 3",
+      "moduleId": "jCtAp",
+      "catalogPath": "Sources/English/015",
+      "sourceName": "123Anime",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 200637,
+      "title": "The 100 Girlfriends Who Really, Really, Really, Really, REALLY Love You Season 3",
+      "moduleId": "zc8g",
+      "catalogPath": "Sources/English/014",
+      "sourceName": "Aniwave",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 200637,
+      "title": "The 100 Girlfriends Who Really, Really, Really, Really, REALLY Love You Season 3",
+      "moduleId": "zangetsu_hianime",
+      "catalogPath": "Sources/English/018",
+      "sourceName": "HiAnime (Zangetsu)",
+      "errors": [
+        "stream: HiAnime: no MegaPlay id"
+      ]
+    },
+    {
+      "aniListId": 200637,
+      "title": "The 100 Girlfriends Who Really, Really, Really, Really, REALLY Love You Season 3",
+      "moduleId": "zangetsu_animekai",
+      "catalogPath": "Sources/English/017",
+      "sourceName": "AnimeKai (Zangetsu)",
+      "errors": [
+        "stream: extractStreamUrl timed out"
       ]
     },
     {
       "aniListId": 182205,
       "title": "That Time I Got Reincarnated as a Slime Season 4",
       "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/020",
+      "catalogPath": "Sources/English/016",
       "sourceName": "AnimeLand",
       "errors": [
         "search: searchResults returned an unusable result"
@@ -276,8 +616,18 @@
     {
       "aniListId": 182205,
       "title": "That Time I Got Reincarnated as a Slime Season 4",
+      "moduleId": "vidlink-local",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "VidLink",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 182205,
+      "title": "That Time I Got Reincarnated as a Slime Season 4",
       "moduleId": "jhWaO",
-      "catalogPath": "Sources/English/002",
+      "catalogPath": "Sources/English/006",
       "sourceName": "AnimeGG",
       "errors": [
         "stream: extractStreamUrl returned an unusable result"
@@ -287,48 +637,18 @@
       "aniListId": 182205,
       "title": "That Time I Got Reincarnated as a Slime Season 4",
       "moduleId": "animex-local",
-      "catalogPath": "Sources/English/005",
+      "catalogPath": "Sources/English/007",
       "sourceName": "Animex",
       "errors": [
         "implausible episode match: verified=13 available=60 expected<=13"
       ]
     },
     {
-      "aniListId": 200637,
-      "title": "The 100 Girlfriends Who Really, Really, Really, Really, REALLY Love You Season 3",
+      "aniListId": 182205,
+      "title": "That Time I Got Reincarnated as a Slime Season 4",
       "moduleId": "8NDe",
-      "catalogPath": "Sources/English/009",
-      "sourceName": "FireAnime English (SUB)",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 200637,
-      "title": "The 100 Girlfriends Who Really, Really, Really, Really, REALLY Love You Season 3",
-      "moduleId": "BmnXo",
       "catalogPath": "Sources/English/010",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 198409,
-      "title": "The World's Strongest Rearguard",
-      "moduleId": "jhWaO",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "AnimeGG",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 198409,
-      "title": "The World's Strongest Rearguard",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/020",
-      "sourceName": "AnimeLand",
+      "sourceName": "FireAnime English (SUB)",
       "errors": [
         "search: searchResults returned an unusable result"
       ]
@@ -336,9 +656,69 @@
     {
       "aniListId": 182205,
       "title": "That Time I Got Reincarnated as a Slime Season 4",
-      "moduleId": "8NDe",
-      "catalogPath": "Sources/English/009",
-      "sourceName": "FireAnime English (SUB)",
+      "moduleId": "jZdQ",
+      "catalogPath": "Sources/English/013",
+      "sourceName": "AniWorld (ENG SUB)",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 200637,
+      "title": "The 100 Girlfriends Who Really, Really, Really, Really, REALLY Love You Season 3",
+      "moduleId": "mod_640849195",
+      "catalogPath": "Sources/English/019",
+      "sourceName": "Animepahe (SUB)",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 182205,
+      "title": "That Time I Got Reincarnated as a Slime Season 4",
+      "moduleId": "jCtAp",
+      "catalogPath": "Sources/English/015",
+      "sourceName": "123Anime",
+      "errors": [
+        "stored route too slow: 2525ms > 2200ms"
+      ]
+    },
+    {
+      "aniListId": 182205,
+      "title": "That Time I Got Reincarnated as a Slime Season 4",
+      "moduleId": "zangetsu_animekai",
+      "catalogPath": "Sources/English/017",
+      "sourceName": "AnimeKai (Zangetsu)",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 182205,
+      "title": "That Time I Got Reincarnated as a Slime Season 4",
+      "moduleId": "zc8g",
+      "catalogPath": "Sources/English/014",
+      "sourceName": "Aniwave",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 198409,
+      "title": "The World's Strongest Rearguard",
+      "moduleId": "jhWaO",
+      "catalogPath": "Sources/English/006",
+      "sourceName": "AnimeGG",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 198409,
+      "title": "The World's Strongest Rearguard",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/016",
+      "sourceName": "AnimeLand",
       "errors": [
         "search: searchResults returned an unusable result"
       ]
@@ -347,18 +727,28 @@
       "aniListId": 198409,
       "title": "The World's Strongest Rearguard",
       "moduleId": "animex-local",
-      "catalogPath": "Sources/English/005",
+      "catalogPath": "Sources/English/007",
       "sourceName": "Animex",
       "errors": [
         "implausible episode match: verified=1 available=60 expected<=1"
       ]
     },
     {
-      "aniListId": 147105,
-      "title": "Witch Hat Atelier",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/020",
-      "sourceName": "AnimeLand",
+      "aniListId": 198409,
+      "title": "The World's Strongest Rearguard",
+      "moduleId": "vidlink-local",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "VidLink",
+      "errors": [
+        "stream: Unexpected end of JSON input"
+      ]
+    },
+    {
+      "aniListId": 198409,
+      "title": "The World's Strongest Rearguard",
+      "moduleId": "8NDe",
+      "catalogPath": "Sources/English/010",
+      "sourceName": "FireAnime English (SUB)",
       "errors": [
         "search: searchResults returned an unusable result"
       ]
@@ -366,9 +756,49 @@
     {
       "aniListId": 198409,
       "title": "The World's Strongest Rearguard",
-      "moduleId": "8NDe",
-      "catalogPath": "Sources/English/009",
-      "sourceName": "FireAnime English (SUB)",
+      "moduleId": "jCtAp",
+      "catalogPath": "Sources/English/015",
+      "sourceName": "123Anime",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 198409,
+      "title": "The World's Strongest Rearguard",
+      "moduleId": "zangetsu_hianime",
+      "catalogPath": "Sources/English/018",
+      "sourceName": "HiAnime (Zangetsu)",
+      "errors": [
+        "stream: HiAnime: no MegaPlay id"
+      ]
+    },
+    {
+      "aniListId": 198409,
+      "title": "The World's Strongest Rearguard",
+      "moduleId": "zangetsu_animekai",
+      "catalogPath": "Sources/English/017",
+      "sourceName": "AnimeKai (Zangetsu)",
+      "errors": [
+        "stored route too slow: 2709ms > 2200ms"
+      ]
+    },
+    {
+      "aniListId": 182205,
+      "title": "That Time I Got Reincarnated as a Slime Season 4",
+      "moduleId": "mod_640849195",
+      "catalogPath": "Sources/English/019",
+      "sourceName": "Animepahe (SUB)",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 147105,
+      "title": "Witch Hat Atelier",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/002",
+      "sourceName": "OneTouch TV",
       "errors": [
         "search: searchResults returned an unusable result"
       ]
@@ -377,17 +807,47 @@
       "aniListId": 147105,
       "title": "Witch Hat Atelier",
       "moduleId": "animex-local",
-      "catalogPath": "Sources/English/005",
+      "catalogPath": "Sources/English/007",
       "sourceName": "Animex",
       "errors": [
         "implausible episode match: verified=13 available=60 expected<=13"
       ]
     },
     {
+      "aniListId": 198409,
+      "title": "The World's Strongest Rearguard",
+      "moduleId": "mod_640849195",
+      "catalogPath": "Sources/English/019",
+      "sourceName": "Animepahe (SUB)",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
       "aniListId": 103303,
       "title": "Sparks of Tomorrow",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/002",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 103303,
+      "title": "Sparks of Tomorrow",
+      "moduleId": "vidlink-local",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "VidLink",
+      "errors": [
+        "implausible episode match: verified=1 available=13 expected<=1"
+      ]
+    },
+    {
+      "aniListId": 147105,
+      "title": "Witch Hat Atelier",
       "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/020",
+      "catalogPath": "Sources/English/016",
       "sourceName": "AnimeLand",
       "errors": [
         "search: searchResults returned an unusable result"
@@ -396,18 +856,8 @@
     {
       "aniListId": 103303,
       "title": "Sparks of Tomorrow",
-      "moduleId": "jhWaO",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "AnimeGG",
-      "errors": [
-        "stream: extractStreamUrl returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 103303,
-      "title": "Sparks of Tomorrow",
       "moduleId": "animex-local",
-      "catalogPath": "Sources/English/005",
+      "catalogPath": "Sources/English/007",
       "sourceName": "Animex",
       "errors": [
         "implausible episode match: verified=1 available=60 expected<=1"
@@ -417,8 +867,28 @@
       "aniListId": 103303,
       "title": "Sparks of Tomorrow",
       "moduleId": "BNbnN",
-      "catalogPath": "Sources/English/006",
+      "catalogPath": "Sources/English/008",
       "sourceName": "AnimeDefenders",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 103303,
+      "title": "Sparks of Tomorrow",
+      "moduleId": "jhWaO",
+      "catalogPath": "Sources/English/006",
+      "sourceName": "AnimeGG",
+      "errors": [
+        "stream: extractStreamUrl returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 103303,
+      "title": "Sparks of Tomorrow",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/016",
+      "sourceName": "AnimeLand",
       "errors": [
         "search: searchResults returned an unusable result"
       ]
@@ -426,18 +896,118 @@
     {
       "aniListId": 147105,
       "title": "Witch Hat Atelier",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/010",
-      "sourceName": "OneTouch TV",
+      "moduleId": "jCtAp",
+      "catalogPath": "Sources/English/015",
+      "sourceName": "123Anime",
+      "errors": [
+        "stored route too slow: 2408ms > 2200ms"
+      ]
+    },
+    {
+      "aniListId": 147105,
+      "title": "Witch Hat Atelier",
+      "moduleId": "zc8g",
+      "catalogPath": "Sources/English/014",
+      "sourceName": "Aniwave",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 147105,
+      "title": "Witch Hat Atelier",
+      "moduleId": "zangetsu_animekai",
+      "catalogPath": "Sources/English/017",
+      "sourceName": "AnimeKai (Zangetsu)",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 103303,
+      "title": "Sparks of Tomorrow",
+      "moduleId": "jCtAp",
+      "catalogPath": "Sources/English/015",
+      "sourceName": "123Anime",
       "errors": [
         "search: searchResults returned an unusable result"
       ]
     },
     {
+      "aniListId": 103303,
+      "title": "Sparks of Tomorrow",
+      "moduleId": "zangetsu_hianime",
+      "catalogPath": "Sources/English/018",
+      "sourceName": "HiAnime (Zangetsu)",
+      "errors": [
+        "stream: HiAnime: no MegaPlay id"
+      ]
+    },
+    {
+      "aniListId": 103303,
+      "title": "Sparks of Tomorrow",
+      "moduleId": "zangetsu_animekai",
+      "catalogPath": "Sources/English/017",
+      "sourceName": "AnimeKai (Zangetsu)",
+      "errors": [
+        "stored route too slow: 2710ms > 2200ms"
+      ]
+    },
+    {
+      "aniListId": 103303,
+      "title": "Sparks of Tomorrow",
+      "moduleId": "zc8g",
+      "catalogPath": "Sources/English/014",
+      "sourceName": "Aniwave",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 147105,
+      "title": "Witch Hat Atelier",
+      "moduleId": "mod_640849195",
+      "catalogPath": "Sources/English/019",
+      "sourceName": "Animepahe (SUB)",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 103303,
+      "title": "Sparks of Tomorrow",
+      "moduleId": "mod_640849195",
+      "catalogPath": "Sources/English/019",
+      "sourceName": "Animepahe (SUB)",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 187538,
+      "title": "BLACK TORCH",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/002",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "No matching route found"
+      ]
+    },
+    {
       "aniListId": 182300,
       "title": "Wistoria: Wand and Sword Season 2",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/002",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "implausible episode match: verified=1 available=1 expected<=12"
+      ]
+    },
+    {
+      "aniListId": 187538,
+      "title": "BLACK TORCH",
       "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/020",
+      "catalogPath": "Sources/English/016",
       "sourceName": "AnimeLand",
       "errors": [
         "search: searchResults returned an unusable result"
@@ -446,9 +1016,9 @@
     {
       "aniListId": 182300,
       "title": "Wistoria: Wand and Sword Season 2",
-      "moduleId": "jhWaO",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "AnimeGG",
+      "moduleId": "vidlink-local",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "VidLink",
       "errors": [
         "search: searchResults returned an unusable result"
       ]
@@ -456,8 +1026,28 @@
     {
       "aniListId": 182300,
       "title": "Wistoria: Wand and Sword Season 2",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/016",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 187538,
+      "title": "BLACK TORCH",
       "moduleId": "animex-local",
-      "catalogPath": "Sources/English/005",
+      "catalogPath": "Sources/English/007",
+      "sourceName": "Animex",
+      "errors": [
+        "implausible episode match: verified=1 available=60 expected<=1"
+      ]
+    },
+    {
+      "aniListId": 182300,
+      "title": "Wistoria: Wand and Sword Season 2",
+      "moduleId": "animex-local",
+      "catalogPath": "Sources/English/007",
       "sourceName": "Animex",
       "errors": [
         "implausible episode match: verified=12 available=60 expected<=12"
@@ -466,39 +1056,9 @@
     {
       "aniListId": 182300,
       "title": "Wistoria: Wand and Sword Season 2",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/010",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "implausible episode match: verified=1 available=1 expected<=12"
-      ]
-    },
-    {
-      "aniListId": 103303,
-      "title": "Sparks of Tomorrow",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/010",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 187538,
-      "title": "BLACK TORCH",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/020",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 177637,
-      "title": "Goodbye, Lara",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/020",
-      "sourceName": "AnimeLand",
+      "moduleId": "jhWaO",
+      "catalogPath": "Sources/English/006",
+      "sourceName": "AnimeGG",
       "errors": [
         "search: searchResults returned an unusable result"
       ]
@@ -507,58 +1067,148 @@
       "aniListId": 187538,
       "title": "BLACK TORCH",
       "moduleId": "jhWaO",
-      "catalogPath": "Sources/English/002",
+      "catalogPath": "Sources/English/006",
       "sourceName": "AnimeGG",
       "errors": [
         "stream: extractStreamUrl returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 177637,
-      "title": "Goodbye, Lara",
-      "moduleId": "jhWaO",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "AnimeGG",
-      "errors": [
-        "stream: extractStreamUrl returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 187538,
-      "title": "BLACK TORCH",
-      "moduleId": "animex-local",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Animex",
-      "errors": [
-        "implausible episode match: verified=1 available=60 expected<=1"
-      ]
-    },
-    {
-      "aniListId": 177637,
-      "title": "Goodbye, Lara",
-      "moduleId": "animex-local",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Animex",
-      "errors": [
-        "implausible episode match: verified=1 available=60 expected<=1"
-      ]
-    },
-    {
-      "aniListId": 187538,
-      "title": "BLACK TORCH",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/010",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "No matching route found"
       ]
     },
     {
       "aniListId": 187538,
       "title": "BLACK TORCH",
       "moduleId": "8NDe",
-      "catalogPath": "Sources/English/009",
+      "catalogPath": "Sources/English/010",
       "sourceName": "FireAnime English (SUB)",
+      "errors": [
+        "stream: extractStreamUrl returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 182300,
+      "title": "Wistoria: Wand and Sword Season 2",
+      "moduleId": "jZdQ",
+      "catalogPath": "Sources/English/013",
+      "sourceName": "AniWorld (ENG SUB)",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 187538,
+      "title": "BLACK TORCH",
+      "moduleId": "zc8g",
+      "catalogPath": "Sources/English/014",
+      "sourceName": "Aniwave",
+      "errors": [
+        "stored route too slow: 2316ms > 2200ms"
+      ]
+    },
+    {
+      "aniListId": 187538,
+      "title": "BLACK TORCH",
+      "moduleId": "jCtAp",
+      "catalogPath": "Sources/English/015",
+      "sourceName": "123Anime",
+      "errors": [
+        "stored route too slow: 2596ms > 2200ms"
+      ]
+    },
+    {
+      "aniListId": 187538,
+      "title": "BLACK TORCH",
+      "moduleId": "zangetsu_hianime",
+      "catalogPath": "Sources/English/018",
+      "sourceName": "HiAnime (Zangetsu)",
+      "errors": [
+        "stream: HiAnime: no MegaPlay id"
+      ]
+    },
+    {
+      "aniListId": 187538,
+      "title": "BLACK TORCH",
+      "moduleId": "zangetsu_animekai",
+      "catalogPath": "Sources/English/017",
+      "sourceName": "AnimeKai (Zangetsu)",
+      "errors": [
+        "stored route too slow: 2730ms > 2200ms"
+      ]
+    },
+    {
+      "aniListId": 182300,
+      "title": "Wistoria: Wand and Sword Season 2",
+      "moduleId": "jCtAp",
+      "catalogPath": "Sources/English/015",
+      "sourceName": "123Anime",
+      "errors": [
+        "stored route too slow: 2443ms > 2200ms"
+      ]
+    },
+    {
+      "aniListId": 182300,
+      "title": "Wistoria: Wand and Sword Season 2",
+      "moduleId": "zangetsu_animekai",
+      "catalogPath": "Sources/English/017",
+      "sourceName": "AnimeKai (Zangetsu)",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 182300,
+      "title": "Wistoria: Wand and Sword Season 2",
+      "moduleId": "zc8g",
+      "catalogPath": "Sources/English/014",
+      "sourceName": "Aniwave",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 187538,
+      "title": "BLACK TORCH",
+      "moduleId": "mod_640849195",
+      "catalogPath": "Sources/English/019",
+      "sourceName": "Animepahe (SUB)",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 177637,
+      "title": "Goodbye, Lara",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/002",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "No matching route found"
+      ]
+    },
+    {
+      "aniListId": 182300,
+      "title": "Wistoria: Wand and Sword Season 2",
+      "moduleId": "mod_640849195",
+      "catalogPath": "Sources/English/019",
+      "sourceName": "Animepahe (SUB)",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 177637,
+      "title": "Goodbye, Lara",
+      "moduleId": "vidlink-local",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "VidLink",
+      "errors": [
+        "implausible episode match: verified=1 available=12 expected<=1"
+      ]
+    },
+    {
+      "aniListId": 177637,
+      "title": "Goodbye, Lara",
+      "moduleId": "jhWaO",
+      "catalogPath": "Sources/English/006",
+      "sourceName": "AnimeGG",
       "errors": [
         "stream: extractStreamUrl returned an unusable result"
       ]
@@ -566,38 +1216,28 @@
     {
       "aniListId": 177637,
       "title": "Goodbye, Lara",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/010",
-      "sourceName": "OneTouch TV",
+      "moduleId": "animex-local",
+      "catalogPath": "Sources/English/007",
+      "sourceName": "Animex",
       "errors": [
-        "No matching route found"
+        "implausible episode match: verified=1 available=60 expected<=1"
       ]
     },
     {
       "aniListId": 269,
       "title": "Bleach",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/020",
-      "sourceName": "AnimeLand",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/002",
+      "sourceName": "OneTouch TV",
       "errors": [
-        "implausible episode match: verified=13 available=13 expected<=366"
+        "implausible episode match: verified=1 available=1 expected<=366"
       ]
     },
     {
-      "aniListId": 187538,
-      "title": "BLACK TORCH",
-      "moduleId": "jWih3",
-      "catalogPath": "Sources/English/011",
-      "sourceName": "AniNeko",
-      "errors": [
-        "stream: extractStreamUrl timed out"
-      ]
-    },
-    {
-      "aniListId": 207141,
-      "title": "Chainsmoker Cat",
+      "aniListId": 177637,
+      "title": "Goodbye, Lara",
       "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/020",
+      "catalogPath": "Sources/English/016",
       "sourceName": "AnimeLand",
       "errors": [
         "search: searchResults returned an unusable result"
@@ -606,40 +1246,18 @@
     {
       "aniListId": 269,
       "title": "Bleach",
-      "moduleId": "jhWaO",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "AnimeGG",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/016",
+      "sourceName": "AnimeLand",
       "errors": [
-        "episodes: extractEpisodes returned an unusable result",
-        "episodes: extractEpisodes returned an unusable result",
-        "episodes: extractEpisodes returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 207141,
-      "title": "Chainsmoker Cat",
-      "moduleId": "jhWaO",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "AnimeGG",
-      "errors": [
-        "stream: extractStreamUrl returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 207141,
-      "title": "Chainsmoker Cat",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Anikoto",
-      "errors": [
-        "implausible episode match: verified=1 available=73 expected<=1"
+        "implausible episode match: verified=13 available=13 expected<=366"
       ]
     },
     {
       "aniListId": 269,
       "title": "Bleach",
       "moduleId": "animex-local",
-      "catalogPath": "Sources/English/005",
+      "catalogPath": "Sources/English/007",
       "sourceName": "Animex",
       "errors": [
         "implausible episode match: verified=60 available=60 expected<=366"
@@ -649,67 +1267,169 @@
       "aniListId": 269,
       "title": "Bleach",
       "moduleId": "BNbnN",
-      "catalogPath": "Sources/English/006",
+      "catalogPath": "Sources/English/008",
       "sourceName": "AnimeDefenders",
       "errors": [
         "implausible episode match: verified=40 available=40 expected<=366"
       ]
     },
     {
-      "aniListId": 207141,
-      "title": "Chainsmoker Cat",
-      "moduleId": "BNbnN",
-      "catalogPath": "Sources/English/006",
-      "sourceName": "AnimeDefenders",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
       "aniListId": 269,
       "title": "Bleach",
       "moduleId": "8NDe",
-      "catalogPath": "Sources/English/009",
+      "catalogPath": "Sources/English/010",
       "sourceName": "FireAnime English (SUB)",
       "errors": [
         "implausible episode match: verified=51 available=412 expected<=366"
       ]
     },
     {
+      "aniListId": 269,
+      "title": "Bleach",
+      "moduleId": "jhWaO",
+      "catalogPath": "Sources/English/006",
+      "sourceName": "AnimeGG",
+      "errors": [
+        "episodes: extractEpisodes returned an unusable result",
+        "episodes: extractEpisodes returned an unusable result",
+        "episodes: extractEpisodes returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 177637,
+      "title": "Goodbye, Lara",
+      "moduleId": "jCtAp",
+      "catalogPath": "Sources/English/015",
+      "sourceName": "123Anime",
+      "errors": [
+        "stored route too slow: 2435ms > 2200ms"
+      ]
+    },
+    {
+      "aniListId": 177637,
+      "title": "Goodbye, Lara",
+      "moduleId": "zangetsu_hianime",
+      "catalogPath": "Sources/English/018",
+      "sourceName": "HiAnime (Zangetsu)",
+      "errors": [
+        "stream: HiAnime: no MegaPlay id"
+      ]
+    },
+    {
+      "aniListId": 177637,
+      "title": "Goodbye, Lara",
+      "moduleId": "zangetsu_animekai",
+      "catalogPath": "Sources/English/017",
+      "sourceName": "AnimeKai (Zangetsu)",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 269,
+      "title": "Bleach",
+      "moduleId": "vidlink-local",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "VidLink",
+      "errors": [
+        "implausible episode match: verified=1 available=1 expected<=366"
+      ]
+    },
+    {
+      "aniListId": 269,
+      "title": "Bleach",
+      "moduleId": "jZdQ",
+      "catalogPath": "Sources/English/013",
+      "sourceName": "AniWorld (ENG SUB)",
+      "errors": [
+        "implausible episode match: verified=51 available=412 expected<=366"
+      ]
+    },
+    {
+      "aniListId": 269,
+      "title": "Bleach",
+      "moduleId": "jCtAp",
+      "catalogPath": "Sources/English/015",
+      "sourceName": "123Anime",
+      "errors": [
+        "implausible episode match: verified=50 available=50 expected<=366"
+      ]
+    },
+    {
+      "aniListId": 269,
+      "title": "Bleach",
+      "moduleId": "zangetsu_hianime",
+      "catalogPath": "Sources/English/018",
+      "sourceName": "HiAnime (Zangetsu)",
+      "errors": [
+        "implausible episode match: verified=14 available=14 expected<=366"
+      ]
+    },
+    {
+      "aniListId": 269,
+      "title": "Bleach",
+      "moduleId": "zc8g",
+      "catalogPath": "Sources/English/014",
+      "sourceName": "Aniwave",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 269,
+      "title": "Bleach",
+      "moduleId": "zangetsu_animekai",
+      "catalogPath": "Sources/English/017",
+      "sourceName": "AnimeKai (Zangetsu)",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 177637,
+      "title": "Goodbye, Lara",
+      "moduleId": "mod_640849195",
+      "catalogPath": "Sources/English/019",
+      "sourceName": "Animepahe (SUB)",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
       "aniListId": 207141,
       "title": "Chainsmoker Cat",
       "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/010",
+      "catalogPath": "Sources/English/002",
       "sourceName": "OneTouch TV",
       "errors": [
         "No matching route found"
       ]
     },
     {
-      "aniListId": 269,
-      "title": "Bleach",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/010",
-      "sourceName": "OneTouch TV",
+      "aniListId": 207141,
+      "title": "Chainsmoker Cat",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/009",
+      "sourceName": "Anikoto",
       "errors": [
-        "stream: extractStreamUrl returned an unusable result"
+        "implausible episode match: verified=1 available=73 expected<=1"
       ]
     },
     {
-      "aniListId": 190569,
-      "title": "Jaadugar: A Witch in Mongolia",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/020",
-      "sourceName": "AnimeLand",
+      "aniListId": 207141,
+      "title": "Chainsmoker Cat",
+      "moduleId": "vidlink-local",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "VidLink",
       "errors": [
-        "search: searchResults returned an unusable result"
+        "implausible episode match: verified=1 available=12 expected<=1"
       ]
     },
     {
-      "aniListId": 190569,
-      "title": "Jaadugar: A Witch in Mongolia",
+      "aniListId": 207141,
+      "title": "Chainsmoker Cat",
       "moduleId": "jhWaO",
-      "catalogPath": "Sources/English/002",
+      "catalogPath": "Sources/English/006",
       "sourceName": "AnimeGG",
       "errors": [
         "stream: extractStreamUrl returned an unusable result"
@@ -719,73 +1439,137 @@
       "aniListId": 207141,
       "title": "Chainsmoker Cat",
       "moduleId": "animex-local",
-      "catalogPath": "Sources/English/005",
+      "catalogPath": "Sources/English/007",
       "sourceName": "Animex",
       "errors": [
-        "stream: extractStreamUrl timed out",
-        "episodes: Animex HTTP 403",
-        "episodes: Animex HTTP 403"
+        "implausible episode match: verified=1 available=60 expected<=1"
       ]
     },
     {
-      "aniListId": 201514,
-      "title": "Rich Girl Caretaker: I'm Secretly the Caregiver of the Most Popular Girl in This Rich Kid School",
+      "aniListId": 207141,
+      "title": "Chainsmoker Cat",
+      "moduleId": "BNbnN",
+      "catalogPath": "Sources/English/008",
+      "sourceName": "AnimeDefenders",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 207141,
+      "title": "Chainsmoker Cat",
       "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/020",
+      "catalogPath": "Sources/English/016",
       "sourceName": "AnimeLand",
       "errors": [
         "search: searchResults returned an unusable result"
       ]
     },
     {
-      "aniListId": 201514,
-      "title": "Rich Girl Caretaker: I'm Secretly the Caregiver of the Most Popular Girl in This Rich Kid School",
-      "moduleId": "jhWaO",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "AnimeGG",
+      "aniListId": 269,
+      "title": "Bleach",
+      "moduleId": "mod_640849195",
+      "catalogPath": "Sources/English/019",
+      "sourceName": "Animepahe (SUB)",
       "errors": [
-        "stream: extractStreamUrl returned an unusable result"
+        "stream: extractStreamUrl timed out"
       ]
     },
     {
-      "aniListId": 201514,
-      "title": "Rich Girl Caretaker: I'm Secretly the Caregiver of the Most Popular Girl in This Rich Kid School",
-      "moduleId": "animex-local",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Animex",
+      "aniListId": 207141,
+      "title": "Chainsmoker Cat",
+      "moduleId": "jCtAp",
+      "catalogPath": "Sources/English/015",
+      "sourceName": "123Anime",
       "errors": [
-        "episodes: Animex HTTP 403",
-        "episodes: Animex HTTP 403",
-        "episodes: Animex HTTP 403"
+        "stored route too slow: 2416ms > 2200ms"
+      ]
+    },
+    {
+      "aniListId": 207141,
+      "title": "Chainsmoker Cat",
+      "moduleId": "zangetsu_animekai",
+      "catalogPath": "Sources/English/017",
+      "sourceName": "AnimeKai (Zangetsu)",
+      "errors": [
+        "stream: extractStreamUrl timed out"
       ]
     },
     {
       "aniListId": 190569,
       "title": "Jaadugar: A Witch in Mongolia",
-      "moduleId": "animex-local",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Animex",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/016",
+      "sourceName": "AnimeLand",
       "errors": [
-        "episodes: extractEpisodes timed out",
-        "episodes: Animex HTTP 403",
-        "episodes: Animex HTTP 403"
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 190569,
+      "title": "Jaadugar: A Witch in Mongolia",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/002",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 207141,
+      "title": "Chainsmoker Cat",
+      "moduleId": "zangetsu_hianime",
+      "catalogPath": "Sources/English/018",
+      "sourceName": "HiAnime (Zangetsu)",
+      "errors": [
+        "stream: HiAnime: no MegaPlay id"
+      ]
+    },
+    {
+      "aniListId": 190569,
+      "title": "Jaadugar: A Witch in Mongolia",
+      "moduleId": "animekai-unoriginal-local",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "AnimeKai (Unoriginal)",
+      "errors": [
+        "stream: extractStreamUrl timed out"
       ]
     },
     {
       "aniListId": 190569,
       "title": "Jaadugar: A Witch in Mongolia",
       "moduleId": "animesogo-local",
-      "catalogPath": "Sources/English/007",
+      "catalogPath": "Sources/English/004",
       "sourceName": "AnimeSogo",
       "errors": [
-        "episodes: extractEpisodes timed out"
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 190569,
+      "title": "Jaadugar: A Witch in Mongolia",
+      "moduleId": "jhWaO",
+      "catalogPath": "Sources/English/006",
+      "sourceName": "AnimeGG",
+      "errors": [
+        "stream: extractStreamUrl returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 190569,
+      "title": "Jaadugar: A Witch in Mongolia",
+      "moduleId": "animex-local",
+      "catalogPath": "Sources/English/007",
+      "sourceName": "Animex",
+      "errors": [
+        "implausible episode match: verified=2 available=60 expected<=2"
       ]
     },
     {
       "aniListId": 190569,
       "title": "Jaadugar: A Witch in Mongolia",
       "moduleId": "8NDe",
-      "catalogPath": "Sources/English/009",
+      "catalogPath": "Sources/English/010",
       "sourceName": "FireAnime English (SUB)",
       "errors": [
         "stream: extractStreamUrl returned an unusable result",
@@ -794,72 +1578,20 @@
       ]
     },
     {
-      "aniListId": 201514,
-      "title": "Rich Girl Caretaker: I'm Secretly the Caregiver of the Most Popular Girl in This Rich Kid School",
-      "moduleId": "animesogo-local",
-      "catalogPath": "Sources/English/007",
-      "sourceName": "AnimeSogo",
+      "aniListId": 207141,
+      "title": "Chainsmoker Cat",
+      "moduleId": "mod_640849195",
+      "catalogPath": "Sources/English/019",
+      "sourceName": "Animepahe (SUB)",
       "errors": [
-        "stream: extractStreamUrl timed out"
-      ]
-    },
-    {
-      "aniListId": 201514,
-      "title": "Rich Girl Caretaker: I'm Secretly the Caregiver of the Most Popular Girl in This Rich Kid School",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/010",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 185542,
-      "title": "Skeleton Knight in Another World Season 2",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/020",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 185542,
-      "title": "Skeleton Knight in Another World Season 2",
-      "moduleId": "jhWaO",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "AnimeGG",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 190569,
-      "title": "Jaadugar: A Witch in Mongolia",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/010",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 185542,
-      "title": "Skeleton Knight in Another World Season 2",
-      "moduleId": "animex-local",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Animex",
-      "errors": [
-        "episodes: Animex HTTP 403",
-        "episodes: Animex HTTP 403",
-        "episodes: Animex HTTP 403"
+        "implausible episode match: verified=1 available=73 expected<=1"
       ]
     },
     {
       "aniListId": 190569,
       "title": "Jaadugar: A Witch in Mongolia",
       "moduleId": "jF12G",
-      "catalogPath": "Sources/English/004",
+      "catalogPath": "Sources/English/009",
       "sourceName": "Anikoto",
       "errors": [
         "stream: extractStreamUrl returned an unusable result",
@@ -868,76 +1600,315 @@
       ]
     },
     {
-      "aniListId": 185542,
-      "title": "Skeleton Knight in Another World Season 2",
-      "moduleId": "8NDe",
-      "catalogPath": "Sources/English/009",
-      "sourceName": "FireAnime English (SUB)",
+      "aniListId": 201514,
+      "title": "Rich Girl Caretaker: I'm Secretly the Caregiver of the Most Popular Girl in This Rich Kid School",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/002",
+      "sourceName": "OneTouch TV",
       "errors": [
         "search: searchResults returned an unusable result"
       ]
     },
     {
-      "aniListId": 199547,
-      "title": "MARRIAGETOXIN",
+      "aniListId": 201514,
+      "title": "Rich Girl Caretaker: I'm Secretly the Caregiver of the Most Popular Girl in This Rich Kid School",
       "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/020",
+      "catalogPath": "Sources/English/016",
       "sourceName": "AnimeLand",
       "errors": [
         "search: searchResults returned an unusable result"
       ]
     },
     {
-      "aniListId": 199547,
-      "title": "MARRIAGETOXIN",
-      "moduleId": "animex-local",
+      "aniListId": 190569,
+      "title": "Jaadugar: A Witch in Mongolia",
+      "moduleId": "jCtAp",
+      "catalogPath": "Sources/English/015",
+      "sourceName": "123Anime",
+      "errors": [
+        "stored route too slow: 2422ms > 2200ms"
+      ]
+    },
+    {
+      "aniListId": 201514,
+      "title": "Rich Girl Caretaker: I'm Secretly the Caregiver of the Most Popular Girl in This Rich Kid School",
+      "moduleId": "vidlink-local",
       "catalogPath": "Sources/English/005",
+      "sourceName": "VidLink",
+      "errors": [
+        "implausible episode match: verified=1 available=12 expected<=1"
+      ]
+    },
+    {
+      "aniListId": 201514,
+      "title": "Rich Girl Caretaker: I'm Secretly the Caregiver of the Most Popular Girl in This Rich Kid School",
+      "moduleId": "jhWaO",
+      "catalogPath": "Sources/English/006",
+      "sourceName": "AnimeGG",
+      "errors": [
+        "stream: extractStreamUrl returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 190569,
+      "title": "Jaadugar: A Witch in Mongolia",
+      "moduleId": "zangetsu_hianime",
+      "catalogPath": "Sources/English/018",
+      "sourceName": "HiAnime (Zangetsu)",
+      "errors": [
+        "stream: HiAnime: no MegaPlay id"
+      ]
+    },
+    {
+      "aniListId": 201514,
+      "title": "Rich Girl Caretaker: I'm Secretly the Caregiver of the Most Popular Girl in This Rich Kid School",
+      "moduleId": "animex-local",
+      "catalogPath": "Sources/English/007",
       "sourceName": "Animex",
       "errors": [
-        "episodes: Animex HTTP 403",
-        "episodes: Animex HTTP 403",
-        "episodes: Animex HTTP 403"
+        "implausible episode match: verified=1 available=60 expected<=1"
+      ]
+    },
+    {
+      "aniListId": 190569,
+      "title": "Jaadugar: A Witch in Mongolia",
+      "moduleId": "zangetsu_animekai",
+      "catalogPath": "Sources/English/017",
+      "sourceName": "AnimeKai (Zangetsu)",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 190569,
+      "title": "Jaadugar: A Witch in Mongolia",
+      "moduleId": "mod_640849195",
+      "catalogPath": "Sources/English/019",
+      "sourceName": "Animepahe (SUB)",
+      "errors": [
+        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 201514,
+      "title": "Rich Girl Caretaker: I'm Secretly the Caregiver of the Most Popular Girl in This Rich Kid School",
+      "moduleId": "jZdQ",
+      "catalogPath": "Sources/English/013",
+      "sourceName": "AniWorld (ENG SUB)",
+      "errors": [
+        "search: searchResults returned an unusable result"
       ]
     },
     {
       "aniListId": 185542,
       "title": "Skeleton Knight in Another World Season 2",
       "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/010",
+      "catalogPath": "Sources/English/002",
       "sourceName": "OneTouch TV",
       "errors": [
         "implausible episode match: verified=1 available=13 expected<=1"
       ]
     },
     {
-      "aniListId": 197178,
-      "title": "ONE PIECE HEROINES",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/020",
-      "sourceName": "AnimeLand",
+      "aniListId": 201514,
+      "title": "Rich Girl Caretaker: I'm Secretly the Caregiver of the Most Popular Girl in This Rich Kid School",
+      "moduleId": "jCtAp",
+      "catalogPath": "Sources/English/015",
+      "sourceName": "123Anime",
       "errors": [
         "search: searchResults returned an unusable result"
       ]
     },
     {
-      "aniListId": 197178,
-      "title": "ONE PIECE HEROINES",
+      "aniListId": 185542,
+      "title": "Skeleton Knight in Another World Season 2",
+      "moduleId": "vidlink-local",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "VidLink",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 201514,
+      "title": "Rich Girl Caretaker: I'm Secretly the Caregiver of the Most Popular Girl in This Rich Kid School",
+      "moduleId": "zangetsu_hianime",
+      "catalogPath": "Sources/English/018",
+      "sourceName": "HiAnime (Zangetsu)",
+      "errors": [
+        "stream: HiAnime: no MegaPlay id"
+      ]
+    },
+    {
+      "aniListId": 185542,
+      "title": "Skeleton Knight in Another World Season 2",
       "moduleId": "jhWaO",
-      "catalogPath": "Sources/English/002",
+      "catalogPath": "Sources/English/006",
       "sourceName": "AnimeGG",
       "errors": [
         "search: searchResults returned an unusable result"
       ]
     },
     {
-      "aniListId": 197178,
-      "title": "ONE PIECE HEROINES",
+      "aniListId": 185542,
+      "title": "Skeleton Knight in Another World Season 2",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/016",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 185542,
+      "title": "Skeleton Knight in Another World Season 2",
       "moduleId": "animex-local",
-      "catalogPath": "Sources/English/005",
+      "catalogPath": "Sources/English/007",
       "sourceName": "Animex",
       "errors": [
-        "episodes: Animex HTTP 403",
-        "episodes: Animex HTTP 403"
+        "implausible episode match: verified=1 available=60 expected<=1"
+      ]
+    },
+    {
+      "aniListId": 201514,
+      "title": "Rich Girl Caretaker: I'm Secretly the Caregiver of the Most Popular Girl in This Rich Kid School",
+      "moduleId": "zangetsu_animekai",
+      "catalogPath": "Sources/English/017",
+      "sourceName": "AnimeKai (Zangetsu)",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 185542,
+      "title": "Skeleton Knight in Another World Season 2",
+      "moduleId": "8NDe",
+      "catalogPath": "Sources/English/010",
+      "sourceName": "FireAnime English (SUB)",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 185542,
+      "title": "Skeleton Knight in Another World Season 2",
+      "moduleId": "jZdQ",
+      "catalogPath": "Sources/English/013",
+      "sourceName": "AniWorld (ENG SUB)",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 185542,
+      "title": "Skeleton Knight in Another World Season 2",
+      "moduleId": "jCtAp",
+      "catalogPath": "Sources/English/015",
+      "sourceName": "123Anime",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 185542,
+      "title": "Skeleton Knight in Another World Season 2",
+      "moduleId": "zangetsu_hianime",
+      "catalogPath": "Sources/English/018",
+      "sourceName": "HiAnime (Zangetsu)",
+      "errors": [
+        "stream: HiAnime: no MegaPlay id"
+      ]
+    },
+    {
+      "aniListId": 185542,
+      "title": "Skeleton Knight in Another World Season 2",
+      "moduleId": "zc8g",
+      "catalogPath": "Sources/English/014",
+      "sourceName": "Aniwave",
+      "errors": [
+        "stored route too slow: 2232ms > 2200ms"
+      ]
+    },
+    {
+      "aniListId": 185542,
+      "title": "Skeleton Knight in Another World Season 2",
+      "moduleId": "zangetsu_animekai",
+      "catalogPath": "Sources/English/017",
+      "sourceName": "AnimeKai (Zangetsu)",
+      "errors": [
+        "stored route too slow: 2738ms > 2200ms"
+      ]
+    },
+    {
+      "aniListId": 201514,
+      "title": "Rich Girl Caretaker: I'm Secretly the Caregiver of the Most Popular Girl in This Rich Kid School",
+      "moduleId": "mod_640849195",
+      "catalogPath": "Sources/English/019",
+      "sourceName": "Animepahe (SUB)",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 199547,
+      "title": "MARRIAGETOXIN",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/002",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 199547,
+      "title": "MARRIAGETOXIN",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/016",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 199547,
+      "title": "MARRIAGETOXIN",
+      "moduleId": "vidlink-local",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "VidLink",
+      "errors": [
+        "stream: Unexpected end of JSON input"
+      ]
+    },
+    {
+      "aniListId": 199547,
+      "title": "MARRIAGETOXIN",
+      "moduleId": "animex-local",
+      "catalogPath": "Sources/English/007",
+      "sourceName": "Animex",
+      "errors": [
+        "implausible episode match: verified=13 available=60 expected<=13"
+      ]
+    },
+    {
+      "aniListId": 185542,
+      "title": "Skeleton Knight in Another World Season 2",
+      "moduleId": "mod_640849195",
+      "catalogPath": "Sources/English/019",
+      "sourceName": "Animepahe (SUB)",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 197178,
+      "title": "ONE PIECE HEROINES",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/002",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "No matching route found"
       ]
     },
     {
@@ -951,11 +1922,11 @@
       ]
     },
     {
-      "aniListId": 199547,
-      "title": "MARRIAGETOXIN",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/010",
-      "sourceName": "OneTouch TV",
+      "aniListId": 197178,
+      "title": "ONE PIECE HEROINES",
+      "moduleId": "jhWaO",
+      "catalogPath": "Sources/English/006",
+      "sourceName": "AnimeGG",
       "errors": [
         "search: searchResults returned an unusable result"
       ]
@@ -963,1097 +1934,101 @@
     {
       "aniListId": 197178,
       "title": "ONE PIECE HEROINES",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/010",
-      "sourceName": "OneTouch TV",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/016",
+      "sourceName": "AnimeLand",
       "errors": [
-        "No matching route found"
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 197178,
+      "title": "ONE PIECE HEROINES",
+      "moduleId": "animex-local",
+      "catalogPath": "Sources/English/007",
+      "sourceName": "Animex",
+      "errors": [
+        "implausible episode match: verified=1 available=60 expected<=1"
       ]
     },
     {
       "aniListId": 197178,
       "title": "ONE PIECE HEROINES",
       "moduleId": "8NDe",
-      "catalogPath": "Sources/English/009",
+      "catalogPath": "Sources/English/010",
       "sourceName": "FireAnime English (SUB)",
       "errors": [
         "implausible episode match: verified=1 available=1218 expected<=1"
       ]
     },
     {
-      "aniListId": 186497,
-      "title": "The Ramparts of Ice",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/020",
-      "sourceName": "AnimeLand",
+      "aniListId": 197178,
+      "title": "ONE PIECE HEROINES",
+      "moduleId": "jZdQ",
+      "catalogPath": "Sources/English/013",
+      "sourceName": "AniWorld (ENG SUB)",
       "errors": [
         "search: searchResults returned an unusable result"
       ]
     },
     {
-      "aniListId": 186497,
-      "title": "The Ramparts of Ice",
-      "moduleId": "jhWaO",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "AnimeGG",
+      "aniListId": 199547,
+      "title": "MARRIAGETOXIN",
+      "moduleId": "jCtAp",
+      "catalogPath": "Sources/English/015",
+      "sourceName": "123Anime",
       "errors": [
-        "implausible episode match: verified=3 available=1 expected<=14"
+        "stored route too slow: 2685ms > 2200ms"
       ]
     },
     {
-      "aniListId": 180745,
-      "title": "Classroom of the Elite 4th Season: Second Year, First Semester",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/020",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 186497,
-      "title": "The Ramparts of Ice",
-      "moduleId": "BNbnN",
-      "catalogPath": "Sources/English/006",
-      "sourceName": "AnimeDefenders",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 186497,
-      "title": "The Ramparts of Ice",
-      "moduleId": "animex-local",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Animex",
-      "errors": [
-        "episodes: Animex HTTP 403",
-        "episodes: Animex HTTP 403",
-        "episodes: Animex HTTP 403"
-      ]
-    },
-    {
-      "aniListId": 180745,
-      "title": "Classroom of the Elite 4th Season: Second Year, First Semester",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Anikoto",
-      "errors": [
-        "implausible episode match: verified=13 available=13 expected<=16"
-      ]
-    },
-    {
-      "aniListId": 180745,
-      "title": "Classroom of the Elite 4th Season: Second Year, First Semester",
-      "moduleId": "animekai-unoriginal-local",
-      "catalogPath": "Sources/English/003",
-      "sourceName": "AnimeKai (Unoriginal)",
-      "errors": [
-        "implausible episode match: verified=13 available=13 expected<=16"
-      ]
-    },
-    {
-      "aniListId": 180745,
-      "title": "Classroom of the Elite 4th Season: Second Year, First Semester",
-      "moduleId": "animesogo-local",
-      "catalogPath": "Sources/English/007",
-      "sourceName": "AnimeSogo",
-      "errors": [
-        "implausible episode match: verified=13 available=13 expected<=16"
-      ]
-    },
-    {
-      "aniListId": 180745,
-      "title": "Classroom of the Elite 4th Season: Second Year, First Semester",
-      "moduleId": "8NDe",
-      "catalogPath": "Sources/English/009",
-      "sourceName": "FireAnime English (SUB)",
-      "errors": [
-        "implausible episode match: verified=16 available=155 expected<=16"
-      ]
-    },
-    {
-      "aniListId": 186497,
-      "title": "The Ramparts of Ice",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/010",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 180745,
-      "title": "Classroom of the Elite 4th Season: Second Year, First Semester",
-      "moduleId": "jWih3",
-      "catalogPath": "Sources/English/011",
-      "sourceName": "AniNeko",
-      "errors": [
-        "implausible episode match: verified=13 available=13 expected<=16"
-      ]
-    },
-    {
-      "aniListId": 180745,
-      "title": "Classroom of the Elite 4th Season: Second Year, First Semester",
-      "moduleId": "animex-local",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Animex",
-      "errors": [
-        "episodes: Animex HTTP 403",
-        "episodes: Animex HTTP 403",
-        "episodes: Animex HTTP 403"
-      ]
-    },
-    {
-      "aniListId": 186497,
-      "title": "The Ramparts of Ice",
-      "moduleId": "jWih3",
-      "catalogPath": "Sources/English/011",
-      "sourceName": "AniNeko",
+      "aniListId": 199547,
+      "title": "MARRIAGETOXIN",
+      "moduleId": "zangetsu_animekai",
+      "catalogPath": "Sources/English/017",
+      "sourceName": "AnimeKai (Zangetsu)",
       "errors": [
         "stream: extractStreamUrl timed out"
       ]
     },
     {
-      "aniListId": 180136,
-      "title": "The Exiled Heavy Knight Knows How to Game the System",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/020",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 180136,
-      "title": "The Exiled Heavy Knight Knows How to Game the System",
-      "moduleId": "jhWaO",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "AnimeGG",
-      "errors": [
-        "stream: extractStreamUrl returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 180136,
-      "title": "The Exiled Heavy Knight Knows How to Game the System",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Anikoto",
-      "errors": [
-        "implausible episode match: verified=1 available=24 expected<=1"
-      ]
-    },
-    {
-      "aniListId": 169580,
-      "title": "I Made Friends with the Second Prettiest Girl in My Class",
-      "moduleId": "jhWaO",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "AnimeGG",
-      "errors": [
-        "implausible episode match: verified=11 available=10 expected<=12"
-      ]
-    },
-    {
-      "aniListId": 169580,
-      "title": "I Made Friends with the Second Prettiest Girl in My Class",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/020",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 180136,
-      "title": "The Exiled Heavy Knight Knows How to Game the System",
-      "moduleId": "8NDe",
-      "catalogPath": "Sources/English/009",
-      "sourceName": "FireAnime English (SUB)",
-      "errors": [
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 180136,
-      "title": "The Exiled Heavy Knight Knows How to Game the System",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/010",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 169580,
-      "title": "I Made Friends with the Second Prettiest Girl in My Class",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/010",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "implausible episode match: verified=1 available=1 expected<=12"
-      ]
-    },
-    {
-      "aniListId": 180136,
-      "title": "The Exiled Heavy Knight Knows How to Game the System",
-      "moduleId": "animex-local",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Animex",
-      "errors": [
-        "episodes: Animex HTTP 403",
-        "episodes: Animex HTTP 403",
-        "episodes: Animex HTTP 403"
-      ]
-    },
-    {
-      "aniListId": 184492,
-      "title": "Welcome to Demon School! Iruma-kun Season 4",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/020",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 184492,
-      "title": "Welcome to Demon School! Iruma-kun Season 4",
-      "moduleId": "jhWaO",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "AnimeGG",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 184492,
-      "title": "Welcome to Demon School! Iruma-kun Season 4",
-      "moduleId": "BNbnN",
-      "catalogPath": "Sources/English/006",
-      "sourceName": "AnimeDefenders",
-      "errors": [
-        "implausible episode match: verified=13 available=13 expected<=14"
-      ]
-    },
-    {
-      "aniListId": 184492,
-      "title": "Welcome to Demon School! Iruma-kun Season 4",
-      "moduleId": "8NDe",
-      "catalogPath": "Sources/English/009",
-      "sourceName": "FireAnime English (SUB)",
-      "errors": [
-        "No matching route found"
-      ]
-    },
-    {
-      "aniListId": 184492,
-      "title": "Welcome to Demon School! Iruma-kun Season 4",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/010",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "implausible episode match: verified=14 available=22 expected<=14"
-      ]
-    },
-    {
-      "aniListId": 169580,
-      "title": "I Made Friends with the Second Prettiest Girl in My Class",
-      "moduleId": "animex-local",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Animex",
-      "errors": [
-        "search: searchResults timed out"
-      ]
-    },
-    {
-      "aniListId": 194393,
-      "title": "I Want to End this Love Game",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/020",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 194393,
-      "title": "I Want to End this Love Game",
-      "moduleId": "jhWaO",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "AnimeGG",
-      "errors": [
-        "implausible episode match: verified=11 available=11 expected<=12"
-      ]
-    },
-    {
-      "aniListId": 194393,
-      "title": "I Want to End this Love Game",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/010",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 184492,
-      "title": "Welcome to Demon School! Iruma-kun Season 4",
-      "moduleId": "animex-local",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Animex",
-      "errors": [
-        "search: searchResults timed out"
-      ]
-    },
-    {
-      "aniListId": 187260,
-      "title": "I Want to Love You Till Your Dying Day",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/020",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 187260,
-      "title": "I Want to Love You Till Your Dying Day",
-      "moduleId": "jhWaO",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "AnimeGG",
-      "errors": [
-        "stream: extractStreamUrl returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 187260,
-      "title": "I Want to Love You Till Your Dying Day",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/010",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 194393,
-      "title": "I Want to End this Love Game",
-      "moduleId": "animex-local",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Animex",
-      "errors": [
-        "search: searchResults timed out"
-      ]
-    },
-    {
-      "aniListId": 199111,
-      "title": "Grand Blue Dreaming Season 3",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/020",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 199111,
-      "title": "Grand Blue Dreaming Season 3",
-      "moduleId": "jhWaO",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "AnimeGG",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 199111,
-      "title": "Grand Blue Dreaming Season 3",
-      "moduleId": "8NDe",
-      "catalogPath": "Sources/English/009",
-      "sourceName": "FireAnime English (SUB)",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 199111,
-      "title": "Grand Blue Dreaming Season 3",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/010",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "implausible episode match: verified=1 available=12 expected<=1"
-      ]
-    },
-    {
-      "aniListId": 199111,
-      "title": "Grand Blue Dreaming Season 3",
-      "moduleId": "animex-local",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Animex",
-      "errors": [
-        "search: searchResults timed out"
-      ]
-    },
-    {
-      "aniListId": 177699,
-      "title": "THE GHOST IN THE SHELL",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/020",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 177699,
-      "title": "THE GHOST IN THE SHELL",
-      "moduleId": "jhWaO",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "AnimeGG",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 177699,
-      "title": "THE GHOST IN THE SHELL",
-      "moduleId": "BNbnN",
-      "catalogPath": "Sources/English/006",
-      "sourceName": "AnimeDefenders",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 187260,
-      "title": "I Want to Love You Till Your Dying Day",
-      "moduleId": "animex-local",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Animex",
-      "errors": [
-        "search: searchResults timed out"
-      ]
-    },
-    {
-      "aniListId": 208044,
-      "title": "From Overshadowed to Overpowered: Second Reincarnation of a Talentless Sage",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/020",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 208044,
-      "title": "From Overshadowed to Overpowered: Second Reincarnation of a Talentless Sage",
-      "moduleId": "jhWaO",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "AnimeGG",
-      "errors": [
-        "stream: extractStreamUrl returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 208044,
-      "title": "From Overshadowed to Overpowered: Second Reincarnation of a Talentless Sage",
-      "moduleId": "animekai-unoriginal-local",
-      "catalogPath": "Sources/English/003",
-      "sourceName": "AnimeKai (Unoriginal)",
-      "errors": [
-        "implausible episode match: verified=2 available=12 expected<=2"
-      ]
-    },
-    {
-      "aniListId": 208044,
-      "title": "From Overshadowed to Overpowered: Second Reincarnation of a Talentless Sage",
-      "moduleId": "BNbnN",
-      "catalogPath": "Sources/English/006",
-      "sourceName": "AnimeDefenders",
-      "errors": [
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 208044,
-      "title": "From Overshadowed to Overpowered: Second Reincarnation of a Talentless Sage",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/010",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "implausible episode match: verified=2 available=10 expected<=2"
-      ]
-    },
-    {
-      "aniListId": 208044,
-      "title": "From Overshadowed to Overpowered: Second Reincarnation of a Talentless Sage",
-      "moduleId": "animex-local",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Animex",
-      "errors": [
-        "search: searchResults timed out"
-      ]
-    },
-    {
-      "aniListId": 197715,
-      "title": "The Villager of Level 999",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/020",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 197715,
-      "title": "The Villager of Level 999",
-      "moduleId": "jhWaO",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "AnimeGG",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 197715,
-      "title": "The Villager of Level 999",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Anikoto",
-      "errors": [
-        "implausible episode match: verified=2 available=13 expected<=2"
-      ]
-    },
-    {
-      "aniListId": 197715,
-      "title": "The Villager of Level 999",
-      "moduleId": "animekai-unoriginal-local",
-      "catalogPath": "Sources/English/003",
-      "sourceName": "AnimeKai (Unoriginal)",
-      "errors": [
-        "implausible episode match: verified=2 available=13 expected<=2"
-      ]
-    },
-    {
-      "aniListId": 197715,
-      "title": "The Villager of Level 999",
-      "moduleId": "BNbnN",
-      "catalogPath": "Sources/English/006",
-      "sourceName": "AnimeDefenders",
-      "errors": [
-        "episodes: extractEpisodes returned an unusable result",
-        "episodes: extractEpisodes returned an unusable result",
-        "episodes: extractEpisodes returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 197715,
-      "title": "The Villager of Level 999",
-      "moduleId": "8NDe",
-      "catalogPath": "Sources/English/009",
-      "sourceName": "FireAnime English (SUB)",
-      "errors": [
-        "implausible episode match: verified=2 available=13 expected<=2"
-      ]
-    },
-    {
-      "aniListId": 197715,
-      "title": "The Villager of Level 999",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/010",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "implausible episode match: verified=1 available=1 expected<=2"
-      ]
-    },
-    {
-      "aniListId": 177699,
-      "title": "THE GHOST IN THE SHELL",
-      "moduleId": "animex-local",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Animex",
-      "errors": [
-        "search: searchResults timed out"
-      ]
-    },
-    {
-      "aniListId": 209983,
-      "title": "HELL MODE: The Hardcore Gamer Dominates in Another World with Garbage Balancing Season 2",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/020",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 209983,
-      "title": "HELL MODE: The Hardcore Gamer Dominates in Another World with Garbage Balancing Season 2",
-      "moduleId": "jhWaO",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "AnimeGG",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 209983,
-      "title": "HELL MODE: The Hardcore Gamer Dominates in Another World with Garbage Balancing Season 2",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Anikoto",
-      "errors": [
-        "implausible episode match: verified=1 available=12 expected<=1"
-      ]
-    },
-    {
-      "aniListId": 209983,
-      "title": "HELL MODE: The Hardcore Gamer Dominates in Another World with Garbage Balancing Season 2",
-      "moduleId": "BNbnN",
-      "catalogPath": "Sources/English/006",
-      "sourceName": "AnimeDefenders",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 209983,
-      "title": "HELL MODE: The Hardcore Gamer Dominates in Another World with Garbage Balancing Season 2",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/010",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 209983,
-      "title": "HELL MODE: The Hardcore Gamer Dominates in Another World with Garbage Balancing Season 2",
-      "moduleId": "8NDe",
-      "catalogPath": "Sources/English/009",
-      "sourceName": "FireAnime English (SUB)",
-      "errors": [
-        "search: searchResults timed out"
-      ]
-    },
-    {
-      "aniListId": 197715,
-      "title": "The Villager of Level 999",
-      "moduleId": "animex-local",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Animex",
-      "errors": [
-        "search: searchResults timed out"
-      ]
-    },
-    {
-      "aniListId": 199748,
-      "title": "I Became a Legend After My 10 Year-Long Last Stand",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/020",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 199748,
-      "title": "I Became a Legend After My 10 Year-Long Last Stand",
-      "moduleId": "jhWaO",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "AnimeGG",
-      "errors": [
-        "stream: extractStreamUrl returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 199748,
-      "title": "I Became a Legend After My 10 Year-Long Last Stand",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Anikoto",
-      "errors": [
-        "implausible episode match: verified=1 available=12 expected<=1"
-      ]
-    },
-    {
-      "aniListId": 199748,
-      "title": "I Became a Legend After My 10 Year-Long Last Stand",
-      "moduleId": "8NDe",
-      "catalogPath": "Sources/English/009",
-      "sourceName": "FireAnime English (SUB)",
-      "errors": [
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 209983,
-      "title": "HELL MODE: The Hardcore Gamer Dominates in Another World with Garbage Balancing Season 2",
-      "moduleId": "animex-local",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Animex",
-      "errors": [
-        "search: searchResults timed out"
-      ]
-    },
-    {
-      "aniListId": 204466,
-      "title": "KAIJU GIRL CARAMELISE",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/020",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 204466,
-      "title": "KAIJU GIRL CARAMELISE",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Anikoto",
-      "errors": [
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 204466,
-      "title": "KAIJU GIRL CARAMELISE",
-      "moduleId": "jhWaO",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "AnimeGG",
-      "errors": [
-        "stream: extractStreamUrl returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 204466,
-      "title": "KAIJU GIRL CARAMELISE",
-      "moduleId": "8NDe",
-      "catalogPath": "Sources/English/009",
-      "sourceName": "FireAnime English (SUB)",
-      "errors": [
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 204466,
-      "title": "KAIJU GIRL CARAMELISE",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/010",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 199748,
-      "title": "I Became a Legend After My 10 Year-Long Last Stand",
-      "moduleId": "animex-local",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Animex",
-      "errors": [
-        "implausible episode match: verified=1 available=60 expected<=1"
-      ]
-    },
-    {
-      "aniListId": 204466,
-      "title": "KAIJU GIRL CARAMELISE",
-      "moduleId": "animex-local",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Animex",
-      "errors": [
-        "implausible episode match: verified=1 available=60 expected<=1"
-      ]
-    },
-    {
-      "aniListId": 16498,
-      "title": "Attack on Titan",
-      "moduleId": "jhWaO",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "AnimeGG",
-      "errors": [
-        "implausible episode match: verified=6 available=1 expected<=25"
-      ]
-    },
-    {
-      "aniListId": 16498,
-      "title": "Attack on Titan",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/020",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "stream: extractStreamUrl returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 101922,
-      "title": "Demon Slayer: Kimetsu no Yaiba",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/020",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "implausible episode match: verified=11 available=11 expected<=26"
-      ]
-    },
-    {
-      "aniListId": 101922,
-      "title": "Demon Slayer: Kimetsu no Yaiba",
-      "moduleId": "jhWaO",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "AnimeGG",
-      "errors": [
-        "implausible episode match: verified=7 available=7 expected<=26"
-      ]
-    },
-    {
-      "aniListId": 101922,
-      "title": "Demon Slayer: Kimetsu no Yaiba",
-      "moduleId": "BNbnN",
-      "catalogPath": "Sources/English/006",
-      "sourceName": "AnimeDefenders",
-      "errors": [
-        "implausible episode match: verified=7 available=7 expected<=26"
-      ]
-    },
-    {
-      "aniListId": 101922,
-      "title": "Demon Slayer: Kimetsu no Yaiba",
-      "moduleId": "8NDe",
-      "catalogPath": "Sources/English/009",
-      "sourceName": "FireAnime English (SUB)",
-      "errors": [
-        "implausible episode match: verified=26 available=66 expected<=26"
-      ]
-    },
-    {
-      "aniListId": 16498,
-      "title": "Attack on Titan",
-      "moduleId": "8NDe",
-      "catalogPath": "Sources/English/009",
-      "sourceName": "FireAnime English (SUB)",
-      "errors": [
-        "implausible episode match: verified=25 available=101 expected<=25"
-      ]
-    },
-    {
-      "aniListId": 101922,
-      "title": "Demon Slayer: Kimetsu no Yaiba",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/010",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "implausible episode match: verified=1 available=1 expected<=26"
-      ]
-    },
-    {
-      "aniListId": 101922,
-      "title": "Demon Slayer: Kimetsu no Yaiba",
-      "moduleId": "jWih3",
-      "catalogPath": "Sources/English/011",
-      "sourceName": "AniNeko",
+      "aniListId": 199547,
+      "title": "MARRIAGETOXIN",
+      "moduleId": "zc8g",
+      "catalogPath": "Sources/English/014",
+      "sourceName": "Aniwave",
       "errors": [
         "stream: extractStreamUrl timed out"
       ]
     },
     {
-      "aniListId": 16498,
-      "title": "Attack on Titan",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/010",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "implausible episode match: verified=1 available=1 expected<=25"
-      ]
-    },
-    {
-      "aniListId": 16498,
-      "title": "Attack on Titan",
-      "moduleId": "animex-local",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Animex",
-      "errors": [
-        "search: searchResults timed out"
-      ]
-    },
-    {
-      "aniListId": 113415,
-      "title": "JUJUTSU KAISEN",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/020",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "implausible episode match: verified=23 available=23 expected<=24"
-      ]
-    },
-    {
-      "aniListId": 113415,
-      "title": "JUJUTSU KAISEN",
-      "moduleId": "animekai-unoriginal-local",
-      "catalogPath": "Sources/English/003",
-      "sourceName": "AnimeKai (Unoriginal)",
-      "errors": [
-        "implausible episode match: verified=12 available=12 expected<=24"
-      ]
-    },
-    {
-      "aniListId": 113415,
-      "title": "JUJUTSU KAISEN",
-      "moduleId": "animesogo-local",
-      "catalogPath": "Sources/English/007",
-      "sourceName": "AnimeSogo",
-      "errors": [
-        "implausible episode match: verified=1 available=1 expected<=24"
-      ]
-    },
-    {
-      "aniListId": 113415,
-      "title": "JUJUTSU KAISEN",
-      "moduleId": "8NDe",
-      "catalogPath": "Sources/English/009",
-      "sourceName": "FireAnime English (SUB)",
-      "errors": [
-        "implausible episode match: verified=24 available=62 expected<=24"
-      ]
-    },
-    {
-      "aniListId": 113415,
-      "title": "JUJUTSU KAISEN",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/010",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "implausible episode match: verified=1 available=1 expected<=24"
-      ]
-    },
-    {
-      "aniListId": 113415,
-      "title": "JUJUTSU KAISEN",
-      "moduleId": "jWih3",
-      "catalogPath": "Sources/English/011",
-      "sourceName": "AniNeko",
-      "errors": [
-        "implausible episode match: verified=12 available=12 expected<=24"
-      ]
-    },
-    {
-      "aniListId": 101922,
-      "title": "Demon Slayer: Kimetsu no Yaiba",
-      "moduleId": "animex-local",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Animex",
-      "errors": [
-        "search: searchResults timed out"
-      ]
-    },
-    {
-      "aniListId": 1535,
-      "title": "Death Note",
-      "moduleId": "jhWaO",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "AnimeGG",
-      "errors": [
-        "implausible episode match: verified=2 available=2 expected<=37"
-      ]
-    },
-    {
-      "aniListId": 1535,
-      "title": "Death Note",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/020",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "stream: extractStreamUrl returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 1535,
-      "title": "Death Note",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/010",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "implausible episode match: verified=1 available=1 expected<=37"
-      ]
-    },
-    {
-      "aniListId": 113415,
-      "title": "JUJUTSU KAISEN",
-      "moduleId": "animex-local",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Animex",
-      "errors": [
-        "implausible episode match: verified=24 available=60 expected<=24"
-      ]
-    },
-    {
-      "aniListId": 21459,
-      "title": "My Hero Academia",
-      "moduleId": "jhWaO",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "AnimeGG",
-      "errors": [
-        "implausible episode match: verified=11 available=5 expected<=13"
-      ]
-    },
-    {
-      "aniListId": 21459,
-      "title": "My Hero Academia",
-      "moduleId": "8NDe",
-      "catalogPath": "Sources/English/009",
-      "sourceName": "FireAnime English (SUB)",
-      "errors": [
-        "implausible episode match: verified=13 available=185 expected<=13"
-      ]
-    },
-    {
-      "aniListId": 21459,
-      "title": "My Hero Academia",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/010",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "implausible episode match: verified=1 available=1 expected<=13"
-      ]
-    },
-    {
-      "aniListId": 1535,
-      "title": "Death Note",
-      "moduleId": "animex-local",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Animex",
-      "errors": [
-        "search: searchResults timed out"
-      ]
-    },
-    {
-      "aniListId": 11061,
-      "title": "Hunter x Hunter (2011)",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/020",
-      "sourceName": "AnimeLand",
+      "aniListId": 197178,
+      "title": "ONE PIECE HEROINES",
+      "moduleId": "zangetsu_hianime",
+      "catalogPath": "Sources/English/018",
+      "sourceName": "HiAnime (Zangetsu)",
       "errors": [
         "search: searchResults returned an unusable result"
       ]
     },
     {
-      "aniListId": 11061,
-      "title": "Hunter x Hunter (2011)",
-      "moduleId": "8NDe",
-      "catalogPath": "Sources/English/009",
-      "sourceName": "FireAnime English (SUB)",
+      "aniListId": 197178,
+      "title": "ONE PIECE HEROINES",
+      "moduleId": "jCtAp",
+      "catalogPath": "Sources/English/015",
+      "sourceName": "123Anime",
       "errors": [
-        "implausible episode match: verified=74 available=150 expected<=148"
+        "stored route too slow: 2421ms > 2200ms"
+      ]
+    },
+    {
+      "aniListId": 197178,
+      "title": "ONE PIECE HEROINES",
+      "moduleId": "zangetsu_animekai",
+      "catalogPath": "Sources/English/017",
+      "sourceName": "AnimeKai (Zangetsu)",
+      "errors": [
+        "stream: extractStreamUrl timed out"
       ]
     }
   ]

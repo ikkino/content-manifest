@@ -1,21 +1,26 @@
 {
-  "sourceName": "Aniwave",
-  "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/aniwave/icon.png",
-  "author": {
-    "name": "ibro",
-    "icon": "https://git.luna-app.eu/ibro/services/raw/branch/main/profile.jpg",
-    "url": "https://github.com/xibrox"
-  },
-  "version": "2.0.27",
+  "id": "zangetsu_animekai",
+  "sourceName": "AnimeKai (Zangetsu)",
+  "iconUrl": "",
+  "version": "1.1.2",
   "language": "English",
   "streamType": "HLS",
   "quality": "1080p",
-  "baseUrl": "https://aniwaves.ru/",
-  "searchBaseUrl": "https://aniwaves.ru/filter?keyword=%s",
+  "baseUrl": "https://animekai.to/",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/017/source.js",
-  "type": "anime",
-  "downloadSupport": true,
-  "asyncJS": true,
   "softsub": true,
-  "id": "zc8g"
+  "asyncJS": true,
+  "type": "anime",
+  "registry": "zangetsu",
+  "registries": [
+    "zangetsu"
+  ],
+  "manifestUrl": "https://raw.githubusercontent.com/Spyou/zangetsu-providers/main/index.json",
+  "status": "active",
+  "addedAt": "2026-06-14T10:25:50.353Z",
+  "note": "Ported from Zangetsu provider",
+  "author": {
+    "name": "Spyou",
+    "icon": ""
+  }
 }
