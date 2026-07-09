@@ -1,6 +1,6 @@
 async function searchResults(keyword) {
     const results = [];
-    
+
     try {
         const url = "https://an1me.to/wp-admin/admin-ajax.php?action=instant_search&query=" + encodeURIComponent(keyword);
         const headers = {
@@ -18,7 +18,7 @@ async function searchResults(keyword) {
         } catch (e) {
             return JSON.stringify(results);
         }
-        
+
         if (!data.success || !data.data || !data.data.html) {
             return JSON.stringify(results);
         }
@@ -27,15 +27,15 @@ async function searchResults(keyword) {
         const anchorPattern = /<a[^>]+href=["']([^"']+)["'][^>]*title=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/g;
         let anchorMatch;
         let matchCount = 0;
-        
+
         while ((anchorMatch = anchorPattern.exec(html)) !== null) {
             matchCount++;
             const href = anchorMatch[1];
             const title = anchorMatch[2];
             const innerHtml = anchorMatch[3];
-            
+
             const imgMatch = innerHtml.match(/<img[^>]+src=["']([^"']+)["'][^>]*>/);
-            
+
             if (imgMatch) {
                 results.push({
                     title: title.trim(),
@@ -44,7 +44,7 @@ async function searchResults(keyword) {
                 });
             }
         }
-        
+
         return JSON.stringify(results);
     } catch (err) {
         console.log("Search error:", err.message);
@@ -99,8 +99,8 @@ async function extractEpisodes(url) {
         };
         const response = await fetchv2(url, headers);
         const html = await response.text();
-        
-        const postIdMatch = html.match(/postid-(\d+)/) || 
+
+        const postIdMatch = html.match(/postid-(\d+)/) ||
                           html.match(/post_id['"]\s*,\s*['"](\d+)['"]/) ||
                           html.match(/anime_id['"]\s*:\s*(\d+)/);
 
@@ -110,7 +110,7 @@ async function extractEpisodes(url) {
         }
 
         const animeId = postIdMatch[1];
-        
+
         const firstPageUrl = `https://an1me.to/wp-admin/admin-ajax.php?action=get_episodes&anime_id=${animeId}&page=1&order=desc`;
         const firstPageRes = await fetchv2(firstPageUrl, headers);
         const firstPageData = await firstPageRes.json();
@@ -122,9 +122,9 @@ async function extractEpisodes(url) {
                     number: parseFloat(ep.meta_number)
                 });
             });
-            
+
             const maxPages = firstPageData.data.max_episodes_page || 1;
-            
+
             if (maxPages > 1) {
                 const promises = [];
                 for (let i = 2; i <= maxPages; i++) {
@@ -145,7 +145,7 @@ async function extractEpisodes(url) {
                 });
             }
         }
-        
+
         return JSON.stringify(results);
     } catch (err) {
         console.log("Error in extractEpisodes:", err);
@@ -165,20 +165,20 @@ async function extractStreamUrl(url) {
         };
         const response = await fetchv2(url, headers);
         const html = await response.text();
-        
+
         const iframeMatch = html.match(/<iframe[^>]+src=["']([^"']+)["']/i);
         if (!iframeMatch) throw new Error("Iframe not found");
-        
+
         let iframeUrl = iframeMatch[1].replace(/&#038;/g, '&').replace(/&amp;/g, '&');
         const iframeResponse = await fetchv2(iframeUrl, headers);
         const iframeHtml = await iframeResponse.text();
-        
+
         const paramsMatch = iframeHtml.match(/const\s+params\s*=\s*({.*?});/s);
         if (!paramsMatch) throw new Error("Params not found");
-        
+
         const params = JSON.parse(paramsMatch[1]);
         const streamUrl = params.sources?.[0]?.url;
-        
+
         console.log("Stream URL secured:", streamUrl);
         return streamUrl || "https://files.catbox.moe/avolvc.mp4";
     } catch (err) {

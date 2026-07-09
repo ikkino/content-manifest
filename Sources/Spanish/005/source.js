@@ -1,5 +1,5 @@
 /** JKanime Sora Module
- * 
+ *
  * Provides access to search, details, episodes, and video streaming links
  * from JKanime (https://jkanime.net/).
  */
@@ -12,7 +12,7 @@ function base64Decode(str) {
         if (typeof atob === 'function') return atob(str);
         if (typeof Buffer === 'function') return Buffer.from(str, 'base64').toString('utf-8');
     } catch (e) {}
-    
+
     var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
     var output = '';
     var char;
@@ -32,12 +32,12 @@ async function soraFetch(url, options = {}) {
     const headers = options.headers ?? {};
     const method = options.method ?? 'GET';
     const body = options.body ?? null;
-    
+
     // Inject default browser User-Agent to prevent Cloudflare/403 blocks
     if (!headers['User-Agent'] && !headers['user-agent']) {
         headers['User-Agent'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36';
     }
-    
+
     try {
         const res = await fetchv2(url, headers, method, body);
         let textRes = res;
@@ -96,7 +96,7 @@ async function searchResults(keyword) {
                 href: match[1].trim()
             });
         }
-        
+
         return JSON.stringify(results);
     } catch (error) {
         return JSON.stringify([]);
@@ -147,7 +147,7 @@ async function extractEpisodes(url) {
         if (!html) {
             return JSON.stringify([]);
         }
-        
+
 
         const slugMatch = url.match(/https?:\/\/(?:www\.)?jkanime\.net\/([^\/]+)/);
         const slug = slugMatch ? slugMatch[1] : '';
@@ -262,7 +262,7 @@ async function extractStreamUrl(url) {
                     const serverName = s.server;
                     // Skip unsupported download-only or end-to-end encrypted servers (Mediafire, Mega)
                     if (serverName === 'Mediafire' || serverName === 'Mega') continue;
-                    
+
                     const remoteB64 = s.remote;
                     if (remoteB64) {
                         const decodedUrl = base64Decode(remoteB64).trim();
@@ -283,7 +283,7 @@ async function extractStreamUrl(url) {
                                     } else if (serverName === 'Streamtape') {
                                         resolvedUrl = await extractStreamtape(decodedUrl);
                                     }
-                                    
+
                                     if (resolvedUrl) {
                                         streams.push({
                                             title: serverName,
@@ -447,7 +447,7 @@ function voeShiftChars(str, shift) {
 async function extractVOE(embedUrl) {
     let html = await soraFetch(embedUrl);
     if (!html) return null;
-    
+
     // Follow window.location redirect if present
     const titleMatch = html.match(/<title>(.*?)<\/title>/);
     if (titleMatch && titleMatch[1].toLowerCase().includes("redirect")) {
@@ -468,16 +468,16 @@ async function extractVOE(embedUrl) {
             }
         }
     }
-    
+
     if (!html) return null;
-    
+
     const jsonScriptMatch = html.match(/<script[^>]+type=["']application\/json["'][^>]*>([\s\S]*?)<\/script>/i);
     if (!jsonScriptMatch) return null;
-    
+
     const obfuscatedJson = jsonScriptMatch[1].trim();
     const data = JSON.parse(obfuscatedJson);
     if (!Array.isArray(data) || typeof data[0] !== "string") return null;
-    
+
     const obfuscatedString = data[0];
     const step1 = voeRot13(obfuscatedString);
     const step2 = voeRemovePatterns(step1);
@@ -485,7 +485,7 @@ async function extractVOE(embedUrl) {
     const step4 = voeShiftChars(step3, 3);
     const step5 = step4.split("").reverse().join("");
     const step6 = safeBase64Decode(step5);
-    
+
     const result = JSON.parse(step6);
     if (result && typeof result === "object") {
         return result.direct_access_url || (result.source && result.source[0] && (result.source[0].direct_access_url || result.source[0].file)) || null;
@@ -506,24 +506,24 @@ function randomStr(length) {
 async function extractDoodstream(embedUrl) {
     const html = await soraFetch(embedUrl);
     if (!html) return null;
-    
+
     const domainMatch = embedUrl.match(/https?:\/\/([^\/]+)/);
     if (!domainMatch) return null;
     const streamDomain = domainMatch[1];
-    
+
     const md5Match = html.match(/'\/pass_md5\/(.*?)',/);
     if (!md5Match) return null;
     const md5Path = md5Match[1];
     const token = md5Path.substring(md5Path.lastIndexOf("/") + 1);
     const expiryTimestamp = new Date().valueOf();
     const random = randomStr(10);
-    
+
     const passUrl = "https://" + streamDomain + "/pass_md5/" + md5Path;
     const passResponse = await soraFetch(passUrl, {
         headers: { "Referer": embedUrl }
     });
     if (!passResponse) return null;
-    
+
     const videoUrl = passResponse.trim() + random + "?token=" + token + "&expiry=" + expiryTimestamp;
     return videoUrl;
 }
@@ -532,14 +532,14 @@ async function extractDoodstream(embedUrl) {
 async function extractStreamtape(embedUrl) {
     const html = await soraFetch(embedUrl);
     if (!html) return null;
-    
+
     const domainMatch = embedUrl.match(/https?:\/\/([^\/]+)/);
     if (!domainMatch) return null;
     const streamDomain = domainMatch[1];
-    
+
     const scriptMatch = html.match(/document\.getElementById\('robotlink'\)\.innerHTML\s*=\s*'([^']+)'\s*\+\s*'([^']+)'/);
     if (!scriptMatch) return null;
-    
+
     const p1 = scriptMatch[1];
     const p2 = scriptMatch[2].substring(3);
     const streamUrl = "https://" + streamDomain + p1 + p2;

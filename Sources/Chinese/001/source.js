@@ -27,11 +27,11 @@ async function extractDetails(url) {
     let description = "N/A";
     if (match) {
         description = match[1]
-            .replace(/<[^>]+>/g, '') 
-            .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(code)) 
-            .replace(/&quot;/g, '"') 
-            .replace(/&apos;/g, "'") 
-            .replace(/&amp;/g, "&") 
+            .replace(/<[^>]+>/g, '')
+            .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(code))
+            .replace(/&quot;/g, '"')
+            .replace(/&apos;/g, "'")
+            .replace(/&amp;/g, "&")
             .trim();
     }
 
@@ -78,7 +78,7 @@ async function extractStreamUrl(url) {
         const videoMatch = iframeHtml.match(/videoUrl:\s*["']([^"']+)["']/i);
         if (!videoMatch) throw new Error("videoUrl not found");
 
-        return videoMatch[1].replace(/\\/g, ""); 
+        return videoMatch[1].replace(/\\/g, "");
     } catch (err) {
         return "https://files.catbox.moe/avolvc.mp4";
     }

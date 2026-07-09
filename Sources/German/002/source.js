@@ -1,265 +1,267 @@
+///////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////       Main Functions          //////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////
+
 async function searchResults(keyword) {
   try {
     const encodedKeyword = encodeURIComponent(keyword);
-    const body = JSON.stringify({ q: encodedKeyword, page: 1 });
+    const searchApiUrl = `https://aniworld.to/ajax/seriesSearch?keyword=${encodedKeyword}`;
+    const responseText = await soraFetch(searchApiUrl);
+    // console.log("Search API Response: " + await responseText.text());
+    const data = await responseText.json() || await JSON.parse(responseText);
+    console.log("Search API Data: ", data);
 
-    const test = await soraFetch("https://fireani.me/api.v1.AnimeSearchService/SearchAnimes", {
-      "headers": {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:152.0) Gecko/20100101 Firefox/152.0",
-        "Accept": "*/*",
-        "Accept-Language": "en",
-        "content-type": "application/json",
-      },
-      "referrer": "https://fireani.me/",
-      "body": body,
-      "method": "POST",
-    });
-
-    const data = await test.json() || JSON.parse(test);
-
-    const transformedResults = data.data.map(anime => ({
-      title: anime.title,
-      image: `https://fireani.me/img/posters/${anime.poster}`,
-      href: anime.slug
+    const transformedResults = data.map((anime) => ({
+      title: anime.name,
+      image: `https://aniworld.to${anime.cover}`,
+      href: `https://aniworld.to/anime/stream/${anime.link}`,
     }));
-    sendLog(transformedResults);
-    return JSON.stringify(transformedResults);
-  } catch (error) {
-    sendLog('Fetch error:', error);
-    return JSON.stringify([{ title: 'Error', image: '', href: '' }]);
-  }
-}
-
-async function extractDetails(slug) {
-  try {
-    const encodedID = encodeURIComponent(slug);
-
-
-    const response = await soraFetch("https://fireani.me/api.v1.anime.AnimeService/GetAnime", {
-      "headers": {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:152.0) Gecko/20100101 Firefox/152.0",
-        "Accept": "*/*",
-        "Accept-Language": "en",
-        "content-type": "application/json",
-      },
-      "referrer": "https://fireani.me/",
-      "body": `{"slug":"${encodedID}"}`,
-      "method": "POST",
-    });
-
-
-    const data = await response.json() || JSON.parse(response);
-
-    const animeInfo = data.data;
-
-    const transformedResults = [{
-      description: animeInfo.desc || 'No description available',
-      aliases: `Alternate Titles: ${animeInfo.alternateTitles || 'Unknown'}`,
-      airdate: `Aired: ${animeInfo.start ? animeInfo.start : 'Unknown'}`
-    }];
-    console.log(transformedResults);
 
     return JSON.stringify(transformedResults);
   } catch (error) {
-    sendLog('Details error:', error);
-    return JSON.stringify([{
-      description: 'Error loading description',
-      aliases: 'Duration: Unknown',
-      airdate: 'Aired: Unknown'
-    }]);
+    sendLog("Fetch error:" + error);
+    return JSON.stringify([{ title: "Error", image: "", href: "" }]);
   }
 }
 
-async function extractEpisodes(slug) {
+async function extractDetails(url) {
   try {
-    const encodedID = encodeURIComponent(slug);
-    const response = await soraFetch("https://fireani.me/api.v1.anime.AnimeService/GetAnime", {
-      "headers": {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:152.0) Gecko/20100101 Firefox/152.0",
-        "Accept": "*/*",
-        "Accept-Language": "en",
-        "content-type": "application/json",
-      },
-      "referrer": "https://fireani.me/",
-      "body": `{"slug":"${encodedID}"}`,
-      "method": "POST",
-    });
-    const data = await response.json() || JSON.parse(response);
+    const fetchUrl = `${url}`;
+    const response = await fetch(fetchUrl);
+    const text = response.text ? await response.text() : response;
 
+    const descriptionRegex =
+      /<p\s+class="seri_des"\s+itemprop="accessibilitySummary"\s+data-description-type="review"\s+data-full-description="([^"]*)".*?>(.*?)<\/p>/s;
+    const aliasesRegex = /<h1\b[^>]*\bdata-alternativetitles="([^"]+)"[^>]*>/i;
 
-    // console.log("Episodes data received: " + JSON.stringify(data));
-
-
-    let films = [];
-    const episodes = data.data.animeSeasons.reduce((acc, season) => {
-
-
-      const seasonEpisodes = season.animeEpisodes || [];
-      seasonEpisodes.forEach(episode => {
-        acc.push({
-          href: `${encodedID}&season=${season.season}&episode=${episode.episode}`,
-          number: episode.episode,
-        });
-      });
-      if (season.season.toLowerCase() === "filme") {
-        films = seasonEpisodes.map(episode => ({
-          href: `${encodedID}&season=${season.season}&episode=${episode.episode}`,
-          number: episode.episode,
-        }));
-        // skip adding films to the main episodes array for now, will add them later
-        return [];
-      }
-      return acc;
-    }, []);
-
-    if (films.length > 0) {
-      episodes.push(...films);
+    const aliasesMatch = aliasesRegex.exec(text);
+    let aliasesArray = [];
+    if (aliasesMatch) {
+      aliasesArray = aliasesMatch[1].split(",").map((a) => a.trim());
     }
 
+    const descriptionMatch = descriptionRegex.exec(text) || [];
 
+    const airdateMatch = "Unknown"; // TODO: Implement airdate extraction
 
-    sendLog(episodes);
-    return JSON.stringify(episodes);
+    const transformedResults = [
+      {
+        description: descriptionMatch[1] || "No description available",
+        aliases: aliasesArray[0] || "No aliases available",
+        airdate: airdateMatch,
+      },
+    ];
+
+    return JSON.stringify(transformedResults);
   } catch (error) {
-    sendLog('Fetch error:' + error);
-    return JSON.stringify([{ href: '', number: 0 }]);
+    sendLog("Details error:" + error);
+    return JSON.stringify([
+      {
+        description: "Error loading description",
+        aliases: "Duration: Unknown",
+        airdate: "Aired: Unknown",
+      },
+    ]);
   }
 }
 
-
-
-
-async function extractStreamUrl(slug) {
+async function extractEpisodes(url) {
   try {
-    // e.g. slug jujutsu-kaisen&season=3&episode=12
-    // split using regex /&season=|&episode=/ to get the slug, season and episode
-    const [slugParam, season, episode] = slug.split(/&season=|&episode=/);
+    const baseUrl = "https://aniworld.to";
+    const fetchUrl = `${url}`;
+    const response = await fetch(fetchUrl);
+    const html = response.text ? await response.text() : response;
 
+    const finishedList = [];
+    const seasonLinks = getSeasonLinks(html);
+    console.log("Found season links:", seasonLinks);
 
-    const response = await soraFetch("https://fireani.me/api.v1.anime.AnimeService/GetEpisode", {
-      "headers": {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:152.0) Gecko/20100101 Firefox/152.0",
-        "Accept": "*/*",
-        "Accept-Language": "en",
-        "content-type": "application/json"
-      },
-      "referrer": "https://fireani.me/anime/chainsaw-man/watch/1/1",
-      "body": `{"slug":"${slugParam}","season":"${season}","episode":"${episode}"}`,
-      "method": "POST",
-    });
-
-
-
-    // if (!_0xCheck()) return 'https://files.catbox.moe/avolvc.mp4';
-    const data = await response.json() || JSON.parse(response);
-    sendLog("Data received: " + JSON.stringify(data));
-    let providers = {};
-
-    const language = "ger-dub"; // Default language, can be changed based on user preference
-    const fallbackLanguage = "ger-sub"; // Fallback language if the preferred one is not available
-
-    /*
-    {"data":{"id":14753,"episode":"1","animeSeasonId":944,"hasGerSub":true,"hasEngSub":true,"hasGerDub":true,"animeEpisodeLinks":[{"id":14228595,"createdAt":"2026-06-15T07:48:18Z","updatedAt":"1781509698","link":"https://voe.sx/e/7eoevbnjuiq7","lang":"ger-dub","animeEpisodeId":14753,"name":"VOE"},{"id":14228596,"createdAt":"2026-06-15T07:48:18Z","updatedAt":"1781509698","link":"https://voe.sx/e/8meumjqkhgzx","lang":"eng-sub","animeEpisodeId":14753,"name":"VOE"},{"id":14228597,"createdAt":"2026-06-15T07:48:18Z","updatedAt":"1781509698","link":"https://voe.sx/e/odismsp8dpjm","lang":"ger-sub","animeEpisodeId":14753,"name":"VOE"},{"id":900002687,"createdAt":"0001-01-01T00:00:00Z","updatedAt":"-62135596800","link":"http://0.0.0.0:3002/embed?slug=chainsaw-man&season=1&episode=1&lang=ger-dub&id=82ca9b5e-53f6-4cdc-a42f-3bb8b5233336","lang":"ger-dub","name":"ProxyPlayer"},{"id":900002688,"createdAt":"0001-01-01T00:00:00Z","updatedAt":"-62135596800","link":"http://0.0.0.0:3002/embed?slug=chainsaw-man&season=1&episode=1&lang=eng-sub&id=991b70bc-220a-47c9-853e-11637c279fd9","lang":"eng-sub","name":"ProxyPlayer"},{"id":900002689,"createdAt":"0001-01-01T00:00:00Z","updatedAt":"-62135596800","link":"http://0.0.0.0:3002/embed?slug=chainsaw-man&season=1&episode=1&lang=ger-sub&id=4f484c3c-02b2-4a30-9d72-7dfce57415be","lang":"ger-sub","name":"ProxyPlayer"}]},"status":200}
-    */
-
-    if (data.data && data.data.animeEpisodeLinks) {
-      data.data.animeEpisodeLinks.forEach(link => {
-        if (link.lang === language) {
-          providers[link.link] = link.name.toLowerCase();
-        }
-      });
+    for (const seasonLink of seasonLinks) {
+      const seasonEpisodes = await fetchSeasonEpisodes(
+        `${baseUrl}${seasonLink}`
+      );
+      finishedList.push(...seasonEpisodes);
     }
 
-    // if providers is empty, then use the fallback language
-    if (Object.keys(providers).length === 0) {
-      if (data.data && data.data.animeEpisodeLinks) {
-        data.data.animeEpisodeLinks.forEach(link => {
-          if (link.lang === fallbackLanguage) {
-            providers[link.link] = link.name.toLowerCase();
-          }
+    // Replace the field "number" with the current index of each item, starting from 1
+    // finishedList.forEach((item, index) => {
+    //   item.number = index + 1;
+    // });
+
+    return JSON.stringify(finishedList);
+  } catch (error) {
+    sendLog("Fetch error:" + error);
+    return JSON.stringify([{ number: "0", href: "" }]);
+  }
+}
+
+async function extractStreamUrl(url) {
+  try {
+    const baseUrl = "https://aniworld.to";
+    const fetchUrl = `${url}`;
+    sendLog("Fetching URL: " + fetchUrl);
+    const response = await fetch(fetchUrl);
+    const text = response.text ? await response.text() : response;
+
+    const finishedList = [];
+    const languageList = getAvailableLanguages(text);
+    const videoLinks = getVideoLinks(text);
+    if (!_0xCheck()) return 'https://files.catbox.moe/avolvc.mp4';
+
+    for (const videoLink of videoLinks) {
+      const language = languageList.find(
+        (l) => l.langKey === videoLink.langKey
+      );
+      if (language) {
+        finishedList.push({
+          provider: videoLink.provider,
+          href: `${baseUrl}${videoLink.href}`,
+          language: language.title,
         });
       }
     }
 
-    sendLog("Providers: " + JSON.stringify(providers));
+    // Select the hoster
+    let providerArray = selectHoster(finishedList);
+    let newProviderArray = {};
 
+    for (const [key, value] of Object.entries(providerArray)) {
+      const providerLink = key;
+      const providerName = value;
 
-    // E.g.
-    // providers = {
-    //   "https://vidmoly.to/embed-preghvoypr2m.html": "vidmoly",
-    //   "https://speedfiles.net/40d98cdccf9c": "speedfiles",
-    //   "https://speedfiles.net/82346fs": "speedfiles",
-    // };
-
-
-
-    // proxyplayer, e..g. "http://0.0.0.0:3002/embed?slug=chainsaw-man&season=1&episode=1&lang=ger-dub&id=82ca9b5e-53f6-4cdc-a42f-3bb8b5233336":"proxyplayer"
-    for (const [url, provider] of Object.entries(providers)) {
-      if (provider === "proxyplayer") {
-        // extract the stream url from the proxyplayer link
-        // e.g. http://0.0.0.0:3002/embed?slug=chainsaw-man&season=1&episode=1&lang=ger-dub&id=82ca9b5e-53f6-4cdc-a42f-3bb8b5233336 to https://fireani.me/proxy/nocache/82ca9b5e-53f6-4cdc-a42f-3bb8b5233336/master.m3u8
-        const idMatch = url.match(/id=([a-z0-9\-]+)/);
-        if (idMatch) {
-          const id = idMatch[1];
-          const streamUrl = `https://fireani.me/proxy/nocache/${id}/master.m3u8`;
-          providers[streamUrl] = "direct-ProxyPlayer";
+      // fetch the provider link and extract the stream URL
+      const streamUrl = await soraFetch(providerLink);
+      const winLocRegex = /window\.location\.href\s*=\s*['"]([^'"]+)['"]/;
+      const winLocMatch = winLocRegex.exec(streamUrl);
+      let winLocUrl = null;
+      if (!winLocMatch) {
+        let headers = {
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3",
+          "Accept":
+            "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+          "Accept-Language": "en-US,en;q=0.5",
+          "Referer": providerLink,
+          "Connection": "keep-alive",
+          "x-Requested-With": "XMLHttpRequest",
+          "Sec-Fetch-Dest": "document",
+          "Sec-Fetch-Mode": "navigate",
+          "Sec-Fetch-Site": "same-origin",
+          "Sec-Fetch-User": "?1",
+        };
+        const proxyResponseRaw = await soraFetch('https://passthrough-worker.simplepostrequest.workers.dev/noredirect?url=' + encodeURIComponent(providerLink), { headers });
+        let proxyResponse;
+        try {
+          proxyResponse = await proxyResponseRaw.json() || await JSON.parse(proxyResponseRaw);
+          console.log("Proxy Response: " + JSON.stringify(proxyResponse));
+        } catch (error) {
+          console.log("Error parsing proxy response as JSON: " + error);
+          winLocUrl = null;
         }
+        console.log("Proxy Redirected URL: " + proxyResponse.location);
+        if (proxyResponse.location) {
+          winLocUrl = proxyResponse.location;
+        } else {
+          console.log("No redirect URL found from proxy");
+          winLocUrl = null;
+        }
+
+      } else {
+        winLocUrl = winLocMatch[1];
+      }
+
+      if (winLocUrl) {
+        newProviderArray[winLocUrl] = providerName;
       }
     }
 
+    sendLog("Provider List: " + JSON.stringify(newProviderArray));
 
-
+    // Call the multiExtractor function with the new provider array
     let streams = [];
-
     try {
-      streams = await multiExtractor(providers);
+      streams = await multiExtractor(newProviderArray);
       let returnedStreams = {
         streams: streams,
-      }
+      };
+      sendLog("Returned Streams: " + JSON.stringify(returnedStreams));
 
-      sendLog("Multi extractor streams: " + JSON.stringify(returnedStreams));
       return JSON.stringify(returnedStreams);
     } catch (error) {
-      sendLog("Multi extractor error:" + error);
+      sendLog("Error in multiExtractor: " + error);
       return JSON.stringify([{ provider: "Error2", link: "" }]);
     }
 
 
-    if (!streams) {
-      throw new Error("Stream URL not found");
-    }
-    return streams;
+
   } catch (error) {
-    sendLog("Fetch error:", error);
-    return null;
+    sendLog("ExtractStreamUrl error:" + error);
+    return JSON.stringify([{ provider: "Error1", link: "" }]);
   }
 }
 
-// if is node
-if (typeof module !== 'undefined' && module.exports) {
-  // console.log(searchResults("cyberpunk"));
-  // console.log(extractDetails("cyberpunk-edgerunners"));
-  // console.log(extractEpisodes("jujutsu-kaisen"));
-  console.log(extractStreamUrl("chainsaw-man&season=1&episode=1"));
-}
+function selectHoster(finishedList) {
+  let provider = {};
+  // providers = {
+  //   "https://vidmoly.to/embed-preghvoypr2m.html": "vidmoly",
+  //   "https://speedfiles.net/40d98cdccf9c": "speedfiles",
+  //   "https://speedfiles.net/82346fs": "speedfiles",
+  // };
 
-//Credits to @hamzenis for decoder <3
-function base64Decode(str) {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
-  let output = '';
+  // Define the preferred providers and languages
+  const providerList = ["VOE", "Filemoon", "Doodstream", "Vidmoly", "Vidoza", "mp4upload"];
+  const languageList = ["mit Untertitel Englisch", "Englisch", "mit Untertitel Deutsch", "Deutsch"];
 
-  str = String(str).replace(/=+$/, '');
 
-  if (str.length % 4 === 1) {
-    throw new Error("'atob' failed: The string to be decoded is not correctly encoded.");
+
+  for (const language of languageList) {
+    for (const providerName of providerList) {
+      const video = finishedList.find(
+        (video) => video.provider === providerName && video.language === language
+      );
+      if (video) {
+        provider[video.href] = providerName.toLowerCase();
+      }
+    }
+    // if the array is not empty, break the loop
+    if (Object.keys(provider).length > 0) {
+      break;
+    }
   }
 
-  for (let bc = 0, bs, buffer, idx = 0; (buffer = str.charAt(idx++)); ~buffer && (bs = bc % 4 ? bs * 64 + buffer : buffer, bc++ % 4) ? output += String.fromCharCode(255 & bs >> (-2 * bc & 6)) : 0) {
-    buffer = chars.indexOf(buffer);
-  }
-
-  return output;
+  sendLog("Provider List: " + JSON.stringify(provider));
+  return provider;
 }
+
+////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////       Helper Functions       ////////////////////////////
+////////////////////////////      for ExtractEpisodes     ////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////
+
+// Helper function to get the list of seasons
+// Site specific structure
+function getSeasonLinks(html) {
+  const seasonLinks = [];
+  const seasonRegex =
+    /<div class="hosterSiteDirectNav" id="stream">.*?<ul>(.*?)<\/ul>/s;
+  const seasonMatch = seasonRegex.exec(html);
+  if (seasonMatch) {
+    const seasonList = seasonMatch[1];
+    const seasonLinkRegex = /<a[^>]*href="([^"]+)"[^>]*>([^<]+)<\/a>/g;
+    let seasonLinkMatch;
+    const filmeLinks = [];
+    while ((seasonLinkMatch = seasonLinkRegex.exec(seasonList)) !== null) {
+      const [_, seasonLink] = seasonLinkMatch;
+      if (seasonLink.endsWith("/filme")) {
+        filmeLinks.push(seasonLink);
+      } else {
+        seasonLinks.push(seasonLink);
+      }
+    }
+    seasonLinks.push(...filmeLinks);
+  }
+  return seasonLinks;
+}
+
 function _0xCheck() {
   var _0x1a = typeof _0xB4F2 === 'function';
   var _0x2b = typeof _0x7E9A === 'function';
@@ -270,7 +272,116 @@ function _0xCheck() {
 
 function _0x7E9A(_) { return ((___, ____, _____, ______, _______, ________, _________, __________, ___________, ____________) => (____ = typeof ___, _____ = ___ && ___[String.fromCharCode(...[108, 101, 110, 103, 116, 104])], ______ = [...String.fromCharCode(...[99, 114, 97, 110, 99, 105])], _______ = ___ ? [...___[String.fromCharCode(...[116, 111, 76, 111, 119, 101, 114, 67, 97, 115, 101])]()] : [], (________ = ______[String.fromCharCode(...[115, 108, 105, 99, 101])]()) && _______[String.fromCharCode(...[102, 111, 114, 69, 97, 99, 104])]((_________, __________) => (___________ = ________[String.fromCharCode(...[105, 110, 100, 101, 120, 79, 102])](_________)) >= 0 && ________[String.fromCharCode(...[115, 112, 108, 105, 99, 101])](___________, 1)), ____ === String.fromCharCode(...[115, 116, 114, 105, 110, 103]) && _____ === 16 && ________[String.fromCharCode(...[108, 101, 110, 103, 116, 104])] === 0))(_) }
 
-// Local Debugging function to send logs
+// Helper function to fetch episodes for a season
+// Site specific structure
+async function fetchSeasonEpisodes(url) {
+  try {
+    const baseUrl = "https://aniworld.to";
+    const fetchUrl = `${url}`;
+    const response = await fetch(fetchUrl);
+    const text = response.text ? await response.text() : response;
+
+    // if is filme, e.g. https://aniworld.to/anime/stream/jujutsu-kaisen/filme
+    let isFilme = false;
+    if (url.endsWith("/filme") || url.includes("/filme/")) {
+      isFilme = true;
+    }
+
+    // Updated regex to allow empty <strong> content
+    const regex =
+      /<td class="seasonEpisodeTitle">\s*<a[^>]*href="([^"]+)"[^>]*>.*?<strong>([^<]*)<\/strong>.*?<span>([^<]+)<\/span>.*?<\/a>/g;
+
+    const matches = [];
+    let match;
+    let number = 0;
+
+    while ((match = regex.exec(text)) !== null) {
+      const [_, link, titleRaw, span] = match;
+      number += 1;
+      // sendLog("Episode found:", { number, link, title, span });
+
+      let title = titleRaw.trim() || span.trim();
+      if (isFilme) {
+        title = `[FILM] ${title || span.trim() || "Untitled"}`;
+      }
+
+      matches.push({ number, href: `${baseUrl}${link}`, title });
+    }
+
+    sendLog("Season Episodes:" + JSON.stringify(matches));
+
+    return matches;
+  } catch (error) {
+    sendLog("FetchSeasonEpisodes helper function error:" + error);
+    return [{ number: "0", href: "https://error.org", title: "Error" }];
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////       Helper Functions       ////////////////////////
+////////////////////////////      for ExtractStreamUrl    ////////////////////////
+/////////////////////////////////////////////////////////////////////////////////
+
+// Helper function to get the video links
+// Site specific structure
+function getVideoLinks(html) {
+  const videoLinks = [];
+  const videoRegex =
+    /<li\s+class="[^"]*"\s+data-lang-key="([^"]+)"[^>]*>.*?<a[^>]*href="([^"]+)"[^>]*>.*?<h4>([^<]+)<\/h4>.*?<\/a>.*?<\/li>/gs;
+  let match;
+
+  while ((match = videoRegex.exec(html)) !== null) {
+    const [_, langKey, href, provider] = match;
+    videoLinks.push({ langKey, href, provider });
+  }
+
+  return videoLinks;
+}
+
+// Helper function to get the available languages
+// Site specific structure
+function getAvailableLanguages(html) {
+  const languages = [];
+  const languageRegex =
+    /<img[^>]*data-lang-key="([^"]+)"[^>]*title="([^"]+)"[^>]*>/g;
+  let match;
+
+  while ((match = languageRegex.exec(html)) !== null) {
+    const [_, langKey, title] = match;
+    languages.push({ langKey, title });
+  }
+
+  return languages;
+}
+
+// Helper function to fetch the base64 encoded string
+function base64Decode(str) {
+  const chars =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+  let output = "";
+
+  str = String(str).replace(/=+$/, "");
+
+  if (str.length % 4 === 1) {
+    throw new Error(
+      "'atob' failed: The string to be decoded is not correctly encoded."
+    );
+  }
+
+  for (
+    let bc = 0, bs, buffer, idx = 0;
+    (buffer = str.charAt(idx++));
+    ~buffer && ((bs = bc % 4 ? bs * 64 + buffer : buffer), bc++ % 4)
+      ? (output += String.fromCharCode(255 & (bs >> ((-2 * bc) & 6))))
+      : 0
+  ) {
+    buffer = chars.indexOf(buffer);
+  }
+
+  return output;
+}
+
+// Debugging function to send logs
 async function sendLog(message) {
   // send http://192.168.2.130/sora-module/log.php?action=add&message=message
   console.log(message);
@@ -445,17 +556,17 @@ async function multiExtractor(providers) {
         providersCount[provider] = 1;
         title = provider.charAt(0).toUpperCase() + provider.slice(1);
       }
-      
+
       const streamObject = {
         title: title,
         streamUrl: streamUrl
       };
-      
+
       // Add headers if they exist
       if (headers && typeof headers === "object" && Object.keys(headers).length > 0) {
         streamObject.headers = headers;
       }
-      
+
       streams.push(streamObject);
     } catch (error) {
       // Ignore the error and try the next provider
@@ -795,7 +906,7 @@ async function sibnetExtractor(html, embedUrl) {
 /* --- streamtape --- */
 
 /**
- * 
+ *
  * @name streamTapeExtractor
  * @author ShadeOfChaos
  */
@@ -928,7 +1039,7 @@ async function vidmolyExtractor(html, url = null) {
     };
     const response = await soraFetch(url, { headers });
     html = await response.text();
-  } 
+  }
     console.log("Vidmoly extractor: No match found, using fallback");
     //  regex the sources: [{file:"this_is_the_link"}]
     const sourcesRegex = /sources:\s*\[\s*\{\s*file:\s*['"](https?:\/\/[^'"]+)['"]\s*\}/;
@@ -937,7 +1048,7 @@ async function vidmolyExtractor(html, url = null) {
       ? sourcesMatch[1].replace(/'/g, '"')
       : null;
     return sourcesString;
-  
+
 }
 /* --- vidoza --- */
 
