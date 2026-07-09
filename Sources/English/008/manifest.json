@@ -1,26 +1,29 @@
 {
-  "sourceName": "Airflix",
-  "iconUrl": "https://img.icons8.com/color/48/netflix.png",
+  "sourceName": "AnimeGG",
+  "iconUrl": "https://files.catbox.moe/caq4am.png",
   "author": {
     "name": "50/50",
     "icon": "https://files.catbox.moe/741wp7.png"
   },
   "version": "1.0.0",
   "language": "English",
-  "streamType": "HLS",
+  "streamType": "mp4",
   "quality": "1080p",
-  "baseUrl": "https://streamdata.vaplayer.ru/",
-  "searchBaseUrl": "https://streamdata.vaplayer.ru/",
+  "baseUrl": "https://www.animegg.org/",
+  "searchBaseUrl": "https://www.animegg.org/",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/008/source.js",
-  "type": "shows/movies/anime",
+  "type": "anime",
   "asyncJS": true,
   "softsub": true,
-  "downloadSupport": false,
+  "downloadSupport": true,
   "supportsSora": true,
   "supportsLuna": true,
-  "jsonUrl": "https://git.luna-app.eu/50n50/sources/raw/branch/main/airflix/airflix.json",
+  "supportsMojuru": true,
+  "supportsDartotsu": true,
+  "supportsAnymex": true,
   "supportsTsumi": true,
   "supportsHiyoku": true,
+  "supportsShirox": true,
   "supportsEclipse": true,
-  "id": "jg3nm"
+  "id": "jhWaO"
 }

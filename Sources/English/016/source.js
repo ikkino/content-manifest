@@ -1,142 +1,246 @@
 async function searchResults(keyword) {
-    const results = [];
-    const response = await fetchv2(`https://animenosub.to/?s=${keyword}`);
-    const html = await response.text();
+    try {
+        const encodedKeyword = encodeURIComponent(keyword);
+        const responseText = await soraFetch(`https://aniwaves.ru/filter?keyword=${encodedKeyword}`);
+        const html = await responseText.text();
 
-    // Regex pattern to extract the title, image, and href from the article elements
-    const regex = /<article class="bs"[^>]*>.*?<a href="([^"]+)"[^>]*>.*?<img src="([^"]+)"[^>]*>.*?<h2[^>]*>(.*?)<\/h2>/gs;
+        const regex = /<div\s+class="item\s*">[\s\S]*?<a\s+href="([^"]+)">[\s\S]*?<img\s+src="([^"]+)"[^>]*>[\s\S]*?<a\s+class="name\s+d-title"[^>]*>([^<]+)<\/a>/g;
 
-    let match;
-    while ((match = regex.exec(html)) !== null) {
-        results.push({
-            title: match[3].trim(),
-            image: match[2].trim(),
-            href: match[1].trim()
-        });
+        const results = [];
+        let match;
+
+        while ((match = regex.exec(html)) !== null) {
+            if (match[3].trim() === "Omiai Aite Wa Oshiego Tsuyokina Mondaiji") {
+                continue;
+            }
+
+            results.push({
+                title: match[3].trim(),
+                image: match[2].trim(),
+                href: `https://aniwaves.ru${match[1].trim()}`
+            });
+        }
+
+        return JSON.stringify(results);
+    } catch (error) {
+        console.log('Fetch error in searchResults:', error);
+        return JSON.stringify([{ title: 'Error', image: '', href: '' }]);
     }
-
-    return JSON.stringify(results);
 }
 
 async function extractDetails(url) {
-    const results = [];
-    const response = await fetchv2(url);
-    const html = await response.text();
+    try {
+        const responseText = await soraFetch(url);
+        const html = await responseText.text();
 
-    const match = html.match(/<div class="entry-content"[^>]*>([\s\S]*?)<\/div>/);
+        // Description: match synopsis div, then find any div with class containing "content"
+        const descriptionMatch = html.match(/<div class="synopsis mb-3">[\s\S]*?<div[^>]*class="[^"]*content[^"]*"[^>]*>(.*?)<\/div>/);
+        let description = descriptionMatch ? descriptionMatch[1].trim() : 'No description available';
 
-    let description = "N/A";
-    if (match) {
-        description = match[1]
-            .replace(/<[^>]+>/g, '')
-            .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(code))
-            .replace(/&quot;/g, '"')
-            .replace(/&apos;/g, "'")
-            .replace(/&amp;/g, "&")
-            .trim();
+        // Remove possible "Aired, ..." prefix (only on episode pages)
+        description = description.replace(/^Aired,\s+[^,]+,\s*/, '');
+
+        const aliasesMatch = html.match(/<div class="names font-italic mb-2">(.*?)<\/div>/);
+        const aliases = aliasesMatch ? aliasesMatch[1].trim() : 'No aliases available';
+
+        const airdateMatch = html.match(/Date aired:\s*<span><span[^>]*>(.*?)<\/span>/);
+        const airdate = airdateMatch ? `Aired: ${airdateMatch[1].trim()}` : 'Aired: Unknown';
+
+        const transformedResults = [{
+            description,
+            aliases,
+            airdate
+        }];
+
+        return JSON.stringify(transformedResults);
+    } catch (error) {
+        console.log('Details error:', error);
+        return JSON.stringify([{
+            description: 'Error loading description',
+            aliases: 'Duration: Unknown',
+            airdate: 'Aired/Released: Unknown'
+        }]);
     }
-
-    results.push({
-        description: description,
-        aliases: 'N/A',
-        airdate: 'N/A'
-    });
-
-    return JSON.stringify(results);
 }
 
 async function extractEpisodes(url) {
-    const results = [];
-    const response = await fetchv2(url);
-    const html = await response.text();
-
-    const regex = /<a href="([^"]+)">\s*<div class="epl-num">([\d.]+)<\/div>/g;
-
-    let match;
-    while ((match = regex.exec(html)) !== null) {
-        results.push({
-            href: match[1].trim(),
-            number: parseFloat(match[2])
-        });
-    }
-    results.reverse();
-    return JSON.stringify(results);
-}
-
-
-async function extractStreamUrl(url) {
     try {
-        const response = await fetchv2(url);
-        const html = await response.text();
-        const streams = [];
+        // Extract series slug from URLs like https://aniwaves.ru/watch/kimetsu-no-yaiba-77717
+        const slugMatch = url.match(/https:\/\/aniwaves\.ru\/watch\/([^\/]+)/);
+        if (!slugMatch) throw new Error("Invalid URL format");
+        const animeSlug = slugMatch[1];
 
-        const optionRegex = /<option value="([^"]+)"[^>]*>\s*([^<]*Omega[^<]*)\s*<\/option>/gi;
+        // First hyphen-separated word for fallback (e.g., "kimetsu")
+        const firstWordMatch = animeSlug.match(/^([^-]+)/);
+        const firstSlugWord = firstWordMatch ? firstWordMatch[1] : animeSlug;
 
-        let optionMatch;
-        while ((optionMatch = optionRegex.exec(html)) !== null) {
-            const base64Value = optionMatch[1];
-            const label = optionMatch[2].trim();
+        const responseText = await soraFetch(url);
+        const html = await responseText.text();
 
-            if (!base64Value) continue;
+        // Capture episode count: "Episodes: <span>26 / 26</span>" -> take first number
+        const episodesMatch = html.match(/Episodes:\s*<span>(\d+)/);
+        const episodesCount = episodesMatch ? parseInt(episodesMatch[1], 10) : 0;
 
-            try {
-                const decodedHtml = atob(base64Value);
-                const iframeMatch = decodedHtml.match(/<iframe[^>]+src=["']([^"']+)["']/i);
+        const transformedResults = [];
 
-                if (iframeMatch) {
-                    let iframeUrl = iframeMatch[1];
-                    if (iframeUrl.startsWith("//")) iframeUrl = "https:" + iframeUrl;
+        if (episodesCount > 0) {
+            for (let i = 1; i <= episodesCount; i++) {
+                transformedResults.push({
+                    href: `${url}/episode/${i}`,
+                    number: i
+                });
+            }
+        } else {
+            // Fallback search using the API
+            const apiUrl = `https://aniwaves.ru/filter?keyword=${encodeURIComponent(firstSlugWord)}`;
+            const searchResponse = await soraFetch(apiUrl);
+            const searchHtml = await searchResponse.text();
 
-                    const responseTwo = await fetchv2(iframeUrl);
-                    const htmlTwo = await responseTwo.text();
+            // Match a search result card: <a href="/watch/..." ...><span>Ep: 26</span>
+            const regex = new RegExp(
+                `<a\\s+[^>]*href="\\/watch\\/${animeSlug}"[^>]*>[\\s\\S]*?<span>Ep:\\s*(\\d+)<\\/span>`,
+                'i'
+            );
+            const epMatch = searchHtml.match(regex);
+            const fallbackCount = epMatch ? parseInt(epMatch[1], 10) : 0;
 
-                    const m3u8Match = htmlTwo.match(/sources\s*:\s*\[\s*\{\s*file\s*:\s*['"]([^'"]+master\.m3u8[^'"]*)['"]/i) ||
-                                      htmlTwo.match(/file\s*:\s*['"]([^'"]+\.m3u8[^'"]*)['"]/i);
-
-                    if (m3u8Match) {
-                        streams.push({
-                            title: label,
-                            streamUrl: m3u8Match[1],
-                            headers: {
-                                "Referer": "https://vidmoly.biz/",
-                                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-                            }
-                        });
-                    }
-                }
-            } catch (innerErr) {
+            for (let i = 1; i <= fallbackCount; i++) {
+                transformedResults.push({
+                    href: `${url}/episode/${i}`,
+                    number: i
+                });
             }
         }
 
-        return JSON.stringify({
-            streams: streams,
-            subtitle: ""
-        });
-    } catch (err) {
-        return JSON.stringify({
-            streams: [],
-            subtitle: ""
-        });
+        return JSON.stringify(transformedResults);
+    } catch (error) {
+        console.log('Fetch error in extractEpisodes:', error);
+        return JSON.stringify([]);
     }
 }
 
-function atob(input) {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
-    let str = '';
-    let buffer = 0;
-    let bits = 0;
-    for (let i = 0; i < input.length; i++) {
-        const char = input.charAt(i);
-        if (char === '=') break;
-        const index = chars.indexOf(char);
-        if (index === -1) continue;
-        buffer = (buffer << 6) | index;
-        bits += 6;
-        if (bits >= 8) {
-            bits -= 8;
-            str += String.fromCharCode((buffer >> bits) & 0xFF);
-            buffer &= (1 << bits) - 1;
+async function extractStreamUrl(url) {
+    try {
+        console.log("Input URL: " + url);
+        const match = url.match(/https:\/\/aniwaves\.ru\/watch\/([^\/]+)\/episode\/(\d+)/);
+        if (!match) throw new Error("Invalid URL format – expected /watch/SLUG/episode/NUM");
+
+        const animeSlug = match[1];
+        const episodeNumber = match[2];
+        console.log("Anime slug: " + animeSlug + ", Episode: " + episodeNumber);
+
+        const idMatch = animeSlug.match(/(\d+)$/);
+        if (!idMatch) throw new Error("Could not extract show ID from slug");
+        const showId = idMatch[1];
+        console.log("Show ID: " + showId);
+
+        const headers = { 'Referer': url };
+
+        // Step 1: Get server list (JSON -> extract result HTML)
+        const listUrl = "https://aniwaves.ru/ajax/server/list?servers=" + showId + "&eps=" + episodeNumber;
+        console.log("Fetching server list: " + listUrl);
+        const listResp = await soraFetch(listUrl, { headers });
+        if (!listResp) throw new Error("No response for server list");
+        const rawText = await listResp.text();
+        const listJson = JSON.parse(rawText);
+        const html = listJson.result;                     // the actual HTML
+        console.log("Server list HTML (first 500 chars): " + html.substring(0, 500));
+
+        // Extract first sub link-id (overall first)
+        const subIdMatch = html.match(/data-link-id="([^"]+)"/);
+        console.log("Sub ID match: " + (subIdMatch ? subIdMatch[1] : "null"));
+        // Extract first dub link-id inside the dub block
+        const dubIdMatch = html.match(/<div class="type" data-type="dub">[\s\S]*?data-link-id="([^"]+)"/);
+        console.log("Dub ID match: " + (dubIdMatch ? dubIdMatch[1] : "null"));
+
+        const subUrls = [];
+        const dubUrls = [];
+
+        async function resolveM3u8(linkId, type) {
+            console.log("\n--- Resolving " + type + " stream for link ID: " + linkId + " ---");
+            try {
+                // Step 2: get embed URL
+                const srcUrl = "https://aniwaves.ru/ajax/sources?id=" + encodeURIComponent(linkId) + "&asi=0&autoPlay=0";
+                console.log("Fetching source: " + srcUrl);
+                const srcResp = await soraFetch(srcUrl, { headers });
+                if (!srcResp) { console.log("No response for source API"); return null; }
+                const srcText = await srcResp.text();
+                console.log("Source API response (first 500 chars): " + srcText.substring(0, 500));
+                const srcData = JSON.parse(srcText);
+                const embedUrl = srcData?.result?.url;
+                if (!embedUrl) { console.log("No embed URL in source response"); return null; }
+                console.log("Embed URL: " + embedUrl);
+
+                // Step 3: fetch embed page, extract data-id for getSources
+                console.log("Fetching embed page...");
+                const embedResp = await soraFetch(embedUrl, { headers });
+                if (!embedResp) { console.log("No response for embed page"); return null; }
+                const embedHtml = await embedResp.text();
+                console.log("Embed HTML (first 500 chars): " + embedHtml.substring(0, 500));
+
+                // NEW: extract data-id from the player div
+                const dataIdMatch = embedHtml.match(/data-id="([^"]+)"/);
+                if (!dataIdMatch) { console.log("No data-id found in embed page"); return null; }
+                const sourceId = dataIdMatch[1];
+                console.log("getSources ID (data-id): " + sourceId);
+
+                // Step 4: call getSources
+                const getSrcUrl = "https://play.echovideo.ru/embed-1/getSources?id=" + sourceId;
+                console.log("Fetching getSources: " + getSrcUrl);
+                const getSrcResp = await soraFetch(getSrcUrl, { headers });
+                if (!getSrcResp) { console.log("No response for getSources"); return null; }
+                const getSrcText = await getSrcResp.text();
+                console.log("getSources response: " + getSrcText);
+                const srcData2 = JSON.parse(getSrcText);
+                const sources = srcData2?.sources;
+                if (!sources) { console.log("No 'sources' field in getSources response"); return null; }
+                console.log("Found M3U8: " + sources);
+                return sources;
+            } catch (e) {
+                console.log("Error resolving " + type + ": " + e);
+                return null;
+            }
+        }
+
+        if (subIdMatch) {
+            const m3u8 = await resolveM3u8(subIdMatch[1], "SUB");
+            if (m3u8) subUrls.push(m3u8);
+        }
+
+        if (dubIdMatch) {
+            const m3u8 = await resolveM3u8(dubIdMatch[1], "DUB");
+            if (m3u8) dubUrls.push(m3u8);
+        }
+
+        console.log("\nFinal SUB URLs: " + JSON.stringify(subUrls));
+        console.log("Final DUB URLs: " + JSON.stringify(dubUrls));
+
+        const streams = [];
+        if (subUrls[0]) streams.push({ title: "SUB", streamUrl: subUrls[0], headers: { 'Referer': url } });
+        if (dubUrls[0]) streams.push({ title: "DUB", streamUrl: dubUrls[0], headers: { 'Referer': url } });
+
+        const result = { streams, subtitles: "" };
+        console.log("Result: " + JSON.stringify(result));
+        return JSON.stringify(result);
+
+    } catch (error) {
+        console.log("Fetch error in extractStreamUrl: " + error);
+        const result = { streams: "", subtitles: "" };
+        console.log("Error result: " + JSON.stringify(result));
+        return JSON.stringify(result);
+    }
+}
+
+// extractStreamUrl(`https://aniwaves.ru/anime-watch/one-piece/ep-1`);
+
+async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
+    try {
+        return await fetchv2(url, options.headers ?? {}, options.method ?? 'GET', options.body ?? null);
+    } catch(e) {
+        try {
+            return await fetch(url, options);
+        } catch(error) {
+            return null;
         }
     }
-    return str;
 }
