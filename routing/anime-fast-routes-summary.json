@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-10T18:09:49.169Z",
+  "generatedAt": "2026-07-11T15:35:34.182Z",
   "mediaRequested": 5,
   "categories": {
     "trendingNow": {
@@ -24,30 +24,30 @@
   "routeCount": 544,
   "refreshedAnime": 0,
   "mergeExisting": true,
-  "unresolvedAnime": 36,
-  "rejectedAttempts": 36,
+  "unresolvedAnime": 39,
+  "rejectedAttempts": 39,
   "rejectedAttemptSummary": {
     "byReason": {
-      "media_probe_failed": 12,
-      "stream_timeout": 11,
-      "search_no_usable_result": 7,
+      "media_probe_failed": 13,
+      "stream_timeout": 13,
+      "search_no_usable_result": 8,
       "implausible_match": 4,
-      "other": 2
+      "other": 1
     },
     "topModules": [
       {
         "sourceName": "Anikoto",
-        "count": 12,
+        "count": 13,
         "reasons": {
-          "media_probe_failed": 10,
+          "media_probe_failed": 11,
           "implausible_match": 2
         }
       },
       {
         "sourceName": "AnimeLand",
-        "count": 12,
+        "count": 13,
         "reasons": {
-          "search_no_usable_result": 7,
+          "search_no_usable_result": 8,
           "media_probe_failed": 2,
           "implausible_match": 2,
           "other": 1
@@ -55,24 +55,54 @@
       },
       {
         "sourceName": "Animetsu",
-        "count": 12,
+        "count": 13,
         "reasons": {
-          "stream_timeout": 11,
-          "other": 1
+          "stream_timeout": 13
         }
       }
     ]
   },
   "mediaProbeBudget": 24,
-  "mediaProbesUsed": 12,
+  "mediaProbesUsed": 13,
   "hostHealth": {
     "successEvents": 0,
-    "failureEvents": 12,
+    "failureEvents": 13,
     "skippedByCooldown": 0,
     "coolingDownHosts": 2
   },
   "failures": [
     {
+      "aniListId": 187538,
+      "title": "BLACK TORCH",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "Anikoto",
+      "errors": [
+        "media probe failed: host=cdn.mewstream.buzz empty media response"
+      ]
+    },
+    {
+      "aniListId": 187538,
+      "title": "BLACK TORCH",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/017",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 187538,
+      "title": "BLACK TORCH",
+      "moduleId": "G7jX",
+      "catalogPath": "Sources/English/022",
+      "sourceName": "Animetsu",
+      "errors": [
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
       "aniListId": 182205,
       "title": "That Time I Got Reincarnated as a Slime Season 4",
       "moduleId": "jF12G",
@@ -105,8 +135,8 @@
       ]
     },
     {
-      "aniListId": 209983,
-      "title": "HELL MODE: The Hardcore Gamer Dominates in Another World with Garbage Balancing Season 2",
+      "aniListId": 186863,
+      "title": "The Cat and the Dragon",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/005",
       "sourceName": "Anikoto",
@@ -115,8 +145,8 @@
       ]
     },
     {
-      "aniListId": 209983,
-      "title": "HELL MODE: The Hardcore Gamer Dominates in Another World with Garbage Balancing Season 2",
+      "aniListId": 186863,
+      "title": "The Cat and the Dragon",
       "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/017",
       "sourceName": "AnimeLand",
@@ -125,8 +155,8 @@
       ]
     },
     {
-      "aniListId": 209983,
-      "title": "HELL MODE: The Hardcore Gamer Dominates in Another World with Garbage Balancing Season 2",
+      "aniListId": 186863,
+      "title": "The Cat and the Dragon",
       "moduleId": "G7jX",
       "catalogPath": "Sources/English/022",
       "sourceName": "Animetsu",
@@ -137,8 +167,8 @@
       ]
     },
     {
-      "aniListId": 199748,
-      "title": "I Became a Legend After My 10 Year-Long Last Stand",
+      "aniListId": 184492,
+      "title": "Welcome to Demon School! Iruma-kun Season 4",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/005",
       "sourceName": "Anikoto",
@@ -147,8 +177,8 @@
       ]
     },
     {
-      "aniListId": 199748,
-      "title": "I Became a Legend After My 10 Year-Long Last Stand",
+      "aniListId": 184492,
+      "title": "Welcome to Demon School! Iruma-kun Season 4",
       "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/017",
       "sourceName": "AnimeLand",
@@ -157,8 +187,8 @@
       ]
     },
     {
-      "aniListId": 199748,
-      "title": "I Became a Legend After My 10 Year-Long Last Stand",
+      "aniListId": 184492,
+      "title": "Welcome to Demon School! Iruma-kun Season 4",
       "moduleId": "G7jX",
       "catalogPath": "Sources/English/022",
       "sourceName": "Animetsu",
@@ -169,8 +199,8 @@
       ]
     },
     {
-      "aniListId": 196218,
-      "title": "The Frontier Lord Begins with Zero Subjects",
+      "aniListId": 171110,
+      "title": "Ascendance of a Bookworm: Adopted Daughter of an Archduke",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/005",
       "sourceName": "Anikoto",
@@ -179,8 +209,8 @@
       ]
     },
     {
-      "aniListId": 196218,
-      "title": "The Frontier Lord Begins with Zero Subjects",
+      "aniListId": 171110,
+      "title": "Ascendance of a Bookworm: Adopted Daughter of an Archduke",
       "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/017",
       "sourceName": "AnimeLand",
@@ -189,40 +219,8 @@
       ]
     },
     {
-      "aniListId": 196218,
-      "title": "The Frontier Lord Begins with Zero Subjects",
-      "moduleId": "G7jX",
-      "catalogPath": "Sources/English/022",
-      "sourceName": "Animetsu",
-      "errors": [
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out"
-      ]
-    },
-    {
-      "aniListId": 196187,
-      "title": "Smoking Behind the Supermarket with You",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Anikoto",
-      "errors": [
-        "implausible episode match: verified=1 available=12 expected<=1"
-      ]
-    },
-    {
-      "aniListId": 196187,
-      "title": "Smoking Behind the Supermarket with You",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/017",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 196187,
-      "title": "Smoking Behind the Supermarket with You",
+      "aniListId": 171110,
+      "title": "Ascendance of a Bookworm: Adopted Daughter of an Archduke",
       "moduleId": "G7jX",
       "catalogPath": "Sources/English/022",
       "sourceName": "Animetsu",
@@ -265,6 +263,38 @@
       ]
     },
     {
+      "aniListId": 196187,
+      "title": "Smoking Behind the Supermarket with You",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "Anikoto",
+      "errors": [
+        "implausible episode match: verified=1 available=12 expected<=1"
+      ]
+    },
+    {
+      "aniListId": 196187,
+      "title": "Smoking Behind the Supermarket with You",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/017",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 196187,
+      "title": "Smoking Behind the Supermarket with You",
+      "moduleId": "G7jX",
+      "catalogPath": "Sources/English/022",
+      "sourceName": "Animetsu",
+      "errors": [
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
       "aniListId": 135865,
       "title": "Saga of Tanya the Evil Season 2",
       "moduleId": "jF12G",
@@ -291,9 +321,9 @@
       "catalogPath": "Sources/English/022",
       "sourceName": "Animetsu",
       "errors": [
-        "episodes: extractEpisodes returned an unusable result",
-        "episodes: extractEpisodes returned an unusable result",
-        "episodes: extractEpisodes returned an unusable result"
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out"
       ]
     },
     {
