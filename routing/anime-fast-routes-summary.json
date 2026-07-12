@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-11T15:35:34.182Z",
+  "generatedAt": "2026-07-12T20:38:53.109Z",
   "mediaRequested": 5,
   "categories": {
     "trendingNow": {
@@ -24,220 +24,62 @@
   "routeCount": 544,
   "refreshedAnime": 0,
   "mergeExisting": true,
-  "unresolvedAnime": 39,
-  "rejectedAttempts": 39,
+  "unresolvedAnime": 36,
+  "rejectedAttempts": 36,
   "rejectedAttemptSummary": {
     "byReason": {
-      "media_probe_failed": 13,
-      "stream_timeout": 13,
-      "search_no_usable_result": 8,
-      "implausible_match": 4,
-      "other": 1
+      "media_probe_failed": 12,
+      "stream_timeout": 11,
+      "search_no_usable_result": 6,
+      "implausible_match": 5,
+      "other": 2
     },
     "topModules": [
       {
         "sourceName": "Anikoto",
-        "count": 13,
+        "count": 12,
         "reasons": {
-          "media_probe_failed": 11,
+          "media_probe_failed": 10,
           "implausible_match": 2
         }
       },
       {
         "sourceName": "AnimeLand",
-        "count": 13,
+        "count": 12,
         "reasons": {
-          "search_no_usable_result": 8,
+          "search_no_usable_result": 6,
+          "implausible_match": 3,
           "media_probe_failed": 2,
-          "implausible_match": 2,
           "other": 1
         }
       },
       {
         "sourceName": "Animetsu",
-        "count": 13,
+        "count": 12,
         "reasons": {
-          "stream_timeout": 13
+          "stream_timeout": 11,
+          "other": 1
         }
       }
     ]
   },
   "mediaProbeBudget": 24,
-  "mediaProbesUsed": 13,
+  "mediaProbesUsed": 12,
   "hostHealth": {
     "successEvents": 0,
-    "failureEvents": 13,
+    "failureEvents": 12,
     "skippedByCooldown": 0,
-    "coolingDownHosts": 2
+    "coolingDownHosts": 3
   },
   "failures": [
     {
-      "aniListId": 187538,
-      "title": "BLACK TORCH",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Anikoto",
-      "errors": [
-        "media probe failed: host=cdn.mewstream.buzz empty media response"
-      ]
-    },
-    {
-      "aniListId": 187538,
-      "title": "BLACK TORCH",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/017",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 187538,
-      "title": "BLACK TORCH",
-      "moduleId": "G7jX",
-      "catalogPath": "Sources/English/022",
-      "sourceName": "Animetsu",
-      "errors": [
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out"
-      ]
-    },
-    {
-      "aniListId": 182205,
-      "title": "That Time I Got Reincarnated as a Slime Season 4",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Anikoto",
-      "errors": [
-        "media probe failed: host=cdn.mewstream.buzz empty media response"
-      ]
-    },
-    {
-      "aniListId": 182205,
-      "title": "That Time I Got Reincarnated as a Slime Season 4",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/017",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 182205,
-      "title": "That Time I Got Reincarnated as a Slime Season 4",
-      "moduleId": "G7jX",
-      "catalogPath": "Sources/English/022",
-      "sourceName": "Animetsu",
-      "errors": [
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out"
-      ]
-    },
-    {
-      "aniListId": 186863,
-      "title": "The Cat and the Dragon",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Anikoto",
-      "errors": [
-        "media probe failed: host=cdn.mewstream.buzz empty media response"
-      ]
-    },
-    {
-      "aniListId": 186863,
-      "title": "The Cat and the Dragon",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/017",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 186863,
-      "title": "The Cat and the Dragon",
-      "moduleId": "G7jX",
-      "catalogPath": "Sources/English/022",
-      "sourceName": "Animetsu",
-      "errors": [
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out"
-      ]
-    },
-    {
-      "aniListId": 184492,
-      "title": "Welcome to Demon School! Iruma-kun Season 4",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Anikoto",
-      "errors": [
-        "media probe failed: host=cdn.mewstream.buzz empty media response"
-      ]
-    },
-    {
-      "aniListId": 184492,
-      "title": "Welcome to Demon School! Iruma-kun Season 4",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/017",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 184492,
-      "title": "Welcome to Demon School! Iruma-kun Season 4",
-      "moduleId": "G7jX",
-      "catalogPath": "Sources/English/022",
-      "sourceName": "Animetsu",
-      "errors": [
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out"
-      ]
-    },
-    {
-      "aniListId": 171110,
-      "title": "Ascendance of a Bookworm: Adopted Daughter of an Archduke",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Anikoto",
-      "errors": [
-        "media probe failed: host=cdn.mewstream.buzz empty media response"
-      ]
-    },
-    {
-      "aniListId": 171110,
-      "title": "Ascendance of a Bookworm: Adopted Daughter of an Archduke",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/017",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 171110,
-      "title": "Ascendance of a Bookworm: Adopted Daughter of an Archduke",
-      "moduleId": "G7jX",
-      "catalogPath": "Sources/English/022",
-      "sourceName": "Animetsu",
-      "errors": [
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out"
-      ]
-    },
-    {
       "aniListId": 178789,
       "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/005",
       "sourceName": "Anikoto",
       "errors": [
-        "implausible episode match: verified=2 available=12 expected<=2"
+        "media probe failed: host=cdn.mewstream.buzz empty media response"
       ]
     },
     {
@@ -253,6 +95,134 @@
     {
       "aniListId": 178789,
       "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
+      "moduleId": "G7jX",
+      "catalogPath": "Sources/English/022",
+      "sourceName": "Animetsu",
+      "errors": [
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 21,
+      "title": "ONE PIECE",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "Anikoto",
+      "errors": [
+        "media probe failed: host=cdn.mewstream.buzz empty media response"
+      ]
+    },
+    {
+      "aniListId": 21,
+      "title": "ONE PIECE",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/017",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "implausible episode match: verified=1061 available=900 expected<=1169"
+      ]
+    },
+    {
+      "aniListId": 21,
+      "title": "ONE PIECE",
+      "moduleId": "G7jX",
+      "catalogPath": "Sources/English/022",
+      "sourceName": "Animetsu",
+      "errors": [
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 214031,
+      "title": "Mob Psycho 100 10th Anniversary Special Movie",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "Anikoto",
+      "errors": [
+        "implausible episode match: verified=1 available=12 expected<=1"
+      ]
+    },
+    {
+      "aniListId": 214031,
+      "title": "Mob Psycho 100 10th Anniversary Special Movie",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/017",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 214031,
+      "title": "Mob Psycho 100 10th Anniversary Special Movie",
+      "moduleId": "G7jX",
+      "catalogPath": "Sources/English/022",
+      "sourceName": "Animetsu",
+      "errors": [
+        "episodes: extractEpisodes returned an unusable result",
+        "episodes: extractEpisodes returned an unusable result",
+        "episodes: extractEpisodes returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 210031,
+      "title": "You and I Are Polar Opposites Season 2",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "Anikoto",
+      "errors": [
+        "media probe failed: host=cdn.mewstream.buzz empty media response"
+      ]
+    },
+    {
+      "aniListId": 210031,
+      "title": "You and I Are Polar Opposites Season 2",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/017",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 210031,
+      "title": "You and I Are Polar Opposites Season 2",
+      "moduleId": "G7jX",
+      "catalogPath": "Sources/English/022",
+      "sourceName": "Animetsu",
+      "errors": [
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 200637,
+      "title": "The 100 Girlfriends Who Really, Really, Really, Really, REALLY Love You Season 3",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "Anikoto",
+      "errors": [
+        "media probe failed: host=cdn.mewstream.buzz empty media response"
+      ]
+    },
+    {
+      "aniListId": 200637,
+      "title": "The 100 Girlfriends Who Really, Really, Really, Really, REALLY Love You Season 3",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/017",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 200637,
+      "title": "The 100 Girlfriends Who Really, Really, Really, Really, REALLY Love You Season 3",
       "moduleId": "G7jX",
       "catalogPath": "Sources/English/022",
       "sourceName": "Animetsu",
@@ -365,7 +335,7 @@
       "catalogPath": "Sources/English/005",
       "sourceName": "Anikoto",
       "errors": [
-        "media probe failed: host=cdn.mewstream.buzz empty media response"
+        "media probe failed: host=fxpy7.watching.onl empty media response"
       ]
     },
     {
