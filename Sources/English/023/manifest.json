@@ -1,28 +1,26 @@
 {
-  "sourceName": "AnimePahe",
-  "iconUrl": "https://files.catbox.moe/fu5sq7.png",
-  "author": {
-    "name": "50/50",
-    "icon": "https://files.catbox.moe/741wp7.png"
-  },
-  "version": "1.2.1",
+  "id": "zangetsu_animekai",
+  "sourceName": "AnimeKai (Zangetsu)",
+  "iconUrl": "",
+  "version": "1.1.2",
   "language": "English",
   "streamType": "HLS",
   "quality": "1080p",
-  "baseUrl": "https://animepahetv.to/",
-  "searchBaseUrl": "https://animepahetv.to/search?q=%s",
+  "baseUrl": "https://animekai.to/",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/023/source.js",
-  "type": "anime",
-  "asyncJS": true,
   "softsub": true,
-  "downloadSupport": true,
-  "supportsSora": true,
-  "supportsLuna": true,
-  "supportsMojuru": true,
-  "supportsDartotsu": true,
-  "supportsAnymex": true,
-  "supportsTsumi": true,
-  "supportsHiyoku": true,
-  "supportsShirox": true,
-  "id": "jLCx0"
+  "asyncJS": true,
+  "type": "anime",
+  "registry": "zangetsu",
+  "registries": [
+    "zangetsu"
+  ],
+  "manifestUrl": "https://raw.githubusercontent.com/Spyou/zangetsu-providers/main/index.json",
+  "status": "active",
+  "addedAt": "2026-06-14T10:25:50.353Z",
+  "note": "Ported from Zangetsu provider",
+  "author": {
+    "name": "Spyou",
+    "icon": ""
+  }
 }

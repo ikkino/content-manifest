@@ -1,21 +1,27 @@
 {
-  "sourceName": "Aniwave",
-  "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/aniwave/icon.png",
+  "sourceName": "AnimeNoSub",
+  "iconUrl": "https://i3.wp.com/animenosub.to/wp-content/uploads/2024/04/cropped-favicon-192x192.png",
   "author": {
-    "name": "ibro",
-    "icon": "https://git.luna-app.eu/ibro/services/raw/branch/main/profile.jpg",
-    "url": "https://github.com/xibrox"
+    "name": "50/50",
+    "icon": "https://files.catbox.moe/741wp7.png"
   },
-  "version": "2.0.27",
+  "version": "1.0.5",
   "language": "English",
   "streamType": "HLS",
   "quality": "1080p",
-  "baseUrl": "https://aniwaves.ru/",
-  "searchBaseUrl": "https://aniwaves.ru/filter?keyword=%s",
+  "baseUrl": "https://vidmoly.to/",
+  "searchBaseUrl": "https://animenosub.to/?s=%s",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/016/source.js",
-  "type": "anime",
-  "downloadSupport": true,
   "asyncJS": true,
-  "softsub": true,
-  "id": "zc8g"
+  "type": "anime",
+  "supportsMojuru": true,
+  "supportsDartotsu": true,
+  "supportsSora": true,
+  "supportsLuna": true,
+  "supportsAnymex": true,
+  "supportsTsumi": true,
+  "supportsHiyoku": true,
+  "supportsShirox": true,
+  "supportsEclipse": true,
+  "id": "wM61"
 }

@@ -42,7 +42,7 @@ async function extractDetails(id) {
     const response = await fetchv2(`https://animetsu.live/v2/api/anime/info/${id}`, headers);
     const json = await response.json();
 
-    const description = cleanHtmlSymbols(json.description) || "No description available";
+    const description = cleanHtmlSymbols(json.description) || "No description available"; 
 
     results.push({
         description: description.replace(/<br>/g, ''),
@@ -151,7 +151,7 @@ async function extractStreamUrl(slug) {
     streams.sort((a, b) => {
         const partsA = a.title.split(' - ');
         const partsB = b.title.split(' - ');
-
+        
         const sA = partsA[0].toLowerCase();
         const sB = partsB[0].toLowerCase();
         const qA = partsA[1].toLowerCase();
@@ -161,7 +161,7 @@ async function extractStreamUrl(slug) {
         const qOrderB = qualityOrder(qB);
 
         if (qOrderA !== qOrderB) return qOrderA - qOrderB;
-
+        
         const sOrderA = serverOrder[sA] || 99;
         const sOrderB = serverOrder[sB] || 99;
         return sOrderA - sOrderB;
@@ -190,10 +190,10 @@ function cleanHtmlSymbols(string) {
         .replace(/&#8217;/g, "'")
         .replace(/&#8211;/g, "-")
         .replace(/&#[0-9]+;/g, "")
-        .replace(/\r?\n|\r/g, " ")
-        .replace(/\s+/g, " ")
+        .replace(/\r?\n|\r/g, " ")  
+        .replace(/\s+/g, " ")       
         .replace(/<i[^>]*>(.*?)<\/i>/g, "$1")
-        .replace(/<b[^>]*>(.*?)<\/b>/g, "$1")
+        .replace(/<b[^>]*>(.*?)<\/b>/g, "$1") 
         .replace(/<[^>]+>/g, "")
-        .trim();
+        .trim();                 
 }

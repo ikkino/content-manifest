@@ -1,29 +1,21 @@
 {
-  "sourceName": "AnimeLand",
-  "iconUrl": "https://w7.animeland.tv/wp-content/themes/twentytwelve/SAO2.ico",
+  "sourceName": "Anizone",
+  "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/anizone/icon.png",
   "author": {
-    "name": "50/50",
-    "icon": "https://files.catbox.moe/741wp7.png"
+    "name": "ibro",
+    "icon": "https://git.luna-app.eu/ibro/services/raw/branch/main/profile.jpg",
+    "url": "https://github.com/xibrox"
   },
-  "version": "1.0.0",
+  "version": "1.0.7",
   "language": "English",
-  "streamType": "mp4",
+  "streamType": "HLS",
   "quality": "1080p",
-  "baseUrl": "https://w7.animeland.tv/",
-  "searchBaseUrl": "https://w7.animeland.tv/",
+  "baseUrl": "https://anizone.to",
+  "searchBaseUrl": "https://anizone.to/anime?search=%s",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/017/source.js",
   "type": "anime",
+  "note": "Use default (Apple Player) or external player to watch the streams (e.g. VLC).",
   "asyncJS": true,
-  "softsub": false,
-  "downloadSupport": true,
-  "supportsMojuru": true,
-  "supportsDartotsu": true,
-  "supportsSora": true,
-  "supportsLuna": true,
-  "supportsAnymex": true,
-  "supportsTsumi": true,
-  "supportsHiyoku": true,
-  "supportsShirox": true,
-  "supportsEclipse": true,
-  "id": "mod_942337115"
+  "softsub": true,
+  "id": "mod_318568986"
 }
