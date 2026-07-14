@@ -1,10 +1,26 @@
 {
-  "id": "mangayomi_1744325818",
-  "sourceName": "AnimeHeaven",
+  "id": "zangetsu_animekai",
+  "sourceName": "AnimeKai (Zangetsu)",
+  "iconUrl": "",
+  "version": "1.1.2",
   "language": "English",
-  "type": "anime",
-  "baseUrl": "https://animeheaven.me",
+  "streamType": "HLS",
+  "quality": "1080p",
+  "baseUrl": "https://animekai.to/",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/025/source.js",
-  "sourceCodeLanguage": "mangayomi-js",
-  "sourceCodeUrl": "https://raw.githubusercontent.com/Mallyd11/mangayomi-anime-extensions/refs/heads/main/javascript/anime/src/en/animeheaven.js"
+  "softsub": true,
+  "asyncJS": true,
+  "type": "anime",
+  "registry": "zangetsu",
+  "registries": [
+    "zangetsu"
+  ],
+  "manifestUrl": "https://raw.githubusercontent.com/Spyou/zangetsu-providers/main/index.json",
+  "status": "active",
+  "addedAt": "2026-06-14T10:25:50.353Z",
+  "note": "Ported from Zangetsu provider",
+  "author": {
+    "name": "Spyou",
+    "icon": ""
+  }
 }

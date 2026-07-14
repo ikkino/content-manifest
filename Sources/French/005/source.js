@@ -1,572 +1,486 @@
 // ==========================================
-// ⚙️ MODULE SORA — ANIME-SAMA (Supabase Edition + Sibnet Fix)test update
+// ⚙️ MODULE SORA — PURSTREAM (Supabase Edition)
 // ==========================================
 
 // ==========================================
 // 🗄️ TRACKER SUPABASE (Base de données)
 // ==========================================
+
 const SUPABASE_URL = "https://qyeisgowjisqbatrmqta.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_F68CBjFVPh71U0SdD9BQJg_UJgL9-Fj";
 
 async function sendSupabaseLog(moduleName, actionType, dataPayload) {
     try {
-        const payload = { module: moduleName, action: actionType, data: dataPayload };
+        const payload = {
+            module: moduleName,
+            action: actionType,
+            data: dataPayload
+        };
+
         const headers = { 
             "Content-Type": "application/json",
             "apikey": SUPABASE_ANON_KEY,
             "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
             "Prefer": "return=minimal" 
         };
-        await fetchv2(`${SUPABASE_URL}/rest/v1/app_logs`, headers, "POST", JSON.stringify(payload));
+        
+        if (typeof fetchv2 !== 'undefined') {
+            await fetchv2(`${SUPABASE_URL}/rest/v1/app_logs`, headers, "POST", JSON.stringify(payload));
+        } else {
+            await fetch(`${SUPABASE_URL}/rest/v1/app_logs`, { method: "POST", headers: headers, body: JSON.stringify(payload) });
+        }
     } catch (e) { 
         console.log(`[Tracker] 🚨 Erreur d'envoi vers Supabase : ${e.message}`); 
     }
 }
 
 // ==========================================
-// ⚙️ LOGIQUE DU MODULE ANIME-SAMA
+// ⚙️ LOGIQUE DU MODULE PURSTREAM
 // ==========================================
 
-async function getDomainsList() {
-    console.log(`[Domaines] 🌐 Récupération des domaines actifs...`);
+let WORKING_DOMAIN = null;
+
+async function getWorkingDomain() {
+    if (WORKING_DOMAIN) return WORKING_DOMAIN; 
+
+    // 🌟 1. PLAN A : Utilisation de l'API Serveur de Purstream (Super Rapide)
     try {
-        const response = await fetchv2("https://anime-sama.pw/");
-        const html = await response.text();
-
-        const domainRegex = /{ name: '([^']+)' }/g;
-        const domains = [];
-        let match;
-        while ((match = domainRegex.exec(html)) !== null) {
-            domains.push(match[1]);
-        }
+        console.log("[Purstream] Vérification de l'API de statut (purstream.wiki/api/server-status)...");
+        const response = await soraFetch("https://purstream.wiki/api/server-status");
+        const json = await response.json();
         
-        console.log(`[Domaines] ✅ Domaines trouvés : ${domains.join(', ')}`);
-        return domains.length > 0 ? domains : ["anime-sama.to"];
-    } catch (err) {
-        console.log(`[Domaines] 🚨 Erreur, fallback sur anime-sama.to`);
-        return ["anime-sama.to"];
-    }
-}
-
-async function trySearch(domain, keyword) {
-    console.log(`[Recherche AS] 🔍 Tentative sur : ${domain} pour "${keyword}"`);
-    try {
-        const headers = {
-            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-            "X-Requested-With": "XMLHttpRequest",
-            "Referer": `https://${domain}/`,
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-        };
-
-        const fetchUrl = `https://${domain}/template-php/defaut/fetch.php`;
-        const response = await fetchv2(fetchUrl, headers, "POST", `query=${encodeURIComponent(keyword)}`);
-        const html = await response.text();
-        const results = [];
-        
-        const regex = /<a[^>]+href=["']([^"']+)["'][\s\S]*?<img[^>]+src=["']([^"']+)["'][\s\S]*?<h3[^>]*>(.*?)<\/h3>/gi;
-        let match;
-        
-        while ((match = regex.exec(html)) !== null) {
-            let href = match[1].trim();
-            let image = match[2].trim();
-            let title = match[3].replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&#039;/g, "'").replace(/&#8211;/g, "-").trim();
+        if (json && json.servers && Array.isArray(json.servers)) {
+            // On cherche le serveur principal
+            const mainServer = json.servers.find(s => s.id === "main");
             
-            if (href.startsWith('/')) href = `https://${domain}${href}`;
-            if (image.startsWith('/')) image = `https://${domain}${image}`;
-
-            if (!results.find(r => r.href === href)) {
-                results.push({ title, image, href });
+            if (mainServer && mainServer.url) {
+                // Nettoyage de "https://purstream.ac/" pour ne garder que "purstream.ac"
+                let cleanDomain = mainServer.url.replace(/^https?:\/\//, '').replace(/\/$/, '');
+                WORKING_DOMAIN = cleanDomain;
+                console.log(`[Purstream] Domaine officiel trouvé via API : ${WORKING_DOMAIN}`);
+                return WORKING_DOMAIN;
             }
         }
+        throw new Error("Serveur principal introuvable dans le JSON.");
         
-        return { results: results };
-    } catch (e) {
-        console.log(`[Recherche AS] 🚨 Erreur sur ${domain} : ${e}`);
-        return { results: [] };
+    } catch (err) {
+        console.log(`[Purstream] Échec de l'API de statut, tentative de secours via HTML... (${err.message})`);
+        
+        // 🚨 2. PLAN B : Lecture HTML (En cas de panne de l'API JSON)
+        try {
+            const response = await soraFetch("https://purstream.wiki/");
+            const html = await response.text();
+            const match = html.match(/https:\/\/(purstream\.[a-z]+)/);
+            
+            if (match && match[1]) {
+                WORKING_DOMAIN = match[1]; 
+                console.log(`[Purstream] Domaine officiel trouvé via HTML : ${WORKING_DOMAIN}`);
+                return WORKING_DOMAIN;
+            } else {
+                throw new Error("Impossible de trouver le domaine sur le wiki (HTML).");
+            }
+        } catch (err2) {
+            console.log(`[Purstream] Échec total. Utilisation du domaine de secours. Erreur: ${err2.message}`);
+            WORKING_DOMAIN = "purstream.ac"; // On met le dernier nom de domaine connu par défaut
+            return WORKING_DOMAIN;
+        }
     }
 }
 
+// --- 1. RECHERCHE ---
 async function searchResults(keyword) {
     try {
-        const domains = await getDomainsList();
-        console.log(`[Recherche AS] 🔍 Démarrage de la recherche sur ${domains.length} domaines.`);
-        
-        let finalResults = [];
+        const domain = await getWorkingDomain();
+        const cleanKeyword = keyword.trim().toLowerCase();
+        let apiUrl = "";
+        let isCatalog = false;
 
-        for (let i = 0; i < domains.length; i++) {
-            let currentDomain = domains[i];
-            console.log(`[Recherche AS] 📡 Vérification du radar pour : ${currentDomain}...`);
-            
-            try {
-                const checkRes = await fetchv2(`https://anime-sama.pw/?check=${currentDomain}`, { "User-Agent": "Mozilla/5.0" }, "GET");
-                const checkData = JSON.parse(await checkRes.text());
-                if (checkData.code !== 200) {
-                    console.log(`[Recherche AS] ⏭️ ${currentDomain} ignoré.`);
-                    continue; 
-                }
-            } catch (e) {}
+        // --- GESTION DES COMMANDES COMBINÉES ---
+        if (cleanKeyword.includes("!")) {
+            isCatalog = true;
 
-            try {
-                let searchAttempt = await trySearch(currentDomain, keyword);
-                if (searchAttempt.results && searchAttempt.results.length > 0) {
-                    console.log(`[Recherche AS] 🚀 Succès sur ${currentDomain} ! ${searchAttempt.results.length} résultats extraits.`);
-                    finalResults = searchAttempt.results;
-                    break; 
-                }
-            } catch (err) {}
+            let typeParam = "*";
+            if (cleanKeyword.includes("!anime")) typeParam = "anime";
+            else if (cleanKeyword.includes("!movie") || cleanKeyword.includes("!film")) typeParam = "movie";
+            else if (cleanKeyword.includes("!serie") || cleanKeyword.includes("!tv")) typeParam = "tv";
+
+            let sortParam = "recently-added";
+            if (cleanKeyword.includes("!trend") || cleanKeyword.includes("!populaire")) sortParam = "most-viewed";
+            else if (cleanKeyword.includes("!top")) sortParam = "best-rated";
+            else if (cleanKeyword.includes("!new")) sortParam = "newest";
+
+            apiUrl = `https://api.${domain}/api/v1/catalog/movies?page=1&sortBy=${sortParam}&types=${typeParam}&categoriesIds=*&franchisesIds=*&displayMode=large&perPage=50`;
+        } 
+        else {
+            // --- RECHERCHE NORMALE ---
+            const encodedKeyword = encodeURIComponent(keyword);
+            apiUrl = `https://api.${domain}/api/v1/search-bar/search/${encodedKeyword}`;
         }
 
-        sendSupabaseLog("Anime-Sama", "SEARCH", { 
+        const responseText = await soraFetch(apiUrl);
+        const data = await responseText.json();
+
+        function findArrayInObject(obj) {
+            if (Array.isArray(obj)) return obj;
+            if (obj && typeof obj === 'object') {
+                for (let key in obj) {
+                    if (Array.isArray(obj[key])) return obj[key];
+                    let found = findArrayInObject(obj[key]);
+                    if (found) return found;
+                }
+            }
+            return null;
+        }
+
+        let items = [];
+
+        if (isCatalog) {
+            items = findArrayInObject(data) || [];
+        } else {
+            items = data?.data?.items?.movies?.items || [];
+        }
+
+        if (!Array.isArray(items) || items.length === 0) {
+             return JSON.stringify([]);
+        }
+
+        // --- TRANSFORMATION DES RÉSULTATS ---
+        const transformedResults = items.map(result => {
+            let imgUrl = result.large_poster_path || result.small_poster_path || result.wallpaper_poster_path || result.poster_path || "https://via.placeholder.com/300x450/222222/FFFFFF?text=Aucune+Affiche";
+            let title = result.title || result.name || "Titre inconnu";
+            let hrefType = (result.type === "movie") ? "movie" : "serie";
+
+            if (!result.type && isCatalog) {
+                if (cleanKeyword.includes("!anime") || cleanKeyword.includes("!serie") || cleanKeyword.includes("!tv")) hrefType = "serie";
+                if (cleanKeyword.includes("!movie") || cleanKeyword.includes("!film")) hrefType = "movie";
+            }
+
+            return {
+                title: title,
+                image: imgUrl,
+                href: `https://${domain}/${hrefType}/${result.id}-${slugify(title)}`
+            };
+        }).filter(Boolean);
+
+        // 📡 Log Supabase (Recherche)
+        sendSupabaseLog("Purstream", "SEARCH", { 
             keyword: keyword, 
-            results_count: finalResults.length,
-            top_results: finalResults.slice(0, 3).map(r => r.title)
+            results_count: transformedResults.length,
+            top_results: transformedResults.slice(0, 3).map(r => r.title)
         });
 
-        return JSON.stringify(finalResults);
-    } catch (globalErr) {
-        console.log(`[Recherche AS] 🚨 Crash global : ${globalErr}`);
+        return JSON.stringify(transformedResults);
+        
+    } catch (error) {
+        console.log('Fetch error in searchResults: ' + error);
+        // 🌟 Tracker d'erreur ajouté
+        sendSupabaseLog("Purstream", "ERROR", { keyword: keyword, error_message: String(error) });
         return JSON.stringify([]);
     }
 }
 
+function slugify(title) {
+    return title
+      .toLowerCase()
+      .normalize("NFKD")                 
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9\s-]/g, "")      
+      .trim()
+      .replace(/\s+/g, "-")              
+      .replace(/-+/g, "-");              
+}
+
 // --- 2. DÉTAILS ---
 async function extractDetails(url) {
-    console.log(`[Détails AS] 📖 Chargement des infos pour : ${url}`);
-    sendSupabaseLog("Anime-Sama", "DETAILS", { anime_url: url });
+    console.log(`[Détails] 📖 Chargement des infos pour : ${url}`);
+    
+    // 📡 Log Supabase (Détails)
+    sendSupabaseLog("Purstream", "DETAILS", { media_url: url });
 
     try {
-        const response = await fetchv2(url);
-        const html = await response.text();
+        const domain = await getWorkingDomain();
+        let apiUrl = "";
 
-        let description = "Pas de description disponible.";
-        let descMatch = html.match(/id=["']synopsis["'][^>]*>([\s\S]*?)<\//i) || 
-                          html.match(/class=["']synopsis["'][^>]*>([\s\S]*?)<\//i) || 
-                          html.match(/<p class=["']text-sm[^>]*>([\s\S]*?)<\/p>/i);
-
-        if (descMatch && descMatch[1]) {
-            description = descMatch[1].replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&#039;/g, "'").trim();
+        if(url.includes('movie')) {
+            const match = url.match(/\/movie\/(\d+)/);
+            if (!match) throw new Error("Invalid URL format");
+            apiUrl = `https://api.${domain}/api/v1/media/${match[1]}/sheet`;
+        } else if(url.includes('serie')) {
+            const match = url.match(/\/serie\/(\d+)/);
+            if (!match) throw new Error("Invalid URL format");
+            apiUrl = `https://api.${domain}/api/v1/media/${match[1]}/sheet`;
+        } else {
+            throw new Error("Invalid URL format");
         }
 
-        return JSON.stringify([{ description, aliases: "Anime-Sama" }]);
-    } catch (e) { 
-        return JSON.stringify([{ description: "Erreur de chargement", aliases: "Anime-Sama" }]); 
+        const responseText = await soraFetch(apiUrl, {
+            headers: {
+                "Referer": `https://${domain}/`,
+                "Origin": `https://${domain}`
+            }
+        });
+        const json = await responseText.json();
+        const data = json.data.items;
+
+        const duration = url.includes('movie') && data.runtime?.minutes 
+            ? `${data.runtime.minutes} minutes` 
+            : 'N/A';
+
+        const transformedResults = [{
+            description: data.overview || 'No description available',
+            aliases: `Duration: ${duration}`,
+            airdate: `Released: ${data.releaseDate ? data.releaseDate : 'N/A'}`
+        }];
+
+        return JSON.stringify(transformedResults);
+
+    } catch (error) {
+        console.log('Details error: ' + error);
+        // 🌟 Tracker d'erreur ajouté
+        sendSupabaseLog("Purstream", "ERROR", { media_url: url, error_message: String(error) });
+        return JSON.stringify([{
+            description: 'Error loading description',
+            aliases: 'Duration: Unknown',
+            airdate: 'Aired/Released: Unknown'
+        }]);
     }
 }
 
 // --- 3. ÉPISODES ---
 async function extractEpisodes(url) {
-    console.log(`[Episodes AS] 📂 Analyse multi-saisons : ${url}`);
     try {
-        if (!url.endsWith('/')) url += '/';
+        const domain = await getWorkingDomain();
 
-        const headers = { "User-Agent": "Mozilla/5.0", "Referer": url };
-        const response = await fetchv2(url, headers, "GET");
-        const html = await response.text();
-
-        const seasonRegex = /panneauAnime\s*\(\s*['"]([^'"]+)['"]\s*,\s*['"]([^'"]+)['"]\s*\)/gi;
-        let match;
-        let tabs = [];
+        // 🌟 Nouveau Regex qui capture l'ID ET le nom complet (ex: 3914-alice-in-borderland)
+        const match = url.match(/\/(movie|serie)\/([a-z0-9-]+)/i);
+        if (!match) throw new Error("Invalid URL format");
         
-        while ((match = seasonRegex.exec(html)) !== null) {
-            let name = match[1].trim();
-            let path = match[2].trim();
-            if (name.toLowerCase() === 'nom' || path.toLowerCase() === 'url') continue;
-            let fullUrl = path.startsWith('http') ? path : url + path;
-            tabs.push({ name: name, url: fullUrl });
-        }
+        const type = match[1];
+        const fullId = match[2]; // "3914-alice-in-borderland"
+        const showId = fullId.split('-')[0]; // "3914" (pour interroger l'API)
 
-        if (tabs.length === 0) tabs.push({ name: "Saison 1", url: url + "saison1/vostfr" });
+        // 1. SI C'EST UN FILM
+        if(type === 'movie') {
+            const responseText = await soraFetch(`https://api.${domain}/api/v1/media/${showId}/sheet`, {
+                headers: { "Referer": `https://${domain}/`, "Origin": `https://${domain}` }
+            });
+            const json = await responseText.json();
+            const data = json.data.items;
 
-        let results = [];
-        let fallbackSeason = 1;
-
-        for (let tab of tabs) {
-            try {
-                let jsUrl = tab.url;
-                if (!jsUrl.endsWith('/')) jsUrl += '/';
-                jsUrl += "episodes.js";
-                
-                let jsRes = await fetchv2(jsUrl, headers, "GET");
-                let jsContent = await jsRes.text();
-
-                if (!jsContent || jsContent.includes("<html") || jsContent.length < 50) {
-                    let tabRes = await fetchv2(tab.url, headers, "GET");
-                    let tabText = await tabRes.text();
-                    let scriptMatch = tabText.match(/<script[^>]+src=['"]([^'"]*episodes\.js[^'"]*)['"]/i);
-                    if (scriptMatch) {
-                        let scriptSrc = scriptMatch[1].trim();
-                        let baseFolder = tab.url.endsWith('/') ? tab.url : tab.url + '/';
-                        jsUrl = scriptSrc.startsWith('http') ? scriptSrc : (scriptSrc.startsWith('/') ? new URL(url).origin + scriptSrc : baseFolder + scriptSrc);
-                        jsRes = await fetchv2(jsUrl, headers, "GET");
-                        jsContent = await jsRes.text();
-                    }
+            return JSON.stringify([
+                { 
+                    href: `${fullId}/movie`, // 🌟 On fait passer le nom complet au lecteur !
+                    number: 1, season: 1, 
+                    title: data.title || data.name || "Film complet", 
+                    image: data.posters ? (data.posters.large || data.posters.small) : "", 
+                    duration: data.runtime ? data.runtime.human : ""
                 }
+            ]);
+            
+        // 2. SI C'EST UNE SÉRIE / UN ANIME
+        } else if(type === 'serie') {
+            const responseText = await soraFetch(`https://api.${domain}/api/v1/media/${showId}/sheet`, {
+                headers: { "Referer": `https://${domain}/`, "Origin": `https://${domain}` }
+            });
+            const json = await responseText.json();
+            const data = json.data.items;
+            let allEpisodes = [];
 
-                if (!jsContent || jsContent.includes("<html") || jsContent.length < 50) continue;
-
-                const arrayRegex = /(?:var|let|const)\s+[a-zA-Z0-9_]+\s*=\s*\[([\s\S]*?)\]/gm;
-                let arrMatch;
-                let maxEpisodes = 0;
-
-                while ((arrMatch = arrayRegex.exec(jsContent)) !== null) {
-                    let urls = arrMatch[1].match(/['"]([^'"]+)['"]/g) || [];
-                    if (urls.length > maxEpisodes) maxEpisodes = urls.length;
-                }
-
-                if (maxEpisodes > 0) {
-                    let cleanTabName = tab.name.replace(/\(?(VOSTFR|VF)\)?/i, '').trim();
-                    let currentSeason = fallbackSeason;
-                    let seasonMatch = cleanTabName.match(/saison\s*(\d+)/i);
+            for (let i = 1; i <= data.seasons; i++) {
+                try {
+                    const seasonResponseText = await soraFetch(`https://api.${domain}/api/v1/media/${showId}/season/${i}`, {
+                        headers: { "Referer": `https://${domain}/`, "Origin": `https://${domain}` }
+                    });
+                    const seasonJson = await seasonResponseText.json();
                     
-                    if (seasonMatch) currentSeason = parseInt(seasonMatch[1]);
-                    else if (cleanTabName.toLowerCase().includes('film') || cleanTabName.toLowerCase().includes('oav')) currentSeason = 0; 
-
-                    for (let i = 0; i < maxEpisodes; i++) {
-                        let separator = jsUrl.includes('?') ? '&' : '?';
-                        let epHref = `${jsUrl}${separator}episode_index=${i}`;
-                        let epTitle = maxEpisodes === 1 ? cleanTabName : `Épisode ${i + 1}`;
-                        
-                        results.push({
-                            title: epTitle, name: epTitle, href: epHref,
-                            number: i + 1, season: currentSeason     
-                        });
+                    if (seasonJson && seasonJson.data && seasonJson.data.items) {
+                        const seasonData = seasonJson.data.items;
+                        for (const episode of seasonData.episodes) {
+                            allEpisodes.push({
+                                href: `${fullId}/${i}/${episode.episode}`, // 🌟 On fait passer le nom complet !
+                                number: parseFloat(episode.episode) || 0,
+                                season: i,
+                                title: episode.name || `Épisode ${episode.episode}`,
+                                image: episode.poster || "",
+                                duration: episode.runtime ? episode.runtime.human : ""
+                            });
+                        }
                     }
-                    if (!cleanTabName.toLowerCase().includes('film')) fallbackSeason++;
-                }
-            } catch (e) { }
+                } catch (e) { }
+            }
+
+            allEpisodes.sort((a, b) => {
+                if (a.season !== b.season) return a.season - b.season;
+                return a.number - b.number;
+            });
+
+            return JSON.stringify(allEpisodes);
         }
-        return JSON.stringify(results);
-    } catch (e) { return JSON.stringify([]); }
+    } catch (error) {
+        sendSupabaseLog("Purstream", "ERROR", { media_url: url, error_message: String(error) });
+        return JSON.stringify([]);
+    }   
 }
 
-// --- 4. LECTEUR ---
+// --- 4. LECTEUR (Tracker Pro + Sous-titres VTT) ---
 async function extractStreamUrl(url) {
-    console.log(`[Lecteur AS] 🎬 Démarrage pour : ${url}`);
-    
+    let finalMediaUrl = url; // Par sécurité
+
     try {
-        let epIndex = 0;
-        let jsUrl1 = url;
-        
-        if (url.includes('episode_index=')) {
-            let parts = url.split('episode_index=');
-            epIndex = parseInt(parts[1]) || 0;
-            jsUrl1 = parts[0];
-            if (jsUrl1.endsWith('?') || jsUrl1.endsWith('&')) jsUrl1 = jsUrl1.slice(0, -1);
-        }
-
-        let langsToFetch = [];
-        let langMatch = jsUrl1.match(/\/(vostfr|vf|va)\//i);
-
-        if (langMatch) {
-            let currentLang = langMatch[1].toLowerCase();
-            langsToFetch = [
-                { lang: "VOSTFR", url: jsUrl1.replace(`/${currentLang}/`, '/vostfr/') },
-                { lang: "VF", url: jsUrl1.replace(`/${currentLang}/`, '/vf/') },
-                { lang: "VA", url: jsUrl1.replace(`/${currentLang}/`, '/va/') }
-            ];
-        } else {
-            langsToFetch = [{ lang: "VOSTFR", url: jsUrl1 }]; 
-        }
-
-        const headers = { "User-Agent": "Mozilla/5.0", "Referer": "https://anime-sama.to/" };
-
-        let fetchPromises = langsToFetch.map(l => fetchv2(l.url, headers, "GET").then(r => r.text()).catch(() => ""));
-        let contents = await Promise.all(fetchPromises);
-        
-        let allEmbeds = [];
-
-        function parseJsContent(jsText, langTag) {
-            if (!jsText || jsText.includes("<html") || jsText.length < 50) return;
-            const arrayRegex = /(?:var|let|const)\s+([a-zA-Z0-9_]+)\s*=\s*\[([\s\S]*?)\];/gm;
-            let match;
-            while ((match = arrayRegex.exec(jsText)) !== null) {
-                let urls = match[2].match(/['"]([^'"]+)['"]/g) || [];
-                if (epIndex < urls.length) {
-                    let rawUrl = urls[epIndex].replace(/['"]/g, '').trim();
-                    if (rawUrl.startsWith('http')) {
-                        allEmbeds.push({ url: rawUrl, lang: langTag });
-                    }
-                }
-            }
-        }
-
-        for (let i = 0; i < contents.length; i++) {
-            if (contents[i]) parseJsContent(contents[i], langsToFetch[i].lang);
-        }
-
+        const startTime = Date.now();
+        const domain = await getWorkingDomain();
         let streams = [];
         let extractedNames = [];
         let failedLinks = [];
+        let subtitleUrl = "";
 
-        for (let embed of allEmbeds) {
-            let embedUrl = embed.url;
-            let urlLower = embedUrl.toLowerCase();
-            let prefix = `[${embed.lang}]`;
-            let streamCountBefore = streams.length;
+        // url ressemble à "3914-alice-in-borderland/1/1" ou "3914-film/movie"
+        const parts = url.split('/');
+        const fullId = parts[0]; 
+        const showId = fullId.split('-')[0]; // "3914"
 
-            // 1. LECTEUR VOE
-            if (urlLower.includes("voe.sx") || urlLower.includes("voe.network") || urlLower.includes("voe") || urlLower.includes("lancewhosedifficult")) {
-                console.log(`[Lecteur] 🕵️ Extraction VOE en cours sur : ${embedUrl}`);
-                try {
-                    let voeRes = await fetchv2(embedUrl, { "Referer": "https://anime-sama.to/" }, "GET");
-                    if (voeRes) {
-                        let voeHtml = await voeRes.text();
-                        
-                        // Fix Redirection VOE (Domain Hopping)
-                        const redirectMatch = voeHtml.match(/window\.location\.href\s*=\s*["']([^"']+)["']/i);
-                        if (redirectMatch && redirectMatch[1]) {
-                            console.log(`[Lecteur] 🔄 VOE : Redirection détectée -> ${redirectMatch[1]}`);
-                            voeRes = await fetchv2(redirectMatch[1], { "Referer": "https://anime-sama.to/" }, "GET");
-                            voeHtml = await voeRes.text();
-                        }
+        // 🌟 On extrait le vrai titre (Alice In Borderland)
+        let mediaTitle = showId;
+        if (fullId.includes('-')) {
+            let cleanStr = fullId.substring(fullId.indexOf('-') + 1).replace(/-/g, ' ');
+            mediaTitle = cleanStr.replace(/\b\w/g, c => c.toUpperCase()); 
+        }
 
-                        const streamUrl = voeExtractor(voeHtml);
-                        if (streamUrl) {
-                            const typeStr = streamUrl.includes(".m3u8") ? "HLS" : "MP4";
-                            streams.push({ title: `${prefix} VOE (${typeStr})`, streamUrl: streamUrl, headers: { "Referer": embedUrl } });
-                            extractedNames.push(`${prefix} VOE`);
-                        }
-                    }
-                } catch(e) {}
-            }
-            // 2. LECTEUR STREAMTAPE
-            else if (urlLower.includes("streamtape")) {
-                try {
-                    const stRes = await fetchv2(embedUrl, { "Referer": "https://anime-sama.to/" }, "GET");
-                    const stHtml = await stRes.text();
-                    const robotMatch = stHtml.match(/document\.getElementById\(['"]robotlink['"]\)\.innerHTML\s*=\s*[^;]+\(['"]([^'"]+)['"]\)/i);
-                    if (robotMatch) {
-                        let tokenStr = robotMatch[1];
-                        let directUrl = "https://streamtape.com" + tokenStr.substring(tokenStr.indexOf('/get_video')) + "&dl=1";
-                        streams.push({ title: `${prefix} Streamtape`, streamUrl: directUrl, headers: { "Referer": "https://streamtape.com/" } });
-                        extractedNames.push(`${prefix} Streamtape`);
-                    }
-                } catch (e) {}
-            } 
-            // 4. LECTEUR VIDMOLY
-            else if (urlLower.includes("vidmoly")) {
-                try {
-                    let fixedVidUrl = embedUrl.replace(/vidmoly\.(to|me|net|ru|is)/i, "vidmoly.biz");
-                    const vidRes = await fetchv2(fixedVidUrl, { "Referer": "https://vidmoly.biz/" }, "GET");
-                    const vidHtml = await vidRes.text();
-                    const fileMatch = vidHtml.match(/file\s*:\s*["']([^"']+\.(?:m3u8|mp4)[^"']*)["']/i) || vidHtml.match(/["'](https?:\/\/[^"']+\.(?:m3u8|mp4)[^"']*)["']/i);
-                    if (fileMatch) {
-                        streams.push({ title: `${prefix} Vidmoly`, streamUrl: fileMatch[1], headers: { "Referer": "https://vidmoly.biz/" } });
-                        extractedNames.push(`${prefix} Vidmoly`);
-                    }
-                } catch (e) {}
-            }
-            // 5. LECTEUR SENDVID
-            else if (urlLower.includes("sendvid")) {
-                try {
-                    const req = await fetchv2(embedUrl, { "Referer": "https://anime-sama.to/" }, "GET");
-                    const sendHtml = await req.text();
-                    const mp4Match = sendHtml.match(/<source[^>]+src=["']([^"']+\.mp4)["']/i) || sendHtml.match(/video_source\s*=\s*["']([^"']+)["']/i);
-                    if (mp4Match) {
-                        streams.push({ title: `${prefix} Sendvid`, streamUrl: mp4Match[1], headers: { "Referer": embedUrl } });
-                        extractedNames.push(`${prefix} Sendvid`);
-                    }
-                } catch (e) {}
-            }
-            // 6. LECTEUR SIBNET (AVEC DIAGNOSTIC iOS)
-            else if (urlLower.includes("sibnet.ru")) {
-                console.log(`[Sibnet] 🔍 1/4 - Démarrage extraction sur : ${embedUrl}`);
-                try {
-                    // 🌟 CORRECTION 1 : On force un User-Agent Desktop pour éviter la version mobile de Sibnet sur iOS
-                    const sibnetHeaders = { 
-                        "Referer": "https://anime-sama.to/",
-                        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
-                    };
-                    const req = await fetchv2(embedUrl, sibnetHeaders, "GET", null, true, "windows-1251");
-                    
-                    if (!req) {
-                        console.log(`[Sibnet] 🚨 1/4 - ERREUR FATALE : La requête (fetchv2) a renvoyé NULL. (Problème de fetch réseau sur iOS ?)`);
-                        continue;
-                    }
-                    
-                    const html = await req.text();
-                    
-                    if (!html || html.length < 100) {
-                         console.log(`[Sibnet] 🚨 2/4 - ERREUR : HTML reçu vide ou trop court (Taille: ${html ? html.length : 0}).`);
-                         continue;
-                    } else {
-                         console.log(`[Sibnet] ✅ 2/4 - HTML téléchargé avec succès. (Taille: ${html.length} chars)`);
-                    }
+        let seasonNumber = "";
+        let episodeNumber = "";
+        let typePath = "serie";
 
-                    // 🌟 CORRECTION 2 : Regex plus robuste (Supporte les .m3u8 et les URLs absolues)
-                    const srcMatch = html.match(/player\.src\s*\(\s*\[\s*\{\s*src\s*:\s*["']([^"']+)["']/i) || 
-                                     html.match(/src:\s*["']((?:https?:\/\/video\.sibnet\.ru)?\/v\/[^"']+\.(?:mp4|m3u8)[^"']*)["']/i) || 
-                                     html.match(/["']((?:https?:\/\/video\.sibnet\.ru)?\/v\/[^"']+\.(?:mp4|m3u8)[^"']*)["']/i);
-                    
-                    if (srcMatch) {
-                        let streamUrl = srcMatch[1].startsWith("http") ? srcMatch[1] : "https://video.sibnet.ru" + srcMatch[1];
-                        console.log(`[Sibnet] ✅ 3/4 - SRC trouvée par le Regex : ${streamUrl}`);
-                        
-                        try {
-                            console.log(`[Sibnet] 📡 4/4 - Tentative de résolution de la redirection (HEAD)...`);
-                            const redirectReq = await fetchv2(streamUrl, {
-                                "Referer": embedUrl,
-                                // Certains iOS WKWebview bloquent si le User-Agent n'est pas "Mobile"
-                                "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Mobile/15E148 Safari/604.1"
-                            }, "HEAD");
-                            
-                            if (redirectReq && redirectReq.url && redirectReq.url !== streamUrl) {
-                                console.log(`[Sibnet] 🔄 Redirection confirmée vers : ${redirectReq.url}`);
-                                streamUrl = redirectReq.url;
-                            } else {
-                                console.log(`[Sibnet] ⚠️ Pas de redirection détectée (URL identique ou échec HEAD). On garde le lien d'origine.`);
+        if (parts[1] === 'movie') {
+            episodeNumber = "movie";
+            typePath = "movie";
+        } else {
+            seasonNumber = parts[1];
+            episodeNumber = parts[2];
+        }
+
+        finalMediaUrl = `https://${domain}/${typePath}/${fullId}`;
+
+        let apiUrl = episodeNumber === "movie" 
+            ? `https://api.${domain}/api/v1/stream/${showId}`
+            : `https://api.${domain}/api/v1/stream/${showId}/episode?season=${seasonNumber}&episode=${episodeNumber}`;
+
+        const response = await soraFetch(apiUrl, {
+            headers: { "Referer": `https://${domain}/`, "Origin": `https://${domain}` }
+        });
+        
+        let json = {};
+        try { json = await response.json(); } catch(e) {
+            failedLinks.push({ server_name: "API Purstream (Crash)", url: apiUrl, reason: "Response JSON Parse failed" });
+        }
+
+        const sources = json?.data?.items?.sources || [];
+
+        for (const source of sources) {
+            if (source.stream_url) {
+                let serverName = source.source_name || "Purstream (Direct)";
+                streams.push({
+                    title: serverName,
+                    streamUrl: source.stream_url,
+                    headers: {
+                        "Origin": `https://${domain}`,
+                        "Referer": `https://${domain}/`,
+                        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+                    }
+                });
+                extractedNames.push(serverName);
+
+                // 🛑 --- EXTRACTION DES SOUS-TITRES (.VTT) --- 🛑
+                if (subtitleUrl === "" && source.stream_url.includes('.m3u8')) {
+                    try {
+                        const m3u8Res = await soraFetch(source.stream_url);
+                        const m3u8Text = await m3u8Res.text();
+
+                        const baseUrl = source.stream_url.substring(0, source.stream_url.lastIndexOf('/') + 1);
+                        const lines = m3u8Text.split('\n');
+
+                        for (const line of lines) {
+                            if (line.includes('TYPE=SUBTITLES')) {
+                                const uriMatch = line.match(/URI="([^"]+)"/);
+                                const nameMatch = line.match(/NAME="([^"]+)"/);
+                                const langMatch = line.match(/LANGUAGE="([^"]+)"/i);
+
+                                if (uriMatch) {
+                                    const uri = uriMatch[1];
+                                    const langName = nameMatch ? nameMatch[1] : (langMatch ? langMatch[1] : "Inconnu");
+                                    const folderPath = uri.split('/')[0]; 
+                                    const vttUrl = `${baseUrl}${folderPath}/subtitle.vtt`;
+
+                                    const isFrench = langName.toLowerCase().includes("fra") || langName.toLowerCase().includes("fre");
+                                    const isForced = langName.toLowerCase().includes("forced");
+
+                                    if (subtitleUrl === "") {
+                                        subtitleUrl = vttUrl; 
+                                    } else if (isFrench && !isForced) {
+                                        subtitleUrl = vttUrl;
+                                    }
+                                }
                             }
-                        } catch(redErr) {
-                            console.log(`[Sibnet] 🚨 Erreur lors de la redirection HEAD (Typique sur iOS) : ${redErr.message}. On force le lien d'origine.`);
                         }
-
-                        streams.push({ 
-                            title: `${prefix} Sibnet`, 
-                            streamUrl: streamUrl, 
-                            headers: { "Referer": embedUrl, "User-Agent": "Mozilla/5.0" } 
-                        });
-                        extractedNames.push(`${prefix} Sibnet`);
-                        console.log(`[Sibnet] 🎉 SUCCÈS TOTAL : Sibnet ajouté aux flux.`);
-
-                    } else {
-                        console.log(`[Sibnet] 🚨 3/4 - ERREUR : Le Regex n'a rien trouvé. Extrait du HTML : ${html.substring(0, 500)}...`);
-                    }
-                } catch(globalSibErr) {
-                    console.log(`[Sibnet] 💥 CRASH GÉNERAL DANS LE TRY/CATCH SIBNET : ${globalSibErr.message}`);
+                    } catch (e) { }
                 }
             }
-            // 7. DETECTEUR UNIVERSEL (Vidhide / Famille Packer)
-            else {
-                try {
-                    const req = await fetchv2(embedUrl, { "Referer": "https://anime-sama.to/" }, "GET");
-                    const html = await req.text();
-
-                    if (html.includes('/vidhide/') || html.includes('eval(function(p,a,c,k,e,d)')) {
-                        let streamUrl = vidhideExtractor(html); 
-                        if (streamUrl) {
-                            let originMatch = embedUrl.match(/^(https?:\/\/[^\/]+)/i);
-                            let originUrl = originMatch ? originMatch[1] + "/" : "https://vidhide.com/";
-                            streams.push({ 
-                                title: `${prefix} Vidhide`, 
-                                streamUrl: streamUrl, 
-                                headers: { "Referer": originUrl, "User-Agent": "Mozilla/5.0" } 
-                            });
-                            extractedNames.push(`${prefix} Vidhide`);
-                        }
-                    }
-                } catch(e) {}
-            }
-
-            if (streams.length === streamCountBefore) {
-                let domainMatch = embedUrl.match(/https?:\/\/(?:www\.)?([^/]+)/i);
-                let serverFallbackName = domainMatch ? domainMatch[1] : "Inconnu";
-                failedLinks.push({ server_name: `${prefix} ${serverFallbackName}`, url: embedUrl });
-            }
         }
 
-        let safeStreams = streams.filter(s => s.streamUrl.includes('.mp4') || s.streamUrl.includes('.m3u8'));
-        let uniqueStreams = [];
-        let seenUrls = new Set();
-        for (let s of safeStreams) {
-            if (!seenUrls.has(s.streamUrl)) { seenUrls.add(s.streamUrl); uniqueStreams.push(s); }
+        if (streams.length === 0 && failedLinks.length === 0) {
+            failedLinks.push({ server_name: "API Purstream", url: apiUrl, reason: "Aucune vidéo trouvée pour ce média" });
         }
 
-        sendSupabaseLog("Anime-Sama", "PLAYER", { 
-            anime_url: url, ep_number: epIndex + 1, streams_found: uniqueStreams.length, servers: extractedNames
+        // 📡 Log Supabase (Player)
+        sendSupabaseLog("Purstream", "PLAYER", { 
+            media_title: mediaTitle, 
+            media_url: finalMediaUrl, 
+            season_number: seasonNumber,
+            ep_number: episodeNumber,
+            streams_found: streams.length,
+            subtitles_found: subtitleUrl !== "",
+            execution_time_ms: Date.now() - startTime,
+            servers: streams.map(s => ({ nom: s.title, lien: s.streamUrl }))
         });
 
         if (failedLinks.length > 0) {
-            sendSupabaseLog("Anime-Sama", "UNSUPPORTED_HOSTS", {
-                anime_url: url, ep_number: epIndex + 1, failed_count: failedLinks.length, failed_links: failedLinks
+            sendSupabaseLog("Purstream", "UNSUPPORTED_HOSTS", {
+                media_title: mediaTitle,
+                media_url: finalMediaUrl,
+                season_number: seasonNumber,
+                ep_number: episodeNumber,
+                failed_count: failedLinks.length,
+                failed_links: failedLinks
             });
         }
 
-        return JSON.stringify(uniqueStreams.length > 0 ? { type: "servers", streams: uniqueStreams } : { type: "none" });
+        return JSON.stringify({ streams, subtitles: subtitleUrl });
 
-    } catch (e) {
-        return JSON.stringify({ type: "none" });
+    } catch (error) {
+        sendSupabaseLog("Purstream", "ERROR", { media_url: finalMediaUrl, error_message: String(error) });
+        return JSON.stringify({ streams: [], subtitles: "" });
     }
 }
 
-// ==========================================
-// 🛠️ FONCTIONS UTILITAIRES & DÉCRYPTEURS
-// ==========================================
-
-// Décodeur VOE (Mise à jour avec safeAtob pour corriger l'erreur Buffer)
-function voeExtractor(html) {
+// --- FONCTION UTILITAIRE SORA ---
+async function soraFetch(url, options = { headers: {}, method: 'GET', body: null, encoding: 'utf-8' }) {
     try {
-        const jsonScriptMatch = html.match(/<script[^>]+type=["']application\/json["'][^>]*>([\s\S]*?)<\/script>/i);
-        if (!jsonScriptMatch) return null;
-        
-        let data = JSON.parse(jsonScriptMatch[1].trim());
-        let step1 = data[0].replace(/[a-zA-Z]/g, c => String.fromCharCode((c <= "Z" ? 90 : 122) >= (c = c.charCodeAt(0) + 13) ? c : c - 26));
-        let step2 = step1; 
-        ["@$", "^^", "~@", "%?", "*~", "!!", "#&"].forEach(pat => step2 = step2.split(pat).join(""));
-        
-        const safeAtob = (b64) => {
-            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
-            let str = String(b64).replace(/=+$/, '');
-            let output = '';
-            for (let bc = 0, bs, buffer, idx = 0; buffer = str.charAt(idx++); ~buffer && (bs = bc % 4 ? bs * 64 + buffer : buffer, bc++ % 4) ? output += String.fromCharCode(255 & bs >> (-2 * bc & 6)) : 0) {
-                buffer = chars.indexOf(buffer);
-            }
-            return output;
-        };
-        
-        let step3 = safeAtob(step2);
-        let step4 = step3.split("").map((c) => String.fromCharCode(c.charCodeAt(0) - 3)).join("");
-        let step5 = step4.split("").reverse().join("");
-        let step6 = safeAtob(step5);
-        
-        let result = JSON.parse(step6);
-        return result.direct_access_url || (result.source && result.source.find(s => s.direct_access_url)?.direct_access_url) || null;
-    } catch (e) { return null; }
-}
-
-function vidhideExtractor(html) {
-    try {
-        let videoUrl = null;
-
-        let directMatch = html.match(/(https?:\/\/[^"'\s]+\.(?:m3u8|mp4)[^"'\s]*)/i);
-        if (directMatch) {
-            videoUrl = directMatch[1];
-        } 
-        else if (html.includes('eval(function(p,a,c,k,e,d)')) {
-            let packRegex = /eval\(function\(p,a,c,k,e,d\).*?\.split\('\|'\)\)\)/g;
-            let packMatches = html.match(packRegex);
-            
-            if (packMatches) {
-                for (let packed of packMatches) {
-                    let argsMatch = packed.match(/}\s*\(\s*(['"])(.*?)\1\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*(['"])(.*?)\5\.split\('\|'\)/);
-                    if (argsMatch) {
-                        let p = argsMatch[2].replace(/\\'/g, "'").replace(/\\"/g, '"');
-                        let a = parseInt(argsMatch[3], 10);
-                        let c = parseInt(argsMatch[4], 10);
-                        let k = argsMatch[6].split('|');
-                        
-                        let e = function(c) {
-                            return (c < a ? '' : e(parseInt(c / a))) + ((c = c % a) > 35 ? String.fromCharCode(c + 29) : c.toString(36));
-                        };
-                        
-                        while (c--) {
-                            if (k[c]) p = p.replace(new RegExp('\\b' + e(c) + '\\b', 'g'), k[c]);
-                        }
-                        
-                        let unpackedMatch = p.match(/(https?:\/\/[^"'\s]+\.(?:m3u8|mp4)[^"'\s]*)/i);
-                        if (unpackedMatch) {
-                            videoUrl = unpackedMatch[1];
-                            break;
-                        }
-                    }
-                }
-            }
+        if (typeof fetchv2 !== 'undefined') {
+            return await fetchv2(
+                url,
+                options.headers ?? {},
+                options.method ?? 'GET',
+                options.body ?? null,
+                true,
+                options.encoding ?? 'utf-8'
+            );
+        } else {
+            return await fetch(url, options);
         }
-
-        if (videoUrl) {
-            return videoUrl.replace(/\\\//g, "/").trim();
+    } catch(e) {
+        try {
+            return await fetch(url, options);
+        } catch(error) {
+            return null;
         }
-        return null;
-    } catch (e) {
-        return null;
     }
 }

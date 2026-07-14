@@ -1,21 +1,28 @@
 {
-  "sourceName": "FireAnime English (SUB)",
-  "iconUrl": "https://i.ibb.co/dJ1SN5ch/favicon.png",
+  "sourceName": "Animex",
+  "iconUrl": "https://animex.one/favicon.ico",
   "author": {
-    "name": "Cufiy & 50/50",
-    "icon": "https://files.catbox.moe/ttj4fc.gif"
+    "name": "StreamPlay"
   },
-  "version": "1.1.7",
+  "version": "1.0.0",
   "language": "English",
   "streamType": "HLS",
   "quality": "1080p",
-  "baseUrl": "https://fireani.me/",
-  "searchBaseUrl": "https://fireani.me/api/anime/search?q=%s",
+  "baseUrl": "https://animex.one/",
+  "searchBaseUrl": "https://animex.one/",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/011/source.js",
-  "asyncJS": true,
   "type": "anime",
-  "supportsMojuru": true,
+  "asyncJS": true,
+  "softsub": true,
+  "downloadSupport": false,
   "supportsSora": true,
   "supportsLuna": true,
-  "id": "8NDe"
+  "supportsMojuru": true,
+  "supportsDartotsu": true,
+  "supportsAnymex": true,
+  "supportsTsumi": true,
+  "supportsHiyoku": true,
+  "supportsShirox": true,
+  "supportsEclipse": true,
+  "id": "animex-local"
 }

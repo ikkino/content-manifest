@@ -1,3 +1,5 @@
+// Sora module for VidUp using enc-dec.app API
+
 async function searchResults(keyword) {
     try {
         let transformedResults = [];
@@ -13,7 +15,6 @@ async function searchResults(keyword) {
         const skipTitleFilter = Object.values(keywordGroups).flat();
         const shouldFilter = !matchesKeyword(keyword, skipTitleFilter);
 
-        // --- TMDB Section ---
         const encodedKeyword = encodeURIComponent(keyword);
         let baseUrlTemplate = null;
 
@@ -35,7 +36,7 @@ async function searchResults(keyword) {
 
         if (baseUrlTemplate) {
             const pagePromises = Array.from({ length: 5 }, (_, i) =>
-                soraFetch(baseUrlTemplate(i + 1)).then(r => r ? r.json() : { results: [] }).catch(() => ({ results: [] }))
+                soraFetch(baseUrlTemplate(i + 1)).then(r => r.json())
             );
             const pages = await Promise.all(pagePromises);
             dataResults = pages.flatMap(p => p.results || []);
@@ -60,6 +61,8 @@ async function searchResults(keyword) {
                         }
                     })
                     .filter(Boolean)
+                    .filter(result => result.title !== "Overflow")
+                    .filter(result => result.title !== "My Marriage Partner Is My Student, a Cocky Troublemaker")
                     .filter(r => !shouldFilter || r.title.toLowerCase().includes(keyword.toLowerCase()))
             );
         }
@@ -137,37 +140,32 @@ async function extractEpisodes(url) {
             console.log(movie);
             return JSON.stringify(movie);
         } else if (url.includes('tv')) {
-            const match = url.match(/tv\/([^\/]+)/);
+            const match = url.match(/tv\/([^\/]+)\/([^\/]+)\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
 
             const showId = match[1];
+
             const showResponseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
             const showData = await showResponseText.json();
 
-            const seasonPromises = (showData.seasons || []).map(async (season) => {
+            let allEpisodes = [];
+            for (const season of showData.seasons) {
                 const seasonNumber = season.season_number;
-                if (seasonNumber === 0) return [];
+                if (seasonNumber === 0) continue;
 
-                try {
-                    const seasonResponseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}/season/${seasonNumber}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
-                    if (!seasonResponseText) return [];
-                    const seasonData = await seasonResponseText.json();
+                const seasonResponseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}/season/${seasonNumber}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
+                const seasonData = await seasonResponseText.json();
 
-                    if (seasonData.episodes && seasonData.episodes.length) {
-                        return seasonData.episodes.map(episode => ({
-                            href: `/tv/${showId}/${seasonNumber}/${episode.episode_number}`,
-                            number: episode.episode_number,
-                            title: episode.name || ""
-                        }));
-                    }
-                } catch (e) {
-                    console.log(`Failed to fetch season ${seasonNumber}: ${e.message}`);
+                if (seasonData.episodes && seasonData.episodes.length) {
+                    const episodes = seasonData.episodes.map(episode => ({
+                        href: `/tv/${showId}/${seasonNumber}/${episode.episode_number}`,
+                        number: episode.episode_number,
+                        title: episode.name || ""
+                    }));
+                    allEpisodes = allEpisodes.concat(episodes);
                 }
-                return [];
-            });
+            }
 
-            const results = await Promise.all(seasonPromises);
-            const allEpisodes = results.flat();
             console.log(allEpisodes);
             return JSON.stringify(allEpisodes);
         } else {
@@ -179,93 +177,136 @@ async function extractEpisodes(url) {
     }
 }
 
+function getQualityWeight(title) {
+    if (title.includes("2160p") || title.includes("4K")) return 2160;
+    if (title.includes("1080p")) return 1080;
+    if (title.includes("720p")) return 720;
+    if (title.includes("480p")) return 480;
+    if (title.includes("360p")) return 360;
+    if (title.includes("Auto")) return 1;
+    return 0;
+}
+
 async function extractStreamUrl(ID) {
     try {
         let isMovie = ID.includes('movie');
-        let tmdbID = "";
-        let seasonNumber = "1";
-        let episodeNumber = "1";
+        let tmdbID, seasonNumber = "1", episodeNumber = "1";
         let mediaType = "";
-        let reqUrl = "";
-        let referer = "";
 
+        const idParts = ID.split('/').filter(Boolean);
         if (isMovie) {
-            tmdbID = ID.replace('/movie/', '').replace('movie/', '');
+            tmdbID = idParts[idParts.length - 1];
             mediaType = "movie";
-            reqUrl = `https://play.xpass.top/data/movie/${tmdbID}?autostart=false`;
-            referer = `https://play.xpass.top/e/movie/${tmdbID}`;
         } else if (ID.includes('tv')) {
-            const parts = ID.split('/');
-            const cleanParts = parts.filter(p => p !== "");
-            tmdbID = cleanParts[1];
-            seasonNumber = cleanParts[2];
-            episodeNumber = cleanParts[3];
+            tmdbID = idParts[1];
+            seasonNumber = idParts[2];
+            episodeNumber = idParts[3];
             mediaType = "tv";
-            reqUrl = `https://play.xpass.top/data/tv/${tmdbID}/${seasonNumber}/${episodeNumber}?autostart=false`;
-            referer = `https://play.xpass.top/e/tv/${tmdbID}/${seasonNumber}/${episodeNumber}`;
         } else {
             return JSON.stringify({ streams: [] });
         }
 
-        const headers = {
-            "Cookie": "auth_token=c2685c63f0016d6ab3a3548eeb1e111551acfc1bbd65fc2b1e2b043af659b39a",
-            "Referer": referer,
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:152.0) Gecko/20100101 Firefox/152.0",
-            "Accept": "*/*"
+        const base_url = mediaType === "movie" 
+            ? `https://vidup.to/movie/${tmdbID}` 
+            : `https://vidup.to/tv/${tmdbID}/${seasonNumber}/${episodeNumber}/`;
+
+        const requestHeaders = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
+            "Referer": "https://vidup.to/",
+            "X-Requested-With": "XMLHttpRequest"
         };
 
-        const response = await soraFetch(reqUrl, { headers });
-        if (!response) throw new Error("Failed to fetch server list from XPass");
+        const pageRes = await soraFetch(base_url, { headers: requestHeaders });
+        if (!pageRes) throw new Error("Failed to fetch VidUp page");
+        const html = await pageRes.text();
 
-        const serverList = await response.json();
-        if (!Array.isArray(serverList)) throw new Error("Invalid server list response");
+        let match = html.match(/\\"en\\":\\"(.*?)\\"/);
+        if (!match) {
+            match = html.match(/\\"[a-z]{2}\\":\\"(.*?)\\"/);
+        }
+        if (!match) throw new Error("No match for key in page response");
+        const text = match[1];
 
-        const serverPromises = serverList.map(async (server) => {
+        const API = "https://enc-dec.app/api";
+        const enc_vidup = `${API}/enc-vidup?text=${encodeURIComponent(text)}`;
+        const encRes = await soraFetch(enc_vidup);
+        if (!encRes) throw new Error("Failed to encrypt vidup text");
+        const encData = await encRes.json();
+        
+        if (encData.status !== 200) throw new Error("VidUp encryption API error");
+        const parts = encData.result;
+        const serversUrl = parts.servers;
+        const streamBase = parts.stream;
+        const token = parts.token;
+
+        requestHeaders["X-CSRF-Token"] = token;
+
+        const serversRes = await soraFetch(serversUrl, { method: "POST", headers: requestHeaders });
+        if (!serversRes) throw new Error("Failed to fetch servers list");
+        const servers_encrypted = await serversRes.text();
+
+        const dec_vidup = `${API}/dec-vidup`;
+        const decServersRes = await fetchv2(dec_vidup, { "Content-Type": "application/json" }, "POST", JSON.stringify({ text: servers_encrypted }));
+        const decServersData = await decServersRes.json();
+        if (decServersData.status !== 200) throw new Error("VidUp decryption API error for servers");
+        const servers_decrypted = decServersData.result;
+
+        let streamObjects = [];
+        let allSubtitles = [];
+
+        for (const server of servers_decrypted) {
             try {
-                if (!server.url) return [];
-                const playlistUrl = `https://play.xpass.top${server.url}`;
-                const playlistResponse = await soraFetch(playlistUrl, { headers });
-                if (!playlistResponse) return [];
-                const playlistData = await playlistResponse.json();
+                const streamUrl = `${streamBase}/${server.data}`;
+                const streamRes = await soraFetch(streamUrl, { method: "POST", headers: requestHeaders });
+                if (!streamRes) continue;
+                const stream_encrypted = await streamRes.text();
 
-                let results = [];
-                if (playlistData && playlistData.playlist && playlistData.playlist.length > 0) {
-                    playlistData.playlist.forEach(item => {
-                        if (item.sources && Array.isArray(item.sources)) {
-                            item.sources.forEach(src => {
-                                if (src.file) {
-                                    const isTik = src.file.includes("tik.1x2.space") || 
-                                                  (src.label && src.label.toUpperCase().includes("TIK")) || 
-                                                  (server.name && server.name.toUpperCase().includes("TIK"));
-                                    if (!isTik) {
-                                        results.push({
-                                            title: `[XPass] ${server.name || 'Server'} - ${src.label || 'HLS'}`,
-                                            streamUrl: src.file,
-                                            headers: {
-                                                "Origin": "https://play.xpass.top",
-                                                "Connection": "keep-alive",
-                                                "Referer": "https://play.xpass.top/"
-                                            }
-                                        });
-                                    }
-                                }
-                            });
+                const decStreamRes = await fetchv2(dec_vidup, { "Content-Type": "application/json" }, "POST", JSON.stringify({ text: stream_encrypted }));
+                const decStreamData = await decStreamRes.json();
+                if (decStreamData.status !== 200) continue;
+                const stream_decrypted = decStreamData.result;
+
+                if (stream_decrypted && stream_decrypted.url) {
+                    streamObjects.push({
+                        title: `[VidUp - ${server.name}] ${server.description || 'HLS'}`,
+                        streamUrl: stream_decrypted.url,
+                        headers: {
+                            "Origin": "https://vidup.to",
+                            "Referer": stream_decrypted.noReferrer ? "" : "https://vidup.to/",
+                            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
+                            ...(stream_decrypted.headers || {})
                         }
                     });
                 }
-                return results;
-            } catch (err) {
-                console.log(`Error fetching playlist for server ${server.name}: ` + err);
-                return [];
+
+                if (stream_decrypted && stream_decrypted.tracks) {
+                    stream_decrypted.tracks.forEach(track => {
+                        if (track.file && !allSubtitles.some(existing => existing.file === track.file)) {
+                            allSubtitles.push(track);
+                        }
+                    });
+                }
+            } catch (serverErr) {
+                console.log(`Error processing VidUp server ${server.name}: ${serverErr}`);
             }
+        }
+
+        streamObjects.sort((a, b) => {
+            const weightA = getQualityWeight(a.title);
+            const weightB = getQualityWeight(b.title);
+            return weightB - weightA;
         });
 
-        const resolvedStreams = await Promise.all(serverPromises);
-        const streamObjects = resolvedStreams.flat();
+        const englishSubtitle = allSubtitles.find(sub => (sub.label || sub.lang || sub.language || '').toLowerCase() === 'english');
+        let subtitleUrl = englishSubtitle ? englishSubtitle.file : "";
+
+        if (subtitleUrl) {
+            subtitleUrl = `https://passthrough-worker.simplepostrequest.workers.dev/?url=${encodeURIComponent(subtitleUrl)}&type=vtt&referer=https%3A%2F%2Fvidup.to%2F`;
+        }
 
         return JSON.stringify({
             streams: streamObjects,
-            subtitles: ""
+            subtitles: subtitleUrl
         });
     } catch (error) {
         console.log('Fetch error in extractStreamUrl: ' + error);
