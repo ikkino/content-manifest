@@ -1,4 +1,7 @@
 class Anikoto {
+    static get searchPageLimit() { return 2; }
+    static get searchResultTarget() { return 12; }
+
     // ---------- Search ----------
     static async search(keyword) {
         const base = "https://animepahetv.to/search?q=" + encodeURIComponent(keyword).replace(/%20/g, "+");
@@ -49,9 +52,10 @@ class Anikoto {
 
         let allItems = parsePage(html1);
 
-        if (totalPages > 1) {
+        if (totalPages > 1 && allItems.length < Anikoto.searchResultTarget) {
             const pagePromises = [];
-            for (let p = 2; p <= totalPages; p++) {
+            const maxPage = Math.min(totalPages, Anikoto.searchPageLimit);
+            for (let p = 2; p <= maxPage; p++) {
                 const url = base + "&page=" + p;
                 console.log("[Anikoto] Fetching page " + p + ": " + url);
                 pagePromises.push(soraFetch(url, { headers }).then(resp => {
@@ -65,6 +69,7 @@ class Anikoto {
                     const items = parsePage(result.value);
                     allItems = allItems.concat(items);
                 }
+                if (allItems.length >= Anikoto.searchResultTarget) break;
             }
         }
 
