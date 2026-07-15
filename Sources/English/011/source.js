@@ -1,114 +1,290 @@
-const ANIMEX_BASE = "https://animex.one";
-const ANIMEX_GRAPHQL = "https://graphql.animex.one/graphql";
-const ANIMEX_API = "https://pp.animex.one/rest/api";
-
-async function animexJson(url, init) {
-  const response = await fetchv2(url, {
-    ...(init || {}),
-    headers: {
-      "Accept": "application/json, text/plain, */*",
-      "Content-Type": "application/json",
-      "Origin": ANIMEX_BASE,
-      "Referer": ANIMEX_BASE + "/",
-      ...((init || {}).headers || {})
-    }
-  });
-  if (!response.ok) throw new Error(`Animex HTTP ${response.status}`);
-  return JSON.parse(await response.text());
-}
-
-async function animexGraphQL(query, variables) {
-  return animexJson(ANIMEX_GRAPHQL, {
-    method: "POST",
-    body: JSON.stringify({ query, variables: variables || {} })
-  });
-}
-
-function animexTitle(item) {
-  return item?.titleEnglish || item?.titleRomaji || item?.titleNative || "Untitled";
-}
-
-function animexHref(item) {
-  return JSON.stringify({
-    id: item.id,
-    anilistId: item.anilistId || null,
-    malId: item.malId || null,
-    title: animexTitle(item),
-    format: item.format || ""
-  });
-}
-
-function parseAnimexHref(href) {
-  try {
-    const parsed = JSON.parse(href);
-    if (parsed?.id) return parsed;
-  } catch (_) {}
-  return { id: String(href || ""), title: "" };
-}
-
-async function searchResults(query) {
-  const payload = await animexGraphQL(
-    "query FastSearch($query: String, $limit: Int) { catalogAnime(filter: { query: $query }, limit: $limit) { items { id anilistId malId titleRomaji titleEnglish format } } }",
-    { query, limit: 12 }
-  );
-  const items = payload?.data?.catalogAnime?.items || [];
-  return items.map((item) => ({
-    title: animexTitle(item),
-    href: animexHref(item),
-    image: "",
-    source: "Animex"
-  })).filter((item) => item.href);
-}
-
-async function extractDetails(href) {
-  const data = parseAnimexHref(href);
-  return [{
-    title: data.title || data.id,
-    description: `${data.title || "Animex anime"} from Animex catalog.`,
-    aliases: [data.title, data.anilistId ? `AniList ${data.anilistId}` : "", data.malId ? `MAL ${data.malId}` : ""].filter(Boolean).join(", "),
-    airdate: ""
-  }];
-}
-
-async function extractEpisodes(href) {
-  const data = parseAnimexHref(href);
-  const servers = await animexJson(`${ANIMEX_API}/servers?id=${encodeURIComponent(data.id)}&epNum=1`, { method: "GET" });
-  const total = Number(servers?.episodeCount || servers?.episodes || servers?.totalEpisodes || 0);
-  const count = Number.isFinite(total) && total > 0 ? Math.min(total, 2000) : 60;
-  const episodes = [];
-  for (let index = 1; index <= count; index += 1) {
-    episodes.push({
-      number: index,
-      title: `Episode ${index}`,
-      href: JSON.stringify({ ...data, number: index })
-    });
-  }
-  return episodes;
-}
-
-async function extractStreamUrl(href) {
-  const data = parseAnimexHref(href);
-  const episode = Number(data.number || 1);
-  const servers = await animexJson(`${ANIMEX_API}/servers?id=${encodeURIComponent(data.id)}&epNum=${episode}`, { method: "GET" });
-  const candidates = [];
-  for (const provider of servers?.subProviders || []) candidates.push(["sub", provider]);
-  for (const provider of servers?.dubProviders || []) candidates.push(["dub", provider]);
-  candidates.sort((lhs, rhs) => Number(rhs[1]?.default === true) - Number(lhs[1]?.default === true));
-
-  for (const [type, provider] of candidates) {
-    if (!provider?.id) continue;
+async function searchResults(keyword) {
     try {
-      const sourcePayload = await animexJson(`${ANIMEX_API}/sources?id=${encodeURIComponent(data.id)}&epNum=${episode}&type=${encodeURIComponent(type)}&providerId=${encodeURIComponent(provider.id)}`, { method: "GET" });
-      const streams = (sourcePayload?.sources || [])
-        .map((source) => ({
-          title: `Animex ${type} ${provider.id} ${source.quality || ""}`.trim(),
-          streamUrl: source.url,
-          headers: { "Referer": sourcePayload?.headers?.Referer || ANIMEX_BASE + "/" }
-        }))
-        .filter((item) => /^https?:\/\//i.test(item.streamUrl || ""));
-      if (streams.length) return streams;
-    } catch (_) {}
-  }
+        let transformedResults = [];
 
-  throw new Error("Animex: no playable streams");
+        const keywordGroups = {
+            trending: ["!trending", "!hot", "!tr", "!!"],
+            topRatedMovie: ["!top-rated-movie", "!topmovie", "!tm", "??"],
+            topRatedTV: ["!top-rated-tv", "!toptv", "!tt", "::"],
+            popularMovie: ["!popular-movie", "!popmovie", "!pm", ";;"],
+            popularTV: ["!popular-tv", "!poptv", "!pt", "++"],
+        };
+
+        const skipTitleFilter = Object.values(keywordGroups).flat();
+        const shouldFilter = !matchesKeyword(keyword, skipTitleFilter);
+
+        // --- TMDB Section ---
+        const encodedKeyword = encodeURIComponent(keyword);
+        let baseUrlTemplate = null;
+
+        if (matchesKeyword(keyword, keywordGroups.trending)) {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/trending/all/week?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+        } else if (matchesKeyword(keyword, keywordGroups.topRatedMovie)) {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/top_rated?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+        } else if (matchesKeyword(keyword, keywordGroups.topRatedTV)) {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/top_rated?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+        } else if (matchesKeyword(keyword, keywordGroups.popularMovie)) {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/popular?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+        } else if (matchesKeyword(keyword, keywordGroups.popularTV)) {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/popular?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+        } else {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/search/multi?api_key=9801b6b0548ad57581d111ea690c85c8&query=${encodedKeyword}&include_adult=false&page=${page}`)}&simple=true`;
+        }
+
+        let dataResults = [];
+
+        if (baseUrlTemplate) {
+            const pagePromises = Array.from({ length: 5 }, (_, i) =>
+                soraFetch(baseUrlTemplate(i + 1)).then(r => r ? r.json() : { results: [] }).catch(() => ({ results: [] }))
+            );
+            const pages = await Promise.all(pagePromises);
+            dataResults = pages.flatMap(p => p.results || []);
+        }
+
+        if (dataResults.length > 0) {
+            transformedResults = transformedResults.concat(
+                dataResults
+                    .map(result => {
+                        if (result.media_type === "movie" || result.title) {
+                            return {
+                                title: result.title || result.name || result.original_title || result.original_name || "Untitled",
+                                image: result.poster_path ? `https://image.tmdb.org/t/p/w500${result.poster_path}` : "",
+                                href: `movie/${result.id}`,
+                            };
+                        } else if (result.media_type === "tv" || result.name) {
+                            return {
+                                title: result.name || result.title || result.original_name || result.original_title || "Untitled",
+                                image: result.poster_path ? `https://image.tmdb.org/t/p/w500${result.poster_path}` : "",
+                                href: `tv/${result.id}/1/1`,
+                            };
+                        }
+                    })
+                    .filter(Boolean)
+                    .filter(r => !shouldFilter || r.title.toLowerCase().includes(keyword.toLowerCase()))
+            );
+        }
+
+        console.log("Transformed Results: " + JSON.stringify(transformedResults));
+        return JSON.stringify(transformedResults);
+    } catch (error) {
+        console.log("Fetch error in searchResults: " + error);
+        return JSON.stringify([{ title: "Error", image: "", href: "" }]);
+    }
+}
+
+function matchesKeyword(keyword, commands) {
+    const lower = keyword.toLowerCase();
+    return commands.some(cmd => lower.startsWith(cmd.toLowerCase()));
+}
+
+async function extractDetails(url) {
+    try {
+        if (url.includes('movie')) {
+            const match = url.match(/movie\/([^\/]+)/);
+            if (!match) throw new Error("Invalid URL format");
+
+            const movieId = match[1];
+            const responseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/${movieId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
+            const data = await responseText.json();
+
+            const transformedResults = [{
+                description: data.overview || 'No description available',
+                aliases: `Duration: ${data.runtime ? data.runtime + " minutes" : 'Unknown'}`,
+                airdate: `Released: ${data.release_date ? data.release_date : 'Unknown'}`
+            }];
+
+            return JSON.stringify(transformedResults);
+        } else if (url.includes('tv')) {
+            const match = url.match(/tv\/([^\/]+)/);
+            if (!match) throw new Error("Invalid URL format");
+
+            const showId = match[1];
+            const responseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
+            const data = await responseText.json();
+
+            const transformedResults = [{
+                description: data.overview || 'No description available',
+                aliases: `Duration: ${data.episode_run_time && data.episode_run_time.length ? data.episode_run_time.join(', ') + " minutes" : 'Unknown'}`,
+                airdate: `Aired: ${data.first_air_date ? data.first_air_date : 'Unknown'}`
+            }];
+
+            console.log(JSON.stringify(transformedResults));
+            return JSON.stringify(transformedResults);
+        } else {
+            throw new Error("Invalid URL format");
+        }
+    } catch (error) {
+        console.log('Details error: ' + error);
+        return JSON.stringify([{
+            description: 'Error loading description',
+            aliases: 'Duration: Unknown',
+            airdate: 'Aired/Released: Unknown'
+        }]);
+    }
+}
+
+async function extractEpisodes(url) {
+    try {
+        if (url.includes('movie')) {
+            const match = url.match(/movie\/([^\/]+)/);
+            if (!match) throw new Error("Invalid URL format");
+
+            const movieId = match[1];
+            const movie = [
+                { href: `/movie/${movieId}`, number: 1, title: "Full Movie" }
+            ];
+
+            console.log(movie);
+            return JSON.stringify(movie);
+        } else if (url.includes('tv')) {
+            const match = url.match(/tv\/([^\/]+)/);
+            if (!match) throw new Error("Invalid URL format");
+
+            const showId = match[1];
+            const showResponseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
+            const showData = await showResponseText.json();
+
+            const seasonPromises = (showData.seasons || []).map(async (season) => {
+                const seasonNumber = season.season_number;
+                if (seasonNumber === 0) return [];
+
+                try {
+                    const seasonResponseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}/season/${seasonNumber}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
+                    if (!seasonResponseText) return [];
+                    const seasonData = await seasonResponseText.json();
+
+                    if (seasonData.episodes && seasonData.episodes.length) {
+                        return seasonData.episodes.map(episode => ({
+                            href: `/tv/${showId}/${seasonNumber}/${episode.episode_number}`,
+                            number: episode.episode_number,
+                            title: episode.name || ""
+                        }));
+                    }
+                } catch (e) {
+                    console.log(`Failed to fetch season ${seasonNumber}: ${e.message}`);
+                }
+                return [];
+            });
+
+            const results = await Promise.all(seasonPromises);
+            const allEpisodes = results.flat();
+            console.log(allEpisodes);
+            return JSON.stringify(allEpisodes);
+        } else {
+            throw new Error("Invalid URL format");
+        }
+    } catch (error) {
+        console.log('Fetch error in extractEpisodes: ' + error);
+        return JSON.stringify([]);
+    }
+}
+
+async function extractStreamUrl(ID) {
+    try {
+        let isMovie = ID.includes('movie');
+        let tmdbID = "";
+        let seasonNumber = "1";
+        let episodeNumber = "1";
+        let mediaType = "";
+        let reqUrl = "";
+        let referer = "";
+
+        if (isMovie) {
+            tmdbID = ID.replace('/movie/', '').replace('movie/', '');
+            mediaType = "movie";
+            reqUrl = `https://play.xpass.top/data/movie/${tmdbID}?autostart=false`;
+            referer = `https://play.xpass.top/e/movie/${tmdbID}`;
+        } else if (ID.includes('tv')) {
+            const parts = ID.split('/');
+            const cleanParts = parts.filter(p => p !== "");
+            tmdbID = cleanParts[1];
+            seasonNumber = cleanParts[2];
+            episodeNumber = cleanParts[3];
+            mediaType = "tv";
+            reqUrl = `https://play.xpass.top/data/tv/${tmdbID}/${seasonNumber}/${episodeNumber}?autostart=false`;
+            referer = `https://play.xpass.top/e/tv/${tmdbID}/${seasonNumber}/${episodeNumber}`;
+        } else {
+            return JSON.stringify({ streams: [] });
+        }
+
+        const headers = {
+            "Cookie": "auth_token=c2685c63f0016d6ab3a3548eeb1e111551acfc1bbd65fc2b1e2b043af659b39a",
+            "Referer": referer,
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:152.0) Gecko/20100101 Firefox/152.0",
+            "Accept": "*/*"
+        };
+
+        const response = await soraFetch(reqUrl, { headers });
+        if (!response) throw new Error("Failed to fetch server list from XPass");
+
+        const serverList = await response.json();
+        if (!Array.isArray(serverList)) throw new Error("Invalid server list response");
+
+        const serverPromises = serverList.map(async (server) => {
+            try {
+                if (!server.url) return [];
+                const playlistUrl = `https://play.xpass.top${server.url}`;
+                const playlistResponse = await soraFetch(playlistUrl, { headers });
+                if (!playlistResponse) return [];
+                const playlistData = await playlistResponse.json();
+
+                let results = [];
+                if (playlistData && playlistData.playlist && playlistData.playlist.length > 0) {
+                    playlistData.playlist.forEach(item => {
+                        if (item.sources && Array.isArray(item.sources)) {
+                            item.sources.forEach(src => {
+                                if (src.file) {
+                                    const isTik = src.file.includes("tik.1x2.space") || 
+                                                  (src.label && src.label.toUpperCase().includes("TIK")) || 
+                                                  (server.name && server.name.toUpperCase().includes("TIK"));
+                                    if (!isTik) {
+                                        results.push({
+                                            title: `[XPass] ${server.name || 'Server'} - ${src.label || 'HLS'}`,
+                                            streamUrl: src.file,
+                                            headers: {
+                                                "Origin": "https://play.xpass.top",
+                                                "Connection": "keep-alive",
+                                                "Referer": "https://play.xpass.top/"
+                                            }
+                                        });
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+                return results;
+            } catch (err) {
+                console.log(`Error fetching playlist for server ${server.name}: ` + err);
+                return [];
+            }
+        });
+
+        const resolvedStreams = await Promise.all(serverPromises);
+        const streamObjects = resolvedStreams.flat();
+
+        return JSON.stringify({
+            streams: streamObjects,
+            subtitles: ""
+        });
+    } catch (error) {
+        console.log('Fetch error in extractStreamUrl: ' + error);
+        return JSON.stringify({ streams: [], subtitles: "" });
+    }
+}
+
+async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
+    const headers = options.headers || {};
+    if (!headers["User-Agent"]) {
+        headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
+    }
+    try {
+        return await fetchv2(url, headers, options.method || 'GET', options.body || null);
+    } catch (e) {
+        try {
+            return await fetch(url, options);
+        } catch (error) {
+            return null;
+        }
+    }
 }

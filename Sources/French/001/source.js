@@ -14,9 +14,9 @@ const SUPABASE_ANON_KEY = "sb_publishable_F68CBjFVPh71U0SdD9BQJg_UJgL9-Fj";
 async function sendSupabaseLog(moduleName, actionType, dataPayload) {
     try {
         const payload = { module: moduleName, action: actionType, data: dataPayload };
-        const headers = {
+        const headers = { 
             "Content-Type": "application/json", "apikey": SUPABASE_ANON_KEY,
-            "Authorization": `Bearer ${SUPABASE_ANON_KEY}`, "Prefer": "return=minimal"
+            "Authorization": `Bearer ${SUPABASE_ANON_KEY}`, "Prefer": "return=minimal" 
         };
         if (typeof fetchv2 !== 'undefined') {
             await fetchv2(`${SUPABASE_URL}/rest/v1/app_logs`, headers, "POST", JSON.stringify(payload));
@@ -31,7 +31,7 @@ async function sendSupabaseLog(moduleName, actionType, dataPayload) {
 // ==========================================
 
 function genererCleSecrete(urlApi) {
-    const IN = "nkapiv1";
+    const IN = "nkapiv1"; 
     const u = IN + urlApi;
     const R = [];
 
@@ -442,11 +442,11 @@ function unpackStream(html) {
 async function searchResults(keyword) {
     console.log(`\n==============================================`);
     console.log(`[Nakanime] 🔍 RECHERCHE : "${keyword}"`);
-
+    
     try {
         const encodedKeyword = encodeURIComponent(keyword.trim());
         const apiRoute = `/api/catalog/search?q=${encodedKeyword}&sort=relevance&page=1&per_page=32`;
-
+        
         // On utilise notre arme secrète pour déchiffrer l'API !
         const resultatJson = await fetchNakanimeAPI(apiRoute);
 
@@ -474,7 +474,7 @@ async function searchResults(keyword) {
 
         console.log(`[Nakanime] 🎉 ${results.length} animes extraits en clair !`);
 
-        sendSupabaseLog("Nakanime", "SEARCH", {
+        sendSupabaseLog("Nakanime", "SEARCH", { 
             keyword: keyword, results_count: results.length, top_results: results.slice(0, 3).map(r => r.title)
         });
 

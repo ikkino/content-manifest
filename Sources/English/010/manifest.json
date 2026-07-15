@@ -1,21 +1,28 @@
 {
-  "sourceName": "Anikuro",
-  "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/anikuro/icon.png",
+  "sourceName": "Animex",
+  "iconUrl": "https://animex.one/favicon.ico",
   "author": {
-    "name": "ibro",
-    "icon": "https://git.luna-app.eu/ibro/services/raw/branch/main/profile.jpg",
-    "url": "https://github.com/xibrox"
+    "name": "StreamPlay"
   },
-  "version": "1.1.8",
+  "version": "1.0.0",
   "language": "English",
   "streamType": "HLS",
   "quality": "1080p",
-  "baseUrl": "https://anikuro.ru/",
-  "searchBaseUrl": "https://anikuro.ru/search?query=%s",
+  "baseUrl": "https://animex.one/",
+  "searchBaseUrl": "https://animex.one/",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/010/source.js",
   "type": "anime",
-  "downloadSupport": true,
   "asyncJS": true,
   "softsub": true,
-  "id": "jLYn4"
+  "downloadSupport": false,
+  "supportsSora": true,
+  "supportsLuna": true,
+  "supportsMojuru": true,
+  "supportsDartotsu": true,
+  "supportsAnymex": true,
+  "supportsTsumi": true,
+  "supportsHiyoku": true,
+  "supportsShirox": true,
+  "supportsEclipse": true,
+  "id": "animex-local"
 }

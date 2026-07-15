@@ -1,199 +1,368 @@
 async function searchResults(keyword) {
     const results = [];
     const headers = {
-        'Referer': 'https://animetsu.live/',
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+        "Content-Type": "multipart/form-data; boundary=----geckoformboundary38c356867533a17de80e8c65d9125df5"
     };
+    const postData = `------geckoformboundary38c356867533a17de80e8c65d9125df5
+Content-Disposition: form-data; name="s_keyword"
 
-    const encodedKeyword = encodeURIComponent(keyword);
-    const response = await fetchv2(`https://animetsu.live/v2/api/anime/search/?query=${encodedKeyword}`, headers);
-    const json = await response.json();
+${keyword}
+------geckoformboundary38c356867533a17de80e8c65d9125df5
+Content-Disposition: form-data; name="orderby"
 
-    json.results.forEach(anime => {
-        const title = anime.title.english || anime.title.romaji || anime.title.native || "Unknown Title";
-        const image = anime.cover_image.large;
-        const href = `${anime.id}`;
+popular
+------geckoformboundary38c356867533a17de80e8c65d9125df5
+Content-Disposition: form-data; name="order"
 
-        if (title && href && image) {
-            results.push({
-                title: title,
-                image: image,
-                href: href
-            });
-        } else {
-            console.error("Missing or invalid data in search result item:", {
-                title,
-                href,
-                image
-            });
-        }
-    });
+DESC
+------geckoformboundary38c356867533a17de80e8c65d9125df5
+Content-Disposition: form-data; name="action"
 
-    return JSON.stringify(results);
-}
+advanced_search
+------geckoformboundary38c356867533a17de80e8c65d9125df5
+Content-Disposition: form-data; name="page"
 
-async function extractDetails(id) {
-    const results = [];
-    const headers = {
-        'Referer': 'https://animetsu.live/',
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-    };
-
-    const response = await fetchv2(`https://animetsu.live/v2/api/anime/info/${id}`, headers);
-    const json = await response.json();
-
-    const description = cleanHtmlSymbols(json.description) || "No description available"; 
-
-    results.push({
-        description: description.replace(/<br>/g, ''),
-        aliases: json.synonyms ? json.synonyms.join(', ') : 'N/A',
-        airdate: json.start_date || 'N/A'
-    });
-
-    return JSON.stringify(results);
-}
-
-async function extractEpisodes(id) {
-    const results = [];
-    const headers = {
-        'Referer': 'https://animetsu.live/',
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-    };
-
-    const response = await fetchv2(`https://animetsu.live/v2/api/anime/eps/${id}`, headers);
-    const json = await response.json();
-
-    for (const ep of json) {
-        results.push({
-            number: ep.ep_num,
-            href: `&id=${id}&num=${ep.ep_num}`
-        });
-    }
-
-    return JSON.stringify(results);
-}
-
-async function extractStreamUrl(slug) {
-    const headers = {
-        'Referer': 'https://animetsu.live/',
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-    };
-
-    const id = (slug.match(/[?&]id=([^&]+)/) || [])[1];
-    const num = (slug.match(/[?&]num=([^&]+)/) || [])[1];
-
-    const streams = [];
+1
+------geckoformboundary38c356867533a17de80e8c65d9125df5--`;
 
     try {
-        const serverListRes = await fetchv2(`https://animetsu.live/v2/api/anime/servers/${id}/${num}`, headers);
-        const serverList = await serverListRes.json();
+        const response = await fetchv2("https://anihq.cc/wp-admin/admin-ajax.php", headers, "POST", postData);
+        const data = await response.json();
+        const html = data.data.html;
+        const articlePattern = /<article[^>]*class="anime-card[^"]*"[^>]*>([\s\S]*?)<\/article>/g;
+        let articleMatch;
 
-        const promises = [];
-        for (const server of serverList) {
-            for (const subType of ['sub', 'dub']) {
-                promises.push((async () => {
-                    try {
-                        const url = `https://animetsu.live/v2/api/anime/oppai/${id}/${num}?server=${server.id}&source_type=${subType}`;
-                        const res = await fetchv2(url, headers);
-                        const data = await res.json();
+        while ((articleMatch = articlePattern.exec(html)) !== null) {
+            const articleHtml = articleMatch[1];
 
-                        if (data?.sources?.length) {
-                            for (const source of data.sources) {
-                                let streamUrl = `https://swiftstream.top/proxy${source.url}`;
-                                let quality = source.quality;
+            const imgMatch = articleHtml.match(/<img[^>]+src=['"]([^'"]+)['"][^>]+alt=['"]([^'"]+)['"]/);
 
-                                if (server.id === 'kite') {
-                                    try {
-                                        const m3u8Res = await fetchv2(streamUrl, headers);
-                                        const m3u8Content = await m3u8Res.text();
-                                        const lines = m3u8Content.split('\n').filter(line => line.trim() !== '');
-                                        const targetLine = lines.find(line => !line.startsWith('#'));
-                                        if (targetLine) {
-                                            streamUrl = `https://swiftstream.top/proxy/oppai/kite/${targetLine.trim()}`;
-                                        }
-                                        if (quality.toLowerCase() === 'master') {
-                                            quality = '1080p';
-                                        }
-                                    } catch (e) {
-                                        console.error("Error rewriting kite URL:", e);
-                                    }
-                                }
 
-                                streams.push({
-                                    title: `${server.id} - ${quality} - ${subType.toUpperCase()}`,
-                                    streamUrl: streamUrl,
-                                    headers: headers
-                                });
-                            }
-                        }
-                    } catch (e) {
-                        console.error(`Error fetching streams for server ${server.id} (${subType}):`, e);
-                    }
-                })());
+            const linkMatch = articleHtml.match(/<h3[^>]*>[\s\S]*?<a[^>]+href=['"]([^'"]+)['"][^>]*title=['"]([^'"]+)['"]/);
+
+            if (imgMatch && linkMatch) {
+                results.push({
+                    title: linkMatch[2].trim(),
+                    image: imgMatch[1].trim(),
+                    href: linkMatch[1].trim()
+                });
             }
         }
 
-        await Promise.all(promises);
-    } catch (e) {
-        console.error("Error fetching server list:", e);
+        return JSON.stringify(results);
+    } catch (err) {
+        console.log(err);
+        return JSON.stringify([{
+            title: "Error",
+            image: "Error",
+            href: "Error"
+        }]);
+    }
+}
+
+
+async function extractDetails(url) {
+    try {
+        const headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
+            "Referer": "https://anihq.cc/"
+        };
+        const response = await fetchv2(url, headers);
+        const html = await response.text();
+
+        let descMatch = html.match(/<div\s+class=["']anime-synopsis["']>[\s\S]*?<div[^>]+class=["']prose[^"']*["'][^>]*>([\s\S]*?)<\/div>/i);
+
+        if (!descMatch) {
+            descMatch = html.match(/<section[^>]+aria-label=["']Anime Overview["'][^>]*>([\s\S]*?)<\/section>/i);
+        }
+
+        let description = "N/A";
+
+        if (descMatch) {
+            description = descMatch[1]
+                .trim()
+                .replace(/<[^>]+>/g, '')
+                .replace(/\s+/g, ' ')
+                .trim();
+        }
+
+        return JSON.stringify([{
+            description: description,
+            aliases: "N/A",
+            airdate: "N/A"
+        }]);
+    } catch (err) {
+        return JSON.stringify([{
+            description: "Error: " + err.message,
+            aliases: "Error",
+            airdate: "Error"
+        }]);
+    }
+}
+
+async function extractEpisodes(url) {
+    const results = [];
+    try {
+        const response = await fetchv2(url);
+        const html = await response.text();
+
+        const watchUrlMatch = html.match(/<a href="([^"]+\/watch\/[^"]+)"/);
+
+        if (!watchUrlMatch) {
+            return JSON.stringify([{
+                href: url,
+                number: 1
+            }]);
+        }
+
+        const watchUrl = watchUrlMatch[1];
+
+        const watchResponse = await fetchv2(watchUrl);
+        const watchHtml = await watchResponse.text();
+
+        const episodeRegex = /<a href="([^"]+)"[^>]*class="[^"]*episode-list-item[^"]*"[^>]*data-episode-search-query="(\d+)"[\s\S]*?<span class="episode-list-item-number">\s*(\d+)\s*<\/span>/g;
+
+        let match;
+        while ((match = episodeRegex.exec(watchHtml)) !== null) {
+            results.push({
+                href: match[1].trim(),
+                number: parseInt(match[2], 10)
+            });
+        }
+
+        if (results.length === 0) {
+            return JSON.stringify([{
+                href: watchUrl,
+                number: 1
+            }]);
+        }
+
+        return JSON.stringify(results);
+    } catch (err) {
+        return JSON.stringify([{
+            href: "Error: " + err.message,
+            number: "Error"
+        }]);
+    }
+}
+
+async function extractStreamUrl(url) {
+    try {
+        const headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
+            "Referer": "https://anihq.cc/"
+        };
+        const response = await fetchv2(url, headers);
+        const html = await response.text();
+
+        const iframeMatch = html.match(/<iframe[^>]+src=['"]([^'"]+)['"]/i);
+        if (!iframeMatch) {
+            console.log("No iframe found on page");
+            return null;
+        }
+
+        const iframeUrl = iframeMatch[1];
+        console.log("Found iframe URL:", iframeUrl);
+
+        const iframeResponse = await fetchv2(iframeUrl, headers);
+        let iframeHtml = await iframeResponse.text();
+
+        let finalUrl = iframeUrl;
+
+        const redirectMatch = iframeHtml.match(/window\.location\.href\s*=\s*['"]([^'"]+)['"]/);
+        if (redirectMatch) {
+            const redirectUrl = redirectMatch[1];
+            finalUrl = redirectUrl;
+            console.log("Following JS redirect to:", redirectUrl);
+            const redirectedResponse = await fetchv2(redirectUrl, headers);
+            iframeHtml = await redirectedResponse.text();
+        }
+
+        let streamData = null;
+        try {
+            streamData = voeExtractor(iframeHtml);
+        } catch (error) {
+            console.log("VOE extraction error:", error.message || error);
+            return null;
+        }
+
+        const streamUrlResult = typeof streamData === "string" ? streamData : getStreamUrl(streamData);
+
+        if (streamUrlResult) {
+            const originMatch = finalUrl.match(/^(https?:\/\/[^\/]+)/);
+            const origin = originMatch ? originMatch[1] : "https://bryantenunder.com";
+            console.log("Stream URL secured:", streamUrlResult);
+
+            return JSON.stringify({
+                streams: [
+                    {
+                        title: "Server 1",
+                        streamUrl: streamUrlResult,
+                        headers: {
+                            "Origin": origin,
+                            "Referer": origin + "/"
+                        }
+                    }
+                ]
+            });
+        }
+
+        console.log("No stream URL found");
+        return null;
+    } catch (error) {
+        console.log("Fetch error:", error.message || error);
+        return null;
+    }
+}
+
+/* SCHEME START */
+
+/**
+ * @name voeExtractor
+ * @author Cufiy
+ */
+
+function voeExtractor(html, url = null) {
+    const regex = /<script[^>]+type=["']application\/json["'][^>]*>([\s\S]*?)<\/script>/gi;
+    let match;
+    let obfuscatedString = null;
+    while ((match = regex.exec(html)) !== null) {
+        try {
+            const data = JSON.parse(match[1].trim());
+            if (Array.isArray(data) && typeof data[0] === "string") {
+                obfuscatedString = data[0];
+                break;
+            }
+        } catch (e) {
+            // Ignore syntax/parse errors for other script tags
+        }
     }
 
-    const serverOrder = { 'pahe': 1, 'meg': 2, 'kite': 3 };
-    const qualityOrder = (q) => {
-        if (q.includes('1080')) return 1;
-        if (q.includes('720')) return 2;
-        if (q.includes('480')) return 3;
-        if (q.includes('360')) return 4;
-        if (q.includes('master')) return 5;
-        return 6;
-    };
+    if (!obfuscatedString) {
+        console.log("No valid VOE application/json script tag found");
+        return null;
+    }
 
-    streams.sort((a, b) => {
-        const partsA = a.title.split(' - ');
-        const partsB = b.title.split(' - ');
-        
-        const sA = partsA[0].toLowerCase();
-        const sB = partsB[0].toLowerCase();
-        const qA = partsA[1].toLowerCase();
-        const qB = partsB[1].toLowerCase();
+    // Step 1: ROT13
+    let step1 = voeRot13(obfuscatedString);
 
-        const qOrderA = qualityOrder(qA);
-        const qOrderB = qualityOrder(qB);
+    // Step 2: Remove patterns
+    let step2 = voeRemovePatterns(step1);
 
-        if (qOrderA !== qOrderB) return qOrderA - qOrderB;
-        
-        const sOrderA = serverOrder[sA] || 99;
-        const sOrderB = serverOrder[sB] || 99;
-        return sOrderA - sOrderB;
+    // Step 3: Base64 decode
+    let step3 = voeBase64Decode(step2);
+
+    // Step 4: Subtract 3 from each char code
+    let step4 = voeShiftChars(step3, 3);
+
+    // Step 5: Reverse string
+    let step5 = step4.split("").reverse().join("");
+
+    // Step 6: Base64 decode again
+    let step6 = voeBase64Decode(step5);
+
+    // Step 7: Parse as JSON
+    let result;
+    try {
+        result = JSON.parse(step6);
+    } catch (e) {
+        throw new Error("Final JSON parse error: " + e.message);
+    }
+
+    // check if direct_access_url is set, not null and starts with http
+    const streamUrl = getStreamUrl(result);
+    if (streamUrl) {
+        console.log("Voe Stream URL: " + streamUrl);
+        return streamUrl;
+    } else {
+        console.log("No stream URL found in the decoded JSON");
+    }
+    return result;
+}
+
+function voeRot13(str) {
+    return str.replace(/[a-zA-Z]/g, function (c) {
+        return String.fromCharCode(
+            (c <= "Z" ? 90 : 122) >= (c = c.charCodeAt(0) + 13)
+                ? c
+                : c - 26
+        );
     });
-
-    const finalStreams = streams.map((s, index) => ({
-        ...s,
-        title: `[Server ${index + 1}] ${s.title}`
-    }));
-
-    const final = {
-        streams: finalStreams,
-        subtitle: ""
-    };
-
-    return JSON.stringify(final);
 }
 
-
-
-
-function cleanHtmlSymbols(string) {
-    if (!string) return "";
-
-    return string
-        .replace(/&#8217;/g, "'")
-        .replace(/&#8211;/g, "-")
-        .replace(/&#[0-9]+;/g, "")
-        .replace(/\r?\n|\r/g, " ")  
-        .replace(/\s+/g, " ")       
-        .replace(/<i[^>]*>(.*?)<\/i>/g, "$1")
-        .replace(/<b[^>]*>(.*?)<\/b>/g, "$1") 
-        .replace(/<[^>]+>/g, "")
-        .trim();                 
+function voeRemovePatterns(str) {
+    const patterns = ["@$", "^^", "~@", "%?", "*~", "!!", "#&"];
+    let result = str;
+    for (const pat of patterns) {
+        result = result.split(pat).join("");
+    }
+    return result;
 }
+
+function voeBase64Decode(str) {
+    if (typeof atob === "function") {
+        try {
+            return atob(str);
+        } catch (e) {
+            // fallback if atob fails
+        }
+    }
+
+    // Pure Javascript Base64 decoding fallback to avoid reliance on Buffer or atob
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+    let cleaned = str.replace(/=+$/, '').replace(/[^A-Za-z0-9+/]/g, '');
+    let output = '';
+    let buffer = 0;
+    let bits = 0;
+
+    for (let i = 0; i < cleaned.length; i++) {
+        const char = cleaned[i];
+        const idx = chars.indexOf(char);
+        if (idx === -1) continue;
+
+        buffer = (buffer << 6) | idx;
+        bits += 6;
+
+        if (bits >= 8) {
+            bits -= 8;
+            const byte = (buffer >> bits) & 0xFF;
+            output += String.fromCharCode(byte);
+        }
+    }
+
+    try {
+        return decodeURIComponent(escape(output));
+    } catch (e) {
+        return output;
+    }
+}
+
+function voeShiftChars(str, shift) {
+    return str
+        .split("")
+        .map((c) => String.fromCharCode(c.charCodeAt(0) - shift))
+        .join("");
+}
+
+function getStreamUrl(result) {
+    if (!result) return null;
+    if (typeof result === "string" && result.startsWith("http")) {
+        return result;
+    }
+    if (typeof result === "object") {
+        if (typeof result.source === "string" && result.source.startsWith("http")) {
+            return result.source;
+        }
+        if (typeof result.direct_access_url === "string" && result.direct_access_url.startsWith("http")) {
+            return result.direct_access_url;
+        }
+        if (Array.isArray(result.source)) {
+            const url = result.source
+                .map((source) => typeof source === "string" ? source : (source.direct_access_url || source.file || source.url))
+                .find((url) => url && url.startsWith("http"));
+            if (url) return url;
+        }
+    }
+    return null;
+}
+/* SCHEME END */
