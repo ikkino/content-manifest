@@ -135,9 +135,9 @@ getMovixDomain().catch(() => {});
 async function sendSupabaseLog(moduleName, actionType, dataPayload) {
     try {
         const payload = { module: moduleName, action: actionType, data: dataPayload };
-        const headers = {
+        const headers = { 
             "Content-Type": "application/json", "apikey": SUPABASE_ANON_KEY,
-            "Authorization": `Bearer ${SUPABASE_ANON_KEY}`, "Prefer": "return=minimal"
+            "Authorization": `Bearer ${SUPABASE_ANON_KEY}`, "Prefer": "return=minimal" 
         };
         if (typeof fetchv2 !== 'undefined') {
             await fetchv2(`${SUPABASE_URL}/rest/v1/app_logs`, headers, "POST", JSON.stringify(payload));
@@ -354,7 +354,7 @@ async function searchResults(keyword) {
         (tvData.results || []).forEach(item => {
             if (item.poster_path) {
                 allResults.push({
-                    title: item.name,
+                    title: item.name, 
                     image: `https://image.tmdb.org/t/p/w500${item.poster_path}`,
                     href: `movix/tv/${item.id}`,
                     popularity: item.popularity + (item.original_language === 'ja' ? 1000 : 0)
@@ -374,9 +374,9 @@ async function searchResults(keyword) {
         });
 
         allResults.sort((a, b) => b.popularity - a.popularity);
-
+        
         _log(`[Movix | 🔍 Recherche] ✅ ${allResults.length} résultats trouvés pour "${keyword}".`);
-        sendSupabaseLog("Movix", "SEARCH", {
+        sendSupabaseLog("Movix", "SEARCH", { 
             keyword: keyword, results_count: allResults.length, top_results: allResults.slice(0, 3).map(r => r.title)
         });
 
@@ -394,14 +394,14 @@ async function extractDetails(href) {
     try {
         href = decodeURIComponent(href);
         const parts = href.split('/');
-        const type = parts[1];
+        const type = parts[1]; 
         const id = parts[2];
 
         _log(`[Movix | 📂 TMDB] Chargement des détails pour l'ID ${id}...`);
         const detailsUrl = `https://api.themoviedb.org/3/${type}/${id}?api_key=${TMDB_KEY}&language=fr-FR`;
         const res = await soraFetch(detailsUrl);
         if (!res) throw new Error("Réponse vide de TMDB");
-
+        
         const text = typeof res === "string" ? res : await res.text();
         const details = JSON.parse(text);
 
@@ -426,7 +426,7 @@ async function extractEpisodes(href) {
     try {
         href = decodeURIComponent(href);
         const parts = href.split('/');
-        const type = parts[1];
+        const type = parts[1]; 
         const id = parts[2];
         let episodes = [];
 
@@ -434,7 +434,7 @@ async function extractEpisodes(href) {
         const detailsUrl = `https://api.themoviedb.org/3/${type}/${id}?api_key=${TMDB_KEY}&language=fr-FR`;
         const res = await soraFetch(detailsUrl);
         if (!res) return JSON.stringify([]);
-
+        
         const text = typeof res === "string" ? res : await res.text();
         const details = JSON.parse(text);
 
@@ -449,13 +449,13 @@ async function extractEpisodes(href) {
             if (details.seasons) {
                 for (const season of details.seasons) {
                     const sNum = season.season_number;
-                    if (sNum === 0) continue;
+                    if (sNum === 0) continue; 
 
                     const seasonUrl = `https://api.themoviedb.org/3/tv/${id}/season/${sNum}?api_key=${TMDB_KEY}&language=fr-FR`;
                     try {
                         const sRes = await soraFetch(seasonUrl);
                         if (!sRes) continue;
-
+                        
                         const sText = typeof sRes === "string" ? sRes : await sRes.text();
                         const sData = JSON.parse(sText);
 
@@ -474,7 +474,7 @@ async function extractEpisodes(href) {
                 }
             }
         }
-
+        
         _log(`[Movix | 📺 TMDB] ✅ ${episodes.length} épisodes générés avec succès.`);
         return JSON.stringify(episodes);
     } catch (e) {
@@ -492,14 +492,14 @@ async function extractStreamUrl(href) {
     let failedLinks = [];
     let skippedLinksCount = 0;
     _fmPowBudget = FM_POW_BUDGET;   // reset du budget de PoW filemoon à chaque extraction
-
+    
     try {
         // Résoudre le domaine actif UNE FOIS et le stocker dans une variable locale
         // pour éviter d'utiliser await directement dans les expressions ${}
         const _mvxD = await getMovixDomain();
 
         const parts = href.split('/');
-        const type = parts[1];
+        const type = parts[1]; 
         const tmdbId = parts[2];
         const seasonNum = type === 'tv' ? parseInt(parts[3]) : 1;
         const episodeNum = type === 'tv' ? parseInt(parts[4]) : 1;
@@ -622,7 +622,29 @@ async function extractStreamUrl(href) {
                   url: () => isTv ? api(`/api/links/tv/${tmdbId}?season=${seasonNum}&episode=${episodeNum}`) : api(`/api/links/movie/${tmdbId}`),
                   extract: (j) => {
                       const dataArray = j?.data ? (Array.isArray(j.data) ? j.data : [j.data]) : [];
-                      if (j?.success) dataArray.forEach(d => { if (d.links) d.links.forEach(link => addLink(link, "VF", null, DOM())); });
+                      // links[] mélange des chaînes ET des objets {url, added_at} -> on gère les deux
+                      if (j?.success) dataArray.forEach(d => { if (d.links) d.links.forEach(link => {
+                          const u = typeof link === "string" ? link : (link && link.url);
+                          if (u) addLink(u, "VF", null, DOM());
+                      }); });
+                  } },
+
+                { name: "1jour1film",
+                  url: () => isTv ? null : api(`/api/j1f/movie/${tmdbId}`),
+                  extract: (j) => {
+                      if (j?.players) {
+                          (j.players.vf || []).forEach(p => addLink(p.url, "VF", null, DOM()));
+                          (j.players.vostfr || []).forEach(p => addLink(p.url, "VOSTFR", null, DOM()));
+                      }
+                  } },
+
+                { name: "SwiftFlow",
+                  url: () => isTv ? null : api(`/api/swiftflow/movie/${tmdbId}`),
+                  extract: (j) => {
+                      if (j?.players) {
+                          (j.players.vf || []).forEach(p => addLink(p.url, "VF", null, DOM()));
+                          (j.players.vostfr || []).forEach(p => addLink(p.url, "VOSTFR", null, DOM()));
+                      }
                   } },
 
                 { name: "IMDB",
@@ -661,11 +683,11 @@ async function extractStreamUrl(href) {
             _log(`[Movix | 🚀 Agrégateur] 📊 Index Absolu pour l'Anime : Épisode n°${absoluteEpisodeIndex}`);
 
             let titlesToTry = [mediaTitle.trim()];
-            if (tmdbData.original_name && tmdbData.original_name !== mediaTitle) titlesToTry.push(tmdbData.original_name.trim());
+            if (tmdbData.original_name && tmdbData.original_name !== mediaTitle) titlesToTry.push(tmdbData.original_name.trim()); 
             if (mediaTitle.includes(' ')) {
-                titlesToTry.push(mediaTitle.replace(/\s+/g, '').trim());
-                titlesToTry.push(mediaTitle.toLowerCase().replace(/(^\w|\s\w)/g, m => m.toUpperCase()).trim());
-                titlesToTry.push((mediaTitle.charAt(0).toUpperCase() + mediaTitle.slice(1).toLowerCase().replace(/\s+/g, '')).trim());
+                titlesToTry.push(mediaTitle.replace(/\s+/g, '').trim()); 
+                titlesToTry.push(mediaTitle.toLowerCase().replace(/(^\w|\s\w)/g, m => m.toUpperCase()).trim()); 
+                titlesToTry.push((mediaTitle.charAt(0).toUpperCase() + mediaTitle.slice(1).toLowerCase().replace(/\s+/g, '')).trim()); 
             }
             if (mediaTitle.includes(':')) titlesToTry.push(mediaTitle.split(':')[0].trim());
             titlesToTry = [...new Set(titlesToTry)];
@@ -682,7 +704,7 @@ async function extractStreamUrl(href) {
                         let tempData = Array.isArray(parsed) ? parsed : (parsed.data || parsed.results || []);
                         if (tempData.length > 0) {
                             movixData = tempData;
-                            break;
+                            break; 
                         }
                     } catch(e) {}
                 }
@@ -697,7 +719,7 @@ async function extractStreamUrl(href) {
                 if (anime.seasons) {
                     for (let season of anime.seasons) {
                         let sNumMatch = season.name.match(/\d+/);
-                        let sNum = sNumMatch ? parseInt(sNumMatch[0]) : 0;
+                        let sNum = sNumMatch ? parseInt(sNumMatch[0]) : 0; 
                         if (season.episodes) {
                             for (let ep of season.episodes) {
                                 currentAbsIndex++;
@@ -822,21 +844,26 @@ async function extractStreamUrl(href) {
             return (title || "").replace(/^\[[^\]]+\]\s*/, "").trim().toLowerCase();
         };
 
+        // Serveurs peu fiables (CF-gated, tokens éphémères...) -> en bas de liste.
+        const deprio = (title) => /upbolt/i.test(title || "") ? 1 : 0;
+
         streams.sort((a, b) => {
             const langDiff = langPriority(a.title) - langPriority(b.title);
             if (langDiff !== 0) return langDiff;
+            const dDiff = deprio(a.title) - deprio(b.title);
+            if (dDiff !== 0) return dDiff;
             return serverName(a.title).localeCompare(serverName(b.title));
         });
 
-        sendSupabaseLog("Movix", "PLAYER", {
-            media_title: mediaTitle, season_number: seasonNum, ep_number: episodeNum,
+        sendSupabaseLog("Movix", "PLAYER", { 
+            media_title: mediaTitle, season_number: seasonNum, ep_number: episodeNum, 
             streams_found: streams.length, hosts_scanned: targetLinks.length, execution_time_ms: Date.now() - startTime
         });
-
+        
         if (failedLinks.length > 0 || streams.length === 0) {
-            sendSupabaseLog("Movix", "UNSUPPORTED_HOSTS", {
-                media_title: mediaTitle, season_number: seasonNum, ep_number: episodeNum,
-                failed_count: failedLinks.length, failed_links: failedLinks
+            sendSupabaseLog("Movix", "UNSUPPORTED_HOSTS", { 
+                media_title: mediaTitle, season_number: seasonNum, ep_number: episodeNum, 
+                failed_count: failedLinks.length, failed_links: failedLinks 
             });
         }
 
@@ -1072,7 +1099,7 @@ async function extractDirectVideo(embedUrl, langPrefix, originalUrl, parentDomai
     let urlLower = embedUrl.toLowerCase();
     let hostRecognized = false;
     let isDeleted = false;
-
+    
     const _mvxD = _movixActiveDomain || MOVIX_FALLBACK_DOMAIN;
     let pDomain = parentDomain || `https://${_mvxD}/`;
     const hostDomain = (embedUrl.match(/https?:\/\/(?:www\.)?([^/]+)/i) || [])[1] || "inconnu";
@@ -1084,19 +1111,26 @@ async function extractDirectVideo(embedUrl, langPrefix, originalUrl, parentDomai
                h.includes("video deleted") || h.includes("file deleted") ||
                h.includes("404 not found") || h.includes("no longer exists") ||
                h.includes("no longer available") || h.includes("видео недоступно") ||
-               h.includes("videostatus");
+               h.includes("videostatus"); 
     };
 
     try {
-        if (urlLower.endsWith(".m3u8") || urlLower.includes("master.m3u8") || urlLower.includes(".m3u8?")) {
+        // Liens directs : on fournit un UA navigateur + Accept (SANS Referer). Certains CDN (ex:
+        // finepulfe.xyz via purstream) renvoient 403 à l'UA par défaut du player iOS (AppleCoreMedia)
+        // ou quand un Referer parent est envoyé.
+        const _directHeaders = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+            "Accept": "*/*"
+        };
+        if (urlLower.endsWith(".m3u8") || urlLower.includes("master.m3u8") || urlLower.includes(".m3u8?") || urlLower.includes("/playlist.m3u8")) {
             hostRecognized = true;
             _log(`   ✅ [Serveur Direct] HLS extrait avec succès !`);
-            return { title: `${langPrefix} Serveur Direct (HLS)`, streamUrl: embedUrl };
+            return { title: `${langPrefix} Serveur Direct (HLS)`, streamUrl: embedUrl, headers: _directHeaders };
         }
         if (urlLower.endsWith(".mp4") || urlLower.includes(".mp4?")) {
             hostRecognized = true;
             _log(`   ✅ [Serveur Direct] MP4 extrait avec succès !`);
-            return { title: `${langPrefix} Serveur Direct (MP4)`, streamUrl: embedUrl };
+            return { title: `${langPrefix} Serveur Direct (MP4)`, streamUrl: embedUrl, headers: _directHeaders };
         }
 
         _log(`   ⏳ [Scan] ${hostDomain} (Referer Parent: ${pDomain})...`);
@@ -1181,15 +1215,15 @@ async function extractDirectVideo(embedUrl, langPrefix, originalUrl, parentDomai
             if (req) {
                 const html = await req.text();
                 if (checkIfDeleted(html) || html.includes("error_msg")) isDeleted = true;
-
+                
                 let matches = [...html.matchAll(/"url([0-9]+)"\s*:\s*"([^"]+)"/g)];
                 if (matches.length > 0) {
-                    matches.sort((a, b) => parseInt(b[1]) - parseInt(a[1]));
+                    matches.sort((a, b) => parseInt(b[1]) - parseInt(a[1])); 
                     let streamUrl = matches[0][2].replace(/\\/g, '');
                     _log(`   ✅ [VK] Flux ${matches[0][1]}p extrait avec succès !`);
                     return { title: `${langPrefix} VK [${matches[0][1]}p]`, streamUrl: streamUrl, headers: { "Referer": "https://vk.com/" } };
                 }
-
+                
                 let hlsMatch = html.match(/"hls"\s*:\s*(?:\[[^\]]*"([^"]+\.m3u8[^"]*)"|"([^"]+\.m3u8[^"]*)")/i) || html.match(/"hls"\s*:\s*"([^"]+)"/i);
                 if (hlsMatch) {
                     let streamUrl = (hlsMatch[1] || hlsMatch[2] || "").replace(/\\/g, '');
@@ -1198,7 +1232,7 @@ async function extractDirectVideo(embedUrl, langPrefix, originalUrl, parentDomai
                         return { title: `${langPrefix} VK (HLS)`, streamUrl: streamUrl, headers: { "Referer": "https://vk.com/" } };
                     }
                 }
-
+                
                 let sourceMatch = html.match(/<source[^>]+src=["']([^"']+)["']/i);
                 if (sourceMatch) {
                     _log(`   ✅ [VK] Flux HTML extrait avec succès !`);
@@ -1223,7 +1257,7 @@ async function extractDirectVideo(embedUrl, langPrefix, originalUrl, parentDomai
                  if (checkIfDeleted(html)) isDeleted = true;
                  else {
                      let streamUrl = vidhideExtractor(html);
-
+                     
                      if (!streamUrl) {
                          const srcMatch = html.match(/sources\s*:\s*\["([^"]+)"\]/i) || html.match(/src\s*:\s*"([^"]+\.mp4)"/i);
                          if (srcMatch) streamUrl = srcMatch[1];
@@ -1232,17 +1266,17 @@ async function extractDirectVideo(embedUrl, langPrefix, originalUrl, parentDomai
                      if (streamUrl) {
                          _log(`   ✅ [Uqload] Flux extrait avec succès !`);
                          uqHeaders["Referer"] = `https://${hostDomain}/`;
-
-                         return {
-                             title: `${langPrefix} Uqload`,
-                             streamUrl: streamUrl,
-                             headers: uqHeaders
+                         
+                         return { 
+                             title: `${langPrefix} Uqload`, 
+                             streamUrl: streamUrl, 
+                             headers: uqHeaders 
                          };
                      }
                  }
             }
         }
-        else if (urlLower.includes("dood") || urlLower.includes("doply") || urlLower.includes("vidply") || urlLower.includes("playmogo")) {
+        else if (urlLower.includes("dood") || urlLower.includes("doply") || urlLower.includes("vidply") || urlLower.includes("playmogo") || urlLower.includes("dsvplay")) {
             hostRecognized = true;
             _log(`   🕵️ Extraction Doodstream en cours pour ${hostDomain}...`);
             const req = await soraFetch(embedUrl, { headers: { "Referer": pDomain } });
@@ -1258,7 +1292,7 @@ async function extractDirectVideo(embedUrl, langPrefix, originalUrl, parentDomai
                  }
             }
         }
-        else if (urlLower.includes("hgcloud") || urlLower.includes("audinifer") || urlLower.includes("huntrexus") || urlLower.includes("vibuxer")) {
+        else if (urlLower.includes("hgcloud") || urlLower.includes("audinifer") || urlLower.includes("masukestin") || urlLower.includes("hglink") || urlLower.includes("huntrexus") || urlLower.includes("vibuxer")) {
             hostRecognized = true;
             _log(`   🕵️ Extraction HGCloud en cours pour ${hostDomain}...`);
 
@@ -1272,8 +1306,8 @@ async function extractDirectVideo(embedUrl, langPrefix, originalUrl, parentDomai
                 const vibuxerUrl = `https://vibuxer.com/e/${videoId}`;
                 _log(`   📡 [HGCloud] Chargement : ${vibuxerUrl}`);
 
-                const req = await soraFetch(vibuxerUrl, {
-                    headers: { "Referer": "https://hgcloud.to/" }
+                const req = await soraFetch(vibuxerUrl, { 
+                    headers: { "Referer": "https://hgcloud.to/" } 
                 });
                 if (req) {
                     const html = await req.text();
@@ -1313,26 +1347,26 @@ async function extractDirectVideo(embedUrl, langPrefix, originalUrl, parentDomai
 
                         if (streamUrl) {
                             _log(`   ✅ [HGCloud] Flux extrait !`);
-                            return {
-                                title: `${langPrefix} HGCloud`,
-                                streamUrl: streamUrl,
-                                headers: { "Referer": vibuxerUrl }
+                            return { 
+                                title: `${langPrefix} HGCloud`, 
+                                streamUrl: streamUrl, 
+                                headers: { "Referer": vibuxerUrl } 
                             };
                         }
                     }
                 }
             }
         }
-        else if (urlLower.includes("filemoon") || urlLower.includes("lukefirst") || urlLower.includes("bysebuho") || urlLower.includes("bysesukior") || urlLower.includes("q8y5z")) {
+        else if (urlLower.includes("filemoon") || urlLower.includes("lukefirst") || urlLower.includes("byse") || urlLower.includes("q8y5z")) {
             hostRecognized = true;
             _log(`   🕵️ Extraction Filemoon en cours pour ${hostDomain}...`);
             let fmResult = await filemoonExtractor(embedUrl, pDomain);
-
+            
             if (fmResult && fmResult.url) {
                 let qLabel = fmResult.quality ? ` [${fmResult.quality}]` : "";
                 _log(`   ✅ [Filemoon] Flux${qLabel} extrait avec succès !`);
                 return { title: `${langPrefix} Filemoon${qLabel}`, streamUrl: fmResult.url, headers: { "Referer": embedUrl } };
-            } else if (typeof fmResult === 'string') {
+            } else if (typeof fmResult === 'string') { 
                 _log(`   ✅ [Filemoon] Flux extrait avec succès !`);
                 return { title: `${langPrefix} Filemoon`, streamUrl: fmResult, headers: { "Referer": embedUrl } };
             }
@@ -1340,12 +1374,12 @@ async function extractDirectVideo(embedUrl, langPrefix, originalUrl, parentDomai
         else if (urlLower.includes("darkibox")) {
             hostRecognized = true;
             _log(`   🕵️ Extraction Darkibox en cours pour ${hostDomain}...`);
-
+            
             let uas = [
                 "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
                 "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Safari/605.1.15",
             ];
-            const headers = {
+            const headers = { 
                 "User-Agent": uas[embedUrl.length % uas.length],
                 "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
                 "Accept-Language": "fr,fr-FR;q=0.8,en-US;q=0.5,en;q=0.3",
@@ -1374,7 +1408,7 @@ async function extractDirectVideo(embedUrl, langPrefix, originalUrl, parentDomai
             } else {
                 let streamUrl = null;
                 let srcMatch = html.match(/sources\s*:\s*\[\s*\{\s*src\s*:\s*["']([^"']+)["']/i);
-
+                
                 if (!srcMatch) srcMatch = html.match(/(https?:\/\/[a-zA-Z0-9.-]+\.darkibox\.com\/[^"'\s]+\.m3u8[^"'\s]*)/i);
                 if (!srcMatch) srcMatch = html.match(/(https?:\/\/[^"'\s]+\.m3u8[^"'\s]*)/i);
 
@@ -1395,13 +1429,13 @@ async function extractDirectVideo(embedUrl, langPrefix, originalUrl, parentDomai
         else if (urlLower.includes("savefiles")) {
             hostRecognized = true;
             _log(`   🕵️ Extraction Savefiles en cours pour ${hostDomain}...`);
-
+            
             const videoIdMatch = embedUrl.match(/\/(?:e|v|embed)\/([a-zA-Z0-9]+)/i) || embedUrl.match(/embed-([a-zA-Z0-9]+)/i);
-
+            
             if (videoIdMatch) {
                 const videoId = videoIdMatch[1];
                 const payload = `op=embed&file_code=${videoId}&auto=1&referer=`;
-
+                
                 try {
                     const req = await soraFetch(`https://${hostDomain}/dl`, {
                         method: "POST",
@@ -1411,15 +1445,15 @@ async function extractDirectVideo(embedUrl, langPrefix, originalUrl, parentDomai
                         },
                         body: payload
                     });
-
+                    
                     if (req) {
                         const html = await req.text();
                         if (checkIfDeleted(html)) {
                             isDeleted = true;
                         } else {
-                            const srcMatch = html.match(/sources\s*:\s*\[\s*\{\s*file\s*:\s*["']([^"']+)["']/i) ||
+                            const srcMatch = html.match(/sources\s*:\s*\[\s*\{\s*file\s*:\s*["']([^"']+)["']/i) || 
                                              html.match(/src\s*:\s*["']([^"']+\.(?:m3u8|mp4)[^"']*)["']/i);
-
+                            
                             if (srcMatch && srcMatch[1]) {
                                 _log(`   ✅ [Savefiles] Flux extrait avec succès !`);
                                 return { title: `${langPrefix} Savefiles`, streamUrl: srcMatch[1], headers: { "Referer": `https://${hostDomain}/` } };
@@ -1432,16 +1466,16 @@ async function extractDirectVideo(embedUrl, langPrefix, originalUrl, parentDomai
         else if (urlLower.includes("fsvid")) {
             hostRecognized = true;
             _log(`   🕵️ Extraction Fsvid en cours pour ${hostDomain}...`);
-
+            
             const req = await soraFetch(embedUrl, { headers: { "Referer": pDomain } });
             if (req) {
                  const html = await req.text();
                  if (checkIfDeleted(html)) isDeleted = true;
                  else {
                      let streamUrl = vidhideExtractor(html);
-
+                     
                      if (!streamUrl) {
-                         const fileMatch = html.match(/sources\s*:\s*\[\s*\{\s*src\s*:\s*["']([^"']+)["']/i) ||
+                         const fileMatch = html.match(/sources\s*:\s*\[\s*\{\s*src\s*:\s*["']([^"']+)["']/i) || 
                                            html.match(/file\s*:\s*["']([^"']+\.(?:m3u8|mp4)[^"']*)["']/i);
                          if (fileMatch) streamUrl = fileMatch[1];
                      }
@@ -1453,10 +1487,135 @@ async function extractDirectVideo(embedUrl, langPrefix, originalUrl, parentDomai
                  }
             }
         }
-        else if (urlLower.includes("lulustream") || urlLower.includes("luluvdo")) {
+        else if (urlLower.includes("vidara")) {
+            hostRecognized = true;
+            _log(`   🕵️ Extraction Vidara en cours pour ${hostDomain}...`);
+            // POST /api/stream {filecode, device:"web"} -> { streaming_url: master.m3u8 }
+            try {
+                const fc = (embedUrl.match(/\/e\/([^/?#]+)/) || [])[1];
+                if (fc) {
+                    const res = await soraFetch(`https://${hostDomain}/api/stream`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json", "Referer": embedUrl },
+                        body: JSON.stringify({ filecode: fc, device: "web" })
+                    });
+                    if (res) {
+                        const j = JSON.parse(await res.text());
+                        if (j && j.streaming_url) {
+                            _log(`   ✅ [Vidara] Flux extrait avec succès !`);
+                            return { title: `${langPrefix} Vidara`, streamUrl: j.streaming_url, headers: { "Referer": `https://${hostDomain}/` } };
+                        }
+                    }
+                }
+            } catch (e) { _log(`   ❌ [Vidara] ${e.message}`); }
+        }
+        else if (urlLower.includes("vidsonic")) {
+            hostRecognized = true;
+            _log(`   🕵️ Extraction Vidsonic en cours pour ${hostDomain}...`);
+            // L'URL vidéo est encodée dans la page : const _0x1 = 'hex|hex|...' -> paires hex -> reverse.
+            try {
+                const req = await soraFetch(embedUrl, { headers: { "Referer": pDomain } });
+                if (req) {
+                    const html = await req.text();
+                    if (checkIfDeleted(html)) isDeleted = true;
+                    else {
+                        const m = html.match(/_0x1\s*=\s*'([^']+)'/);
+                        if (m) {
+                            const clean = m[1].split('|').join('');
+                            let out = ""; for (let i = 0; i < clean.length; i += 2) out += String.fromCharCode(parseInt(clean.substr(i, 2), 16));
+                            const streamUrl = out.split('').reverse().join('');
+                            if (streamUrl && streamUrl.startsWith("http")) {
+                                _log(`   ✅ [Vidsonic] Flux extrait avec succès !`);
+                                return { title: `${langPrefix} Vidsonic`, streamUrl: streamUrl, headers: { "Referer": `https://${hostDomain}/` } };
+                            }
+                        }
+                    }
+                }
+            } catch (e) { _log(`   ❌ [Vidsonic] ${e.message}`); }
+        }
+        else if (urlLower.includes("anonmp4")) {
+            hostRecognized = true;
+            _log(`   🕵️ Extraction Anonmp4 en cours pour ${hostDomain}...`);
+            // La page contient une URL API (.../load/<blob>) qui renvoie { hls: master.m3u8 }.
+            try {
+                const req = await soraFetch(embedUrl, { headers: { "Referer": pDomain } });
+                if (req) {
+                    const html = await req.text();
+                    if (checkIfDeleted(html)) isDeleted = true;
+                    else {
+                        const apiUrl = (html.match(/https?:\/\/[^"'\s]*\/load\/[^"'\s]+/i) || [])[0];
+                        if (apiUrl) {
+                            const ar = await soraFetch(apiUrl, { headers: { "Referer": embedUrl } });
+                            if (ar) {
+                                const j = JSON.parse(await ar.text());
+                                if (j && j.hls) {
+                                    _log(`   ✅ [Anonmp4] Flux extrait avec succès !`);
+                                    return { title: `${langPrefix} Anonmp4`, streamUrl: j.hls, headers: { "Referer": `https://${hostDomain}/` } };
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (e) { _log(`   ❌ [Anonmp4] ${e.message}`); }
+        }
+        else if (urlLower.includes("upbolt")) {
+            hostRecognized = true;
+            _log(`   🕵️ Extraction Upbolt en cours pour ${hostDomain}...`);
+            // POST /dl op=embed&file_code=<code> -> page JWPlayer avec sources:[{file:master.m3u8}].
+            // ⚠️ /dl est souvent derrière Cloudflare -> ne marche que si le CF est résolu (Shirox).
+            try {
+                const fc = (embedUrl.match(/\/e\/([^/?#]+)/) || [])[1];
+                if (fc) {
+                    const res = await soraFetch(`https://${hostDomain}/dl`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/x-www-form-urlencoded", "Referer": embedUrl },
+                        body: `op=embed&file_code=${fc}&auto=1&referer=`
+                    });
+                    if (res) {
+                        const html = await res.text();
+                        if (checkIfDeleted(html)) isDeleted = true;
+                        else {
+                            const f = (html.match(/sources:\s*\[\s*\{\s*file:\s*["']([^"']+)["']/i) || [])[1];
+                            if (f && f.startsWith("http")) {
+                                _log(`   ✅ [Upbolt] Flux extrait avec succès !`);
+                                return { title: `${langPrefix} Upbolt`, streamUrl: f, headers: { "Referer": `https://${hostDomain}/` } };
+                            }
+                        }
+                    }
+                }
+            } catch (e) { _log(`   ❌ [Upbolt] ${e.message}`); }
+        }
+        else if (urlLower.includes("streamcash")) {
+            hostRecognized = true;
+            _log(`   🕵️ Extraction Streamcash en cours pour ${hostDomain}...`);
+            // window.__PCr = '<base64>' -> JSON { src: master.m3u8 } (base64 décodé en pur-JS, fiable iOS)
+            try {
+                const req = await soraFetch(embedUrl, { headers: { "Referer": pDomain } });
+                if (req) {
+                    const html = await req.text();
+                    if (checkIfDeleted(html)) isDeleted = true;
+                    else {
+                        const m = html.match(/__PCr\s*=\s*['"]([A-Za-z0-9+/_=-]+)['"]/);
+                        if (m) {
+                            const b64 = m[1].replace(/-/g, '+').replace(/_/g, '/').replace(/=+$/, '');
+                            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+                            let dec = '';
+                            for (let bc = 0, bs = 0, idx = 0; idx < b64.length; idx++) { const c = chars.indexOf(b64.charAt(idx)); if (c < 0) continue; bs = bc % 4 ? bs * 64 + c : c; if (bc++ % 4) dec += String.fromCharCode(255 & (bs >> ((-2 * bc) & 6))); }
+                            try { dec = decodeURIComponent(escape(dec)); } catch (e) {}
+                            const j = JSON.parse(dec);
+                            if (j && j.src) {
+                                _log(`   ✅ [Streamcash] Flux extrait avec succès !`);
+                                return { title: `${langPrefix} Streamcash`, streamUrl: j.src, headers: { "Referer": `https://${hostDomain}/` } };
+                            }
+                        }
+                    }
+                }
+            } catch (e) { _log(`   ❌ [Streamcash] ${e.message}`); }
+        }
+        else if (urlLower.includes("lulustream") || urlLower.includes("luluvdo") || urlLower.includes("luluvid")) {
             hostRecognized = true;
             _log(`   🕵️ Extraction Lulustream en cours pour ${hostDomain}...`);
-
+            
             const luluHeaders = {
                 "Referer": pDomain,
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
@@ -1471,8 +1630,8 @@ async function extractDirectVideo(embedUrl, langPrefix, originalUrl, parentDomai
                  else {
                      let streamUrl = vidhideExtractor(html);
                      if (!streamUrl) {
-                         const fileMatch = html.match(/sources\s*:\s*\[\s*\{\s*file\s*:\s*["']([^"']+)["']/i) ||
-                                           html.match(/file\s*:\s*["']([^"']+\.(?:m3u8|mp4)[^"']*)["']/i) ||
+                         const fileMatch = html.match(/sources\s*:\s*\[\s*\{\s*file\s*:\s*["']([^"']+)["']/i) || 
+                                           html.match(/file\s*:\s*["']([^"']+\.(?:m3u8|mp4)[^"']*)["']/i) || 
                                            html.match(/src\s*:\s*["']([^"']+\.(?:m3u8|mp4)[^"']*)["']/i);
                          if (fileMatch) streamUrl = fileMatch[1];
                      }
@@ -1481,16 +1640,16 @@ async function extractDirectVideo(embedUrl, langPrefix, originalUrl, parentDomai
                          _log(`   ✅ [Lulustream] Flux extrait avec succès !`);
                          luluHeaders["Referer"] = `https://${hostDomain}/`;
 
-                         return {
-                             title: `${langPrefix} Lulustream`,
-                             streamUrl: streamUrl,
-                             headers: luluHeaders
+                         return { 
+                             title: `${langPrefix} Lulustream`, 
+                             streamUrl: streamUrl, 
+                             headers: luluHeaders 
                          };
                      }
                  }
             }
         }
-        else if (urlLower.includes("embedseek") || urlLower.includes("neocine") || urlLower.includes("embed4me") || urlLower.includes("lpayer")) {
+        else if (urlLower.includes("embedseek") || urlLower.includes("neocine") || urlLower.includes("embed4me") || urlLower.includes("lpayer") || urlLower.includes("seekplayer") || urlLower.includes("flemmix") || urlLower.includes("p2pstream")) {
             hostRecognized = true;
             _log(`   🕵️ Extraction Embedseek/Neocine en cours pour ${hostDomain}...`);
             const res = await embedseekExtractor(embedUrl, langPrefix);
@@ -1498,28 +1657,82 @@ async function extractDirectVideo(embedUrl, langPrefix, originalUrl, parentDomai
             _log(`   ❌ [Embedseek] Échec extraction.`);
         }
         else {
+            // 🤖 AUTO-DÉTECTION DU FOURNISSEUR (domaine inconnu). On identifie par SIGNATURE (API/contenu)
+            // au lieu du nom de domaine -> les nouveaux domaines des familles connues marchent tout seuls.
             let hostName = hostDomain.split('.')[0];
             hostName = hostName.charAt(0).toUpperCase() + hostName.slice(1);
             hostRecognized = true;
+
+            // 0) EMBEDSEEK : URL avec #id ou ?id= -> /api/v1/video renvoie un blob hex chiffré (AES-128-CBC).
+            if (embedUrl.match(/#[a-zA-Z0-9]+/) || embedUrl.match(/[?&]id=[a-zA-Z0-9]+/)) {
+                try {
+                    const es = await embedseekExtractor(embedUrl, langPrefix);
+                    if (es && es.streamUrl) { _log(`   🤖 [Auto] Embedseek détecté sur ${hostDomain} !`); return es; }
+                } catch (e) {}
+            }
 
             const req = await soraFetch(embedUrl, { headers: { "Referer": pDomain } });
             if (req) {
                 const html = await req.text();
                 if (checkIfDeleted(html)) isDeleted = true;
                 else {
-                    let streamUrl = vidhideExtractor(html);
+                    let streamUrl = null;
 
+                    // 1) DOODSTREAM (signature : /pass_md5/ dans le HTML)
+                    if (html.includes("/pass_md5/")) {
+                        try {
+                            const d = await doodstreamExtractor(html, embedUrl);
+                            if (d) { _log(`   🤖 [Auto] Doodstream détecté sur ${hostDomain} !`); return { title: `${langPrefix} Doodstream`, streamUrl: d, headers: { "Referer": embedUrl } }; }
+                        } catch (e) {}
+                    }
+
+                    // 2) VIDSONIC (signature : const _0x1 = 'hex|hex|...' -> paires hex -> reverse)
+                    if (!streamUrl) {
+                        const m = html.match(/_0x1\s*=\s*'([^']+)'/);
+                        if (m) {
+                            const clean = m[1].split('|').join('');
+                            let out = ""; for (let i = 0; i < clean.length; i += 2) out += String.fromCharCode(parseInt(clean.substr(i, 2), 16));
+                            const u = out.split('').reverse().join('');
+                            if (u.startsWith("http")) { streamUrl = u; hostName = "Vidsonic"; _log(`   🤖 [Auto] Vidsonic détecté sur ${hostDomain} !`); }
+                        }
+                    }
+
+                    // 3) STREAMCASH (signature : window.__PCr = '<base64>' -> JSON { src })
+                    if (!streamUrl) {
+                        const m = html.match(/__PCr\s*=\s*['"]([A-Za-z0-9+/_=-]+)['"]/);
+                        if (m) {
+                            const b64 = m[1].replace(/-/g, '+').replace(/_/g, '/').replace(/=+$/, '');
+                            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+                            let dec = ''; for (let bc = 0, bs = 0, idx = 0; idx < b64.length; idx++) { const c = chars.indexOf(b64.charAt(idx)); if (c < 0) continue; bs = bc % 4 ? bs * 64 + c : c; if (bc++ % 4) dec += String.fromCharCode(255 & (bs >> ((-2 * bc) & 6))); }
+                            try { dec = decodeURIComponent(escape(dec)); } catch (e) {}
+                            try { const j = JSON.parse(dec); if (j && j.src) { streamUrl = j.src; hostName = "Streamcash"; _log(`   🤖 [Auto] Streamcash détecté sur ${hostDomain} !`); } } catch (e) {}
+                        }
+                    }
+
+                    // 4) VIDHIDE / p.a.c.k.e.r
+                    if (!streamUrl) streamUrl = vidhideExtractor(html);
+
+                    // 5) JWPlayer / m3u8-mp4 direct
                     if (!streamUrl) {
                         const fileMatch = html.match(/sources\s*:\s*\[\s*\{\s*src\s*:\s*["']([^"']+)["']/i) ||
                                           html.match(/file\s*:\s*["']([^"']+\.(?:m3u8|mp4)[^"']*)["']/i) ||
                                           html.match(/src\s*:\s*["']([^"']+\.(?:m3u8|mp4)[^"']*)["']/i);
                         if (fileMatch) streamUrl = fileMatch[1];
                     }
-
                     if (!streamUrl) {
                         const sourceMatch = html.match(/<source[^>]+src=["']([^"']+\.(?:m3u8|mp4)[^"']*)["']/i) ||
                                             html.match(/video_source\s*=\s*["']([^"']+)["']/i);
                         if (sourceMatch) streamUrl = sourceMatch[1];
+                    }
+
+                    // 6) VOE (domaines qui ROTENT -> détection par contenu ; suit 1 redirect JS window.location)
+                    if (!streamUrl) {
+                        let voeHtml = html;
+                        const jsRedir = html.match(new RegExp("win" + "dow\\.location(?:\\.href)?\\s*=\\s*[\"']([^\"']+)[\"']", "i"));
+                        if (jsRedir && jsRedir[1] && jsRedir[1].startsWith("http")) {
+                            try { const rr = await soraFetch(jsRedir[1], { headers: { "Referer": pDomain } }); if (rr) voeHtml = await rr.text(); } catch (e) {}
+                        }
+                        try { const v = voeExtractor(voeHtml); if (v) { streamUrl = v; hostName = "VOE"; } } catch (e) {}
                     }
 
                     if (streamUrl && streamUrl.startsWith("http")) {
@@ -1529,10 +1742,10 @@ async function extractDirectVideo(embedUrl, langPrefix, originalUrl, parentDomai
                 }
             }
         }
-    } catch (e) {
+    } catch (e) { 
         _log(`   🚨 [Erreur] Crash du décodeur sur ${hostDomain} : ${e.message}`);
     }
-
+    
     if (!hostRecognized) {
         _log(`   ❌ [Rejet] Serveur non pris en charge : ${hostDomain} -> ${originalUrl}`);
         return { title: `${langPrefix} Non Supporté`, originalUrl: originalUrl };
@@ -1549,12 +1762,12 @@ function voeExtractor(html) {
     try {
         const jsonScriptMatch = html.match(/<script[^>]+type=["']application\/json["'][^>]*>([\s\S]*?)<\/script>/i);
         if (!jsonScriptMatch) return null;
-
+        
         let data = JSON.parse(jsonScriptMatch[1].trim());
         let step1 = data[0].replace(/[a-zA-Z]/g, c => String.fromCharCode((c <= "Z" ? 90 : 122) >= (c = c.charCodeAt(0) + 13) ? c : c - 26));
-        let step2 = step1;
+        let step2 = step1; 
         ["@$", "^^", "~@", "%?", "*~", "!!", "#&"].forEach(pat => step2 = step2.split(pat).join(""));
-
+        
         const safeAtob = (b64) => {
             const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
             let str = String(b64).replace(/=+$/, '');
@@ -1564,12 +1777,12 @@ function voeExtractor(html) {
             }
             return output;
         };
-
+        
         let step3 = safeAtob(step2);
         let step4 = step3.split("").map((c) => String.fromCharCode(c.charCodeAt(0) - 3)).join("");
         let step5 = step4.split("").reverse().join("");
         let step6 = safeAtob(step5);
-
+        
         let result = JSON.parse(step6);
         return result.source || (result.source && result.source.find(s => s.source)?.source) || null;
     } catch (e) { return null; }
@@ -1579,7 +1792,7 @@ function vidhideExtractor(html) {
     try {
         let directMatch = html.match(/(https?:\/\/[^"'\s]+\.(?:m3u8|mp4)[^"'\s]*)/i);
         if (directMatch) return directMatch[1];
-
+        
         if (html.includes('eval(function(p,a,c,k,e,d)')) {
             let packRegex = /eval\(function\(p,a,c,k,e,d\).*?\.split\('\|'\)\)\)/g;
             let packMatches = html.match(packRegex);
@@ -1613,19 +1826,19 @@ async function doodstreamExtractor(html, url) {
         }
         const streamDomain = domainMatch[1];
         _log(`   [Doodstream Extractor] 🌐 Domaine détecté : ${streamDomain}`);
-
+        
         const md5Match = html.match(/'\/pass_md5\/(.*?)'/);
         if (!md5Match) {
             _log(`   [Doodstream Extractor] ❌ Échec : Impossible de trouver le chemin '/pass_md5/' dans le HTML.`);
             return null;
         }
-
+        
         const md5Path = md5Match[1];
         _log(`   [Doodstream Extractor] 🔑 Chemin MD5 extrait : /pass_md5/${md5Path}`);
-
+        
         const token = md5Path.substring(md5Path.lastIndexOf("/") + 1);
         _log(`   [Doodstream Extractor] 🎟️ Token extrait : ${token}`);
-
+        
         const expiryTimestamp = new Date().valueOf();
         const random = randomStr(10);
         _log(`   [Doodstream Extractor] ⏱️ Timestamp : ${expiryTimestamp} | 🎲 Random String : ${random}`);
@@ -1636,21 +1849,21 @@ async function doodstreamExtractor(html, url) {
         const passResponse = await soraFetch(passUrl, {
             headers: { "Referer": url }
         });
-
+        
         if (!passResponse) {
             _log(`   [Doodstream Extractor] ❌ Échec : Aucune réponse de l'API MD5.`);
             return null;
         }
-
+        
         const responseData = await passResponse.text();
         _log(`   [Doodstream Extractor] 📥 Réponse API MD5 (Brut) : ${responseData.substring(0, 80)}...`);
-
+        
         if (responseData && responseData.startsWith('http')) {
             const finalUrl = `${responseData}${random}?token=${token}&expiry=${expiryTimestamp}`;
             _log(`   [Doodstream Extractor] 🎉 SUCCÈS ! URL finale générée : ${finalUrl}`);
             return finalUrl;
         }
-
+        
         _log(`   [Doodstream Extractor] ❌ Échec : La réponse API ne commence pas par 'http'.`);
         return null;
     } catch (e) {
@@ -1825,7 +2038,7 @@ async function filemoonExtractor(url, parentDomain) {
     try {
         const captchaUrl = `https://${currentHost}/api/videos/${videoId}/embed/captcha`;
         _log(`   📡 [Filemoon 4/6] embed/captcha : ${captchaUrl}`);
-
+        
         const captchaRes = await soraFetch(captchaUrl, {
             headers: { ...baseHeaders, "Content-Type": "application/json" },
             method: "POST",
@@ -1852,7 +2065,7 @@ async function filemoonExtractor(url, parentDomain) {
             _log(`   📡 [Filemoon 5/6] Résolution du Proof of Work (worker, fallback local)...`);
             const solution = await solvePoW(powNonce, powDifficulty);
             if (!solution || solution === "0") { _log(`   ⏭️ [Filemoon 5/6] PoW non résolu (sauté) -> ${url}`); return null; }
-
+            
             const verifyUrl = `https://${currentHost}/api/videos/${videoId}/embed/captcha/verify`;
             _log(`   📡 [Filemoon 5/6] embed/captcha/verify : ${verifyUrl}`);
 
@@ -2033,7 +2246,7 @@ class FileMoonDecryptor {
         for (let i = 0; i < decoded.length; i++) bytes[i] = decoded.charCodeAt(i);
         return bytes;
     }
-
+    
     concatBytes(...arrays) {
         const totalLength = arrays.reduce((sum, arr) => sum + arr.length, 0);
         const result = new Uint8Array(totalLength);
@@ -2044,7 +2257,7 @@ class FileMoonDecryptor {
         }
         return result;
     }
-
+    
     async decrypt() {
         try {
             // Déchiffrement 100% local (plus de jm26.net) : clé = concat des 2 key_parts choisis.

@@ -1,98 +1,142 @@
 async function searchResults(keyword) {
-    const postData = `op=title_search&q=${encodeURIComponent(keyword)}`;
-    const headers = await getDefaultHeaders();
     const results = [];
-    try {
-        const response = await fetchv2("https://beta.otaku-streamers.com/a.php", headers, "POST", postData);
-        const data = await response.json();
+    const response = await fetchv2(`https://animenosub.to/?s=${keyword}`);
+    const html = await response.text();
 
-        if (data && data.content) {
-            data.content.forEach(item => {
-                results.push({
-                    title: item.title,
-                    image: item.cover,
-                    href: item.url
-                });
-            });
-        }
+    // Regex pattern to extract the title, image, and href from the article elements
+    const regex = /<article class="bs"[^>]*>.*?<a href="([^"]+)"[^>]*>.*?<img src="([^"]+)"[^>]*>.*?<h2[^>]*>(.*?)<\/h2>/gs;
 
-        return JSON.stringify(results);
-    } catch (err) {
-        return JSON.stringify([{
-            title: "Error",
-            image: "Error",
-            href: "Error"
-        }]);
+    let match;
+    while ((match = regex.exec(html)) !== null) {
+        results.push({
+            title: match[3].trim(),
+            image: match[2].trim(),
+            href: match[1].trim()
+        });
     }
+
+    return JSON.stringify(results);
 }
 
 async function extractDetails(url) {
-    const headers = await getDefaultHeaders();
-    try {
-        const response = await fetchv2(url, headers);
-        const html = await response.text();
+    const results = [];
+    const response = await fetchv2(url);
+    const html = await response.text();
 
-        const descriptionMatch = html.match(/<div class="tp-synopsis">[\s\S]*?<p>([\s\S]*?)<\/p>/i);
-        const description = descriptionMatch ? descriptionMatch[1].replace(/<br\s*\/?>/gi, "\n").replace(/<\/?[^>]+(>|$)/g, "").trim() : "N/A";
+    const match = html.match(/<div class="entry-content"[^>]*>([\s\S]*?)<\/div>/);
 
-        return JSON.stringify([{
-            description: description,
-            aliases: "N/A",
-            airdate: "N/A"
-        }]);
-    } catch (err) {
-        return JSON.stringify([{
-            description: "Error",
-            aliases: "Error",
-            airdate: "Error"
-        }]);
+    let description = "N/A";
+    if (match) {
+        description = match[1]
+            .replace(/<[^>]+>/g, '') 
+            .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(code)) 
+            .replace(/&quot;/g, '"') 
+            .replace(/&apos;/g, "'") 
+            .replace(/&amp;/g, "&") 
+            .trim();
     }
+
+    results.push({
+        description: description,
+        aliases: 'N/A',
+        airdate: 'N/A'
+    });
+
+    return JSON.stringify(results);
 }
 
 async function extractEpisodes(url) {
-    const headers = await getDefaultHeaders();
     const results = [];
-    try {
-        const response = await fetchv2(url, headers);
-        const html = await response.text();
+    const response = await fetchv2(url);
+    const html = await response.text();
 
-        const regex = /<a href="(.*?)" class="tp-ep-row" data-no="(.*?)">/g;
-        let match;
-        while ((match = regex.exec(html)) !== null) {
-            results.push({
-                href: match[1].trim(),
-                number: parseInt(match[2], 10)
-            });
-        }
-        results.reverse();
-        return JSON.stringify(results);
-    } catch (err) {
-        return JSON.stringify([{
-            href: "Error",
-            number: "Error"
-        }]);
+    const regex = /<a href="([^"]+)">\s*<div class="epl-num">([\d.]+)<\/div>/g;
+
+    let match;
+    while ((match = regex.exec(html)) !== null) {
+        results.push({
+            href: match[1].trim(),
+            number: parseFloat(match[2])
+        });
     }
+    results.reverse();
+    return JSON.stringify(results);
 }
+
 
 async function extractStreamUrl(url) {
-    const headers = await getDefaultHeaders();
     try {
-        const response = await fetchv2(url, headers);
+        const response = await fetchv2(url);
         const html = await response.text();
+        const streams = [];
+        
+        const optionRegex = /<option value="([^"]+)"[^>]*>\s*([^<]*Omega[^<]*)\s*<\/option>/gi;
+        
+        let optionMatch;
+        while ((optionMatch = optionRegex.exec(html)) !== null) {
+            const base64Value = optionMatch[1];
+            const label = optionMatch[2].trim();
+            
+            if (!base64Value) continue;
 
-        const streamMatch = html.match(/<source src="(.*?)" type=".*?"\/>/i);
-        return streamMatch ? streamMatch[1] : "https://error.org/";
+            try {
+                const decodedHtml = atob(base64Value);
+                const iframeMatch = decodedHtml.match(/<iframe[^>]+src=["']([^"']+)["']/i);
+                
+                if (iframeMatch) {
+                    let iframeUrl = iframeMatch[1];
+                    if (iframeUrl.startsWith("//")) iframeUrl = "https:" + iframeUrl;
+
+                    const responseTwo = await fetchv2(iframeUrl);
+                    const htmlTwo = await responseTwo.text();
+
+                    const m3u8Match = htmlTwo.match(/sources\s*:\s*\[\s*\{\s*file\s*:\s*['"]([^'"]+master\.m3u8[^'"]*)['"]/i) || 
+                                      htmlTwo.match(/file\s*:\s*['"]([^'"]+\.m3u8[^'"]*)['"]/i);
+                    
+                    if (m3u8Match) {
+                        streams.push({
+                            title: label,
+                            streamUrl: m3u8Match[1],
+                            headers: {
+                                "Referer": "https://vidmoly.biz/",
+                                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+                            }
+                        });
+                    }
+                }
+            } catch (innerErr) {
+            }
+        }
+
+        return JSON.stringify({
+            streams: streams,
+            subtitle: ""
+        });
     } catch (err) {
-        return "https://error.org/";
+        return JSON.stringify({
+            streams: [],
+            subtitle: ""
+        });
     }
 }
 
-async function getDefaultHeaders() {
-    const session = await fetchv2("https://ilovefeet.simplepostrequest.workers.dev/session");
-    const sessionKey = await session.text();
-    return {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
-        "Cookie": `bb_betasessionhash=${sessionKey}`
-    };
+function atob(input) {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+    let str = '';
+    let buffer = 0;
+    let bits = 0;
+    for (let i = 0; i < input.length; i++) {
+        const char = input.charAt(i);
+        if (char === '=') break;
+        const index = chars.indexOf(char);
+        if (index === -1) continue;
+        buffer = (buffer << 6) | index;
+        bits += 6;
+        if (bits >= 8) {
+            bits -= 8;
+            str += String.fromCharCode((buffer >> bits) & 0xFF);
+            buffer &= (1 << bits) - 1;
+        }
+    }
+    return str;
 }

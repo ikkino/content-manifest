@@ -1,316 +1,119 @@
+const BASE_URL = "https://123animes.ru";
+
+function absoluteUrl(value) {
+  if (!value) return "";
+  if (/^https?:\/\//i.test(value)) return value;
+  return BASE_URL + (value.startsWith("/") ? value : "/" + value);
+}
+
+function animeSlug(url) {
+  return String(url || "").split("/anime/").pop().split("/")[0].split("?")[0];
+}
+
+function cleanText(value) {
+  return String(value || "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+}
+
+function normalizeTitle(value) {
+  return String(value || "").toLowerCase().replace(/\([^)]*\)/g, "").replace(/[^a-z0-9]+/g, "");
+}
+
+async function fetchText(url, options = {}) {
+  const response = await fetchv2(url, {
+    "Accept": "text/html,application/json,*/*",
+    "Referer": BASE_URL + "/",
+    ...(options.headers || {})
+  }, options.method, options.body);
+  if (!response.ok) throw new Error("HTTP " + response.status);
+  return response.text();
+}
+
 async function searchResults(keyword) {
-    const results = [];
-    try {
-        const response = await fetchv2("https://anineko.to/browser?keyword=" + encodeURIComponent(keyword));
-        const html = await response.text();
+  const html = await fetchText(BASE_URL + "/search?keyword=" + encodeURIComponent(keyword));
+  const blocks = html.match(/<div class="item">[\s\S]*?(?=<div class="item">|<div class="clearfix"><\/div>)/g) || [];
+  const wanted = normalizeTitle(keyword);
+  const results = [];
 
-        const regex = /<article class="nv-anime-card nv-browse-card">[\s\S]*?<a[^>]+href="([^"]+)"[^>]*>[\s\S]*?<img[^>]+src="([^"]+)"[^>]+alt="([^"]+)"/g;
-        let match;
-        while ((match = regex.exec(html)) !== null) {
-            results.push({
-                title: match[3].trim(),
-                image: match[2].trim(),
-                href: "https://anineko.to" + match[1].trim()
-            });
-        }
+  for (const block of blocks) {
+    const href = block.match(/<a href="([^"]+)"[^>]*class="(?:thumb|poster)[^"]*"/)?.[1]
+      || block.match(/<a href="([^"]+)"/)?.[1];
+    const title = block.match(/<a[^>]*class="name"[^>]*>([\s\S]*?)<\/a>/)?.[1]
+      || block.match(/<img[^>]*alt="([^"]+)"/)?.[1];
+    const image = block.match(/\sdata-src="([^"]+)"/)?.[1]
+      || block.match(/\ssrc="([^"]+)"/)?.[1]
+      || "";
 
-        return JSON.stringify(results);
-    } catch (err) {
-        return JSON.stringify([{
-            title: "Error",
-            image: "Error",
-            href: "Error"
-        }]);
-    }
+    if (!href || !title) continue;
+    results.push({
+      title: cleanText(title),
+      image: absoluteUrl(image),
+      href: absoluteUrl(href)
+    });
+  }
+
+  results.sort((a, b) => {
+    const aTitle = normalizeTitle(a.title);
+    const bTitle = normalizeTitle(b.title);
+    const aExact = aTitle === wanted ? 0 : 1;
+    const bExact = bTitle === wanted ? 0 : 1;
+    return aExact - bExact || a.title.length - b.title.length;
+  });
+
+  return JSON.stringify(results);
 }
 
 async function extractDetails(url) {
-    try {
-        const response = await fetchv2(url);
-        const html = await response.text();
+  const html = await fetchText(url);
+  const description = cleanText(html.match(/<div class="desc">([\s\S]*?)<\/div>/)?.[1]) || "N/A";
+  const aliases = cleanText(html.match(/<p class="alias">([\s\S]*?)<\/p>/)?.[1]) || "N/A";
+  const airdate = cleanText(html.match(/<dt>Released:<\/dt>\s*<dd>\s*<a[^>]*>([\s\S]*?)<\/a>/)?.[1]) || "N/A";
 
-        let description = "N/A";
-        const descMatch = html.match(/<meta name="description" content="([^"]+)"/);
-        if (descMatch) {
-            description = descMatch[1].trim();
-        }
-
-        return JSON.stringify([{
-            description: description,
-            aliases: "N/A",
-            airdate: "N/A"
-        }]);
-    } catch (err) {
-        return JSON.stringify([{
-            description: "Error",
-            aliases: "Error",
-            airdate: "Error"
-        }]);
-    }
+  return JSON.stringify([{ description, aliases, airdate }]);
 }
 
 async function extractEpisodes(url) {
-    const results = [];
-    try {
-        const response = await fetchv2(url);
-        const html = await response.text();
+  const slug = animeSlug(url);
+  if (!slug) return JSON.stringify([]);
 
-        const regex = /<article class="nv-info-episode-item">[\s\S]*?<a[^>]+href="([^"]+)"[^>]*>[\s\S]*?<strong>Episode (\d+)<\/strong>/g;
-        let match;
-        while ((match = regex.exec(html)) !== null) {
-            results.push({
-                href: "https://anineko.to" + match[1].trim(),
-                number: parseInt(match[2], 10)
-            });
-        }
+  const responseText = await fetchText(BASE_URL + "/ajax/film/sv?id=" + encodeURIComponent(slug));
+  let html = responseText;
+  try {
+    html = JSON.parse(responseText).html || "";
+  } catch {
+    html = responseText;
+  }
 
-        return JSON.stringify(results);
-    } catch (err) {
-        return JSON.stringify([{
-            href: "Error",
-            number: "Error"
-        }]);
-    }
+  const server = html.match(/<div class="server[^"]*"[^>]*data-name="([^"]+)"/)?.[1]
+    || html.match(/<div class="server[^"]*"[^>]*data-id="([^"]+)"/)?.[1]
+    || "vidstreaming.io";
+  const episodes = [];
+  const seen = new Set();
+  const anchorRegex = /<a\b[^>]*data-id="([^"]+)"[^>]*data-base="([^"]+)"[^>]*href="([^"]+)"/g;
+  let match;
+
+  while ((match = anchorRegex.exec(html)) !== null) {
+    const episodeId = match[1];
+    const number = Number.parseFloat(match[2]);
+    if (!episodeId || seen.has(episodeId)) continue;
+    seen.add(episodeId);
+    episodes.push({
+      href: episodeId + "/" + server,
+      number: Number.isFinite(number) ? number : episodes.length + 1
+    });
+  }
+
+  episodes.sort((a, b) => a.number - b.number);
+  return JSON.stringify(episodes);
 }
 
-async function extractStreamUrl(url) {
-    try {
-        const response = await fetchv2(url);
-        const html = await response.text();
+async function extractStreamUrl(id) {
+  const data = JSON.parse(await fetchText(BASE_URL + "/ajax/episode/info?epr=" + encodeURIComponent(id)));
+  if (!data.target || !/^https?:\/\//i.test(data.target)) return JSON.stringify({ streams: [] });
 
-        const serverTasks = [];
-        let subtitles = "";
-
-        const regex = /<button[^>]+data-video="([^"]+)"[^>]*>\s*([^<\s]+)\s*<span>([^<]+)<\/span>/g;
-        let match;
-        while ((match = regex.exec(html)) !== null) {
-            const videoUrl = match[1];
-            const serverName = match[2].trim();
-            let label = match[3].trim();
-
-            if (label === "Sort Sub") label = "Soft Sub";
-
-            if (!subtitles) {
-                const subMatch = videoUrl.match(/(?:sub|caption_1|c1_file)=([^&"]+)/);
-                if (subMatch) {
-                    subtitles = decodeURIComponent(subMatch[1]);
-                }
-            }
-
-            serverTasks.push((async () => {
-                let streamUrl = null;
-                let priority = 99;
-
-                try {
-                    if (serverName === "HD-1" || serverName === "HD-2") {
-                        priority = serverName === "HD-1" ? 1 : 2;
-                        if (videoUrl.includes("vibeplayer.site")) {
-                            const idMatch = videoUrl.match(/vibeplayer\.site\/([a-z0-9]+)/);
-                            if (idMatch) {
-                                streamUrl = `https://vibeplayer.site/public/stream/${idMatch[1]}/master.m3u8`;
-                            }
-                        }
-                    } else if (serverName === "StreamHG" || serverName === "Earnvids") {
-                        priority = serverName === "StreamHG" ? 3 : 4;
-                        const playerResponse = await fetchv2(videoUrl);
-                        const playerHtml = await playerResponse.text();
-                        const obfuscatedScript = playerHtml.match(/<script[^>]*>\s*(eval\(function\(p,a,c,k,e,d.*?\)[\s\S]*?)<\/script>/);
-                        if (obfuscatedScript) {
-                            const unpackedScript = unpack(obfuscatedScript[1]);
-
-                            const hlsMatch = unpackedScript.match(/"(https:\/\/[^"]+master\.m3u8[^"]*)"/);
-                            if (hlsMatch) {
-                                streamUrl = hlsMatch[1];
-                            } else {
-                                const fileMatch = unpackedScript.match(/file\s*:\s*"([^"]+)"/);
-                                if (fileMatch) streamUrl = fileMatch[1];
-                            }
-                        }
-                    } else if (serverName === "Doodstream") {
-                        priority = 5;
-                        const playerResponse = await fetchv2(videoUrl);
-                        const playerHtml = await playerResponse.text();
-                        streamUrl = await doodstreamExtractor(playerHtml, videoUrl);
-                    }
-                } catch (e) {
-                    console.log("Error extracting server " + serverName + ": " + e);
-                }
-
-                if (streamUrl) {
-                    return { serverName, label, priority, streamUrl };
-                }
-                return null;
-            })());
-        }
-
-        const resolvedResults = await Promise.all(serverTasks);
-        const validStreams = resolvedResults.filter(s => s !== null);
-
-        validStreams.sort((a, b) => a.priority - b.priority);
-
-        const streams = [];
-        const serverCounts = {};
-
-        for (const s of validStreams) {
-            let baseName = s.serverName.replace("-", " ");
-            let baseTitle = "";
-            if (s.serverName === "HD-1" || s.serverName === "HD-2") {
-                baseTitle = `[👑] ${baseName} ${s.label}`;
-            } else {
-                baseTitle = `${baseName} ${s.label}`;
-            }
-
-            let finalTitle = baseTitle;
-            if (serverCounts[baseTitle]) {
-                serverCounts[baseTitle]++;
-                finalTitle = `${baseTitle} ${serverCounts[baseTitle]}`;
-            } else {
-                serverCounts[baseTitle] = 1;
-            }
-
-            streams.push({
-                title: finalTitle,
-                streamUrl: s.streamUrl,
-                headers: {}
-            });
-        }
-
-        return JSON.stringify({
-            streams: streams,
-            subtitles: subtitles
-        });
-    } catch (err) {
-        return JSON.stringify({
-            streams: [],
-            subtitles: ""
-        });
-    }
-}
-
-async function doodstreamExtractor(html, url) {
-    try {
-        const streamDomain = url.match(/https:\/\/(.*?)\//)[1];
-        const md5Match = html.match(/'\/pass_md5\/(.*?)',/);
-        if (!md5Match) return null;
-        const md5Path = md5Match[1];
-
-        const token = md5Path.substring(md5Path.lastIndexOf("/") + 1);
-        const expiryTimestamp = new Date().valueOf();
-        const random = randomStr(10);
-
-        const passResponse = await fetchv2(`https://${streamDomain}/pass_md5/${md5Path}`, {
-            headers: {
-                "Referer": url,
-            },
-        });
-        const responseData = await passResponse.text();
-        return `${responseData}${random}?token=${token}&expiry=${expiryTimestamp}`;
-    } catch (e) {
-        return null;
-    }
-}
-
-function randomStr(length) {
-    const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-    let result = "";
-    for (let i = 0; i < length; i++) {
-        result += characters.charAt(Math.floor(Math.random() * characters.length));
-    }
-    return result;
-}
-
-class Unbaser {
-    constructor(base) {
-        this.ALPHABET = {
-            62: "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
-            95: "' !\"#$%&\'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~'",
-        };
-        this.dictionary = {};
-        this.base = base;
-        if (36 < base && base < 62) {
-            this.ALPHABET[base] = this.ALPHABET[base] ||
-                this.ALPHABET[62].substr(0, base);
-        }
-        if (2 <= base && base <= 36) {
-            this.unbase = (value) => parseInt(value, base);
-        }
-        else {
-            try {
-                [...this.ALPHABET[base]].forEach((cipher, index) => {
-                    this.dictionary[cipher] = index;
-                });
-            }
-            catch (er) {
-                throw Error("Unsupported base encoding.");
-            }
-            this.unbase = this._dictunbaser;
-        }
-    }
-    _dictunbaser(value) {
-        let ret = 0;
-        [...value].reverse().forEach((cipher, index) => {
-            ret = ret + ((Math.pow(this.base, index)) * this.dictionary[cipher]);
-        });
-        return ret;
-    }
-}
-
-function detect(source) {
-    return source.replace(" ", "").startsWith("eval(function(p,a,c,k,e,");
-}
-
-function unpack(source) {
-    let { payload, symtab, radix, count } = _filterargs(source);
-    if (count != symtab.length) {
-        throw Error("Malformed p.a.c.k.e.r. symtab.");
-    }
-    let unbase;
-    try {
-        unbase = new Unbaser(radix);
-    }
-    catch (e) {
-        throw Error("Unknown p.a.c.k.e.r. encoding.");
-    }
-    function lookup(match) {
-        const word = match;
-        let word2;
-        if (radix == 1) {
-            word2 = symtab[parseInt(word)];
-        }
-        else {
-            word2 = symtab[unbase.unbase(word)];
-        }
-        return word2 || word;
-    }
-    source = payload.replace(/\b\w+\b/g, lookup);
-    return _replacestrings(source);
-    function _filterargs(source) {
-        const juicers = [
-            /}\('(.*)', *(\d+|\[\]), *(\d+), *'(.*)'\.split\('\|'\), *(\d+), *(.*)\)\)/,
-            /}\('(.*)', *(\d+|\[\]), *(\d+), *'(.*)'\.split\('\|'\)/,
-        ];
-        for (const juicer of juicers) {
-            const args = juicer.exec(source);
-            if (args) {
-                let a = args;
-                if (a[2] == "[]") {
-                }
-                try {
-                    return {
-                        payload: a[1],
-                        symtab: a[4].split("|"),
-                        radix: parseInt(a[2]),
-                        count: parseInt(a[3]),
-                    };
-                }
-                catch (ValueError) {
-                    throw Error("Corrupted p.a.c.k.e.r. data.");
-                }
-            }
-        }
-        throw Error("Could not make sense of p.a.c.k.e.r data (unexpected code structure)");
-    }
-    function _replacestrings(source) {
-        return source;
-    }
+  return JSON.stringify({
+    streams: [{
+      title: data.name || "123Anime",
+      streamUrl: data.target
+    }]
+  });
 }

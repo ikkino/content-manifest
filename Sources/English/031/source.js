@@ -1,304 +1,555 @@
-// VidCore Media Source Module
-
 async function searchResults(keyword) {
     try {
-        let transformedResults = [];
-
-        const keywordGroups = {
-            trending: ["!trending", "!hot", "!tr", "!!"],
-            topRatedMovie: ["!top-rated-movie", "!topmovie", "!tm", "??"],
-            topRatedTV: ["!top-rated-tv", "!toptv", "!tt", "::"],
-            popularMovie: ["!popular-movie", "!popmovie", "!pm", ";;"],
-            popularTV: ["!popular-tv", "!poptv", "!pt", "++"],
-        };
-
-        const skipTitleFilter = Object.values(keywordGroups).flat();
-        const shouldFilter = !matchesKeyword(keyword, skipTitleFilter);
-
         const encodedKeyword = encodeURIComponent(keyword);
-        let baseUrlTemplate = null;
-
-        if (matchesKeyword(keyword, keywordGroups.trending)) {
-            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/trending/all/week?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
-        } else if (matchesKeyword(keyword, keywordGroups.topRatedMovie)) {
-            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/top_rated?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
-        } else if (matchesKeyword(keyword, keywordGroups.topRatedTV)) {
-            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/top_rated?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
-        } else if (matchesKeyword(keyword, keywordGroups.popularMovie)) {
-            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/popular?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
-        } else if (matchesKeyword(keyword, keywordGroups.popularTV)) {
-            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/popular?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
-        } else {
-            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/search/multi?api_key=9801b6b0548ad57581d111ea690c85c8&query=${encodedKeyword}&include_adult=false&page=${page}`)}&simple=true`;
-        }
-
-        let dataResults = [];
-
-        if (baseUrlTemplate) {
-            const pagePromises = Array.from({ length: 5 }, (_, i) =>
-                soraFetch(baseUrlTemplate(i + 1)).then(r => r ? r.json() : { results: [] })
-            );
-            const pages = await Promise.all(pagePromises);
-            dataResults = pages.flatMap(p => p.results || []);
-        }
-
-        if (dataResults.length > 0) {
-            transformedResults = transformedResults.concat(
-                dataResults
-                    .map(result => {
-                        if (result.media_type === "movie" || result.title) {
-                            return {
-                                title: result.title || result.name || result.original_title || result.original_name || "Untitled",
-                                image: result.poster_path ? `https://image.tmdb.org/t/p/w500${result.poster_path}` : "",
-                                href: `movie/${result.id}`,
-                            };
-                        } else if (result.media_type === "tv" || result.name) {
-                            return {
-                                title: result.name || result.title || result.original_name || result.original_title || "Untitled",
-                                image: result.poster_path ? `https://image.tmdb.org/t/p/w500${result.poster_path}` : "",
-                                href: `tv/${result.id}/1/1`,
-                            };
-                        }
-                    })
-                    .filter(Boolean)
-                    .filter(r => !shouldFilter || r.title.toLowerCase().includes(keyword.toLowerCase()))
-            );
-        }
+        const ddosInterceptor = new DdosGuardInterceptor();
+        const responseText = await ddosInterceptor.fetchWithBypass(`https://animepahe.pw/api?m=search&q=${encodedKeyword}`);
+        const dataText = await responseText.text();
+        const data = JSON.parse(dataText);
+        const transformedResults = data.data.map(result => {
+            return {
+                title: result.title,
+                image: `https://tmdbproxy22.simplepostrequest.workers.dev/images?url=${encodeURIComponent(result.poster)}&cache=1h`,
+                href: `https://animepahe.pw/anime/${result.session}`
+            };
+        });
 
         return JSON.stringify(transformedResults);
     } catch (error) {
         console.log("Fetch error in searchResults: " + error);
-        return JSON.stringify([{ title: "Error", image: "", href: "" }]);
+        return JSON.stringify([{ title: "Please wait a bit then try again!", image: "", href: "" }]);
     }
-}
-
-function matchesKeyword(keyword, commands) {
-    const lower = keyword.toLowerCase();
-    return commands.some(cmd => lower.startsWith(cmd.toLowerCase()));
 }
 
 async function extractDetails(url) {
     try {
-        if (url.includes('movie')) {
-            const match = url.match(/movie\/([^\/]+)/);
-            if (!match) throw new Error("Invalid URL format");
+        const ddosInterceptor = new DdosGuardInterceptor();
+        const responseText = await ddosInterceptor.fetchWithBypass(url);
+        const dataText = await responseText.text();
 
-            const movieId = match[1];
-            const responseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/${movieId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
-            const data = await responseText.json();
+        const descMatch = dataText.match(/<div class="anime-synopsis">(.*?)<\/div>/s);
+        const description = descMatch ? descMatch[1].replace(/<br\s*\/?>/gi, '\n').trim() : 'N/A';
 
-            const transformedResults = [{
-                description: data.overview || 'No description available',
-                aliases: `Duration: ${data.runtime ? data.runtime + " minutes" : 'Unknown'}`,
-                airdate: `Released: ${data.release_date ? data.release_date : 'Unknown'}`
-            }];
+        const aliasMatch = dataText.match(/<strong>Synonyms: <\/strong>(.*?)<\/p>/);
+        const aliases = aliasMatch ? aliasMatch[1].trim() : 'N/A';
 
-            return JSON.stringify(transformedResults);
-        } else if (url.includes('tv')) {
-            const match = url.match(/tv\/([^\/]+)/);
-            if (!match) throw new Error("Invalid URL format");
+        const airMatch = dataText.match(/<strong>Aired:<\/strong>(.*?)<\/p>/s);
+        const airdate = airMatch ? airMatch[1].replace(/\s+/g, ' ').trim() : 'N/A';
 
-            const showId = match[1];
-            const responseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
-            const data = await responseText.json();
-
-            const transformedResults = [{
-                description: data.overview || 'No description available',
-                aliases: `Duration: ${data.episode_run_time && data.episode_run_time.length ? data.episode_run_time.join(', ') + " minutes" : 'Unknown'}`,
-                airdate: `Aired: ${data.first_air_date ? data.first_air_date : 'Unknown'}`
-            }];
-
-            return JSON.stringify(transformedResults);
-        } else {
-            throw new Error("Invalid URL format");
-        }
-    } catch (error) {
-        console.log('Details error: ' + error);
         return JSON.stringify([{
-            description: 'Error loading description',
-            aliases: 'Duration: Unknown',
-            airdate: 'Aired/Released: Unknown'
+            description,
+            aliases,
+            airdate
+        }]);
+    } catch (err) {
+        return JSON.stringify([{
+            description: "Error",
+            aliases: "Error",
+            airdate: "Error"
         }]);
     }
 }
 
 async function extractEpisodes(url) {
+    const results = [];
     try {
-        if (url.includes('movie')) {
-            const match = url.match(/movie\/([^\/]+)/);
-            if (!match) throw new Error("Invalid URL format");
-            const movieId = match[1];
+        const uuidMatch = url.match(/\/anime\/([^\/]+)/);
+        if (!uuidMatch) throw new Error("Invalid URL");
+        const id = uuidMatch[1];
 
-            const movie = [
-                { href: `/movie/${movieId}`, number: 1, title: "Full Movie" }
-            ];
-            return JSON.stringify(movie);
-        } else if (url.includes('tv')) {
-            const match = url.match(/tv\/([^\/]+)\/([^\/]+)\/([^\/]+)/);
-            if (!match) throw new Error("Invalid URL format");
-            const showId = match[1];
+        const ddosInterceptor = new DdosGuardInterceptor();
 
-            const showResponseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
-            const showData = await showResponseText.json();
+        let page = 1;
+        const apiUrl1 = `https://animepahe.pw/api?m=release&id=${id}&sort=episode_asc&page=${page}`;
+        const response1 = await ddosInterceptor.fetchWithBypass(apiUrl1);
+        const dataText1 = await response1.text();
+        const data1 = JSON.parse(dataText1);
 
-            let allEpisodes = [];
-            for (const season of showData.seasons) {
-                const seasonNumber = season.season_number;
-                if (seasonNumber === 0) continue;
+        for (const item of data1.data) {
+            results.push({
+                href: `https://animepahe.pw/play/${id}/${item.session}`,
+                number: item.episode
+            });
+        }
 
-                const seasonResponseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}/season/${seasonNumber}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
-                const seasonData = await seasonResponseText.json();
+        const lastPage = data1.last_page;
+        if (lastPage > 1) {
+            const pagePromises = [];
+            for (let p = 2; p <= lastPage; p++) {
+                pagePromises.push((async (pageNum) => {
+                    let pageData = null;
+                    let retries = 0;
+                    while (!pageData && retries < 3) {
+                        try {
+                            const apiUrl = `https://animepahe.pw/api?m=release&id=${id}&sort=episode_asc&page=${pageNum}`;
+                            const response = await ddosInterceptor.fetchWithBypass(apiUrl);
+                            const dataText = await response.text();
+                            pageData = JSON.parse(dataText);
+                        } catch (pageErr) {
+                            retries++;
+                            if (retries < 3) {
+                                await new Promise(resolve => setTimeout(resolve, 500));
+                            }
+                        }
+                    }
+                    return pageData;
+                })(p));
+            }
 
-                if (seasonData.episodes && seasonData.episodes.length) {
-                    const episodes = seasonData.episodes.map(episode => ({
-                        href: `/tv/${showId}/${seasonNumber}/${episode.episode_number}`,
-                        number: episode.episode_number,
-                        title: episode.name || ""
-                    }));
-                    allEpisodes = allEpisodes.concat(episodes);
+            const allPagesData = await Promise.all(pagePromises);
+            for (const pageData of allPagesData) {
+                if (pageData && pageData.data) {
+                    for (const item of pageData.data) {
+                        results.push({
+                            href: `https://animepahe.pw/play/${id}/${item.session}`,
+                            number: item.episode
+                        });
+                    }
                 }
             }
-            return JSON.stringify(allEpisodes);
-        } else {
-            throw new Error("Invalid URL format");
         }
-    } catch (error) {
-        console.log('Fetch error in extractEpisodes: ' + error);
-        return JSON.stringify([]);
+
+        return JSON.stringify(results);
+    } catch (err) {
+        return JSON.stringify([{
+            href: "Error",
+            number: "Error"
+        }]);
     }
 }
 
-async function extractStreamUrl(ID) {
+async function extractStreamUrl(url) {
     try {
-        let isMovie = ID.includes('movie');
-        let tmdbID, seasonNumber = "1", episodeNumber = "1";
-        let mediaType = "";
+        console.log("[Animepahe] extractStreamUrl called with URL: " + url);
+        const ddosInterceptor = new DdosGuardInterceptor();
+        const responseText = await ddosInterceptor.fetchWithBypass(url);
+        const dataText = await responseText.text();
+        console.log("[Animepahe] Bypass fetch successful. Response text length: " + dataText.length);
 
-        if (isMovie) {
-            tmdbID = ID.replace('/movie/', '').replace('/', '');
-            mediaType = "movie";
-        } else if (ID.includes('tv')) {
-            const parts = ID.split('/');
-            tmdbID = parts[2];
-            seasonNumber = parts[3];
-            episodeNumber = parts[4];
-            mediaType = "tv";
-        } else {
-            return JSON.stringify({ streams: [] });
+        const buttonRegex = /<button[^>]*data-src="([^"]+)"[^>]*data-fansub="([^"]+)"[^>]*data-resolution="([^"]+)"[^>]*data-audio="([^"]+)"[^>]*>/g;
+        const buttons = [];
+        let match;
+        while ((match = buttonRegex.exec(dataText)) !== null) {
+            buttons.push({
+                src: match[1],
+                fansub: match[2],
+                resolution: match[3],
+                audio: match[4]
+            });
+        }
+        console.log("[Animepahe] Parsed buttons count: " + buttons.length);
+
+        if (buttons.length === 0) {
+            const buttonMatches = dataText.match(/<button[^>]*data-src="([^"]*)"[^>]*>/g);
+            console.warn("[Animepahe] No buttons matched the full regex. Partial match count: " + (buttonMatches ? buttonMatches.length : 0));
+            if (!buttonMatches) {
+                console.log("[Animepahe] Sample response text: " + dataText.substring(0, 800));
+                return JSON.stringify({ streams: [], subtitle: "" });
+            }
+            return JSON.stringify({ streams: [], subtitle: "" });
         }
 
-        const targetPageUrl = mediaType === "movie"
-            ? `https://vidcore.net/movie/${tmdbID}/`
-            : `https://vidcore.net/tv/${tmdbID}/${seasonNumber}/${episodeNumber}/`;
-
-        const response = await soraFetch(targetPageUrl);
-        if (!response) throw new Error("Failed to fetch vidcore page");
-        const html = await response.text();
-
-        const match = html.match(/\\"en\\":\\"(.*?)\\"/) || html.match(/"en":"(.*?)"/);
-        if (!match) throw new Error("Could not find payload text on vidcore page");
-        const text = match[1];
-
-        const encVidcoreUrl = `https://enc-dec.app/api/enc-vidcore?text=${encodeURIComponent(text)}`;
-        const encRes = await soraFetch(encVidcoreUrl);
-        if (!encRes) throw new Error("Failed to call enc-vidcore API");
-        const encJson = await encRes.json();
-        const parts = encJson.result;
-
-        const { servers, stream, token } = parts;
-
-        const headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
-            "Referer": "https://vidcore.net/",
-            "X-Requested-With": "XMLHttpRequest",
-            "X-CSRF-Token": token
+        const deepUnpack = (source) => {
+            let decoded = source;
+            let safety = 0;
+            while (/eval\(function\(p,a,c,k,e,d\)/.test(decoded) && safety < 5) {
+                try {
+                    decoded = unpack(decoded);
+                    safety++;
+                } catch (e) {
+                    console.warn("[Animepahe] Unpack error at depth " + safety + ": " + e.message);
+                    break;
+                }
+            }
+            return decoded;
         };
 
-        const serversRes = await fetchv2(servers, headers, "POST", null);
-        const serversEncrypted = await serversRes.text();
+        const solverBatchUrl = `https://tmdbproxy22.simplepostrequest.workers.dev/solver-fast?cache=1h`;
+        const payload = {
+            urls: buttons.map(btn => btn.src)
+        };
+        const headers = {
+            "Content-Type": "application/json",
+            "Referer": "https://animepahe.pw/",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+        };
 
-        const decRes = await fetchv2("https://enc-dec.app/api/dec-vidcore", { "Content-Type": "application/json" }, "POST", JSON.stringify({
-            text: serversEncrypted
-        }));
-        const decJson = await decRes.json();
-        const serversDecrypted = decJson.result || [];
+        console.log("[Animepahe] Sending batch request for " + buttons.length + " streams.");
+        const resp = await fetchv2(solverBatchUrl, headers, "POST", JSON.stringify(payload));
+        const respText = await resp.text();
+        const batchData = JSON.parse(respText);
+        const htmls = batchData.htmls || [];
 
-        let streamObjects = [];
-        let allSubtitles = [];
-
-        const serverPromises = serversDecrypted.map(async (server) => {
-            try {
-                const streamUrl = `${stream}/${server.data}`;
-                const streamRes = await fetchv2(streamUrl, headers, "POST", null);
-                const streamEncrypted = await streamRes.text();
-
-                const decStreamRes = await fetchv2("https://enc-dec.app/api/dec-vidcore", { "Content-Type": "application/json" }, "POST", JSON.stringify({
-                    text: streamEncrypted
-                }));
-                const decStreamJson = await decStreamRes.json();
-                const streamDecrypted = decStreamJson.result;
-
-                if (streamDecrypted && streamDecrypted.url) {
-                    return {
-                        name: server.name,
-                        url: streamDecrypted.url,
-                        tracks: streamDecrypted.tracks || []
-                    };
-                }
-            } catch (err) {
-                console.log(`Error fetching/decrypting stream for VidCore server ${server.name}: ` + err.message);
+        const streams = [];
+        for (let i = 0; i < buttons.length; i++) {
+            const btn = buttons[i];
+            const html = htmls[i];
+            if (!html) {
+                console.warn("[Animepahe] Empty HTML returned for stream index " + i);
+                continue;
             }
-            return null;
-        });
 
-        const results = await Promise.all(serverPromises);
+            const kwikUrl = btn.src;
+            const audioType = btn.audio === "jpn" ? "Hardsub" : "Dub";
+            const title = btn.resolution + "p • " + audioType;
 
-        results.forEach(res => {
-            if (!res) return;
-            streamObjects.push({
-                title: `[VidCore] ${res.name}`,
-                streamUrl: res.url,
-                headers: {
-                    "Referer": "https://vidcore.net/",
-                    "Origin": "https://vidcore.net"
+            try {
+                const evalRegex = /eval\(function\(p,a,c,k,e,d\)\{[^}]*\}\('[^']*',\d+,\d+,'[^']*'\.split\('\|'\)[^)]*\)/g;
+                const evalBlocks = [...html.matchAll(evalRegex)].map(m => m[0]);
+                console.log("[Animepahe] [" + title + "] Processing page. Found " + evalBlocks.length + " eval blocks.");
+
+                if (evalBlocks.length === 0) {
+                    console.log("[Animepahe] [" + title + "] No eval blocks found. Trying script tags fallback.");
+                    const scriptMatch = html.match(/<script>(.*?)<\/script>/s);
+                    if (scriptMatch) {
+                        const scriptContent = scriptMatch[1];
+                        let unpacked = null;
+                        if (scriptContent.includes('));eval(')) {
+                            const parts = scriptContent.split('));eval(');
+                            if (parts.length === 2) {
+                                const layer2Packed = parts[1].substring(0, parts[1].length - 1);
+                                try {
+                                    unpacked = unpack(layer2Packed);
+                                } catch (e) {
+                                    console.warn("[Animepahe] [" + title + "] Failed unpacking layer 2 script content: " + e.message);
+                                }
+                            }
+                        } else {
+                            try {
+                                unpacked = unpack(scriptContent);
+                            } catch (e) {
+                                console.warn("[Animepahe] [" + title + "] Failed unpacking script content: " + e.message);
+                            }
+                        }
+                        if (unpacked) {
+                            const urlMatch = unpacked.match(/const source=\\?['"]([^'"]+)['"]/) ||
+                                unpacked.match(/https:\/\/[^\s'";]+\.m3u8/);
+                            if (urlMatch) {
+                                let hlsUrl = (urlMatch[1] || urlMatch[0]).replace(/\\+$/, '');
+                                hlsUrl = hlsUrl.replace("/stream/", "/hls/").replace("uwu.m3u8", "owo.m3u8");
+                                console.log("[Animepahe] [" + title + "] Found HLS URL in fallback script: " + hlsUrl);
+                                streams.push({
+                                    title: title,
+                                    streamUrl: hlsUrl,
+                                    headers: { "Referer": "https://kwik.cx/", "Origin": "https://kwik.cx" }
+                                });
+                                continue;
+                            }
+                        }
+                    }
+                    console.warn("[Animepahe] [" + title + "] Fallback script regex failed to find HLS URL. HTML sample: " + html.substring(0, 500));
+                    continue;
                 }
-            });
 
-            res.tracks.forEach(track => {
-                if (track.file && !allSubtitles.some(existing => existing.url === track.file)) {
-                    allSubtitles.push({
-                        url: track.file,
-                        language: track.label || "English"
-                    });
+                let hlsUrl = null;
+                for (const block of evalBlocks) {
+                    try {
+                        const unpacked = deepUnpack(block);
+                        console.log("[Animepahe] [" + title + "] Unpacked snippet: " + unpacked.substring(0, 150));
+                        const sourceMatch = unpacked.match(/(?:source\s*=\s*['"]([^'"]+\.m3u8)['"])/i);
+                        if (sourceMatch) {
+                            hlsUrl = sourceMatch[1];
+                            break;
+                        }
+                        const directMatch = unpacked.match(/https?:\/\/[^\s'"<>]+\.m3u8[^\s'"<>]*/i);
+                        if (directMatch) {
+                            hlsUrl = directMatch[0];
+                            break;
+                        }
+                    } catch (e) {
+                        console.error("[Animepahe] [" + title + "] Error processing eval block: " + e.message, e);
+                    }
                 }
-            });
+
+                if (!hlsUrl) {
+                    console.warn("[Animepahe] [" + title + "] No HLS URL found in unpacked blocks.");
+                    continue;
+                }
+
+                hlsUrl = hlsUrl.replace(/\\+$/, '');
+                hlsUrl = hlsUrl.replace("/stream/", "/hls/").replace("uwu.m3u8", "owo.m3u8");
+                console.log("[Animepahe] [" + title + "] Resolved final HLS URL: " + hlsUrl);
+                streams.push({
+                    title: title,
+                    streamUrl: hlsUrl,
+                    headers: { "Referer": "https://kwik.cx/", "Origin": "https://kwik.cx" }
+                });
+            } catch (e) {
+                console.error("[Animepahe] [" + title + "] Exception in stream parsing: " + e.message, e);
+            }
+        }
+
+        console.log("[Animepahe] Successfully resolved " + streams.length + " streams out of " + buttons.length);
+
+        streams.sort((a, b) => {
+            const aIsSub = a.title.includes("Hardsub") ? 0 : 1;
+            const bIsSub = b.title.includes("Hardsub") ? 0 : 1;
+            if (aIsSub !== bIsSub) return aIsSub - bIsSub;
+            const aRes = parseInt(a.title.match(/(\d+)p/)?.[1] || 0);
+            const bRes = parseInt(b.title.match(/(\d+)p/)?.[1] || 0);
+            return bRes - aRes;
         });
 
-        const englishSubtitle = allSubtitles.find(sub => sub.language.toLowerCase() === 'english');
-        let subtitleUrl = englishSubtitle ? englishSubtitle.url : "";
+        const finalResult = JSON.stringify({ streams: streams, subtitle: "" });
+        return finalResult;
 
-        return JSON.stringify({
-            streams: streamObjects,
-            subtitles: subtitleUrl
-        });
-    } catch (e) {
-        console.log("Error in extractStreamUrl: " + e.message);
-        return JSON.stringify({ streams: [], subtitles: "" });
+    } catch (err) {
+        console.error("[Animepahe] Fatal exception in extractStreamUrl: " + err.message, err);
+        return JSON.stringify({ streams: [], subtitle: "" });
     }
 }
 
-async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
-    const headers = options.headers || {};
-    if (!headers["User-Agent"]) {
-        headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
+// Fixed Bypass
+class DdosGuardInterceptor {
+    constructor() {
+        this.errorCodes = [403];
+        this.serverCheck = ["ddos-guard"];
+        this.cookieStore = {};
     }
-    try {
-        return await fetchv2(url, headers, options.method || 'GET', options.body || null);
-    } catch (e) {
+
+    async fetchWithBypass(url, options = {}) {
+        const solverUrl = `https://tmdbproxy22.simplepostrequest.workers.dev/solver?url=${encodeURIComponent(url)}&cache=1h`;
+        return fetchv2(solverUrl, options.headers || {});
+    }
+
+    async fetchWithBypassDdos(url, options = {}) {
+        let response = await this.fetchWithCookies(url, options);
+        let responseText = null;
+
+        if (this.errorCodes.includes(response.status)) {
+            const newCookie = await this.getNewCookie(url);
+            if (newCookie || this.cookieStore["__ddg2_"]) {
+                return this.fetchWithCookies(url, options);
+            }
+            return response;
+        }
+
         try {
-            return await fetch(url, options);
+            responseText = await response.text();
+        } catch (e) {
+            return response;
+        }
+
+        const isBlocked = responseText.includes('ddos-guard/js-challenge') ||
+            responseText.includes('DDoS-Guard') ||
+            responseText.includes('data-ddg-origin');
+
+        if (!isBlocked) {
+            response.text = async () => responseText;
+            return response;
+        }
+
+        if (this.cookieStore["__ddg2_"]) {
+            return this.fetchWithCookies(url, options);
+        }
+
+        const newCookie = await this.getNewCookie(url);
+        if (!newCookie) {
+            response.text = async () => responseText;
+            return response;
+        }
+
+        return this.fetchWithCookies(url, options);
+    }
+
+    async fetchWithCookies(url, options) {
+        const cookieHeader = this.getCookieHeader();
+        const headers = options.headers || {};
+        if (cookieHeader) {
+            headers.Cookie = cookieHeader;
+        }
+
+        const response = await fetchv2(url, headers);
+
+        try {
+            const setCookieHeader = response.headers ? response.headers["Set-Cookie"] || response.headers["set-cookie"] : null;
+            if (setCookieHeader) {
+                this.storeCookies(setCookieHeader);
+            }
+        } catch (e) {
+        }
+
+        return response;
+    }
+
+    isDdosGuard(response) {
+        const serverHeader = response.headers["Server"];
+        return serverHeader && this.serverCheck.includes(serverHeader.toLowerCase());
+    }
+
+    storeCookies(setCookieString) {
+        const cookies = Array.isArray(setCookieString) ? setCookieString : [setCookieString];
+
+        cookies.forEach(cookieHeader => {
+            const parts = cookieHeader.split(";");
+            if (parts.length > 0) {
+                const [key, value] = parts[0].split("=");
+                if (key) {
+                    this.cookieStore[key.trim()] = value?.trim() || "";
+                }
+            }
+        });
+    }
+
+    getCookieHeader() {
+        return Object.entries(this.cookieStore)
+            .map(([key, value]) => `${key}=${value}`)
+            .join("; ");
+    }
+
+    async getNewCookie(targetUrl) {
+        try {
+            const wellKnownResponse = await fetchv2("https://check.ddos-guard.net/check.js");
+            const wellKnownText = await wellKnownResponse.text();
+
+            const paths = wellKnownText.match(/['"](\/\.well-known\/ddos-guard\/[^'"]+)['"]/g);
+            const checkPaths = wellKnownText.match(/['"]https:\/\/check\.ddos-guard\.net\/[^'"]+['"]/g);
+
+            if (!paths || paths.length === 0) {
+                return null;
+            }
+
+            const localPath = paths[0].replace(/['"]/g, '');
+
+            const match = targetUrl.match(/^(https?:\/\/[^\/]+)/);
+            if (!match) {
+                return null;
+            }
+            const baseUrl = match[1];
+
+            const localUrl = `${baseUrl}${localPath}`;
+
+            const localResponse = await fetchv2(localUrl, {
+                headers: {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                    'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
+                    'Referer': targetUrl
+                }
+            });
+
+            let setCookie = null;
+            try {
+                setCookie = localResponse.headers ? localResponse.headers["set-cookie"] || localResponse.headers["Set-Cookie"] : null;
+            } catch (e) {
+            }
+            if (setCookie) {
+                this.storeCookies(setCookie);
+            }
+
+            if (checkPaths && checkPaths.length > 0) {
+                const checkUrl = checkPaths[0].replace(/['"]/g, '');
+
+                const checkResponse = await fetchv2(checkUrl, {
+                    headers: {
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                        'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
+                        'Referer': targetUrl
+                    }
+                });
+
+                try {
+                    setCookie = checkResponse.headers ? checkResponse.headers["set-cookie"] || checkResponse.headers["Set-Cookie"] : null;
+                } catch (e) {
+                }
+                if (setCookie) {
+                    this.storeCookies(setCookie);
+                }
+            }
+
+            if (this.cookieStore["__ddg2_"]) {
+                return this.cookieStore["__ddg2_"];
+            }
+
+            return null;
         } catch (error) {
             return null;
         }
     }
+}
+
+// Fixed deobfuscator:
+class Unbaser {
+    constructor(base) {
+        this.ALPHABET = {
+            62: "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
+            95: "' !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~'",
+        };
+        this.dictionary = {};
+        this.base = base;
+        if (36 < base && base < 62) {
+            this.ALPHABET[base] = this.ALPHABET[base] || this.ALPHABET[62].substr(0, base);
+        }
+        if (2 <= base && base <= 36) {
+            this.unbase = (value) => parseInt(value, base);
+        } else {
+            try {
+                [...this.ALPHABET[base]].forEach((cipher, index) => {
+                    this.dictionary[cipher] = index;
+                });
+            } catch (er) {
+                throw Error("Unsupported base encoding.");
+            }
+            this.unbase = this._dictunbaser;
+        }
+    }
+
+    _dictunbaser(value) {
+        let ret = 0;
+        [...value].reverse().forEach((cipher, index) => {
+            ret = ret + ((Math.pow(this.base, index)) * this.dictionary[cipher]);
+        });
+        return ret;
+    }
+}
+
+function unpack(source) {
+    function _filterargs(source) {
+        const juicers = [
+            /}\('(.*)', *(\d+|\[\]), *(\d+), *'(.*)'\.split\('\|'\), *(\d+), *(.*)\)\)/,
+            /}\('(.*)', *(\d+|\[\]), *(\d+), *'(.*)'\.split\('\|'\)/,
+        ];
+        for (const juicer of juicers) {
+            const args = juicer.exec(source);
+            if (args) {
+                let a = args;
+                try {
+                    return {
+                        payload: a[1],
+                        symtab: a[4].split("|"),
+                        radix: parseInt(a[2]),
+                        count: parseInt(a[3]),
+                    };
+                } catch (ValueError) {
+                    throw Error("Corrupted p.a.c.k.e.r. data.");
+                }
+            }
+        }
+        throw Error("Could not make sense of p.a.c.k.e.r data (unexpected code structure)");
+    }
+
+    let { payload, symtab, radix, count } = _filterargs(source);
+
+    if (count != symtab.length) {
+        throw Error("Malformed p.a.c.k.e.r. symtab.");
+    }
+
+    let unbase;
+    try {
+        unbase = new Unbaser(radix);
+    } catch (e) {
+        throw Error("Unknown p.a.c.k.e.r. encoding.");
+    }
+
+    function lookup(match) {
+        const word = match;
+        let word2;
+        if (radix == 1) {
+            word2 = symtab[parseInt(word)];
+        } else {
+            word2 = symtab[unbase.unbase(word)];
+        }
+        return word2 || word;
+    }
+
+    source = payload.replace(/\b\w+\b/g, lookup);
+    return source;
 }
