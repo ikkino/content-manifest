@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-07-16T05:20:10.991Z",
+  "generatedAt": "2026-07-17T03:35:11.259Z",
   "hosts": {
     "cdn.mewstream.buzz": {
       "lastFailureAt": "2026-07-16T05:20:10.991Z",
@@ -10,11 +10,25 @@
       "cooldownUntil": "2026-07-16T11:22:23.463Z"
     },
     "animesource.me": {
-      "lastFailureAt": "2026-07-16T05:20:10.991Z",
+      "lastFailureAt": "2026-07-17T03:35:11.259Z",
       "lastFailure": "media probe failed: host=animesource.me fetch failed",
+      "failureCount": 4,
+      "consecutiveFailures": 4,
+      "cooldownUntil": "2026-07-17T09:38:28.661Z"
+    },
+    "9hjkrt.nekostream.site": {
+      "lastFailureAt": "2026-07-17T03:35:11.259Z",
+      "lastFailure": "media probe failed: host=9hjkrt.nekostream.site empty media response",
+      "failureCount": 9,
+      "consecutiveFailures": 9,
+      "cooldownUntil": "2026-07-17T09:37:30.306Z"
+    },
+    "fxpy7.watching.onl": {
+      "lastFailureAt": "2026-07-17T03:35:11.259Z",
+      "lastFailure": "media probe failed: host=fxpy7.watching.onl empty media response",
       "failureCount": 2,
       "consecutiveFailures": 2,
-      "cooldownUntil": "2026-07-16T11:23:05.972Z"
+      "cooldownUntil": "2026-07-17T09:37:46.024Z"
     }
   }
 }
