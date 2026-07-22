@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-21T03:42:44.801Z",
+  "generatedAt": "2026-07-22T03:43:27.137Z",
   "mediaRequested": 5,
   "categories": {
     "trendingNow": {
@@ -29,8 +29,9 @@
   "rejectedAttemptSummary": {
     "byReason": {
       "search_no_usable_result": 20,
-      "media_probe_failed": 13,
+      "media_probe_failed": 12,
       "implausible_match": 5,
+      "media_host_blocked": 1,
       "other": 1
     },
     "topModules": [
@@ -38,8 +39,9 @@
         "sourceName": "Anikoto",
         "count": 13,
         "reasons": {
-          "media_probe_failed": 11,
-          "implausible_match": 2
+          "media_probe_failed": 10,
+          "implausible_match": 2,
+          "media_host_blocked": 1
         }
       },
       {
@@ -67,12 +69,12 @@
     "successEvents": 0,
     "failureEvents": 13,
     "skippedByCooldown": 0,
-    "coolingDownHosts": 3
+    "coolingDownHosts": 4
   },
   "failures": [
     {
-      "aniListId": 178789,
-      "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
+      "aniListId": 177699,
+      "title": "THE GHOST IN THE SHELL",
       "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/001",
       "sourceName": "AnimeLand",
@@ -81,38 +83,8 @@
       ]
     },
     {
-      "aniListId": 178789,
-      "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "Anikoto",
-      "errors": [
-        "media probe failed: host=9hjkrt.nekostream.site empty media response"
-      ]
-    },
-    {
-      "aniListId": 178789,
-      "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
-      "moduleId": "jR5U5",
-      "catalogPath": "Sources/English/003",
-      "sourceName": "Senshi",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 185542,
-      "title": "Skeleton Knight in Another World Season 2",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 185542,
-      "title": "Skeleton Knight in Another World Season 2",
+      "aniListId": 177699,
+      "title": "THE GHOST IN THE SHELL",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/002",
       "sourceName": "Anikoto",
@@ -121,8 +93,68 @@
       ]
     },
     {
-      "aniListId": 185542,
-      "title": "Skeleton Knight in Another World Season 2",
+      "aniListId": 177699,
+      "title": "THE GHOST IN THE SHELL",
+      "moduleId": "jR5U5",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "Senshi",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 187260,
+      "title": "I Want to Love You Till Your Dying Day",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 187260,
+      "title": "I Want to Love You Till Your Dying Day",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/002",
+      "sourceName": "Anikoto",
+      "errors": [
+        "media probe failed: host=cdn.mewstream.buzz empty media response"
+      ]
+    },
+    {
+      "aniListId": 187260,
+      "title": "I Want to Love You Till Your Dying Day",
+      "moduleId": "jR5U5",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "Senshi",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 178789,
+      "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 178789,
+      "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/002",
+      "sourceName": "Anikoto",
+      "errors": [
+        "media probe failed: host=megap.kotocdn.site empty media response"
+      ]
+    },
+    {
+      "aniListId": 178789,
+      "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
       "moduleId": "jR5U5",
       "catalogPath": "Sources/English/003",
       "sourceName": "Senshi",
@@ -161,8 +193,8 @@
       ]
     },
     {
-      "aniListId": 169583,
-      "title": "Oh Boy, Was I Wrong About Her",
+      "aniListId": 128757,
+      "title": "Young Ladies Don't Play Fighting Games",
       "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/001",
       "sourceName": "AnimeLand",
@@ -171,8 +203,8 @@
       ]
     },
     {
-      "aniListId": 169583,
-      "title": "Oh Boy, Was I Wrong About Her",
+      "aniListId": 128757,
+      "title": "Young Ladies Don't Play Fighting Games",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/002",
       "sourceName": "Anikoto",
@@ -181,38 +213,8 @@
       ]
     },
     {
-      "aniListId": 169583,
-      "title": "Oh Boy, Was I Wrong About Her",
-      "moduleId": "jR5U5",
-      "catalogPath": "Sources/English/003",
-      "sourceName": "Senshi",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 202269,
-      "title": "Love Unseen Beneath the Clear Night Sky",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 202269,
-      "title": "Love Unseen Beneath the Clear Night Sky",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "Anikoto",
-      "errors": [
-        "media probe failed: host=cdn.mewstream.buzz empty media response"
-      ]
-    },
-    {
-      "aniListId": 202269,
-      "title": "Love Unseen Beneath the Clear Night Sky",
+      "aniListId": 128757,
+      "title": "Young Ladies Don't Play Fighting Games",
       "moduleId": "jR5U5",
       "catalogPath": "Sources/English/003",
       "sourceName": "Senshi",
@@ -297,7 +299,7 @@
       "catalogPath": "Sources/English/002",
       "sourceName": "Anikoto",
       "errors": [
-        "media probe failed: host=9hjkrt.nekostream.site empty media response"
+        "media probe failed: host=megap.kotocdn.site empty media response"
       ]
     },
     {
@@ -327,7 +329,7 @@
       "catalogPath": "Sources/English/002",
       "sourceName": "Anikoto",
       "errors": [
-        "media probe failed: host=9hjkrt.nekostream.site empty media response"
+        "media probe failed: host=megap.kotocdn.site empty media response"
       ]
     },
     {
@@ -357,7 +359,7 @@
       "catalogPath": "Sources/English/002",
       "sourceName": "Anikoto",
       "errors": [
-        "media probe failed: host=9hjkrt.nekostream.site empty media response"
+        "media probe failed: host=fxpy7.watching.onl HTTP 403"
       ]
     },
     {
@@ -387,7 +389,7 @@
       "catalogPath": "Sources/English/002",
       "sourceName": "Anikoto",
       "errors": [
-        "media probe failed: host=9hjkrt.nekostream.site empty media response"
+        "media probe failed: host=megap.kotocdn.site empty media response"
       ]
     },
     {
@@ -417,7 +419,7 @@
       "catalogPath": "Sources/English/002",
       "sourceName": "Anikoto",
       "errors": [
-        "media probe failed: host=9hjkrt.nekostream.site empty media response"
+        "media probe failed: host=megap.kotocdn.site empty media response"
       ]
     },
     {
@@ -447,7 +449,7 @@
       "catalogPath": "Sources/English/002",
       "sourceName": "Anikoto",
       "errors": [
-        "media probe failed: host=9hjkrt.nekostream.site empty media response"
+        "media probe failed: host=megap.kotocdn.site empty media response"
       ]
     },
     {
