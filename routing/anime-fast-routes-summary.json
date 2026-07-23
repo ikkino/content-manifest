@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-22T03:43:27.137Z",
+  "generatedAt": "2026-07-23T03:42:51.941Z",
   "mediaRequested": 5,
   "categories": {
     "trendingNow": {
@@ -28,11 +28,11 @@
   "rejectedAttempts": 39,
   "rejectedAttemptSummary": {
     "byReason": {
-      "search_no_usable_result": 20,
+      "search_no_usable_result": 21,
       "media_probe_failed": 12,
-      "implausible_match": 5,
-      "media_host_blocked": 1,
-      "other": 1
+      "implausible_match": 4,
+      "other": 1,
+      "media_host_blocked": 1
     },
     "topModules": [
       {
@@ -48,9 +48,9 @@
         "sourceName": "AnimeLand",
         "count": 13,
         "reasons": {
-          "search_no_usable_result": 7,
-          "implausible_match": 3,
+          "search_no_usable_result": 8,
           "media_probe_failed": 2,
+          "implausible_match": 2,
           "other": 1
         }
       },
@@ -73,8 +73,8 @@
   },
   "failures": [
     {
-      "aniListId": 177699,
-      "title": "THE GHOST IN THE SHELL",
+      "aniListId": 135865,
+      "title": "Saga of Tanya the Evil Season 2",
       "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/001",
       "sourceName": "AnimeLand",
@@ -83,8 +83,8 @@
       ]
     },
     {
-      "aniListId": 177699,
-      "title": "THE GHOST IN THE SHELL",
+      "aniListId": 135865,
+      "title": "Saga of Tanya the Evil Season 2",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/002",
       "sourceName": "Anikoto",
@@ -93,8 +93,8 @@
       ]
     },
     {
-      "aniListId": 177699,
-      "title": "THE GHOST IN THE SHELL",
+      "aniListId": 135865,
+      "title": "Saga of Tanya the Evil Season 2",
       "moduleId": "jR5U5",
       "catalogPath": "Sources/English/003",
       "sourceName": "Senshi",
@@ -103,8 +103,8 @@
       ]
     },
     {
-      "aniListId": 187260,
-      "title": "I Want to Love You Till Your Dying Day",
+      "aniListId": 194829,
+      "title": "From Old Country Bumpkin to Master Swordsman II",
       "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/001",
       "sourceName": "AnimeLand",
@@ -113,8 +113,38 @@
       ]
     },
     {
-      "aniListId": 187260,
-      "title": "I Want to Love You Till Your Dying Day",
+      "aniListId": 194829,
+      "title": "From Old Country Bumpkin to Master Swordsman II",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/002",
+      "sourceName": "Anikoto",
+      "errors": [
+        "implausible episode match: verified=2 available=2 expected<=3"
+      ]
+    },
+    {
+      "aniListId": 194829,
+      "title": "From Old Country Bumpkin to Master Swordsman II",
+      "moduleId": "jR5U5",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "Senshi",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 197715,
+      "title": "The Villager of Level 999",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 197715,
+      "title": "The Villager of Level 999",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/002",
       "sourceName": "Anikoto",
@@ -123,8 +153,68 @@
       ]
     },
     {
-      "aniListId": 187260,
-      "title": "I Want to Love You Till Your Dying Day",
+      "aniListId": 197715,
+      "title": "The Villager of Level 999",
+      "moduleId": "jR5U5",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "Senshi",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 159309,
+      "title": "Trapped in a Dating Sim: The World of Otome Games is Tough for Mobs Season 2",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 159309,
+      "title": "Trapped in a Dating Sim: The World of Otome Games is Tough for Mobs Season 2",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/002",
+      "sourceName": "Anikoto",
+      "errors": [
+        "media probe failed: host=cdn.mewstream.buzz empty media response"
+      ]
+    },
+    {
+      "aniListId": 159309,
+      "title": "Trapped in a Dating Sim: The World of Otome Games is Tough for Mobs Season 2",
+      "moduleId": "jR5U5",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "Senshi",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 184356,
+      "title": "Tomb Raider King",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 184356,
+      "title": "Tomb Raider King",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/002",
+      "sourceName": "Anikoto",
+      "errors": [
+        "media probe failed: host=cdn.mewstream.buzz empty media response"
+      ]
+    },
+    {
+      "aniListId": 184356,
+      "title": "Tomb Raider King",
       "moduleId": "jR5U5",
       "catalogPath": "Sources/English/003",
       "sourceName": "Senshi",
@@ -163,66 +253,6 @@
       ]
     },
     {
-      "aniListId": 21,
-      "title": "ONE PIECE",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "implausible episode match: verified=1061 available=900 expected<=1170"
-      ]
-    },
-    {
-      "aniListId": 21,
-      "title": "ONE PIECE",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "Anikoto",
-      "errors": [
-        "media probe failed: host=cdn.mewstream.buzz empty media response"
-      ]
-    },
-    {
-      "aniListId": 21,
-      "title": "ONE PIECE",
-      "moduleId": "jR5U5",
-      "catalogPath": "Sources/English/003",
-      "sourceName": "Senshi",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 128757,
-      "title": "Young Ladies Don't Play Fighting Games",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 128757,
-      "title": "Young Ladies Don't Play Fighting Games",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "Anikoto",
-      "errors": [
-        "media probe failed: host=cdn.mewstream.buzz empty media response"
-      ]
-    },
-    {
-      "aniListId": 128757,
-      "title": "Young Ladies Don't Play Fighting Games",
-      "moduleId": "jR5U5",
-      "catalogPath": "Sources/English/003",
-      "sourceName": "Senshi",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
       "aniListId": 196187,
       "title": "Smoking Behind the Supermarket with You",
       "moduleId": "mod_942337115",
@@ -245,36 +275,6 @@
     {
       "aniListId": 196187,
       "title": "Smoking Behind the Supermarket with You",
-      "moduleId": "jR5U5",
-      "catalogPath": "Sources/English/003",
-      "sourceName": "Senshi",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 135865,
-      "title": "Saga of Tanya the Evil Season 2",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 135865,
-      "title": "Saga of Tanya the Evil Season 2",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "Anikoto",
-      "errors": [
-        "implausible episode match: verified=2 available=12 expected<=2"
-      ]
-    },
-    {
-      "aniListId": 135865,
-      "title": "Saga of Tanya the Evil Season 2",
       "moduleId": "jR5U5",
       "catalogPath": "Sources/English/003",
       "sourceName": "Senshi",
@@ -359,7 +359,7 @@
       "catalogPath": "Sources/English/002",
       "sourceName": "Anikoto",
       "errors": [
-        "media probe failed: host=fxpy7.watching.onl HTTP 403"
+        "media probe failed: host=megap.kotocdn.site empty media response"
       ]
     },
     {
@@ -419,7 +419,7 @@
       "catalogPath": "Sources/English/002",
       "sourceName": "Anikoto",
       "errors": [
-        "media probe failed: host=megap.kotocdn.site empty media response"
+        "media probe failed: host=fxpy7.watching.onl HTTP 403"
       ]
     },
     {
