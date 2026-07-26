@@ -1,555 +1,374 @@
-async function searchResults(keyword) {
-    try {
-        const encodedKeyword = encodeURIComponent(keyword);
-        const ddosInterceptor = new DdosGuardInterceptor();
-        const responseText = await ddosInterceptor.fetchWithBypass(`https://animepahe.pw/api?m=search&q=${encodedKeyword}`);
-        const dataText = await responseText.text();
-        const data = JSON.parse(dataText);
-        const transformedResults = data.data.map(result => {
-            return {
-                title: result.title,
-                image: `https://tmdbproxy22.simplepostrequest.workers.dev/images?url=${encodeURIComponent(result.poster)}&cache=1h`,
-                href: `https://animepahe.pw/anime/${result.session}`
-            };
-        });
+// ==========================================
+// ⚙️ MODULE SORA — AETHER (aether.bar)
+// Recherche TMDB (réponses en anglais) + 5 providers de stream + multi sous-titres
+// ==========================================
 
-        return JSON.stringify(transformedResults);
+const TMDB_API_KEY = "f3d757824f08ea2cff45eb8f47ca3a1e";
+const TMDB_BASE = "https://api.themoviedb.org/3";
+const TMDB_LANG = "en-US"; // Réponses en anglais comme demandé
+
+const SITE_URL = "https://aether.bar";
+
+// Liste des providers de stream Aether.
+// field   = la clé qui contient l'URL du flux dans la réponse JSON.
+// tvSeg   = le segment utilisé pour les séries (Meridian utilise "show" au lieu de "tv").
+const PROVIDERS = [
+    { name: "Link",     base: "https://link.aether.cx",     field: "stream",     tvSeg: "tv" },
+    { name: "Vidy",     base: "https://vidy.aether.cx",     field: "stream",     tvSeg: "tv" },
+    { name: "Nebula",   base: "https://nebula.aether.cx",   field: "stream_url", tvSeg: "tv" },
+    { name: "Meridian", base: "https://meridian.aether.bar", field: "url",       tvSeg: "show" },
+    { name: "Tiki",     base: "https://tiki.aether.cx",     field: "stream",     tvSeg: "tv" }
+];
+
+// Source "scrape" multi-serveurs (renvoie plusieurs flux + captions)
+const FAST_URL = "https://fast.aether.cx";
+// Source de sous-titres dédiée (gros catalogue de langues)
+const VDRK_SUB_URL = "https://sub.vdrk.site/v1";
+
+const DEFAULT_HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
+    "Referer": `${SITE_URL}/`,
+    "Origin": SITE_URL
+};
+
+// ==========================================
+// 🗄️ TRACKER SUPABASE (Statistiques)
+// ==========================================
+
+const SUPABASE_URL = "https://qyeisgowjisqbatrmqta.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_F68CBjFVPh71U0SdD9BQJg_UJgL9-Fj";
+
+async function sendSupabaseLog(moduleName, actionType, dataPayload) {
+    try {
+        const payload = { module: moduleName, action: actionType, data: dataPayload };
+        const headers = {
+            "Content-Type": "application/json", "apikey": SUPABASE_ANON_KEY,
+            "Authorization": `Bearer ${SUPABASE_ANON_KEY}`, "Prefer": "return=minimal"
+        };
+        if (typeof fetchv2 !== 'undefined') await fetchv2(`${SUPABASE_URL}/rest/v1/app_logs`, headers, "POST", JSON.stringify(payload));
+        else await fetch(`${SUPABASE_URL}/rest/v1/app_logs`, { method: "POST", headers: headers, body: JSON.stringify(payload) });
+    } catch (e) { console.log(`[Aether][Tracker] 🚨 Échec envoi log : ${e}`); }
+}
+
+// ==========================================
+// ⚙️ 1. RECHERCHE (TMDB multi)
+// ==========================================
+
+async function searchResults(keyword) {
+    console.log(`[Aether][Search] 🔎 Recherche pour : "${keyword}"`);
+    try {
+        const encoded = encodeURIComponent(keyword);
+        const url = `${TMDB_BASE}/search/multi?query=${encoded}&include_adult=false&page=1&language=${TMDB_LANG}&api_key=${TMDB_API_KEY}`;
+        console.log(`[Aether][Search] 🌐 URL TMDB : ${url}`);
+
+        const response = await soraFetch(url);
+        const data = await response.json();
+
+        const items = Array.isArray(data.results) ? data.results : [];
+        console.log(`[Aether][Search] 📦 ${items.length} résultats bruts reçus de TMDB`);
+
+        const results = items
+            .filter(r => r.media_type === "movie" || r.media_type === "tv")
+            .map(r => {
+                const type = r.media_type; // "movie" ou "tv"
+                const title = r.title || r.name || r.original_title || r.original_name;
+                const id = r.id;
+                if (!title || !id) return null;
+
+                const image = r.poster_path
+                    ? `https://image.tmdb.org/t/p/w500${r.poster_path}`
+                    : "https://via.placeholder.com/500x750?text=No+Image";
+
+                return { title, image, href: `aether://${type}/${id}` };
+            })
+            .filter(Boolean);
+
+        console.log(`[Aether][Search] ✅ ${results.length} résultats film/série retenus`);
+        results.forEach(r => console.log(`   -> ${r.title}  (${r.href})`));
+
+        sendSupabaseLog("Aether", "SEARCH", { keyword, results_count: results.length });
+        return JSON.stringify(results);
     } catch (error) {
-        console.log("Fetch error in searchResults: " + error);
-        return JSON.stringify([{ title: "Please wait a bit then try again!", image: "", href: "" }]);
+        console.log(`[Aether][Search] 🚨 Erreur : ${error}`);
+        return JSON.stringify([]);
     }
 }
 
+// ==========================================
+// ⚙️ 2. DÉTAILS (TMDB)
+// ==========================================
+
 async function extractDetails(url) {
+    console.log(`[Aether][Details] 📄 Chargement des détails pour : ${url}`);
     try {
-        const ddosInterceptor = new DdosGuardInterceptor();
-        const responseText = await ddosInterceptor.fetchWithBypass(url);
-        const dataText = await responseText.text();
+        const { type, id } = parseHref(url);
+        const endpoint = type === "movie" ? "movie" : "tv";
+        const apiUrl = `${TMDB_BASE}/${endpoint}/${id}?api_key=${TMDB_API_KEY}&language=${TMDB_LANG}`;
+        console.log(`[Aether][Details] 🌐 type=${type} id=${id} -> ${apiUrl}`);
 
-        const descMatch = dataText.match(/<div class="anime-synopsis">(.*?)<\/div>/s);
-        const description = descMatch ? descMatch[1].replace(/<br\s*\/?>/gi, '\n').trim() : 'N/A';
+        const response = await soraFetch(apiUrl);
+        const data = await response.json();
 
-        const aliasMatch = dataText.match(/<strong>Synonyms: <\/strong>(.*?)<\/p>/);
-        const aliases = aliasMatch ? aliasMatch[1].trim() : 'N/A';
+        const description = data.overview || "No description available.";
 
-        const airMatch = dataText.match(/<strong>Aired:<\/strong>(.*?)<\/p>/s);
-        const airdate = airMatch ? airMatch[1].replace(/\s+/g, ' ').trim() : 'N/A';
+        let duration = "Unknown";
+        if (data.runtime) duration = `${data.runtime} min`;
+        else if (Array.isArray(data.episode_run_time) && data.episode_run_time.length) duration = `${data.episode_run_time[0]} min`;
+        else if (data.number_of_seasons) duration = `${data.number_of_seasons} season(s)`;
+
+        const releaseDate = data.release_date || data.first_air_date || "Unknown";
+        console.log(`[Aether][Details] ✅ "${data.title || data.name}" | durée=${duration} | sortie=${releaseDate}`);
 
         return JSON.stringify([{
             description,
-            aliases,
-            airdate
+            aliases: `Duration: ${duration}`,
+            airdate: `Released: ${releaseDate}`
         }]);
-    } catch (err) {
-        return JSON.stringify([{
-            description: "Error",
-            aliases: "Error",
-            airdate: "Error"
-        }]);
+    } catch (error) {
+        console.log(`[Aether][Details] 🚨 Erreur : ${error}`);
+        return JSON.stringify([{ description: "Error loading details", aliases: "", airdate: "" }]);
     }
 }
 
+// ==========================================
+// ⚙️ 3. ÉPISODES
+// ==========================================
+
 async function extractEpisodes(url) {
-    const results = [];
+    console.log(`[Aether][Episodes] 🎬 Extraction des épisodes pour : ${url}`);
     try {
-        const uuidMatch = url.match(/\/anime\/([^\/]+)/);
-        if (!uuidMatch) throw new Error("Invalid URL");
-        const id = uuidMatch[1];
+        const { type, id } = parseHref(url);
 
-        const ddosInterceptor = new DdosGuardInterceptor();
-
-        let page = 1;
-        const apiUrl1 = `https://animepahe.pw/api?m=release&id=${id}&sort=episode_asc&page=${page}`;
-        const response1 = await ddosInterceptor.fetchWithBypass(apiUrl1);
-        const dataText1 = await response1.text();
-        const data1 = JSON.parse(dataText1);
-
-        for (const item of data1.data) {
-            results.push({
-                href: `https://animepahe.pw/play/${id}/${item.session}`,
-                number: item.episode
-            });
+        if (type === "movie") {
+            console.log(`[Aether][Episodes] 🎞️ Film détecté -> 1 entrée "Full Movie"`);
+            return JSON.stringify([{ href: `aether-play://movie/${id}`, number: 1, title: "Full Movie" }]);
         }
 
-        const lastPage = data1.last_page;
-        if (lastPage > 1) {
-            const pagePromises = [];
-            for (let p = 2; p <= lastPage; p++) {
-                pagePromises.push((async (pageNum) => {
-                    let pageData = null;
-                    let retries = 0;
-                    while (!pageData && retries < 3) {
-                        try {
-                            const apiUrl = `https://animepahe.pw/api?m=release&id=${id}&sort=episode_asc&page=${pageNum}`;
-                            const response = await ddosInterceptor.fetchWithBypass(apiUrl);
-                            const dataText = await response.text();
-                            pageData = JSON.parse(dataText);
-                        } catch (pageErr) {
-                            retries++;
-                            if (retries < 3) {
-                                await new Promise(resolve => setTimeout(resolve, 500));
-                            }
-                        }
-                    }
-                    return pageData;
-                })(p));
-            }
+        // Série : on récupère les saisons via TMDB
+        console.log(`[Aether][Episodes] 📺 Série id=${id}, récupération des saisons...`);
+        const showResp = await soraFetch(`${TMDB_BASE}/tv/${id}?api_key=${TMDB_API_KEY}&language=${TMDB_LANG}`);
+        const show = await showResp.json();
 
-            const allPagesData = await Promise.all(pagePromises);
-            for (const pageData of allPagesData) {
-                if (pageData && pageData.data) {
-                    for (const item of pageData.data) {
-                        results.push({
-                            href: `https://animepahe.pw/play/${id}/${item.session}`,
-                            number: item.episode
+        let allEpisodes = [];
+        if (Array.isArray(show.seasons)) {
+            console.log(`[Aether][Episodes] 📚 ${show.seasons.length} saison(s) trouvée(s)`);
+            for (const season of show.seasons) {
+                const sNum = season.season_number;
+                if (sNum === 0) { console.log(`[Aether][Episodes] ⏭️ Saison 0 (Specials) ignorée`); continue; }
+
+                const seasonResp = await soraFetch(`${TMDB_BASE}/tv/${id}/season/${sNum}?api_key=${TMDB_API_KEY}&language=${TMDB_LANG}`);
+                const seasonData = await seasonResp.json();
+
+                if (Array.isArray(seasonData.episodes)) {
+                    console.log(`[Aether][Episodes]   -> Saison ${sNum} : ${seasonData.episodes.length} épisode(s)`);
+                    for (const ep of seasonData.episodes) {
+                        allEpisodes.push({
+                            href: `aether-play://tv/${id}/${sNum}/${ep.episode_number}`,
+                            number: ep.episode_number,
+                            season: sNum,
+                            title: ep.name || `Episode ${ep.episode_number}`
                         });
                     }
                 }
             }
         }
-
-        return JSON.stringify(results);
-    } catch (err) {
-        return JSON.stringify([{
-            href: "Error",
-            number: "Error"
-        }]);
+        console.log(`[Aether][Episodes] ✅ Total : ${allEpisodes.length} épisode(s)`);
+        return JSON.stringify(allEpisodes);
+    } catch (error) {
+        console.log(`[Aether][Episodes] 🚨 Erreur : ${error}`);
+        return JSON.stringify([]);
     }
 }
+
+// ==========================================
+// ⚙️ 4. EXTRACTION VIDÉO (5 providers en parallèle) + SOUS-TITRES MULTIPLES
+// ==========================================
 
 async function extractStreamUrl(url) {
+    const startTime = Date.now();
+    console.log(`[Aether][Player] ============================================`);
+    console.log(`[Aether][Player] ▶️ Extraction démarrée pour : ${url}`);
     try {
-        console.log("[Animepahe] extractStreamUrl called with URL: " + url);
-        const ddosInterceptor = new DdosGuardInterceptor();
-        const responseText = await ddosInterceptor.fetchWithBypass(url);
-        const dataText = await responseText.text();
-        console.log("[Animepahe] Bypass fetch successful. Response text length: " + dataText.length);
+        const { type, id, season, episode } = parsePlayHref(url);
+        console.log(`[Aether][Player] 🧩 type=${type} id=${id} saison=${season} épisode=${episode}`);
 
-        const buttonRegex = /<button[^>]*data-src="([^"]+)"[^>]*data-fansub="([^"]+)"[^>]*data-resolution="([^"]+)"[^>]*data-audio="([^"]+)"[^>]*>/g;
-        const buttons = [];
-        let match;
-        while ((match = buttonRegex.exec(dataText)) !== null) {
-            buttons.push({
-                src: match[1],
-                fansub: match[2],
-                resolution: match[3],
-                audio: match[4]
+        let streams = [];
+        let allSubtitles = [];       // toutes les pistes de sous-titres (multi)
+        let bestSubtitle = "";       // meilleure piste (anglais en priorité), pour compat
+        let gotEnglishSub = false;
+        const seenStreams = new Set();
+        const seenSubs = new Set();
+
+        // --- Helpers locaux ---
+        function addStream(title, streamUrl, headers) {
+            if (!streamUrl || typeof streamUrl !== "string" || !streamUrl.startsWith("http")) return false;
+            if (seenStreams.has(streamUrl)) { console.log(`[Aether][Player] ♻️ [${title}] flux en double, ignoré`); return false; }
+            seenStreams.add(streamUrl);
+            streams.push({ title, streamUrl, headers: headers || { "Referer": `${SITE_URL}/`, "Origin": SITE_URL } });
+            console.log(`[Aether][Player] ✅ [${title}] flux ajouté : ${streamUrl.slice(0, 70)}...`);
+            return true;
+        }
+
+        function addSubtitle(rawUrl, label, kind, headers) {
+            if (!rawUrl || seenSubs.has(rawUrl)) return;
+            seenSubs.add(rawUrl);
+            const cleanLabel = label || "Unknown";
+            const lang = String(cleanLabel).trim().toLowerCase();
+            allSubtitles.push({
+                url: rawUrl,
+                label: cleanLabel,
+                kind: kind || "captions",
+                headers: headers || { "Referer": `${SITE_URL}/` }
             });
-        }
-        console.log("[Animepahe] Parsed buttons count: " + buttons.length);
-
-        if (buttons.length === 0) {
-            const buttonMatches = dataText.match(/<button[^>]*data-src="([^"]*)"[^>]*>/g);
-            console.warn("[Animepahe] No buttons matched the full regex. Partial match count: " + (buttonMatches ? buttonMatches.length : 0));
-            if (!buttonMatches) {
-                console.log("[Animepahe] Sample response text: " + dataText.substring(0, 800));
-                return JSON.stringify({ streams: [], subtitle: "" });
+            const isEnglish = lang === "english" || lang === "en" || lang === "eng" || lang === "en-us";
+            if (isEnglish && !gotEnglishSub) {
+                bestSubtitle = rawUrl;
+                gotEnglishSub = true;
+                console.log(`[Aether][Player] ⭐ Sous-titre anglais sélectionné par défaut`);
+            } else if (bestSubtitle === "") {
+                bestSubtitle = rawUrl; // secours
             }
-            return JSON.stringify({ streams: [], subtitle: "" });
         }
 
-        const deepUnpack = (source) => {
-            let decoded = source;
-            let safety = 0;
-            while (/eval\(function\(p,a,c,k,e,d\)/.test(decoded) && safety < 5) {
-                try {
-                    decoded = unpack(decoded);
-                    safety++;
-                } catch (e) {
-                    console.warn("[Animepahe] Unpack error at depth " + safety + ": " + e.message);
-                    break;
-                }
-            }
-            return decoded;
-        };
-
-        const solverBatchUrl = `https://tmdbproxy22.simplepostrequest.workers.dev/solver-fast?cache=1h`;
-        const payload = {
-            urls: buttons.map(btn => btn.src)
-        };
-        const headers = {
-            "Content-Type": "application/json",
-            "Referer": "https://animepahe.pw/",
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
-        };
-
-        console.log("[Animepahe] Sending batch request for " + buttons.length + " streams.");
-        const resp = await fetchv2(solverBatchUrl, headers, "POST", JSON.stringify(payload));
-        const respText = await resp.text();
-        const batchData = JSON.parse(respText);
-        const htmls = batchData.htmls || [];
-
-        const streams = [];
-        for (let i = 0; i < buttons.length; i++) {
-            const btn = buttons[i];
-            const html = htmls[i];
-            if (!html) {
-                console.warn("[Animepahe] Empty HTML returned for stream index " + i);
-                continue;
-            }
-
-            const kwikUrl = btn.src;
-            const audioType = btn.audio === "jpn" ? "Hardsub" : "Dub";
-            const title = btn.resolution + "p • " + audioType;
-
+        // === On lance TOUTES les sources en parallèle ===
+        const fetchJson = async (label, fullUrl, headers) => {
+            console.log(`[Aether][Player] 🌐 [${label}] GET ${fullUrl}`);
             try {
-                const evalRegex = /eval\(function\(p,a,c,k,e,d\)\{[^}]*\}\('[^']*',\d+,\d+,'[^']*'\.split\('\|'\)[^)]*\)/g;
-                const evalBlocks = [...html.matchAll(evalRegex)].map(m => m[0]);
-                console.log("[Animepahe] [" + title + "] Processing page. Found " + evalBlocks.length + " eval blocks.");
-
-                if (evalBlocks.length === 0) {
-                    console.log("[Animepahe] [" + title + "] No eval blocks found. Trying script tags fallback.");
-                    const scriptMatch = html.match(/<script>(.*?)<\/script>/s);
-                    if (scriptMatch) {
-                        const scriptContent = scriptMatch[1];
-                        let unpacked = null;
-                        if (scriptContent.includes('));eval(')) {
-                            const parts = scriptContent.split('));eval(');
-                            if (parts.length === 2) {
-                                const layer2Packed = parts[1].substring(0, parts[1].length - 1);
-                                try {
-                                    unpacked = unpack(layer2Packed);
-                                } catch (e) {
-                                    console.warn("[Animepahe] [" + title + "] Failed unpacking layer 2 script content: " + e.message);
-                                }
-                            }
-                        } else {
-                            try {
-                                unpacked = unpack(scriptContent);
-                            } catch (e) {
-                                console.warn("[Animepahe] [" + title + "] Failed unpacking script content: " + e.message);
-                            }
-                        }
-                        if (unpacked) {
-                            const urlMatch = unpacked.match(/const source=\\?['"]([^'"]+)['"]/) ||
-                                unpacked.match(/https:\/\/[^\s'";]+\.m3u8/);
-                            if (urlMatch) {
-                                let hlsUrl = (urlMatch[1] || urlMatch[0]).replace(/\\+$/, '');
-                                hlsUrl = hlsUrl.replace("/stream/", "/hls/").replace("uwu.m3u8", "owo.m3u8");
-                                console.log("[Animepahe] [" + title + "] Found HLS URL in fallback script: " + hlsUrl);
-                                streams.push({
-                                    title: title,
-                                    streamUrl: hlsUrl,
-                                    headers: { "Referer": "https://kwik.cx/", "Origin": "https://kwik.cx" }
-                                });
-                                continue;
-                            }
-                        }
-                    }
-                    console.warn("[Animepahe] [" + title + "] Fallback script regex failed to find HLS URL. HTML sample: " + html.substring(0, 500));
-                    continue;
-                }
-
-                let hlsUrl = null;
-                for (const block of evalBlocks) {
-                    try {
-                        const unpacked = deepUnpack(block);
-                        console.log("[Animepahe] [" + title + "] Unpacked snippet: " + unpacked.substring(0, 150));
-                        const sourceMatch = unpacked.match(/(?:source\s*=\s*['"]([^'"]+\.m3u8)['"])/i);
-                        if (sourceMatch) {
-                            hlsUrl = sourceMatch[1];
-                            break;
-                        }
-                        const directMatch = unpacked.match(/https?:\/\/[^\s'"<>]+\.m3u8[^\s'"<>]*/i);
-                        if (directMatch) {
-                            hlsUrl = directMatch[0];
-                            break;
-                        }
-                    } catch (e) {
-                        console.error("[Animepahe] [" + title + "] Error processing eval block: " + e.message, e);
-                    }
-                }
-
-                if (!hlsUrl) {
-                    console.warn("[Animepahe] [" + title + "] No HLS URL found in unpacked blocks.");
-                    continue;
-                }
-
-                hlsUrl = hlsUrl.replace(/\\+$/, '');
-                hlsUrl = hlsUrl.replace("/stream/", "/hls/").replace("uwu.m3u8", "owo.m3u8");
-                console.log("[Animepahe] [" + title + "] Resolved final HLS URL: " + hlsUrl);
-                streams.push({
-                    title: title,
-                    streamUrl: hlsUrl,
-                    headers: { "Referer": "https://kwik.cx/", "Origin": "https://kwik.cx" }
-                });
-            } catch (e) {
-                console.error("[Animepahe] [" + title + "] Exception in stream parsing: " + e.message, e);
-            }
-        }
-
-        console.log("[Animepahe] Successfully resolved " + streams.length + " streams out of " + buttons.length);
-
-        streams.sort((a, b) => {
-            const aIsSub = a.title.includes("Hardsub") ? 0 : 1;
-            const bIsSub = b.title.includes("Hardsub") ? 0 : 1;
-            if (aIsSub !== bIsSub) return aIsSub - bIsSub;
-            const aRes = parseInt(a.title.match(/(\d+)p/)?.[1] || 0);
-            const bRes = parseInt(b.title.match(/(\d+)p/)?.[1] || 0);
-            return bRes - aRes;
-        });
-
-        const finalResult = JSON.stringify({ streams: streams, subtitle: "" });
-        return finalResult;
-
-    } catch (err) {
-        console.error("[Animepahe] Fatal exception in extractStreamUrl: " + err.message, err);
-        return JSON.stringify({ streams: [], subtitle: "" });
-    }
-}
-
-// Fixed Bypass
-class DdosGuardInterceptor {
-    constructor() {
-        this.errorCodes = [403];
-        this.serverCheck = ["ddos-guard"];
-        this.cookieStore = {};
-    }
-
-    async fetchWithBypass(url, options = {}) {
-        const solverUrl = `https://tmdbproxy22.simplepostrequest.workers.dev/solver?url=${encodeURIComponent(url)}&cache=1h`;
-        return fetchv2(solverUrl, options.headers || {});
-    }
-
-    async fetchWithBypassDdos(url, options = {}) {
-        let response = await this.fetchWithCookies(url, options);
-        let responseText = null;
-
-        if (this.errorCodes.includes(response.status)) {
-            const newCookie = await this.getNewCookie(url);
-            if (newCookie || this.cookieStore["__ddg2_"]) {
-                return this.fetchWithCookies(url, options);
-            }
-            return response;
-        }
-
-        try {
-            responseText = await response.text();
-        } catch (e) {
-            return response;
-        }
-
-        const isBlocked = responseText.includes('ddos-guard/js-challenge') ||
-            responseText.includes('DDoS-Guard') ||
-            responseText.includes('data-ddg-origin');
-
-        if (!isBlocked) {
-            response.text = async () => responseText;
-            return response;
-        }
-
-        if (this.cookieStore["__ddg2_"]) {
-            return this.fetchWithCookies(url, options);
-        }
-
-        const newCookie = await this.getNewCookie(url);
-        if (!newCookie) {
-            response.text = async () => responseText;
-            return response;
-        }
-
-        return this.fetchWithCookies(url, options);
-    }
-
-    async fetchWithCookies(url, options) {
-        const cookieHeader = this.getCookieHeader();
-        const headers = options.headers || {};
-        if (cookieHeader) {
-            headers.Cookie = cookieHeader;
-        }
-
-        const response = await fetchv2(url, headers);
-
-        try {
-            const setCookieHeader = response.headers ? response.headers["Set-Cookie"] || response.headers["set-cookie"] : null;
-            if (setCookieHeader) {
-                this.storeCookies(setCookieHeader);
-            }
-        } catch (e) {
-        }
-
-        return response;
-    }
-
-    isDdosGuard(response) {
-        const serverHeader = response.headers["Server"];
-        return serverHeader && this.serverCheck.includes(serverHeader.toLowerCase());
-    }
-
-    storeCookies(setCookieString) {
-        const cookies = Array.isArray(setCookieString) ? setCookieString : [setCookieString];
-
-        cookies.forEach(cookieHeader => {
-            const parts = cookieHeader.split(";");
-            if (parts.length > 0) {
-                const [key, value] = parts[0].split("=");
-                if (key) {
-                    this.cookieStore[key.trim()] = value?.trim() || "";
-                }
-            }
-        });
-    }
-
-    getCookieHeader() {
-        return Object.entries(this.cookieStore)
-            .map(([key, value]) => `${key}=${value}`)
-            .join("; ");
-    }
-
-    async getNewCookie(targetUrl) {
-        try {
-            const wellKnownResponse = await fetchv2("https://check.ddos-guard.net/check.js");
-            const wellKnownText = await wellKnownResponse.text();
-
-            const paths = wellKnownText.match(/['"](\/\.well-known\/ddos-guard\/[^'"]+)['"]/g);
-            const checkPaths = wellKnownText.match(/['"]https:\/\/check\.ddos-guard\.net\/[^'"]+['"]/g);
-
-            if (!paths || paths.length === 0) {
-                return null;
-            }
-
-            const localPath = paths[0].replace(/['"]/g, '');
-
-            const match = targetUrl.match(/^(https?:\/\/[^\/]+)/);
-            if (!match) {
-                return null;
-            }
-            const baseUrl = match[1];
-
-            const localUrl = `${baseUrl}${localPath}`;
-
-            const localResponse = await fetchv2(localUrl, {
-                headers: {
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-                    'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
-                    'Referer': targetUrl
-                }
-            });
-
-            let setCookie = null;
-            try {
-                setCookie = localResponse.headers ? localResponse.headers["set-cookie"] || localResponse.headers["Set-Cookie"] : null;
-            } catch (e) {
-            }
-            if (setCookie) {
-                this.storeCookies(setCookie);
-            }
-
-            if (checkPaths && checkPaths.length > 0) {
-                const checkUrl = checkPaths[0].replace(/['"]/g, '');
-
-                const checkResponse = await fetchv2(checkUrl, {
-                    headers: {
-                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-                        'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
-                        'Referer': targetUrl
-                    }
-                });
-
-                try {
-                    setCookie = checkResponse.headers ? checkResponse.headers["set-cookie"] || checkResponse.headers["Set-Cookie"] : null;
-                } catch (e) {
-                }
-                if (setCookie) {
-                    this.storeCookies(setCookie);
-                }
-            }
-
-            if (this.cookieStore["__ddg2_"]) {
-                return this.cookieStore["__ddg2_"];
-            }
-
-            return null;
-        } catch (error) {
-            return null;
-        }
-    }
-}
-
-// Fixed deobfuscator:
-class Unbaser {
-    constructor(base) {
-        this.ALPHABET = {
-            62: "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
-            95: "' !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~'",
+                const resp = await soraFetch(fullUrl, { headers: headers || DEFAULT_HEADERS });
+                if (!resp) { console.log(`[Aether][Player] ⚠️ [${label}] réponse nulle`); return null; }
+                const text = await resp.text();
+                try { return JSON.parse(text); }
+                catch (e) { console.log(`[Aether][Player] ❌ [${label}] réponse non-JSON (${text.slice(0, 60)}...)`); return null; }
+            } catch (e) { console.log(`[Aether][Player] 🚨 [${label}] erreur réseau : ${e}`); return null; }
         };
-        this.dictionary = {};
-        this.base = base;
-        if (36 < base && base < 62) {
-            this.ALPHABET[base] = this.ALPHABET[base] || this.ALPHABET[62].substr(0, base);
-        }
-        if (2 <= base && base <= 36) {
-            this.unbase = (value) => parseInt(value, base);
-        } else {
-            try {
-                [...this.ALPHABET[base]].forEach((cipher, index) => {
-                    this.dictionary[cipher] = index;
-                });
-            } catch (er) {
-                throw Error("Unsupported base encoding.");
-            }
-            this.unbase = this._dictunbaser;
-        }
-    }
 
-    _dictunbaser(value) {
-        let ret = 0;
-        [...value].reverse().forEach((cipher, index) => {
-            ret = ret + ((Math.pow(this.base, index)) * this.dictionary[cipher]);
-        });
-        return ret;
-    }
-}
+        // 1) Les 5 providers simples + 2) fast.aether (scrape) + 3) sub.vdrk (sous-titres)
+        const fastPath = type === "movie"
+            ? `/scrape?type=movie&tmdbId=${id}`
+            : `/scrape?type=show&tmdbId=${id}&season=${season}&episode=${episode}`;
+        const vdrkPath = type === "movie"
+            ? `/movie/${id}`
+            : `/tv/${id}/${season}/${episode}`;
 
-function unpack(source) {
-    function _filterargs(source) {
-        const juicers = [
-            /}\('(.*)', *(\d+|\[\]), *(\d+), *'(.*)'\.split\('\|'\), *(\d+), *(.*)\)\)/,
-            /}\('(.*)', *(\d+|\[\]), *(\d+), *'(.*)'\.split\('\|'\)/,
+        const tasks = [
+            ...PROVIDERS.map(p => {
+                const path = type === "movie" ? `/movie/${id}` : `/${p.tvSeg}/${id}/${season}/${episode}`;
+                return fetchJson(p.name, `${p.base}${path}`).then(json => ({ kind: "simple", provider: p, json }));
+            }),
+            fetchJson("Fast", `${FAST_URL}${fastPath}`).then(json => ({ kind: "fast", json })),
+            fetchJson("VdrkSubs", `${VDRK_SUB_URL}${vdrkPath}`).then(json => ({ kind: "vdrk", json }))
         ];
-        for (const juicer of juicers) {
-            const args = juicer.exec(source);
-            if (args) {
-                let a = args;
-                try {
-                    return {
-                        payload: a[1],
-                        symtab: a[4].split("|"),
-                        radix: parseInt(a[2]),
-                        count: parseInt(a[3]),
-                    };
-                } catch (ValueError) {
-                    throw Error("Corrupted p.a.c.k.e.r. data.");
+        const results = await Promise.all(tasks);
+
+        for (const result of results) {
+            if (!result || !result.json) continue;
+            const { kind, json } = result;
+
+            // --- Providers simples (1 flux + éventuellement subtitles[]) ---
+            if (kind === "simple") {
+                const provider = result.provider;
+                if (!addStream(provider.name, json[provider.field])) {
+                    if (!json[provider.field]) console.log(`[Aether][Player] ℹ️ [${provider.name}] aucun flux (champ "${provider.field}" absent)`);
+                }
+                if (Array.isArray(json.subtitles) && json.subtitles.length > 0) {
+                    console.log(`[Aether][Player] 💬 [${provider.name}] ${json.subtitles.length} piste(s) de sous-titres`);
+                    for (const sub of json.subtitles) {
+                        addSubtitle(sub && (sub.url || sub.file), sub.language || sub.lang || sub.label, sub.kind);
+                    }
+                }
+            }
+
+            // --- fast.aether : plusieurs flux nommés, chacun avec headers + captions ---
+            else if (kind === "fast") {
+                const fastStreams = Array.isArray(json.streams) ? json.streams : [];
+                console.log(`[Aether][Player] ⚡ [Fast] ${fastStreams.length} serveur(s)`);
+                for (const s of fastStreams) {
+                    if (!s || !s.url) continue;
+                    addStream(`Fast - ${s.name || "Server"}`, s.url, s.headers || undefined);
+                    if (Array.isArray(s.captions)) {
+                        for (const cap of s.captions) {
+                            addSubtitle(cap && cap.url, cap.language || cap.label, cap.type === "srt" ? "captions" : (cap.type || "captions"));
+                        }
+                    }
+                }
+            }
+
+            // --- sub.vdrk : source dédiée de sous-titres [{label, file}] ---
+            else if (kind === "vdrk") {
+                const list = Array.isArray(json) ? json : [];
+                console.log(`[Aether][Player] 💬 [VdrkSubs] ${list.length} piste(s) de sous-titres`);
+                for (const sub of list) {
+                    addSubtitle(sub && (sub.file || sub.url), sub.label || sub.language, "captions",
+                        { "Referer": "https://vdrk.site/" });
                 }
             }
         }
-        throw Error("Could not make sense of p.a.c.k.e.r data (unexpected code structure)");
-    }
 
-    let { payload, symtab, radix, count } = _filterargs(source);
+        // On place l'anglais en tête de la liste multi (pratique pour l'app)
+        allSubtitles.sort((a, b) => {
+            const ae = String(a.label).toLowerCase() === "english" ? 0 : 1;
+            const be = String(b.label).toLowerCase() === "english" ? 0 : 1;
+            return ae - be;
+        });
 
-    if (count != symtab.length) {
-        throw Error("Malformed p.a.c.k.e.r. symtab.");
-    }
+        console.log(`[Aether][Player] --------------------------------------------`);
+        console.log(`[Aether][Player] 📊 Bilan : ${streams.length} flux | ${allSubtitles.length} sous-titres | anglais=${gotEnglishSub} | ${Date.now() - startTime}ms`);
+        streams.forEach(s => console.log(`   🎥 ${s.title}`));
+        allSubtitles.forEach(s => console.log(`   💬 ${s.label}`));
 
-    let unbase;
-    try {
-        unbase = new Unbaser(radix);
-    } catch (e) {
-        throw Error("Unknown p.a.c.k.e.r. encoding.");
-    }
+        sendSupabaseLog("Aether", "PLAYER", {
+            media_path: type === "movie" ? `/movie/${id}` : `/tv/${id}/${season}/${episode}`,
+            type: type.toUpperCase(),
+            season: type === "movie" ? "N/A" : season,
+            episode: type === "movie" ? "N/A" : episode,
+            streams_found: streams.length,
+            subtitles_found: allSubtitles.length,
+            execution_time_ms: Date.now() - startTime,
+            servers: streams.map(s => ({ nom: s.title, lien: s.streamUrl }))
+        });
 
-    function lookup(match) {
-        const word = match;
-        let word2;
-        if (radix == 1) {
-            word2 = symtab[parseInt(word)];
-        } else {
-            word2 = symtab[unbase.unbase(word)];
+        if (streams.length > 0) {
+            // subtitles  = string (meilleure piste, compat anciens lecteurs)
+            // allSubtitles = tableau complet de toutes les langues (multi-pistes)
+            return JSON.stringify({ streams, subtitles: bestSubtitle, allSubtitles });
         }
-        return word2 || word;
+        console.log(`[Aether][Player] ❌ Aucun flux trouvé`);
+        return JSON.stringify({ streams: [], subtitles: "", allSubtitles: [] });
+    } catch (error) {
+        console.log(`[Aether][Player] 🚨 Erreur critique : ${error}`);
+        return JSON.stringify({ streams: [], subtitles: "", allSubtitles: [] });
     }
+}
 
-    source = payload.replace(/\b\w+\b/g, lookup);
-    return source;
+// ==========================================
+// 🔧 UTILS
+// ==========================================
+
+// aether://{type}/{id}
+function parseHref(url) {
+    const parts = url.replace("aether://", "").split("/");
+    return { type: parts[0], id: parts[1] };
+}
+
+// aether-play://movie/{id}  |  aether-play://tv/{id}/{season}/{episode}
+function parsePlayHref(url) {
+    const parts = url.replace("aether-play://", "").split("/");
+    return {
+        type: parts[0],
+        id: parts[1],
+        season: parts[2] || "1",
+        episode: parts[3] || "1"
+    };
+}
+
+async function soraFetch(url, options = { headers: {}, method: 'GET', body: null, encoding: 'utf-8' }) {
+    try {
+        if (typeof fetchv2 !== 'undefined') {
+            return await fetchv2(url, options.headers ?? {}, options.method ?? 'GET', options.body ?? null, true, options.encoding ?? 'utf-8');
+        } else {
+            return await fetch(url, options);
+        }
+    } catch (e) {
+        try { return await fetch(url, options); } catch (error) { return null; }
+    }
 }

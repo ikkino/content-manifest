@@ -1,33 +1,24 @@
 {
-  "sourceName": "AnimePahe",
-  "iconUrl": "https://files.catbox.moe/fu5sq7.png",
+  "sourceName": "Aether",
+  "iconUrl": "https://aether.bar/favicon.ico",
   "author": {
-    "name": "50/50",
-    "icon": "https://files.catbox.moe/741wp7.png"
+    "name": "MXFia19",
+    "icon": "https://i.pinimg.com/1200x/89/78/33/89783349d3270e4ab071db9a038db8ea.jpg",
+    "url": "https://github.com/MXFia19"
   },
-  "version": "1.3.1",
+  "version": "1.2.0",
   "language": "English",
-  "languageType": [
-    "Dubbed",
-    "Subbed"
-  ],
   "streamType": "HLS",
   "quality": "1080p",
-  "baseUrl": "https://animepahe.si/",
-  "searchBaseUrl": "https://animepahe.si/",
+  "baseUrl": "https://aether.bar/",
+  "searchBaseUrl": "https://api.themoviedb.org/3/search/multi",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/029/source.js",
-  "type": "anime",
+  "type": "shows/movies/anime",
+  "downloadSupport": true,
   "asyncJS": true,
   "softsub": true,
-  "downloadSupport": true,
   "supportsSora": true,
   "supportsLuna": true,
-  "supportsMojuru": true,
-  "supportsDartotsu": true,
-  "supportsAnymex": true,
-  "supportsTsumi": true,
-  "supportsHiyoku": true,
-  "supportsShirox": true,
-  "supportsEclipse": true,
-  "id": "jLCx0"
+  "changelog": "Add fast.aether scrape servers + vdrk subtitle source",
+  "id": "jGSkn"
 }

@@ -1,6 +1,6 @@
 {
-  "sourceName": "Peachify",
-  "iconUrl": "https://peachify.top/favicon.ico",
+  "sourceName": "AniNeko",
+  "iconUrl": "https://files.catbox.moe/6tgiww.png",
   "author": {
     "name": "50/50",
     "icon": "https://files.catbox.moe/741wp7.png"
@@ -8,21 +8,26 @@
   "version": "1.0.0",
   "language": "English",
   "languageType": [
-    "Native"
+    "Dubbed",
+    "Subbed"
   ],
   "streamType": "HLS",
   "quality": "1080p",
-  "baseUrl": "https://peachify.top/",
-  "searchBaseUrl": "https://peachify.top/",
+  "baseUrl": "https://anineko.to/",
+  "searchBaseUrl": "https://anineko.to/",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/015/source.js",
-  "type": "shows/movies/anime",
+  "type": "anime",
   "asyncJS": true,
   "softsub": true,
-  "downloadSupport": false,
+  "downloadSupport": true,
+  "supportsMojuru": true,
+  "supportsDartotsu": true,
   "supportsSora": true,
   "supportsLuna": true,
+  "supportsAnymex": true,
   "supportsTsumi": true,
   "supportsHiyoku": true,
+  "supportsShirox": true,
   "supportsEclipse": true,
-  "id": "jYbWp"
+  "id": "jWih3"
 }
