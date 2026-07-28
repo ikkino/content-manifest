@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-27T03:59:57.085Z",
+  "generatedAt": "2026-07-28T03:32:31.799Z",
   "mediaRequested": 5,
   "categories": {
     "trendingNow": {
@@ -30,8 +30,9 @@
     "byReason": {
       "search_no_usable_result": 22,
       "media_probe_failed": 15,
-      "implausible_match": 4,
-      "other": 1
+      "implausible_match": 3,
+      "other": 1,
+      "media_host_blocked": 1
     },
     "topModules": [
       {
@@ -39,7 +40,7 @@
         "count": 14,
         "reasons": {
           "media_probe_failed": 13,
-          "implausible_match": 1
+          "media_host_blocked": 1
         }
       },
       {
@@ -62,12 +63,12 @@
     ]
   },
   "mediaProbeBudget": 24,
-  "mediaProbesUsed": 15,
+  "mediaProbesUsed": 16,
   "hostHealth": {
     "successEvents": 0,
-    "failureEvents": 15,
+    "failureEvents": 16,
     "skippedByCooldown": 0,
-    "coolingDownHosts": 3
+    "coolingDownHosts": 4
   },
   "failures": [
     {
@@ -131,8 +132,8 @@
       ]
     },
     {
-      "aniListId": 210031,
-      "title": "You and I Are Polar Opposites Season 2",
+      "aniListId": 169583,
+      "title": "Oh Boy, Was I Wrong About Her",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/001",
       "sourceName": "Anikoto",
@@ -141,8 +142,8 @@
       ]
     },
     {
-      "aniListId": 210031,
-      "title": "You and I Are Polar Opposites Season 2",
+      "aniListId": 169583,
+      "title": "Oh Boy, Was I Wrong About Her",
       "moduleId": "jR5U5",
       "catalogPath": "Sources/English/003",
       "sourceName": "Senshi",
@@ -151,8 +152,8 @@
       ]
     },
     {
-      "aniListId": 210031,
-      "title": "You and I Are Polar Opposites Season 2",
+      "aniListId": 169583,
+      "title": "Oh Boy, Was I Wrong About Her",
       "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/008",
       "sourceName": "AnimeLand",
@@ -161,8 +162,8 @@
       ]
     },
     {
-      "aniListId": 200637,
-      "title": "The 100 Girlfriends Who Really, Really, Really, Really, REALLY Love You Season 3",
+      "aniListId": 202269,
+      "title": "Love Unseen Beneath the Clear Night Sky",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/001",
       "sourceName": "Anikoto",
@@ -171,8 +172,8 @@
       ]
     },
     {
-      "aniListId": 200637,
-      "title": "The 100 Girlfriends Who Really, Really, Really, Really, REALLY Love You Season 3",
+      "aniListId": 202269,
+      "title": "Love Unseen Beneath the Clear Night Sky",
       "moduleId": "jR5U5",
       "catalogPath": "Sources/English/003",
       "sourceName": "Senshi",
@@ -181,8 +182,8 @@
       ]
     },
     {
-      "aniListId": 200637,
-      "title": "The 100 Girlfriends Who Really, Really, Really, Really, REALLY Love You Season 3",
+      "aniListId": 202269,
+      "title": "Love Unseen Beneath the Clear Night Sky",
       "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/008",
       "sourceName": "AnimeLand",
@@ -191,8 +192,8 @@
       ]
     },
     {
-      "aniListId": 195600,
-      "title": "Daemons of the Shadow Realm",
+      "aniListId": 185542,
+      "title": "Skeleton Knight in Another World Season 2",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/001",
       "sourceName": "Anikoto",
@@ -201,8 +202,8 @@
       ]
     },
     {
-      "aniListId": 195600,
-      "title": "Daemons of the Shadow Realm",
+      "aniListId": 185542,
+      "title": "Skeleton Knight in Another World Season 2",
       "moduleId": "jR5U5",
       "catalogPath": "Sources/English/003",
       "sourceName": "Senshi",
@@ -211,8 +212,8 @@
       ]
     },
     {
-      "aniListId": 195600,
-      "title": "Daemons of the Shadow Realm",
+      "aniListId": 185542,
+      "title": "Skeleton Knight in Another World Season 2",
       "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/008",
       "sourceName": "AnimeLand",
@@ -227,7 +228,7 @@
       "catalogPath": "Sources/English/001",
       "sourceName": "Anikoto",
       "errors": [
-        "implausible episode match: verified=3 available=12 expected<=3"
+        "media probe failed: host=megap.kotocdn.site empty media response"
       ]
     },
     {
@@ -257,7 +258,7 @@
       "catalogPath": "Sources/English/001",
       "sourceName": "Anikoto",
       "errors": [
-        "media probe failed: host=cdn.mewstream.buzz empty media response"
+        "media probe failed: host=megap.kotocdn.site empty media response"
       ]
     },
     {
@@ -287,7 +288,7 @@
       "catalogPath": "Sources/English/001",
       "sourceName": "Anikoto",
       "errors": [
-        "media probe failed: host=cdn.mewstream.buzz empty media response"
+        "media probe failed: host=megap.kotocdn.site empty media response"
       ]
     },
     {
@@ -317,7 +318,7 @@
       "catalogPath": "Sources/English/001",
       "sourceName": "Anikoto",
       "errors": [
-        "media probe failed: host=cdn.mewstream.buzz empty media response"
+        "media probe failed: host=megap.kotocdn.site empty media response"
       ]
     },
     {
@@ -467,7 +468,7 @@
       "catalogPath": "Sources/English/001",
       "sourceName": "Anikoto",
       "errors": [
-        "media probe failed: host=megap.kotocdn.site empty media response"
+        "media probe failed: host=fxpy7.watching.onl HTTP 403"
       ]
     },
     {
