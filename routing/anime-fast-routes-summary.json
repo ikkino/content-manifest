@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-28T03:32:31.799Z",
+  "generatedAt": "2026-07-29T03:36:01.234Z",
   "mediaRequested": 5,
   "categories": {
     "trendingNow": {
@@ -30,9 +30,8 @@
     "byReason": {
       "search_no_usable_result": 22,
       "media_probe_failed": 15,
-      "implausible_match": 3,
-      "other": 1,
-      "media_host_blocked": 1
+      "implausible_match": 4,
+      "other": 1
     },
     "topModules": [
       {
@@ -40,15 +39,15 @@
         "count": 14,
         "reasons": {
           "media_probe_failed": 13,
-          "media_host_blocked": 1
+          "implausible_match": 1
         }
       },
       {
         "sourceName": "AnimeLand",
         "count": 14,
         "reasons": {
-          "search_no_usable_result": 8,
           "implausible_match": 3,
+          "search_no_usable_result": 8,
           "media_probe_failed": 2,
           "other": 1
         }
@@ -63,44 +62,14 @@
     ]
   },
   "mediaProbeBudget": 24,
-  "mediaProbesUsed": 16,
+  "mediaProbesUsed": 15,
   "hostHealth": {
     "successEvents": 0,
-    "failureEvents": 16,
+    "failureEvents": 15,
     "skippedByCooldown": 0,
-    "coolingDownHosts": 4
+    "coolingDownHosts": 3
   },
   "failures": [
-    {
-      "aniListId": 178789,
-      "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "Anikoto",
-      "errors": [
-        "media probe failed: host=cdn.mewstream.buzz empty media response"
-      ]
-    },
-    {
-      "aniListId": 178789,
-      "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
-      "moduleId": "jR5U5",
-      "catalogPath": "Sources/English/003",
-      "sourceName": "Senshi",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 178789,
-      "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/008",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
     {
       "aniListId": 21,
       "title": "ONE PIECE",
@@ -132,8 +101,8 @@
       ]
     },
     {
-      "aniListId": 169583,
-      "title": "Oh Boy, Was I Wrong About Her",
+      "aniListId": 177699,
+      "title": "THE GHOST IN THE SHELL",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/001",
       "sourceName": "Anikoto",
@@ -142,8 +111,8 @@
       ]
     },
     {
-      "aniListId": 169583,
-      "title": "Oh Boy, Was I Wrong About Her",
+      "aniListId": 177699,
+      "title": "THE GHOST IN THE SHELL",
       "moduleId": "jR5U5",
       "catalogPath": "Sources/English/003",
       "sourceName": "Senshi",
@@ -152,8 +121,8 @@
       ]
     },
     {
-      "aniListId": 169583,
-      "title": "Oh Boy, Was I Wrong About Her",
+      "aniListId": 177699,
+      "title": "THE GHOST IN THE SHELL",
       "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/008",
       "sourceName": "AnimeLand",
@@ -162,8 +131,8 @@
       ]
     },
     {
-      "aniListId": 202269,
-      "title": "Love Unseen Beneath the Clear Night Sky",
+      "aniListId": 187260,
+      "title": "I Want to Love You Till Your Dying Day",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/001",
       "sourceName": "Anikoto",
@@ -172,8 +141,8 @@
       ]
     },
     {
-      "aniListId": 202269,
-      "title": "Love Unseen Beneath the Clear Night Sky",
+      "aniListId": 187260,
+      "title": "I Want to Love You Till Your Dying Day",
       "moduleId": "jR5U5",
       "catalogPath": "Sources/English/003",
       "sourceName": "Senshi",
@@ -182,8 +151,8 @@
       ]
     },
     {
-      "aniListId": 202269,
-      "title": "Love Unseen Beneath the Clear Night Sky",
+      "aniListId": 187260,
+      "title": "I Want to Love You Till Your Dying Day",
       "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/008",
       "sourceName": "AnimeLand",
@@ -192,8 +161,8 @@
       ]
     },
     {
-      "aniListId": 185542,
-      "title": "Skeleton Knight in Another World Season 2",
+      "aniListId": 178789,
+      "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/001",
       "sourceName": "Anikoto",
@@ -202,8 +171,8 @@
       ]
     },
     {
-      "aniListId": 185542,
-      "title": "Skeleton Knight in Another World Season 2",
+      "aniListId": 178789,
+      "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
       "moduleId": "jR5U5",
       "catalogPath": "Sources/English/003",
       "sourceName": "Senshi",
@@ -212,8 +181,38 @@
       ]
     },
     {
-      "aniListId": 185542,
-      "title": "Skeleton Knight in Another World Season 2",
+      "aniListId": 178789,
+      "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/008",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 196219,
+      "title": "The Oblivious Saint Can't Contain Her Power",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "Anikoto",
+      "errors": [
+        "media probe failed: host=cdn.mewstream.buzz empty media response"
+      ]
+    },
+    {
+      "aniListId": 196219,
+      "title": "The Oblivious Saint Can't Contain Her Power",
+      "moduleId": "jR5U5",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "Senshi",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 196219,
+      "title": "The Oblivious Saint Can't Contain Her Power",
       "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/008",
       "sourceName": "AnimeLand",
@@ -228,7 +227,7 @@
       "catalogPath": "Sources/English/001",
       "sourceName": "Anikoto",
       "errors": [
-        "media probe failed: host=megap.kotocdn.site empty media response"
+        "implausible episode match: verified=3 available=12 expected<=3"
       ]
     },
     {
@@ -468,7 +467,7 @@
       "catalogPath": "Sources/English/001",
       "sourceName": "Anikoto",
       "errors": [
-        "media probe failed: host=fxpy7.watching.onl HTTP 403"
+        "media probe failed: host=megap.kotocdn.site empty media response"
       ]
     },
     {
