@@ -1,16 +1,16 @@
 {
-  "generatedAt": "2026-08-01T15:29:55.831Z",
+  "generatedAt": "2026-08-01T17:18:03.205Z",
   "mediaRequested": 25,
   "categories": {
     "trendingNow": {
       "requested": 25,
       "mediaChecked": 25,
-      "animeWithRoutes": 24
+      "animeWithRoutes": 25
     },
     "popularThisSeason": {
       "requested": 25,
       "mediaChecked": 24,
-      "animeWithRoutes": 23
+      "animeWithRoutes": 24
     },
     "popularAllTime": {
       "requested": 25,
@@ -18,14 +18,14 @@
       "animeWithRoutes": 23
     }
   },
-  "mediaChecked": 61,
+  "mediaChecked": 62,
   "modulesChecked": 10,
-  "animeWithRoutes": 58,
-  "routeCount": 229,
+  "animeWithRoutes": 60,
+  "routeCount": 239,
   "failures": [
     {
-      "aniListId": 187538,
-      "title": "BLACK TORCH",
+      "aniListId": 185874,
+      "title": "BLEACH: Thousand-Year Blood War - The Calamity",
       "moduleId": "BiECa",
       "catalogPath": "Sources/English/001",
       "sourceName": "IPTV-org",
@@ -34,8 +34,8 @@
       ]
     },
     {
-      "aniListId": 186863,
-      "title": "The Cat and the Dragon",
+      "aniListId": 195600,
+      "title": "Daemons of the Shadow Realm",
       "moduleId": "BiECa",
       "catalogPath": "Sources/English/001",
       "sourceName": "IPTV-org",
@@ -44,8 +44,8 @@
       ]
     },
     {
-      "aniListId": 187538,
-      "title": "BLACK TORCH",
+      "aniListId": 185874,
+      "title": "BLEACH: Thousand-Year Blood War - The Calamity",
       "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/007",
       "sourceName": "AnimeLand",
@@ -54,8 +54,98 @@
       ]
     },
     {
-      "aniListId": 186863,
-      "title": "The Cat and the Dragon",
+      "aniListId": 195600,
+      "title": "Daemons of the Shadow Realm",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/007",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 185874,
+      "title": "BLEACH: Thousand-Year Blood War - The Calamity",
+      "moduleId": "jYrUx",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "IMDb",
+      "errors": [
+        "stream: extractStreamUrl returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 195600,
+      "title": "Daemons of the Shadow Realm",
+      "moduleId": "jYrUx",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "IMDb",
+      "errors": [
+        "stream: extractStreamUrl returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 195600,
+      "title": "Daemons of the Shadow Realm",
+      "moduleId": "BNbnN",
+      "catalogPath": "Sources/English/009",
+      "sourceName": "AnimeDefenders",
+      "errors": [
+        "implausible episode match: verified=16 available=16 expected<=17"
+      ]
+    },
+    {
+      "aniListId": 185874,
+      "title": "BLEACH: Thousand-Year Blood War - The Calamity",
+      "moduleId": "vidlink-local",
+      "catalogPath": "Sources/English/010",
+      "sourceName": "VidLink",
+      "errors": [
+        "implausible episode match: verified=1 available=1 expected<=2"
+      ]
+    },
+    {
+      "aniListId": 185874,
+      "title": "BLEACH: Thousand-Year Blood War - The Calamity",
+      "moduleId": "BNbnN",
+      "catalogPath": "Sources/English/009",
+      "sourceName": "AnimeDefenders",
+      "errors": [
+        "implausible episode match: verified=2 available=41 expected<=2"
+      ]
+    },
+    {
+      "aniListId": 185874,
+      "title": "BLEACH: Thousand-Year Blood War - The Calamity",
+      "moduleId": "BSyfU",
+      "catalogPath": "Sources/English/011",
+      "sourceName": "Kisskh",
+      "errors": [
+        "implausible episode match: verified=2 available=13 expected<=2"
+      ]
+    },
+    {
+      "aniListId": 195600,
+      "title": "Daemons of the Shadow Realm",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/004",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 187538,
+      "title": "BLACK TORCH",
+      "moduleId": "BiECa",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "IPTV-org",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 187538,
+      "title": "BLACK TORCH",
       "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/007",
       "sourceName": "AnimeLand",
@@ -74,16 +164,6 @@
       ]
     },
     {
-      "aniListId": 186863,
-      "title": "The Cat and the Dragon",
-      "moduleId": "jYrUx",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "IMDb",
-      "errors": [
-        "implausible episode match: verified=6 available=12 expected<=6"
-      ]
-    },
-    {
       "aniListId": 187538,
       "title": "BLACK TORCH",
       "moduleId": "jYrUx",
@@ -94,23 +174,33 @@
       ]
     },
     {
-      "aniListId": 186863,
-      "title": "The Cat and the Dragon",
+      "aniListId": 185874,
+      "title": "BLEACH: Thousand-Year Blood War - The Calamity",
       "moduleId": "BmnXo",
       "catalogPath": "Sources/English/004",
       "sourceName": "OneTouch TV",
+      "errors": [
+        "implausible episode match: verified=1 available=1 expected<=2"
+      ]
+    },
+    {
+      "aniListId": 190569,
+      "title": "Jaadugar: A Witch in Mongolia",
+      "moduleId": "BiECa",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "IPTV-org",
       "errors": [
         "search: searchResults returned an unusable result"
       ]
     },
     {
-      "aniListId": 186863,
-      "title": "The Cat and the Dragon",
-      "moduleId": "BNbnN",
-      "catalogPath": "Sources/English/009",
-      "sourceName": "AnimeDefenders",
+      "aniListId": 190569,
+      "title": "Jaadugar: A Witch in Mongolia",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/007",
+      "sourceName": "AnimeLand",
       "errors": [
-        "implausible episode match: verified=5 available=5 expected<=6"
+        "search: searchResults returned an unusable result"
       ]
     },
     {
@@ -120,7 +210,17 @@
       "catalogPath": "Sources/English/010",
       "sourceName": "VidLink",
       "errors": [
-        "stream: Cannot read properties of null (reading 'stream')"
+        "implausible episode match: verified=5 available=12 expected<=5"
+      ]
+    },
+    {
+      "aniListId": 190569,
+      "title": "Jaadugar: A Witch in Mongolia",
+      "moduleId": "jYrUx",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "IMDb",
+      "errors": [
+        "stream: extractStreamUrl returned an unusable result"
       ]
     },
     {
@@ -129,6 +229,16 @@
       "moduleId": "BiECa",
       "catalogPath": "Sources/English/001",
       "sourceName": "IPTV-org",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 190569,
+      "title": "Jaadugar: A Witch in Mongolia",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/004",
+      "sourceName": "OneTouch TV",
       "errors": [
         "search: searchResults returned an unusable result"
       ]
@@ -144,13 +254,13 @@
       ]
     },
     {
-      "aniListId": 184492,
-      "title": "Welcome to Demon School! Iruma-kun Season 4",
-      "moduleId": "jYrUx",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "IMDb",
+      "aniListId": 190569,
+      "title": "Jaadugar: A Witch in Mongolia",
+      "moduleId": "BNbnN",
+      "catalogPath": "Sources/English/009",
+      "sourceName": "AnimeDefenders",
       "errors": [
-        "search: searchResults returned an unusable result"
+        "implausible episode match: verified=5 available=5 expected<=6"
       ]
     },
     {
@@ -164,48 +274,8 @@
       ]
     },
     {
-      "aniListId": 186863,
-      "title": "The Cat and the Dragon",
-      "moduleId": "vidlink-local",
-      "catalogPath": "Sources/English/010",
-      "sourceName": "VidLink",
-      "errors": [
-        "stream: Cannot read properties of null (reading 'stream')"
-      ]
-    },
-    {
-      "aniListId": 171110,
-      "title": "Ascendance of a Bookworm: Adopted Daughter of an Archduke",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 171110,
-      "title": "Ascendance of a Bookworm: Adopted Daughter of an Archduke",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/007",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 171110,
-      "title": "Ascendance of a Bookworm: Adopted Daughter of an Archduke",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "implausible episode match: verified=1 available=1 expected<=16"
-      ]
-    },
-    {
-      "aniListId": 171110,
-      "title": "Ascendance of a Bookworm: Adopted Daughter of an Archduke",
+      "aniListId": 184492,
+      "title": "Welcome to Demon School! Iruma-kun Season 4",
       "moduleId": "jYrUx",
       "catalogPath": "Sources/English/005",
       "sourceName": "IMDb",
@@ -224,13 +294,13 @@
       ]
     },
     {
-      "aniListId": 171110,
-      "title": "Ascendance of a Bookworm: Adopted Daughter of an Archduke",
+      "aniListId": 190569,
+      "title": "Jaadugar: A Witch in Mongolia",
       "moduleId": "vidlink-local",
       "catalogPath": "Sources/English/010",
       "sourceName": "VidLink",
       "errors": [
-        "search: searchResults returned an unusable result"
+        "stream: Cannot read properties of null (reading 'stream')"
       ]
     },
     {
@@ -274,31 +344,11 @@
       ]
     },
     {
-      "aniListId": 209983,
-      "title": "HELL MODE: The Hardcore Gamer Dominates in Another World with Garbage Balancing Season 2",
+      "aniListId": 171110,
+      "title": "Ascendance of a Bookworm: Adopted Daughter of an Archduke",
       "moduleId": "BiECa",
       "catalogPath": "Sources/English/001",
       "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 209983,
-      "title": "HELL MODE: The Hardcore Gamer Dominates in Another World with Garbage Balancing Season 2",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/007",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 209983,
-      "title": "HELL MODE: The Hardcore Gamer Dominates in Another World with Garbage Balancing Season 2",
-      "moduleId": "jYrUx",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "IMDb",
       "errors": [
         "search: searchResults returned an unusable result"
       ]
@@ -314,21 +364,21 @@
       ]
     },
     {
-      "aniListId": 209983,
-      "title": "HELL MODE: The Hardcore Gamer Dominates in Another World with Garbage Balancing Season 2",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "OneTouch TV",
+      "aniListId": 171110,
+      "title": "Ascendance of a Bookworm: Adopted Daughter of an Archduke",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/007",
+      "sourceName": "AnimeLand",
       "errors": [
         "search: searchResults returned an unusable result"
       ]
     },
     {
-      "aniListId": 209983,
-      "title": "HELL MODE: The Hardcore Gamer Dominates in Another World with Garbage Balancing Season 2",
-      "moduleId": "vidlink-local",
-      "catalogPath": "Sources/English/010",
-      "sourceName": "VidLink",
+      "aniListId": 171110,
+      "title": "Ascendance of a Bookworm: Adopted Daughter of an Archduke",
+      "moduleId": "jYrUx",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "IMDb",
       "errors": [
         "search: searchResults returned an unusable result"
       ]
@@ -344,6 +394,16 @@
       ]
     },
     {
+      "aniListId": 171110,
+      "title": "Ascendance of a Bookworm: Adopted Daughter of an Archduke",
+      "moduleId": "vidlink-local",
+      "catalogPath": "Sources/English/010",
+      "sourceName": "VidLink",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
       "aniListId": 21,
       "title": "ONE PIECE",
       "moduleId": "BSyfU",
@@ -354,8 +414,8 @@
       ]
     },
     {
-      "aniListId": 199748,
-      "title": "I Became a Legend After My 10 Year-Long Last Stand",
+      "aniListId": 186863,
+      "title": "The Cat and the Dragon",
       "moduleId": "BiECa",
       "catalogPath": "Sources/English/001",
       "sourceName": "IPTV-org",
@@ -364,8 +424,8 @@
       ]
     },
     {
-      "aniListId": 199748,
-      "title": "I Became a Legend After My 10 Year-Long Last Stand",
+      "aniListId": 186863,
+      "title": "The Cat and the Dragon",
       "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/007",
       "sourceName": "AnimeLand",
@@ -374,23 +434,153 @@
       ]
     },
     {
-      "aniListId": 199748,
-      "title": "I Became a Legend After My 10 Year-Long Last Stand",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "implausible episode match: verified=1 available=1 expected<=5"
-      ]
-    },
-    {
-      "aniListId": 199748,
-      "title": "I Became a Legend After My 10 Year-Long Last Stand",
+      "aniListId": 186863,
+      "title": "The Cat and the Dragon",
       "moduleId": "jYrUx",
       "catalogPath": "Sources/English/005",
       "sourceName": "IMDb",
       "errors": [
-        "implausible episode match: verified=5 available=12 expected<=5"
+        "implausible episode match: verified=6 available=12 expected<=6"
+      ]
+    },
+    {
+      "aniListId": 171110,
+      "title": "Ascendance of a Bookworm: Adopted Daughter of an Archduke",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/004",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "implausible episode match: verified=1 available=1 expected<=16"
+      ]
+    },
+    {
+      "aniListId": 186863,
+      "title": "The Cat and the Dragon",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/004",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 186863,
+      "title": "The Cat and the Dragon",
+      "moduleId": "BNbnN",
+      "catalogPath": "Sources/English/009",
+      "sourceName": "AnimeDefenders",
+      "errors": [
+        "implausible episode match: verified=5 available=5 expected<=6"
+      ]
+    },
+    {
+      "aniListId": 186863,
+      "title": "The Cat and the Dragon",
+      "moduleId": "vidlink-local",
+      "catalogPath": "Sources/English/010",
+      "sourceName": "VidLink",
+      "errors": [
+        "implausible episode match: verified=6 available=12 expected<=6"
+      ]
+    },
+    {
+      "aniListId": 171110,
+      "title": "Ascendance of a Bookworm: Adopted Daughter of an Archduke",
+      "moduleId": "BSyfU",
+      "catalogPath": "Sources/English/011",
+      "sourceName": "Kisskh",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 209983,
+      "title": "HELL MODE: The Hardcore Gamer Dominates in Another World with Garbage Balancing Season 2",
+      "moduleId": "BiECa",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "IPTV-org",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 209983,
+      "title": "HELL MODE: The Hardcore Gamer Dominates in Another World with Garbage Balancing Season 2",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/007",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 209983,
+      "title": "HELL MODE: The Hardcore Gamer Dominates in Another World with Garbage Balancing Season 2",
+      "moduleId": "jYrUx",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "IMDb",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 209983,
+      "title": "HELL MODE: The Hardcore Gamer Dominates in Another World with Garbage Balancing Season 2",
+      "moduleId": "vidlink-local",
+      "catalogPath": "Sources/English/010",
+      "sourceName": "VidLink",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 209983,
+      "title": "HELL MODE: The Hardcore Gamer Dominates in Another World with Garbage Balancing Season 2",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/004",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 186863,
+      "title": "The Cat and the Dragon",
+      "moduleId": "BSyfU",
+      "catalogPath": "Sources/English/011",
+      "sourceName": "Kisskh",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 182205,
+      "title": "That Time I Got Reincarnated as a Slime Season 4",
+      "moduleId": "BiECa",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "IPTV-org",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 182205,
+      "title": "That Time I Got Reincarnated as a Slime Season 4",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/007",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 182205,
+      "title": "That Time I Got Reincarnated as a Slime Season 4",
+      "moduleId": "jYrUx",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "IMDb",
+      "errors": [
+        "search: searchResults returned an unusable result"
       ]
     },
     {
@@ -424,13 +614,13 @@
       ]
     },
     {
-      "aniListId": 269,
-      "title": "Bleach",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "OneTouch TV",
+      "aniListId": 182205,
+      "title": "That Time I Got Reincarnated as a Slime Season 4",
+      "moduleId": "vidlink-local",
+      "catalogPath": "Sources/English/010",
+      "sourceName": "VidLink",
       "errors": [
-        "implausible episode match: verified=1 available=1 expected<=366"
+        "search: searchResults returned an unusable result"
       ]
     },
     {
@@ -444,23 +634,23 @@
       ]
     },
     {
-      "aniListId": 199748,
-      "title": "I Became a Legend After My 10 Year-Long Last Stand",
-      "moduleId": "vidlink-local",
-      "catalogPath": "Sources/English/010",
-      "sourceName": "VidLink",
+      "aniListId": 182205,
+      "title": "That Time I Got Reincarnated as a Slime Season 4",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/004",
+      "sourceName": "OneTouch TV",
       "errors": [
-        "implausible episode match: verified=5 available=12 expected<=5"
+        "stream: extractStreamUrl timed out"
       ]
     },
     {
-      "aniListId": 199748,
-      "title": "I Became a Legend After My 10 Year-Long Last Stand",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/003",
-      "sourceName": "Anikoto",
+      "aniListId": 269,
+      "title": "Bleach",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/004",
+      "sourceName": "OneTouch TV",
       "errors": [
-        "stream: extractStreamUrl timed out"
+        "implausible episode match: verified=1 available=1 expected<=366"
       ]
     },
     {
@@ -474,78 +664,8 @@
       ]
     },
     {
-      "aniListId": 199748,
-      "title": "I Became a Legend After My 10 Year-Long Last Stand",
-      "moduleId": "BSyfU",
-      "catalogPath": "Sources/English/011",
-      "sourceName": "Kisskh",
-      "errors": [
-        "implausible episode match: verified=5 available=12 expected<=5"
-      ]
-    },
-    {
-      "aniListId": 207141,
-      "title": "Chainsmoker Cat",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 207141,
-      "title": "Chainsmoker Cat",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/007",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 207141,
-      "title": "Chainsmoker Cat",
-      "moduleId": "jYrUx",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "IMDb",
-      "errors": [
-        "implausible episode match: verified=5 available=12 expected<=5"
-      ]
-    },
-    {
-      "aniListId": 207141,
-      "title": "Chainsmoker Cat",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 207141,
-      "title": "Chainsmoker Cat",
-      "moduleId": "vidlink-local",
-      "catalogPath": "Sources/English/010",
-      "sourceName": "VidLink",
-      "errors": [
-        "implausible episode match: verified=5 available=12 expected<=5"
-      ]
-    },
-    {
-      "aniListId": 269,
-      "title": "Bleach",
-      "moduleId": "vidlink-local",
-      "catalogPath": "Sources/English/010",
-      "sourceName": "VidLink",
-      "errors": [
-        "implausible episode match: verified=1 available=1 expected<=366"
-      ]
-    },
-    {
-      "aniListId": 207141,
-      "title": "Chainsmoker Cat",
+      "aniListId": 182205,
+      "title": "That Time I Got Reincarnated as a Slime Season 4",
       "moduleId": "BSyfU",
       "catalogPath": "Sources/English/011",
       "sourceName": "Kisskh",
@@ -554,8 +674,8 @@
       ]
     },
     {
-      "aniListId": 185874,
-      "title": "BLEACH: Thousand-Year Blood War - The Calamity",
+      "aniListId": 199748,
+      "title": "I Became a Legend After My 10 Year-Long Last Stand",
       "moduleId": "BiECa",
       "catalogPath": "Sources/English/001",
       "sourceName": "IPTV-org",
@@ -564,18 +684,8 @@
       ]
     },
     {
-      "aniListId": 185874,
-      "title": "BLEACH: Thousand-Year Blood War - The Calamity",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "implausible episode match: verified=1 available=1 expected<=2"
-      ]
-    },
-    {
-      "aniListId": 185874,
-      "title": "BLEACH: Thousand-Year Blood War - The Calamity",
+      "aniListId": 199748,
+      "title": "I Became a Legend After My 10 Year-Long Last Stand",
       "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/007",
       "sourceName": "AnimeLand",
@@ -584,43 +694,23 @@
       ]
     },
     {
-      "aniListId": 185874,
-      "title": "BLEACH: Thousand-Year Blood War - The Calamity",
-      "moduleId": "animekai-unoriginal-local",
-      "catalogPath": "Sources/English/006",
-      "sourceName": "AnimeKai (Unoriginal)",
-      "errors": [
-        "implausible episode match: verified=1 available=1 expected<=2"
-      ]
-    },
-    {
-      "aniListId": 185874,
-      "title": "BLEACH: Thousand-Year Blood War - The Calamity",
+      "aniListId": 199748,
+      "title": "I Became a Legend After My 10 Year-Long Last Stand",
       "moduleId": "jYrUx",
       "catalogPath": "Sources/English/005",
       "sourceName": "IMDb",
       "errors": [
-        "stream: extractStreamUrl returned an unusable result"
+        "implausible episode match: verified=5 available=12 expected<=5"
       ]
     },
     {
-      "aniListId": 185874,
-      "title": "BLEACH: Thousand-Year Blood War - The Calamity",
-      "moduleId": "vidlink-local",
-      "catalogPath": "Sources/English/010",
-      "sourceName": "VidLink",
+      "aniListId": 199748,
+      "title": "I Became a Legend After My 10 Year-Long Last Stand",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "Anikoto",
       "errors": [
-        "implausible episode match: verified=1 available=1 expected<=2"
-      ]
-    },
-    {
-      "aniListId": 185874,
-      "title": "BLEACH: Thousand-Year Blood War - The Calamity",
-      "moduleId": "BNbnN",
-      "catalogPath": "Sources/English/009",
-      "sourceName": "AnimeDefenders",
-      "errors": [
-        "implausible episode match: verified=2 available=41 expected<=2"
+        "stream: extractStreamUrl timed out"
       ]
     },
     {
@@ -644,18 +734,8 @@
       ]
     },
     {
-      "aniListId": 196218,
-      "title": "The Frontier Lord Begins with Zero Subjects",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/007",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 196218,
-      "title": "The Frontier Lord Begins with Zero Subjects",
+      "aniListId": 199748,
+      "title": "I Became a Legend After My 10 Year-Long Last Stand",
       "moduleId": "BmnXo",
       "catalogPath": "Sources/English/004",
       "sourceName": "OneTouch TV",
@@ -666,11 +746,41 @@
     {
       "aniListId": 196218,
       "title": "The Frontier Lord Begins with Zero Subjects",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/007",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 199748,
+      "title": "I Became a Legend After My 10 Year-Long Last Stand",
+      "moduleId": "vidlink-local",
+      "catalogPath": "Sources/English/010",
+      "sourceName": "VidLink",
+      "errors": [
+        "implausible episode match: verified=5 available=12 expected<=5"
+      ]
+    },
+    {
+      "aniListId": 196218,
+      "title": "The Frontier Lord Begins with Zero Subjects",
       "moduleId": "jYrUx",
       "catalogPath": "Sources/English/005",
       "sourceName": "IMDb",
       "errors": [
         "implausible episode match: verified=5 available=12 expected<=5"
+      ]
+    },
+    {
+      "aniListId": 196218,
+      "title": "The Frontier Lord Begins with Zero Subjects",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/004",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "implausible episode match: verified=1 available=1 expected<=5"
       ]
     },
     {
@@ -696,66 +806,6 @@
     {
       "aniListId": 196218,
       "title": "The Frontier Lord Begins with Zero Subjects",
-      "moduleId": "vidlink-local",
-      "catalogPath": "Sources/English/010",
-      "sourceName": "VidLink",
-      "errors": [
-        "stream: Cannot read properties of null (reading 'stream')"
-      ]
-    },
-    {
-      "aniListId": 185874,
-      "title": "BLEACH: Thousand-Year Blood War - The Calamity",
-      "moduleId": "BSyfU",
-      "catalogPath": "Sources/English/011",
-      "sourceName": "Kisskh",
-      "errors": [
-        "implausible episode match: verified=1 available=1 expected<=2"
-      ]
-    },
-    {
-      "aniListId": 182205,
-      "title": "That Time I Got Reincarnated as a Slime Season 4",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 182205,
-      "title": "That Time I Got Reincarnated as a Slime Season 4",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/007",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 182205,
-      "title": "That Time I Got Reincarnated as a Slime Season 4",
-      "moduleId": "jYrUx",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "IMDb",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 182205,
-      "title": "That Time I Got Reincarnated as a Slime Season 4",
-      "moduleId": "vidlink-local",
-      "catalogPath": "Sources/English/010",
-      "sourceName": "VidLink",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 196218,
-      "title": "The Frontier Lord Begins with Zero Subjects",
       "moduleId": "BSyfU",
       "catalogPath": "Sources/English/011",
       "sourceName": "Kisskh",
@@ -764,63 +814,13 @@
       ]
     },
     {
-      "aniListId": 208044,
-      "title": "From Overshadowed to Overpowered: Second Reincarnation of a Talentless Sage",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 208044,
-      "title": "From Overshadowed to Overpowered: Second Reincarnation of a Talentless Sage",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/007",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 208044,
-      "title": "From Overshadowed to Overpowered: Second Reincarnation of a Talentless Sage",
-      "moduleId": "animekai-unoriginal-local",
-      "catalogPath": "Sources/English/006",
-      "sourceName": "AnimeKai (Unoriginal)",
-      "errors": [
-        "implausible episode match: verified=6 available=12 expected<=6"
-      ]
-    },
-    {
-      "aniListId": 208044,
-      "title": "From Overshadowed to Overpowered: Second Reincarnation of a Talentless Sage",
-      "moduleId": "jYrUx",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "IMDb",
-      "errors": [
-        "implausible episode match: verified=6 available=12 expected<=6"
-      ]
-    },
-    {
-      "aniListId": 208044,
-      "title": "From Overshadowed to Overpowered: Second Reincarnation of a Talentless Sage",
+      "aniListId": 196218,
+      "title": "The Frontier Lord Begins with Zero Subjects",
       "moduleId": "vidlink-local",
       "catalogPath": "Sources/English/010",
       "sourceName": "VidLink",
       "errors": [
-        "implausible episode match: verified=6 available=12 expected<=6"
-      ]
-    },
-    {
-      "aniListId": 208044,
-      "title": "From Overshadowed to Overpowered: Second Reincarnation of a Talentless Sage",
-      "moduleId": "BSyfU",
-      "catalogPath": "Sources/English/011",
-      "sourceName": "Kisskh",
-      "errors": [
-        "implausible episode match: verified=6 available=12 expected<=6"
+        "stream: Cannot read properties of null (reading 'stream')"
       ]
     },
     {
@@ -846,21 +846,21 @@
     {
       "aniListId": 196187,
       "title": "Smoking Behind the Supermarket with You",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/007",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 196187,
-      "title": "Smoking Behind the Supermarket with You",
       "moduleId": "jYrUx",
       "catalogPath": "Sources/English/005",
       "sourceName": "IMDb",
       "errors": [
         "implausible episode match: verified=4 available=12 expected<=4"
+      ]
+    },
+    {
+      "aniListId": 196187,
+      "title": "Smoking Behind the Supermarket with You",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/007",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
       ]
     },
     {
@@ -876,16 +876,6 @@
     {
       "aniListId": 196187,
       "title": "Smoking Behind the Supermarket with You",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 196187,
-      "title": "Smoking Behind the Supermarket with You",
       "moduleId": "vidlink-local",
       "catalogPath": "Sources/English/010",
       "sourceName": "VidLink",
@@ -896,46 +886,6 @@
     {
       "aniListId": 196187,
       "title": "Smoking Behind the Supermarket with You",
-      "moduleId": "BSyfU",
-      "catalogPath": "Sources/English/011",
-      "sourceName": "Kisskh",
-      "errors": [
-        "stream: extractStreamUrl timed out"
-      ]
-    },
-    {
-      "aniListId": 180136,
-      "title": "The Exiled Heavy Knight Knows How to Game the System",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 180136,
-      "title": "The Exiled Heavy Knight Knows How to Game the System",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/007",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 180136,
-      "title": "The Exiled Heavy Knight Knows How to Game the System",
-      "moduleId": "jYrUx",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "IMDb",
-      "errors": [
-        "implausible episode match: verified=5 available=26 expected<=5"
-      ]
-    },
-    {
-      "aniListId": 180136,
-      "title": "The Exiled Heavy Knight Knows How to Game the System",
       "moduleId": "BmnXo",
       "catalogPath": "Sources/English/004",
       "sourceName": "OneTouch TV",
@@ -944,18 +894,8 @@
       ]
     },
     {
-      "aniListId": 180136,
-      "title": "The Exiled Heavy Knight Knows How to Game the System",
-      "moduleId": "vidlink-local",
-      "catalogPath": "Sources/English/010",
-      "sourceName": "VidLink",
-      "errors": [
-        "implausible episode match: verified=5 available=26 expected<=5"
-      ]
-    },
-    {
-      "aniListId": 180136,
-      "title": "The Exiled Heavy Knight Knows How to Game the System",
+      "aniListId": 199748,
+      "title": "I Became a Legend After My 10 Year-Long Last Stand",
       "moduleId": "BSyfU",
       "catalogPath": "Sources/English/011",
       "sourceName": "Kisskh",
@@ -964,8 +904,8 @@
       ]
     },
     {
-      "aniListId": 182616,
-      "title": "The Elusive Samurai Season 2",
+      "aniListId": 196017,
+      "title": "Grow Up Show",
       "moduleId": "BiECa",
       "catalogPath": "Sources/English/001",
       "sourceName": "IPTV-org",
@@ -974,68 +914,8 @@
       ]
     },
     {
-      "aniListId": 182616,
-      "title": "The Elusive Samurai Season 2",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/007",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 182616,
-      "title": "The Elusive Samurai Season 2",
-      "moduleId": "jYrUx",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "IMDb",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 182616,
-      "title": "The Elusive Samurai Season 2",
-      "moduleId": "vidlink-local",
-      "catalogPath": "Sources/English/010",
-      "sourceName": "VidLink",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 182616,
-      "title": "The Elusive Samurai Season 2",
-      "moduleId": "BSyfU",
-      "catalogPath": "Sources/English/011",
-      "sourceName": "Kisskh",
-      "errors": [
-        "stream: extractStreamUrl timed out"
-      ]
-    },
-    {
-      "aniListId": 195600,
-      "title": "Daemons of the Shadow Realm",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 195600,
-      "title": "Daemons of the Shadow Realm",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/007",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 195600,
-      "title": "Daemons of the Shadow Realm",
+      "aniListId": 196017,
+      "title": "Grow Up Show",
       "moduleId": "jYrUx",
       "catalogPath": "Sources/English/005",
       "sourceName": "IMDb",
@@ -1044,8 +924,28 @@
       ]
     },
     {
-      "aniListId": 195600,
-      "title": "Daemons of the Shadow Realm",
+      "aniListId": 196017,
+      "title": "Grow Up Show",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/007",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 196017,
+      "title": "Grow Up Show",
+      "moduleId": "BNbnN",
+      "catalogPath": "Sources/English/009",
+      "sourceName": "AnimeDefenders",
+      "errors": [
+        "implausible episode match: verified=4 available=4 expected<=5"
+      ]
+    },
+    {
+      "aniListId": 196017,
+      "title": "Grow Up Show",
       "moduleId": "BmnXo",
       "catalogPath": "Sources/English/004",
       "sourceName": "OneTouch TV",
@@ -1054,18 +954,18 @@
       ]
     },
     {
-      "aniListId": 195600,
-      "title": "Daemons of the Shadow Realm",
-      "moduleId": "BNbnN",
-      "catalogPath": "Sources/English/009",
-      "sourceName": "AnimeDefenders",
+      "aniListId": 196017,
+      "title": "Grow Up Show",
+      "moduleId": "BSyfU",
+      "catalogPath": "Sources/English/011",
+      "sourceName": "Kisskh",
       "errors": [
-        "implausible episode match: verified=16 available=16 expected<=17"
+        "implausible episode match: verified=1 available=1 expected<=5"
       ]
     },
     {
-      "aniListId": 195600,
-      "title": "Daemons of the Shadow Realm",
+      "aniListId": 196017,
+      "title": "Grow Up Show",
       "moduleId": "vidlink-local",
       "catalogPath": "Sources/English/010",
       "sourceName": "VidLink",
@@ -1074,45 +974,123 @@
       ]
     },
     {
-      "aniListId": 195600,
-      "title": "Daemons of the Shadow Realm",
-      "moduleId": "BSyfU",
-      "catalogPath": "Sources/English/011",
-      "sourceName": "Kisskh",
-      "errors": [
-        "implausible episode match: verified=16 available=16 expected<=17"
-      ]
-    },
-    {
-      "aniListId": 182205,
-      "title": "That Time I Got Reincarnated as a Slime Season 4",
-      "moduleId": "BSyfU",
-      "catalogPath": "Sources/English/011",
-      "sourceName": "Kisskh",
-      "errors": [
-        "implausible episode match: verified=16 available=52 expected<=16"
-      ]
-    },
-    {
-      "aniListId": 195600,
-      "title": "Daemons of the Shadow Realm",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/003",
-      "sourceName": "Anikoto",
-      "errors": [
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 135865,
-      "title": "Saga of Tanya the Evil Season 2",
+      "aniListId": 207141,
+      "title": "Chainsmoker Cat",
       "moduleId": "BiECa",
       "catalogPath": "Sources/English/001",
       "sourceName": "IPTV-org",
       "errors": [
         "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 207141,
+      "title": "Chainsmoker Cat",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/007",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 207141,
+      "title": "Chainsmoker Cat",
+      "moduleId": "jYrUx",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "IMDb",
+      "errors": [
+        "implausible episode match: verified=5 available=12 expected<=5"
+      ]
+    },
+    {
+      "aniListId": 207141,
+      "title": "Chainsmoker Cat",
+      "moduleId": "vidlink-local",
+      "catalogPath": "Sources/English/010",
+      "sourceName": "VidLink",
+      "errors": [
+        "implausible episode match: verified=5 available=12 expected<=5"
+      ]
+    },
+    {
+      "aniListId": 196187,
+      "title": "Smoking Behind the Supermarket with You",
+      "moduleId": "BSyfU",
+      "catalogPath": "Sources/English/011",
+      "sourceName": "Kisskh",
+      "errors": [
+        "implausible episode match: verified=4 available=24 expected<=4"
+      ]
+    },
+    {
+      "aniListId": 208044,
+      "title": "From Overshadowed to Overpowered: Second Reincarnation of a Talentless Sage",
+      "moduleId": "BiECa",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "IPTV-org",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 208044,
+      "title": "From Overshadowed to Overpowered: Second Reincarnation of a Talentless Sage",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/007",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 207141,
+      "title": "Chainsmoker Cat",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/004",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 208044,
+      "title": "From Overshadowed to Overpowered: Second Reincarnation of a Talentless Sage",
+      "moduleId": "jYrUx",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "IMDb",
+      "errors": [
+        "implausible episode match: verified=6 available=12 expected<=6"
+      ]
+    },
+    {
+      "aniListId": 208044,
+      "title": "From Overshadowed to Overpowered: Second Reincarnation of a Talentless Sage",
+      "moduleId": "animekai-unoriginal-local",
+      "catalogPath": "Sources/English/006",
+      "sourceName": "AnimeKai (Unoriginal)",
+      "errors": [
+        "implausible episode match: verified=6 available=12 expected<=6"
+      ]
+    },
+    {
+      "aniListId": 208044,
+      "title": "From Overshadowed to Overpowered: Second Reincarnation of a Talentless Sage",
+      "moduleId": "vidlink-local",
+      "catalogPath": "Sources/English/010",
+      "sourceName": "VidLink",
+      "errors": [
+        "implausible episode match: verified=6 available=12 expected<=6"
+      ]
+    },
+    {
+      "aniListId": 207141,
+      "title": "Chainsmoker Cat",
+      "moduleId": "BSyfU",
+      "catalogPath": "Sources/English/011",
+      "sourceName": "Kisskh",
+      "errors": [
+        "stream: extractStreamUrl timed out"
       ]
     },
     {
@@ -1136,13 +1114,23 @@
       ]
     },
     {
-      "aniListId": 135865,
-      "title": "Saga of Tanya the Evil Season 2",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/007",
-      "sourceName": "AnimeLand",
+      "aniListId": 178789,
+      "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
+      "moduleId": "jYrUx",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "IMDb",
       "errors": [
         "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 208044,
+      "title": "From Overshadowed to Overpowered: Second Reincarnation of a Talentless Sage",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/004",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "stream: extractStreamUrl timed out"
       ]
     },
     {
@@ -1156,48 +1144,8 @@
       ]
     },
     {
-      "aniListId": 135865,
-      "title": "Saga of Tanya the Evil Season 2",
-      "moduleId": "jYrUx",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "IMDb",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
       "aniListId": 178789,
       "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
-      "moduleId": "jYrUx",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "IMDb",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 135865,
-      "title": "Saga of Tanya the Evil Season 2",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "implausible episode match: verified=1 available=1 expected<=4"
-      ]
-    },
-    {
-      "aniListId": 178789,
-      "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
-      "moduleId": "vidlink-local",
-      "catalogPath": "Sources/English/010",
-      "sourceName": "VidLink",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 135865,
-      "title": "Saga of Tanya the Evil Season 2",
       "moduleId": "vidlink-local",
       "catalogPath": "Sources/English/010",
       "sourceName": "VidLink",
@@ -1216,8 +1164,8 @@
       ]
     },
     {
-      "aniListId": 204466,
-      "title": "KAIJU GIRL CARAMELISE",
+      "aniListId": 180136,
+      "title": "The Exiled Heavy Knight Knows How to Game the System",
       "moduleId": "BiECa",
       "catalogPath": "Sources/English/001",
       "sourceName": "IPTV-org",
@@ -1226,8 +1174,8 @@
       ]
     },
     {
-      "aniListId": 204466,
-      "title": "KAIJU GIRL CARAMELISE",
+      "aniListId": 180136,
+      "title": "The Exiled Heavy Knight Knows How to Game the System",
       "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/007",
       "sourceName": "AnimeLand",
@@ -1236,18 +1184,28 @@
       ]
     },
     {
-      "aniListId": 204466,
-      "title": "KAIJU GIRL CARAMELISE",
+      "aniListId": 180136,
+      "title": "The Exiled Heavy Knight Knows How to Game the System",
       "moduleId": "jYrUx",
       "catalogPath": "Sources/English/005",
       "sourceName": "IMDb",
       "errors": [
-        "implausible episode match: verified=5 available=12 expected<=5"
+        "implausible episode match: verified=5 available=26 expected<=5"
       ]
     },
     {
-      "aniListId": 204466,
-      "title": "KAIJU GIRL CARAMELISE",
+      "aniListId": 180136,
+      "title": "The Exiled Heavy Knight Knows How to Game the System",
+      "moduleId": "vidlink-local",
+      "catalogPath": "Sources/English/010",
+      "sourceName": "VidLink",
+      "errors": [
+        "implausible episode match: verified=5 available=26 expected<=5"
+      ]
+    },
+    {
+      "aniListId": 180136,
+      "title": "The Exiled Heavy Knight Knows How to Game the System",
       "moduleId": "BmnXo",
       "catalogPath": "Sources/English/004",
       "sourceName": "OneTouch TV",
@@ -1256,18 +1214,8 @@
       ]
     },
     {
-      "aniListId": 204466,
-      "title": "KAIJU GIRL CARAMELISE",
-      "moduleId": "vidlink-local",
-      "catalogPath": "Sources/English/010",
-      "sourceName": "VidLink",
-      "errors": [
-        "implausible episode match: verified=5 available=12 expected<=5"
-      ]
-    },
-    {
-      "aniListId": 204466,
-      "title": "KAIJU GIRL CARAMELISE",
+      "aniListId": 208044,
+      "title": "From Overshadowed to Overpowered: Second Reincarnation of a Talentless Sage",
       "moduleId": "BSyfU",
       "catalogPath": "Sources/English/011",
       "sourceName": "Kisskh",
@@ -1276,8 +1224,8 @@
       ]
     },
     {
-      "aniListId": 11061,
-      "title": "Hunter x Hunter (2011)",
+      "aniListId": 182616,
+      "title": "The Elusive Samurai Season 2",
       "moduleId": "BiECa",
       "catalogPath": "Sources/English/001",
       "sourceName": "IPTV-org",
@@ -1286,8 +1234,8 @@
       ]
     },
     {
-      "aniListId": 11061,
-      "title": "Hunter x Hunter (2011)",
+      "aniListId": 182616,
+      "title": "The Elusive Samurai Season 2",
       "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/007",
       "sourceName": "AnimeLand",
@@ -1296,8 +1244,8 @@
       ]
     },
     {
-      "aniListId": 11061,
-      "title": "Hunter x Hunter (2011)",
+      "aniListId": 182616,
+      "title": "The Elusive Samurai Season 2",
       "moduleId": "jYrUx",
       "catalogPath": "Sources/English/005",
       "sourceName": "IMDb",
@@ -1306,8 +1254,8 @@
       ]
     },
     {
-      "aniListId": 11061,
-      "title": "Hunter x Hunter (2011)",
+      "aniListId": 182616,
+      "title": "The Elusive Samurai Season 2",
       "moduleId": "vidlink-local",
       "catalogPath": "Sources/English/010",
       "sourceName": "VidLink",
@@ -1316,123 +1264,135 @@
       ]
     },
     {
-      "aniListId": 11061,
-      "title": "Hunter x Hunter (2011)",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "implausible episode match: verified=5 available=5 expected<=148"
-      ]
-    },
-    {
-      "aniListId": 135865,
-      "title": "Saga of Tanya the Evil Season 2",
+      "aniListId": 182616,
+      "title": "The Elusive Samurai Season 2",
       "moduleId": "BSyfU",
       "catalogPath": "Sources/English/011",
       "sourceName": "Kisskh",
       "errors": [
-        "implausible episode match: verified=4 available=13 expected<=4"
+        "stream: extractStreamUrl timed out"
       ]
     },
     {
-      "aniListId": 190569,
-      "title": "Jaadugar: A Witch in Mongolia",
+      "aniListId": 1735,
+      "title": "Naruto: Shippuden",
       "moduleId": "BiECa",
       "catalogPath": "Sources/English/001",
       "sourceName": "IPTV-org",
       "errors": [
-        "search: searchResults returned an unusable result"
+        "implausible episode match: verified=1 available=1 expected<=500"
       ]
     },
     {
-      "aniListId": 190569,
-      "title": "Jaadugar: A Witch in Mongolia",
+      "aniListId": 1735,
+      "title": "Naruto: Shippuden",
       "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/007",
       "sourceName": "AnimeLand",
       "errors": [
-        "search: searchResults returned an unusable result"
+        "implausible episode match: verified=1 available=1 expected<=500"
       ]
     },
     {
-      "aniListId": 190569,
-      "title": "Jaadugar: A Witch in Mongolia",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/003",
-      "sourceName": "Anikoto",
-      "errors": [
-        "implausible episode match: verified=5 available=5 expected<=6"
-      ]
-    },
-    {
-      "aniListId": 190569,
-      "title": "Jaadugar: A Witch in Mongolia",
+      "aniListId": 1735,
+      "title": "Naruto: Shippuden",
       "moduleId": "jYrUx",
       "catalogPath": "Sources/English/005",
       "sourceName": "IMDb",
       "errors": [
-        "stream: extractStreamUrl returned an unusable result"
+        "implausible episode match: verified=1 available=1 expected<=500"
       ]
     },
     {
-      "aniListId": 190569,
-      "title": "Jaadugar: A Witch in Mongolia",
-      "moduleId": "animekai-unoriginal-local",
-      "catalogPath": "Sources/English/006",
-      "sourceName": "AnimeKai (Unoriginal)",
-      "errors": [
-        "implausible episode match: verified=5 available=5 expected<=6"
-      ]
-    },
-    {
-      "aniListId": 190569,
-      "title": "Jaadugar: A Witch in Mongolia",
+      "aniListId": 1735,
+      "title": "Naruto: Shippuden",
       "moduleId": "BmnXo",
       "catalogPath": "Sources/English/004",
       "sourceName": "OneTouch TV",
       "errors": [
-        "search: searchResults returned an unusable result"
+        "implausible episode match: verified=1 available=1 expected<=500"
       ]
     },
     {
-      "aniListId": 190569,
-      "title": "Jaadugar: A Witch in Mongolia",
-      "moduleId": "animesogo-local",
-      "catalogPath": "Sources/English/008",
-      "sourceName": "AnimeSogo",
-      "errors": [
-        "implausible episode match: verified=5 available=5 expected<=6"
-      ]
-    },
-    {
-      "aniListId": 190569,
-      "title": "Jaadugar: A Witch in Mongolia",
-      "moduleId": "BNbnN",
-      "catalogPath": "Sources/English/009",
-      "sourceName": "AnimeDefenders",
-      "errors": [
-        "implausible episode match: verified=5 available=5 expected<=6"
-      ]
-    },
-    {
-      "aniListId": 190569,
-      "title": "Jaadugar: A Witch in Mongolia",
+      "aniListId": 1735,
+      "title": "Naruto: Shippuden",
       "moduleId": "vidlink-local",
       "catalogPath": "Sources/English/010",
       "sourceName": "VidLink",
       "errors": [
+        "stream: Cannot read properties of null (reading 'stream')",
+        "stream: Cannot read properties of null (reading 'stream')",
         "stream: Cannot read properties of null (reading 'stream')"
       ]
     },
     {
-      "aniListId": 190569,
-      "title": "Jaadugar: A Witch in Mongolia",
+      "aniListId": 180136,
+      "title": "The Exiled Heavy Knight Knows How to Game the System",
       "moduleId": "BSyfU",
       "catalogPath": "Sources/English/011",
       "sourceName": "Kisskh",
       "errors": [
-        "implausible episode match: verified=5 available=5 expected<=6"
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 204466,
+      "title": "KAIJU GIRL CARAMELISE",
+      "moduleId": "BiECa",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "IPTV-org",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 204466,
+      "title": "KAIJU GIRL CARAMELISE",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/007",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 204466,
+      "title": "KAIJU GIRL CARAMELISE",
+      "moduleId": "jYrUx",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "IMDb",
+      "errors": [
+        "implausible episode match: verified=5 available=12 expected<=5"
+      ]
+    },
+    {
+      "aniListId": 204466,
+      "title": "KAIJU GIRL CARAMELISE",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/004",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 204466,
+      "title": "KAIJU GIRL CARAMELISE",
+      "moduleId": "vidlink-local",
+      "catalogPath": "Sources/English/010",
+      "sourceName": "VidLink",
+      "errors": [
+        "implausible episode match: verified=5 available=12 expected<=5"
+      ]
+    },
+    {
+      "aniListId": 1735,
+      "title": "Naruto: Shippuden",
+      "moduleId": "BSyfU",
+      "catalogPath": "Sources/English/011",
+      "sourceName": "Kisskh",
+      "errors": [
+        "stream: extractStreamUrl timed out"
       ]
     },
     {
@@ -1466,13 +1426,13 @@
       ]
     },
     {
-      "aniListId": 11061,
-      "title": "Hunter x Hunter (2011)",
+      "aniListId": 204466,
+      "title": "KAIJU GIRL CARAMELISE",
       "moduleId": "BSyfU",
       "catalogPath": "Sources/English/011",
       "sourceName": "Kisskh",
       "errors": [
-        "implausible episode match: verified=12 available=12 expected<=148"
+        "stream: extractStreamUrl timed out"
       ]
     },
     {
@@ -1481,6 +1441,66 @@
       "moduleId": "BiECa",
       "catalogPath": "Sources/English/001",
       "sourceName": "IPTV-org",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 97940,
+      "title": "Black Clover",
+      "moduleId": "BSyfU",
+      "catalogPath": "Sources/English/011",
+      "sourceName": "Kisskh",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 135865,
+      "title": "Saga of Tanya the Evil Season 2",
+      "moduleId": "BiECa",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "IPTV-org",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 135865,
+      "title": "Saga of Tanya the Evil Season 2",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/007",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 147105,
+      "title": "Witch Hat Atelier",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/004",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 135865,
+      "title": "Saga of Tanya the Evil Season 2",
+      "moduleId": "jYrUx",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "IMDb",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 135865,
+      "title": "Saga of Tanya the Evil Season 2",
+      "moduleId": "vidlink-local",
+      "catalogPath": "Sources/English/010",
+      "sourceName": "VidLink",
       "errors": [
         "search: searchResults returned an unusable result"
       ]
@@ -1498,11 +1518,21 @@
     {
       "aniListId": 147105,
       "title": "Witch Hat Atelier",
+      "moduleId": "vidlink-local",
+      "catalogPath": "Sources/English/010",
+      "sourceName": "VidLink",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 135865,
+      "title": "Saga of Tanya the Evil Season 2",
       "moduleId": "BmnXo",
       "catalogPath": "Sources/English/004",
       "sourceName": "OneTouch TV",
       "errors": [
-        "search: searchResults returned an unusable result"
+        "implausible episode match: verified=1 available=1 expected<=4"
       ]
     },
     {
@@ -1513,56 +1543,6 @@
       "sourceName": "Kisskh",
       "errors": [
         "stream: extractStreamUrl timed out"
-      ]
-    },
-    {
-      "aniListId": 1735,
-      "title": "Naruto: Shippuden",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "implausible episode match: verified=1 available=1 expected<=500"
-      ]
-    },
-    {
-      "aniListId": 1735,
-      "title": "Naruto: Shippuden",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/007",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "implausible episode match: verified=1 available=1 expected<=500"
-      ]
-    },
-    {
-      "aniListId": 1735,
-      "title": "Naruto: Shippuden",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "implausible episode match: verified=1 available=1 expected<=500"
-      ]
-    },
-    {
-      "aniListId": 1735,
-      "title": "Naruto: Shippuden",
-      "moduleId": "jYrUx",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "IMDb",
-      "errors": [
-        "implausible episode match: verified=1 available=1 expected<=500"
-      ]
-    },
-    {
-      "aniListId": 97940,
-      "title": "Black Clover",
-      "moduleId": "BSyfU",
-      "catalogPath": "Sources/English/011",
-      "sourceName": "Kisskh",
-      "errors": [
-        "implausible episode match: verified=1 available=1 expected<=170"
       ]
     },
     {
@@ -1626,25 +1606,13 @@
       ]
     },
     {
-      "aniListId": 1735,
-      "title": "Naruto: Shippuden",
-      "moduleId": "vidlink-local",
-      "catalogPath": "Sources/English/010",
-      "sourceName": "VidLink",
-      "errors": [
-        "stream: Cannot read properties of null (reading 'stream')",
-        "stream: Cannot read properties of null (reading 'stream')",
-        "stream: Cannot read properties of null (reading 'stream')"
-      ]
-    },
-    {
-      "aniListId": 210031,
-      "title": "You and I Are Polar Opposites Season 2",
+      "aniListId": 135865,
+      "title": "Saga of Tanya the Evil Season 2",
       "moduleId": "BSyfU",
       "catalogPath": "Sources/English/011",
       "sourceName": "Kisskh",
       "errors": [
-        "stream: extractStreamUrl timed out"
+        "implausible episode match: verified=4 available=13 expected<=4"
       ]
     },
     {
@@ -1698,8 +1666,8 @@
       ]
     },
     {
-      "aniListId": 187260,
-      "title": "I Want to Love You Till Your Dying Day",
+      "aniListId": 210031,
+      "title": "You and I Are Polar Opposites Season 2",
       "moduleId": "BSyfU",
       "catalogPath": "Sources/English/011",
       "sourceName": "Kisskh",
@@ -1740,16 +1708,6 @@
     {
       "aniListId": 103303,
       "title": "Sparks of Tomorrow",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 103303,
-      "title": "Sparks of Tomorrow",
       "moduleId": "vidlink-local",
       "catalogPath": "Sources/English/010",
       "sourceName": "VidLink",
@@ -1763,6 +1721,16 @@
       "moduleId": "BNbnN",
       "catalogPath": "Sources/English/009",
       "sourceName": "AnimeDefenders",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 103303,
+      "title": "Sparks of Tomorrow",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/004",
+      "sourceName": "OneTouch TV",
       "errors": [
         "search: searchResults returned an unusable result"
       ]
@@ -1820,11 +1788,21 @@
     {
       "aniListId": 159309,
       "title": "Trapped in a Dating Sim: The World of Otome Games is Tough for Mobs Season 2",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/004",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "stream: extractStreamUrl timed out"
+      ]
+    },
+    {
+      "aniListId": 187260,
+      "title": "I Want to Love You Till Your Dying Day",
       "moduleId": "BSyfU",
       "catalogPath": "Sources/English/011",
       "sourceName": "Kisskh",
       "errors": [
-        "implausible episode match: verified=4 available=9 expected<=4"
+        "stream: extractStreamUrl timed out"
       ]
     },
     {
@@ -1840,19 +1818,29 @@
     {
       "aniListId": 177699,
       "title": "THE GHOST IN THE SHELL",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "implausible episode match: verified=1 available=1 expected<=4"
-      ]
-    },
-    {
-      "aniListId": 177699,
-      "title": "THE GHOST IN THE SHELL",
       "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/007",
       "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 159309,
+      "title": "Trapped in a Dating Sim: The World of Otome Games is Tough for Mobs Season 2",
+      "moduleId": "BSyfU",
+      "catalogPath": "Sources/English/011",
+      "sourceName": "Kisskh",
+      "errors": [
+        "implausible episode match: verified=4 available=9 expected<=4"
+      ]
+    },
+    {
+      "aniListId": 185542,
+      "title": "Skeleton Knight in Another World Season 2",
+      "moduleId": "BiECa",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "IPTV-org",
       "errors": [
         "search: searchResults returned an unusable result"
       ]
@@ -1865,6 +1853,36 @@
       "sourceName": "IMDb",
       "errors": [
         "implausible episode match: verified=4 available=10 expected<=4"
+      ]
+    },
+    {
+      "aniListId": 185542,
+      "title": "Skeleton Knight in Another World Season 2",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/007",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 177699,
+      "title": "THE GHOST IN THE SHELL",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/004",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "implausible episode match: verified=1 available=1 expected<=4"
+      ]
+    },
+    {
+      "aniListId": 185542,
+      "title": "Skeleton Knight in Another World Season 2",
+      "moduleId": "jYrUx",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "IMDb",
+      "errors": [
+        "search: searchResults returned an unusable result"
       ]
     },
     {
@@ -1888,46 +1906,6 @@
       ]
     },
     {
-      "aniListId": 177699,
-      "title": "THE GHOST IN THE SHELL",
-      "moduleId": "BSyfU",
-      "catalogPath": "Sources/English/011",
-      "sourceName": "Kisskh",
-      "errors": [
-        "implausible episode match: verified=1 available=1 expected<=4"
-      ]
-    },
-    {
-      "aniListId": 185542,
-      "title": "Skeleton Knight in Another World Season 2",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 185542,
-      "title": "Skeleton Knight in Another World Season 2",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/007",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 185542,
-      "title": "Skeleton Knight in Another World Season 2",
-      "moduleId": "jYrUx",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "IMDb",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
       "aniListId": 185542,
       "title": "Skeleton Knight in Another World Season 2",
       "moduleId": "vidlink-local",
@@ -1935,16 +1913,6 @@
       "sourceName": "VidLink",
       "errors": [
         "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 185542,
-      "title": "Skeleton Knight in Another World Season 2",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "implausible episode match: verified=4 available=13 expected<=4"
       ]
     },
     {
@@ -1958,6 +1926,18 @@
       ]
     },
     {
+      "aniListId": 185542,
+      "title": "Skeleton Knight in Another World Season 2",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/004",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "stream: extractStreamUrl returned an unusable result",
+        "episodes: extractEpisodes returned an unusable result",
+        "stream: extractStreamUrl returned an unusable result"
+      ]
+    },
+    {
       "aniListId": 198946,
       "title": "Clevatess Season 2",
       "moduleId": "BiECa",
@@ -1983,26 +1963,6 @@
       "moduleId": "jYrUx",
       "catalogPath": "Sources/English/005",
       "sourceName": "IMDb",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 198946,
-      "title": "Clevatess Season 2",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 198946,
-      "title": "Clevatess Season 2",
-      "moduleId": "vidlink-local",
-      "catalogPath": "Sources/English/010",
-      "sourceName": "VidLink",
       "errors": [
         "search: searchResults returned an unusable result"
       ]
@@ -2018,13 +1978,53 @@
       ]
     },
     {
-      "aniListId": 198946,
-      "title": "Clevatess Season 2",
+      "aniListId": 177699,
+      "title": "THE GHOST IN THE SHELL",
       "moduleId": "BSyfU",
       "catalogPath": "Sources/English/011",
       "sourceName": "Kisskh",
       "errors": [
-        "stream: extractStreamUrl timed out"
+        "implausible episode match: verified=4 available=26 expected<=4"
+      ]
+    },
+    {
+      "aniListId": 194829,
+      "title": "From Old Country Bumpkin to Master Swordsman II",
+      "moduleId": "BiECa",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "IPTV-org",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 198946,
+      "title": "Clevatess Season 2",
+      "moduleId": "vidlink-local",
+      "catalogPath": "Sources/English/010",
+      "sourceName": "VidLink",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 194829,
+      "title": "From Old Country Bumpkin to Master Swordsman II",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/007",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 194829,
+      "title": "From Old Country Bumpkin to Master Swordsman II",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/004",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "implausible episode match: verified=1 available=1 expected<=4"
       ]
     }
   ]
