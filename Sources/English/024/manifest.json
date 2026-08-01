@@ -1,26 +1,24 @@
 {
-  "id": "zangetsu_animekai",
-  "sourceName": "AnimeKai (Zangetsu)",
-  "iconUrl": "",
-  "version": "1.1.2",
+  "sourceName": "Aether",
+  "iconUrl": "https://aether.bar/favicon.ico",
+  "author": {
+    "name": "MXFia19",
+    "icon": "https://i.pinimg.com/1200x/89/78/33/89783349d3270e4ab071db9a038db8ea.jpg",
+    "url": "https://github.com/MXFia19"
+  },
+  "version": "1.2.0",
   "language": "English",
   "streamType": "HLS",
   "quality": "1080p",
-  "baseUrl": "https://animekai.to/",
+  "baseUrl": "https://aether.bar/",
+  "searchBaseUrl": "https://api.themoviedb.org/3/search/multi",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/024/source.js",
-  "softsub": true,
+  "type": "shows/movies/anime",
+  "downloadSupport": true,
   "asyncJS": true,
-  "type": "anime",
-  "registry": "zangetsu",
-  "registries": [
-    "zangetsu"
-  ],
-  "manifestUrl": "https://raw.githubusercontent.com/Spyou/zangetsu-providers/main/index.json",
-  "status": "active",
-  "addedAt": "2026-06-14T10:25:50.353Z",
-  "note": "Ported from Zangetsu provider",
-  "author": {
-    "name": "Spyou",
-    "icon": ""
-  }
+  "softsub": true,
+  "supportsSora": true,
+  "supportsLuna": true,
+  "changelog": "Add fast.aether scrape servers + vdrk subtitle source",
+  "id": "jGSkn"
 }

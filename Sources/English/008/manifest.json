@@ -1,32 +1,28 @@
 {
-  "sourceName": "AnimeLand",
-  "iconUrl": "https://w7.animeland.tv/wp-content/themes/twentytwelve/SAO2.ico",
+  "sourceName": "AnimeSogo",
+  "iconUrl": "https://animesogo.to/favicon.ico",
   "author": {
-    "name": "50/50",
-    "icon": "https://files.catbox.moe/741wp7.png"
+    "name": "Yuzono AnikotoTheme"
   },
   "version": "1.0.0",
   "language": "English",
-  "languageType": [
-    "Subbed"
-  ],
-  "streamType": "mp4",
+  "streamType": "HLS",
   "quality": "1080p",
-  "baseUrl": "https://w7.animeland.tv/",
-  "searchBaseUrl": "https://w7.animeland.tv/",
+  "baseUrl": "https://animesogo.to/",
+  "searchBaseUrl": "https://animesogo.to/",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/008/source.js",
   "type": "anime",
   "asyncJS": true,
-  "softsub": false,
-  "downloadSupport": true,
-  "supportsMojuru": true,
-  "supportsDartotsu": true,
+  "softsub": true,
+  "downloadSupport": false,
   "supportsSora": true,
   "supportsLuna": true,
+  "supportsMojuru": true,
+  "supportsDartotsu": true,
   "supportsAnymex": true,
   "supportsTsumi": true,
   "supportsHiyoku": true,
   "supportsShirox": true,
   "supportsEclipse": true,
-  "id": "mod_942337115"
+  "id": "animesogo-local"
 }
