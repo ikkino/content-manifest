@@ -1,118 +1,119 @@
+const BASE_URL = "https://123animes.ru";
+
+function absoluteUrl(value) {
+  if (!value) return "";
+  if (/^https?:\/\//i.test(value)) return value;
+  return BASE_URL + (value.startsWith("/") ? value : "/" + value);
+}
+
+function animeSlug(url) {
+  return String(url || "").split("/anime/").pop().split("/")[0].split("?")[0];
+}
+
+function cleanText(value) {
+  return String(value || "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+}
+
+function normalizeTitle(value) {
+  return String(value || "").toLowerCase().replace(/\([^)]*\)/g, "").replace(/[^a-z0-9]+/g, "");
+}
+
+async function fetchText(url, options = {}) {
+  const response = await fetchv2(url, {
+    "Accept": "text/html,application/json,*/*",
+    "Referer": BASE_URL + "/",
+    ...(options.headers || {})
+  }, options.method, options.body);
+  if (!response.ok) throw new Error("HTTP " + response.status);
+  return response.text();
+}
+
 async function searchResults(keyword) {
-    const regex = /<a href="([^"]*)" class="mse">[\s\S]*?<img src="([^"]*)" class="media-object">[\s\S]*?<h2>([^<]*?)<\/h2>/g;
-    const results = [];
-    try {
-        const response = await fetchv2("https://www.animegg.org/search/?q=" + encodeURIComponent(keyword));
-        const html = await response.text();
+  const html = await fetchText(BASE_URL + "/search?keyword=" + encodeURIComponent(keyword));
+  const blocks = html.match(/<div class="item">[\s\S]*?(?=<div class="item">|<div class="clearfix"><\/div>)/g) || [];
+  const wanted = normalizeTitle(keyword);
+  const results = [];
 
-        let match;
-        while ((match = regex.exec(html)) !== null) {
-            results.push({
-                title: match[3].trim(),
-                image: match[2].trim(),
-                href: "https://www.animegg.org" + match[1].trim()
-            });
-        }
+  for (const block of blocks) {
+    const href = block.match(/<a href="([^"]+)"[^>]*class="(?:thumb|poster)[^"]*"/)?.[1]
+      || block.match(/<a href="([^"]+)"/)?.[1];
+    const title = block.match(/<a[^>]*class="name"[^>]*>([\s\S]*?)<\/a>/)?.[1]
+      || block.match(/<img[^>]*alt="([^"]+)"/)?.[1];
+    const image = block.match(/\sdata-src="([^"]+)"/)?.[1]
+      || block.match(/\ssrc="([^"]+)"/)?.[1]
+      || "";
 
-        return JSON.stringify(results);
-    } catch (err) {
-        return JSON.stringify([{
-            title: "Error",
-            image: "Error",
-            href: "Error"
-        }]);
-    }
+    if (!href || !title) continue;
+    results.push({
+      title: cleanText(title),
+      image: absoluteUrl(image),
+      href: absoluteUrl(href)
+    });
+  }
+
+  results.sort((a, b) => {
+    const aTitle = normalizeTitle(a.title);
+    const bTitle = normalizeTitle(b.title);
+    const aExact = aTitle === wanted ? 0 : 1;
+    const bExact = bTitle === wanted ? 0 : 1;
+    return aExact - bExact || a.title.length - b.title.length;
+  });
+
+  return JSON.stringify(results);
 }
 
 async function extractDetails(url) {
-    try {
-        const response = await fetchv2(url);
-        const html = await response.text();
+  const html = await fetchText(url);
+  const description = cleanText(html.match(/<div class="desc">([\s\S]*?)<\/div>/)?.[1]) || "N/A";
+  const aliases = cleanText(html.match(/<p class="alias">([\s\S]*?)<\/p>/)?.[1]) || "N/A";
+  const airdate = cleanText(html.match(/<dt>Released:<\/dt>\s*<dd>\s*<a[^>]*>([\s\S]*?)<\/a>/)?.[1]) || "N/A";
 
-        const descMatch = html.match(/<p class="ptext">(.*?)<\/p>/s);
-        const description = descMatch ? descMatch[1].trim() : "N/A";
-
-        return JSON.stringify([{
-            description: description,
-            aliases: "N/A",
-            airdate: "N/A"
-        }]);
-    } catch (err) {
-        return JSON.stringify([{
-            description: "Error",
-            aliases: "Error",
-            airdate: "Error"
-        }]);
-    }
+  return JSON.stringify([{ description, aliases, airdate }]);
 }
 
 async function extractEpisodes(url) {
-    const results = [];
-    try {
-        const response = await fetchv2(url);
-        const html = await response.text();
+  const slug = animeSlug(url);
+  if (!slug) return JSON.stringify([]);
 
-        const regex = /<a href="([^"]*)" class="anm_det_pop">[\s\S]*?<i class="anititle">(Episode (\d+)|Movie)<\/i>/g;
-        let match;
-        while ((match = regex.exec(html)) !== null) {
-            const href = "https://www.animegg.org" + match[1].trim();
-            let number;
-            if (match[2] === "Movie") {
-                number = 1;
-            } else {
-                number = parseInt(match[3], 10);
-            }
-            results.push({
-                href: href,
-                number: number
-            });
-        }
+  const responseText = await fetchText(BASE_URL + "/ajax/film/sv?id=" + encodeURIComponent(slug));
+  let html = responseText;
+  try {
+    html = JSON.parse(responseText).html || "";
+  } catch {
+    html = responseText;
+  }
 
-        return JSON.stringify(results.reverse());
-    } catch (err) {
-        return JSON.stringify([{
-            href: "Error",
-            number: "Error"
-        }]);
-    }
+  const server = html.match(/<div class="server[^"]*"[^>]*data-name="([^"]+)"/)?.[1]
+    || html.match(/<div class="server[^"]*"[^>]*data-id="([^"]+)"/)?.[1]
+    || "vidstreaming.io";
+  const episodes = [];
+  const seen = new Set();
+  const anchorRegex = /<a\b[^>]*data-id="([^"]+)"[^>]*data-base="([^"]+)"[^>]*href="([^"]+)"/g;
+  let match;
+
+  while ((match = anchorRegex.exec(html)) !== null) {
+    const episodeId = match[1];
+    const number = Number.parseFloat(match[2]);
+    if (!episodeId || seen.has(episodeId)) continue;
+    seen.add(episodeId);
+    episodes.push({
+      href: episodeId + "/" + server,
+      number: Number.isFinite(number) ? number : episodes.length + 1
+    });
+  }
+
+  episodes.sort((a, b) => a.number - b.number);
+  return JSON.stringify(episodes);
 }
 
-async function extractStreamUrl(url) {
-    try {
-        const response = await fetchv2(url);
-        const html = await response.text();
-        const ulMatch = html.match(/<ul id="videos"[^>]*>(.*?)<\/ul>/s);
-        if (!ulMatch) return JSON.stringify({streams: [], subtitle: "none"});
-        const ulHtml = ulMatch[1];
-        const liRegex = /<li><a[^>]*data-id='(\d+)'[^>]*data-version="(subbed|dubbed)"[^>]*>/g;
-        const versions = [];
-        let liMatch;
-        while ((liMatch = liRegex.exec(ulHtml)) !== null) {
-            versions.push({id: liMatch[1], type: liMatch[2]});
-        }
-        const embedPromises = versions.map(async (ver) => {
-            const embedUrl = `https://www.animegg.org/embed/${ver.id}`;
-            const embedResponse = await fetchv2(embedUrl);
-            const embedHtml = await embedResponse.text();
-            const vsMatch = embedHtml.match(/(?:var|const|let) videoSources = (\[[\s\S]*?\]);/);
-            if (!vsMatch) return [];
-            const jsonString = vsMatch[1].replace(/([{,]\s*)([a-zA-Z_][a-zA-Z0-9_]*)\s*:/g, '$1"$2":');
-            const vsJson = JSON.parse(jsonString);
-            return vsJson.map(src => {
-                const quality = src.label;
-                const fileUrl = "https://www.animegg.org" + src.file;
-                const title = (ver.type === 'subbed' ? 'Sub' : 'Dub') + ' • ' + quality;
-                return {
-                    title: title,
-                    streamUrl: fileUrl,
-                    headers: { "Referer": "https://www.animegg.org/" }
-                };
-            });
-        });
-        const streamArrays = await Promise.all(embedPromises);
-        const streams = streamArrays.flat();
-        return JSON.stringify({streams: streams, subtitle: "none"});
-    } catch (err) {
-        return JSON.stringify({streams: [], subtitle: "none"});
-    }
+async function extractStreamUrl(id) {
+  const data = JSON.parse(await fetchText(BASE_URL + "/ajax/episode/info?epr=" + encodeURIComponent(id)));
+  if (!data.target || !/^https?:\/\//i.test(data.target)) return JSON.stringify({ streams: [] });
+
+  return JSON.stringify({
+    streams: [{
+      title: data.name || "123Anime",
+      streamUrl: data.target
+    }]
+  });
 }

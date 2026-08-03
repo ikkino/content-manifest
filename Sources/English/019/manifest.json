@@ -1,26 +1,21 @@
 {
-  "id": "zangetsu_animekai",
-  "sourceName": "AnimeKai (Zangetsu)",
-  "iconUrl": "",
-  "version": "1.1.2",
+  "sourceName": "Animepahe (SUB)",
+  "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/animepahe/icon.png",
+  "author": {
+    "name": "ibro",
+    "icon": "https://git.luna-app.eu/ibro/services/raw/branch/main/profile.jpg",
+    "url": "https://github.com/xibrox"
+  },
+  "version": "1.2.7",
   "language": "English",
   "streamType": "HLS",
   "quality": "1080p",
-  "baseUrl": "https://animekai.to/",
+  "baseUrl": "https://animepahetv.to/",
+  "searchBaseUrl": "https://animepahetv.to/search?q=%s",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/019/source.js",
-  "softsub": true,
-  "asyncJS": true,
   "type": "anime",
-  "registry": "zangetsu",
-  "registries": [
-    "zangetsu"
-  ],
-  "manifestUrl": "https://raw.githubusercontent.com/Spyou/zangetsu-providers/main/index.json",
-  "status": "active",
-  "addedAt": "2026-06-14T10:25:50.353Z",
-  "note": "Ported from Zangetsu provider",
-  "author": {
-    "name": "Spyou",
-    "icon": ""
-  }
+  "downloadSupport": true,
+  "asyncJS": true,
+  "softsub": true,
+  "id": "mod_640849195"
 }
