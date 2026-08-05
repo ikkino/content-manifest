@@ -1,50 +1,60 @@
 async function searchResults(keyword) {
+    const baseUrl = "https://w7.animeland.tv";
     const results = [];
     try {
-        const response = await fetchv2("https://api3.devcorp.me/vod/search?page=1&keyword=" + encodeURIComponent(keyword.toLowerCase()));
-        const encrypted = await response.text();
+        const response = await fetchv2(baseUrl + "/?s=" + encodeURIComponent(keyword));
+        const html = await response.text();
 
-        const headers = { "Content-Type": "application/json" };
-        const postData = JSON.stringify({ text: encrypted });
+        const regex = /<a href="([^"]+)"[^>]*>\s*<img[^>]*src="([^"]*)"[^>]*alt="([^"]*)"/g;
 
-        const decryptedResponse = await fetchv2("https://enc-dec.app/api/dec-onetouchtv", headers, "POST", postData);
-        const decryptedData = await decryptedResponse.json();
-        console.log(JSON.stringify(decryptedData));
-        if (decryptedData.status === 200 && Array.isArray(decryptedData.result)) {
-            for (const item of decryptedData.result) {
-                results.push({
-                    title: item.title || "Unknown",
-                    image: item.image || "",
-                    href: item.id
-                });
+        let match;
+        while ((match = regex.exec(html)) !== null) {
+            let href = match[1].trim();
+            let image = match[2].trim();
+            let title = match[3].trim();
+
+            if (href.startsWith("/")) {
+                href = baseUrl + href;
             }
+            if (image.startsWith("/")) {
+                image = baseUrl + image;
+            }
+
+            if (href === baseUrl + "/" || href.includes("kissanimes.net")) {
+                continue;
+            }
+
+            results.push({
+                href,
+                image,
+                title
+            });
         }
-        console.log(results);
+
         return JSON.stringify(results);
     } catch (err) {
-        console.error(err);
-        return JSON.stringify([{ title: "Error", image: "Error", href: "Error" }]);
+        return JSON.stringify([{
+            title: "Error",
+            image: "Error",
+            href: "Error"
+        }]);
     }
 }
 
-async function extractDetails(ID) {
+async function extractDetails(url) {
     try {
-        const response = await fetchv2("https://api3.devcorp.me/web/vod/" + ID + "/detail");
-        const encrypted = await response.text();
+        const response = await fetchv2(url);
+        const html = await response.text();
 
-        const headers = { "Content-Type": "application/json" };
-        const postData = JSON.stringify({ text: encrypted });
+        const regex = /<div class="Anime Info">\s*<\/div>\s*([\s\S]*?)<\/div>/i;
+        const match = html.match(regex);
 
-        const decryptedResponse = await fetchv2("https://enc-dec.app/api/dec-onetouchtv", headers, "POST", postData);
-        const decryptedText = await decryptedResponse.text();
-        const decryptedData = JSON.parse(decryptedText);
-
-        const result = decryptedData.result;
+        const description = match ? match[1].trim() : "N/A";
 
         return JSON.stringify([{
-            description: result.description || "N/A",
-            aliases: Array.isArray(result.otherTitles) ? result.otherTitles.join(", ") : "N/A",
-            airdate: result.year || "N/A"
+            description: description,
+            aliases: "N/A",
+            airdate: "N/A"
         }]);
     } catch (err) {
         return JSON.stringify([{
@@ -55,74 +65,58 @@ async function extractDetails(ID) {
     }
 }
 
-async function extractEpisodes(ID) {
+async function extractEpisodes(url) {
     const results = [];
     try {
-        const response = await fetchv2("https://api3.devcorp.me/web/vod/" + ID + "/detail");
-        const encrypted = await response.text();
+        const response = await fetchv2(url);
+        const html = await response.text();
 
-        const headers = { "Content-Type": "application/json" };
-        const postData = JSON.stringify({ text: encrypted });
+        const regex = /<li class="play"><a[^>]*href="([^"]+)"[^>]*>([^<]*)<\/a><\/li>/g;
 
-        const decryptedResponse = await fetchv2("https://enc-dec.app/api/dec-onetouchtv", headers, "POST", postData);
-        const decryptedText = await decryptedResponse.text();
-        const decryptedData = JSON.parse(decryptedText);
+        let match;
+        while ((match = regex.exec(html)) !== null) {
+            const href = match[1].trim();
+            const text = match[2].trim();
 
-        const episodes = decryptedData.result.episodes || [];
+            let number = null;
+            const urlMatch = href.match(/-episode-(\d+)/i);
+            if (urlMatch) {
+                number = parseInt(urlMatch[1], 10);
+            } else {
+                const textMatch = text.match(/Episode\s*(\d+)/i);
+                if (textMatch) number = parseInt(textMatch[1], 10);
+            }
 
-        for (const ep of episodes) {
             results.push({
-                href: ep.id,
-                number: parseInt(ep.episode, 10)
+                href,
+                number
             });
         }
 
         return JSON.stringify(results.reverse());
     } catch (err) {
-        return JSON.stringify([{ href: "Error", number: "Error" }]);
+        return JSON.stringify([{
+            href: "Error",
+            number: "Error"
+        }]);
     }
 }
 
-async function extractStreamUrl(href) {
+async function extractStreamUrl(url) {
     try {
-        const parts = href.split("-episode-");
-        const id = parts[0];
-        const episodeNumber = parts[1];
+        const response = await fetchv2(url);
+        const html = await response.text();
+        const match = html.match(/file=([a-zA-Z0-9]+\.html)/);
+        if (match) {
+            const filename = match[1];
+            console.log('Filename:' + filename);
+            const videoUrl = `https://animesource.me/cache/${filename}.mp4`;
+            console.log('Video URL:' + videoUrl);
+            return videoUrl;
+        }
 
-        const response = await fetchv2("https://api3.devcorp.me/web/vod/" + id + "/episode/" + episodeNumber);
-        const encrypted = await response.text();
-
-        const headers = { "Content-Type": "application/json" };
-        const postData = JSON.stringify({ text: encrypted });
-
-        const decryptedResponse = await fetchv2("https://enc-dec.app/api/dec-onetouchtv", headers, "POST", postData);
-        const decryptedText = await decryptedResponse.text();
-        const decryptedData = JSON.parse(decryptedText);
-
-        const sources = decryptedData.result.sources;
-        const tracks = decryptedData.result.track;
-
-        const stream = sources.find(s => s.url.includes(".mp4") || s.url.includes(".m3u8"));
-        const subtitle = tracks.find(t => t.name && t.name.toLowerCase().includes("english"));
-        
-        return JSON.stringify({
-            streams: [{
-                title: "Default",
-                streamUrl: stream ? stream.url : "https://error.org/",
-                headers: stream ? stream.headers : {}
-            }],
-            subtitles: subtitle ? subtitle.file : null
-        });
     } catch (err) {
-        return JSON.stringify({
-            streams: [{
-                title: "Error",
-                streamUrl: "https://error.org/",
-                headers: {}
-            }],
-            subtitles: null
-        });
+        console.error("Error:" + err);
+        return null;
     }
 }
-
-

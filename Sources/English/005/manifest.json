@@ -1,6 +1,6 @@
 {
-  "sourceName": "OneTouch TV",
-  "iconUrl": "https://onetouchtv.xyz/favicon.png",
+  "sourceName": "AnimeLand",
+  "iconUrl": "https://w7.animeland.tv/wp-content/themes/twentytwelve/SAO2.ico",
   "author": {
     "name": "50/50",
     "icon": "https://files.catbox.moe/741wp7.png"
@@ -10,19 +10,23 @@
   "languageType": [
     "Subbed"
   ],
-  "streamType": "HLS",
+  "streamType": "mp4",
   "quality": "1080p",
-  "baseUrl": "https://s1.devcorp.me/",
-  "searchBaseUrl": "https://s1.devcorp.me/",
+  "baseUrl": "https://w7.animeland.tv/",
+  "searchBaseUrl": "https://w7.animeland.tv/",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/005/source.js",
-  "type": "shows/movies/anime",
+  "type": "anime",
   "asyncJS": true,
-  "softsub": true,
-  "downloadSupport": false,
+  "softsub": false,
+  "downloadSupport": true,
+  "supportsMojuru": true,
+  "supportsDartotsu": true,
   "supportsSora": true,
   "supportsLuna": true,
+  "supportsAnymex": true,
   "supportsTsumi": true,
   "supportsHiyoku": true,
+  "supportsShirox": true,
   "supportsEclipse": true,
-  "id": "BmnXo"
+  "id": "mod_942337115"
 }
