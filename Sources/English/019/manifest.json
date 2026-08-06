@@ -1,28 +1,26 @@
 {
-  "sourceName": "VidUp",
-  "iconUrl": "https://vidup.to/favicon.ico",
-  "author": {
-    "name": "50/50",
-    "icon": "https://files.catbox.moe/741wp7.png"
-  },
-  "version": "1.0.0",
+  "id": "zangetsu_animekai",
+  "sourceName": "AnimeKai (Zangetsu)",
+  "iconUrl": "",
+  "version": "1.1.2",
   "language": "English",
-  "languageType": [
-    "Native"
-  ],
   "streamType": "HLS",
   "quality": "1080p",
-  "baseUrl": "https://vidup.to/",
-  "searchBaseUrl": "https://vidup.to/",
+  "baseUrl": "https://animekai.to/",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/019/source.js",
-  "type": "shows/movies/anime",
-  "asyncJS": true,
   "softsub": true,
-  "downloadSupport": false,
-  "supportsSora": true,
-  "supportsLuna": true,
-  "supportsTsumi": true,
-  "supportsHiyoku": true,
-  "supportsEclipse": true,
-  "id": "jwXaY"
+  "asyncJS": true,
+  "type": "anime",
+  "registry": "zangetsu",
+  "registries": [
+    "zangetsu"
+  ],
+  "manifestUrl": "https://raw.githubusercontent.com/Spyou/zangetsu-providers/main/index.json",
+  "status": "active",
+  "addedAt": "2026-06-14T10:25:50.353Z",
+  "note": "Ported from Zangetsu provider",
+  "author": {
+    "name": "Spyou",
+    "icon": ""
+  }
 }
