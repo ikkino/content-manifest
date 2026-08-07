@@ -1,24 +1,28 @@
 {
-  "sourceName": "AniWorld (ENG SUB)",
-  "iconUrl": "https://git.luna-app.eu/Cufiy/sora-modules/raw/branch/main/modules/aniworld/aniworld.png",
+  "sourceName": "VidFast",
+  "iconUrl": "https://files.catbox.moe/i6r78t.png",
   "author": {
-    "name": "Cufiy & Hamzo",
-    "icon": "https://files.catbox.moe/ttj4fc.gif",
-    "url": "https://github.com/JMcrafter26"
+    "name": "50/50",
+    "icon": "https://files.catbox.moe/741wp7.png"
   },
-  "version": "0.3.5",
+  "version": "1.2.2",
   "language": "English",
+  "languageType": [
+    "Native"
+  ],
   "streamType": "HLS",
-  "quality": "720p",
-  "baseUrl": "https://google.com",
-  "searchBaseUrl": "https://aniworld.to/ajax/seriesSearch?keyword=%s",
+  "quality": "1080p",
+  "baseUrl": "https://vidfast.pro/",
+  "searchBaseUrl": "https://vidfast.pro/",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/015/source.js",
+  "type": "shows/movies/anime",
   "asyncJS": true,
-  "streamAsyncJS": false,
-  "type": "anime",
-  "supportsMojuru": true,
+  "softsub": true,
+  "downloadSupport": false,
   "supportsSora": true,
   "supportsLuna": true,
-  "supportsSoru": true,
-  "id": "jZdQ"
+  "supportsTsumi": true,
+  "supportsHiyoku": true,
+  "supportsEclipse": true,
+  "id": "B0b0R"
 }
