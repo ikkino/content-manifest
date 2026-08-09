@@ -1,24 +1,22 @@
 {
-  "sourceName": "AniWorld (ENG SUB)",
-  "iconUrl": "https://git.luna-app.eu/Cufiy/sora-modules/raw/branch/main/modules/aniworld/aniworld.png",
+  "sourceName": "VidLink",
+  "iconUrl": "https://vidlink.pro/favicon.ico",
   "author": {
-    "name": "Cufiy & Hamzo",
-    "icon": "https://files.catbox.moe/ttj4fc.gif",
-    "url": "https://github.com/JMcrafter26"
+    "name": "Local Repair"
   },
-  "version": "0.3.5",
+  "version": "1.0.1",
   "language": "English",
-  "streamType": "HLS",
-  "quality": "720p",
-  "baseUrl": "https://google.com",
-  "searchBaseUrl": "https://aniworld.to/ajax/seriesSearch?keyword=%s",
+  "streamType": "MP4",
+  "quality": "1080p",
+  "baseUrl": "https://vidlink.pro/",
+  "searchBaseUrl": "https://vidlink.pro/",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/015/source.js",
-  "asyncJS": true,
-  "streamAsyncJS": false,
   "type": "anime",
-  "supportsMojuru": true,
+  "asyncJS": true,
+  "softsub": true,
+  "downloadSupport": false,
   "supportsSora": true,
   "supportsLuna": true,
-  "supportsSoru": true,
-  "id": "jZdQ"
+  "supportsShirox": true,
+  "id": "vidlink-local"
 }

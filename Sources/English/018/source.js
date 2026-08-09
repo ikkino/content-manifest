@@ -6,16 +6,16 @@ class Anikoto {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
             "Referer": "https://animepahetv.to/"
         };
-
+    
         console.log("[Anikoto] Searching HTML pages, page 1: " + base);
-
+    
         const resp1 = await soraFetch(base, { headers });
         if (!resp1 || resp1.status !== 200) {
             console.error("[Anikoto] Failed to fetch page 1");
             return [];
         }
         const html1 = await resp1.text();
-
+    
         let totalPages = 1;
         const lastLinkMatch = html1.match(/<a\s+title="Last"\s+class="page-link"\s+href="[^"]*&?page=(\d+)"/i);
         if (lastLinkMatch) {
@@ -29,7 +29,7 @@ class Anikoto {
                 console.log("[Anikoto] Detected total pages: " + totalPages);
             }
         }
-
+    
         const parsePage = (html) => {
             const items = [];
             const blocks = html.split('<div class="anime-item">');
@@ -46,9 +46,9 @@ class Anikoto {
             }
             return items;
         };
-
+    
         let allItems = parsePage(html1);
-
+    
         if (totalPages > 1) {
             const pagePromises = [];
             for (let p = 2; p <= totalPages; p++) {
@@ -67,7 +67,7 @@ class Anikoto {
                 }
             }
         }
-
+    
         console.log("[Anikoto] Search returned " + allItems.length + " items total");
         return allItems;
     }
@@ -79,7 +79,7 @@ class Anikoto {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
             "Accept": "application/json, text/javascript, */*; q=0.01"
         };
-
+    
         // Helper: fetch a page and return parsed JSON object
         const fetchPage = async (url) => {
             const resp = await soraFetch(url, { headers });
@@ -104,7 +104,7 @@ class Anikoto {
                 return null;
             }
         };
-
+    
         // Fetch page 1
         const url1 = baseUrl + "&page=1";
         console.log("[Anikoto] Fetching episodes page 1: " + url1);
@@ -113,11 +113,11 @@ class Anikoto {
             console.error("[Anikoto] Failed to get page 1 data");
             return [];
         }
-
+    
         const allEpisodes = json1.data || [];
         const totalPages = json1.last_page || 1;
         console.log("[Anikoto] Episodes total pages: " + totalPages + " | first batch: " + allEpisodes.length);
-
+    
         // Fetch remaining pages in parallel
         if (totalPages > 1) {
             const pagePromises = [];
@@ -140,7 +140,7 @@ class Anikoto {
             // Wait for all secondary pages to finish
             await Promise.allSettled(pagePromises);
         }
-
+    
         // Sort ascending by episode number
         allEpisodes.sort((a, b) => a.episode - b.episode);
         console.log("[Anikoto] Total episodes fetched: " + allEpisodes.length);
@@ -230,11 +230,11 @@ class Anikoto {
         });
         if (!resp || resp.status !== 200) return null;
         const html = await resp.text();
-
+    
         const dataIdMatch = html.match(/data-id="(\d+)"/);
         if (!dataIdMatch) return null;
         const dataId = dataIdMatch[1];
-
+    
         const sourcesUrl = "https://megaplay.buzz/stream/getSources?id=" + dataId + "&id=" + dataId;
         console.log("[Anikoto] Fetching sources: " + sourcesUrl);
         const srcResp = await soraFetch(sourcesUrl, {
@@ -247,11 +247,11 @@ class Anikoto {
         let data;
         try { data = await srcResp.json(); } catch (e) { return null; }
         if (!data?.sources?.file) return null;
-
+    
         // Subtitle extraction
         const tracks = data.tracks || [];
         console.log("[Anikoto] Source tracks: " + JSON.stringify(tracks));
-
+    
         let englishSub = "";
         const engTrack = tracks.find(t =>
             t.kind === "captions" &&
@@ -263,7 +263,7 @@ class Anikoto {
             const firstCaption = tracks.find(t => t.kind === "captions" && t.file);
             if (firstCaption) englishSub = firstCaption.file;
         }
-
+    
         // All subtitle tracks with required headers
         const allSubtitles = tracks
             .filter(t => t.file)
@@ -273,7 +273,7 @@ class Anikoto {
                 kind: t.kind,
                 headers: { Referer: "https://megaplay.buzz/" }
             }));
-
+    
         return {
             streamUrl: data.sources.file,
             subtitles: englishSub,
@@ -293,11 +293,11 @@ class Anikoto {
         });
         if (!resp || resp.status !== 200) return null;
         const html = await resp.text();
-
+    
         const dataIdMatch = html.match(/data-id="(\d+)"/);
         if (!dataIdMatch) return null;
         const dataId = dataIdMatch[1];
-
+    
         const sourcesUrl = "https://vidwish.live/stream/getSources?id=" + dataId + "&id=" + dataId;
         console.log("[Anikoto] Fetching Vidplay sources: " + sourcesUrl);
         const srcResp = await soraFetch(sourcesUrl, {
@@ -310,10 +310,10 @@ class Anikoto {
         let data;
         try { data = await srcResp.json(); } catch (e) { return null; }
         if (!data?.sources?.file) return null;
-
+    
         const tracks = data.tracks || [];
         console.log("[Anikoto] Vidplay tracks: " + JSON.stringify(tracks));
-
+    
         let englishSub = "";
         const engTrack = tracks.find(t =>
             t.kind === "captions" &&
@@ -325,7 +325,7 @@ class Anikoto {
             const firstCaption = tracks.find(t => t.kind === "captions" && t.file);
             if (firstCaption) englishSub = firstCaption.file;
         }
-
+    
         const allSubtitles = tracks
             .filter(t => t.file)
             .map(t => ({
@@ -334,7 +334,7 @@ class Anikoto {
                 kind: t.kind,
                 headers: { Referer: "https://vidwish.live/" }
             }));
-
+    
         return {
             streamUrl: data.sources.file,
             subtitles: englishSub,
@@ -350,9 +350,9 @@ class Anikoto {
             const match = url.match(/anime\/([^\/]+)\/([^?]+)\?num=(\d+)/);
             if (!match) return null;
             const [, animeSession, episodeSession, epNum] = match;
-
+    
             console.log("[extractStreamUrl-Kwik] Anime: " + animeSession + ", Episode: " + epNum);
-
+    
             // 1. Fetch play page for malId & chapterUpdatedAt
             const playUrl = "https://animepahetv.to/play/" + animeSession + "/" + episodeSession;
             const playResp = await soraFetch(playUrl, {
@@ -365,7 +365,7 @@ class Anikoto {
             if (!malMatch || !tsMatch) return null;
             const malId = malMatch[1];
             const chapterUpdatedAt = tsMatch[1];
-
+    
             // 2. Mapper
             const mapperUrl = `https://mapper.mewcdn.online/api/mal/${malId}/${epNum}/${chapterUpdatedAt}`;
             console.log("[extractStreamUrl-Kwik] Mapper: " + mapperUrl);
@@ -380,15 +380,15 @@ class Anikoto {
                 try { mapperJson = JSON.parse(await mapperResp.text()); } catch (e) {}
             }
             if (!mapperJson) return null;
-
+    
             // 3. Collect ALL qualities that have a sub URL
             const qualityOrder = ["Kiwi-Stream-360p", "Kiwi-Stream-720p", "Kiwi-Stream-800p", "Kiwi-Stream-1080p"];
             const streams = [];
-
+    
             for (const quality of qualityOrder) {
                 if (mapperJson[quality]?.sub?.url) {
                     const encoded = mapperJson[quality].sub.url;
-
+    
                     // 4. Decode – AJAX header required
                     const ajaxUrl = "https://anikototv.to/ajax/server?get=" + encoded;
                     console.log("[extractStreamUrl-Kwik] Decoding " + quality + ": " + ajaxUrl);
@@ -408,7 +408,7 @@ class Anikoto {
                     if (!ajaxJson?.result?.url) continue;
                     const kwikUrl = ajaxJson.result.url;
                     console.log("[extractStreamUrl-Kwik] Kwik URL: " + kwikUrl);
-
+    
                     // 5. Fetch Kwik page (bypass DDoS‑Guard)
                     const interceptor = new DdosGuardInterceptor();
                     const kwikResp = await interceptor.fetchWithBypass(kwikUrl);
@@ -417,7 +417,7 @@ class Anikoto {
                         continue;
                     }
                     const html = await kwikResp.text();
-
+    
                     // 6. Extract packed script
                     let scriptContent = null;
                     const scriptMatch = html.match(/<script>(.*?)<\/script>/s);
@@ -430,7 +430,7 @@ class Anikoto {
                         console.error("[extractStreamUrl-Kwik] No script found for " + quality);
                         continue;
                     }
-
+    
                     // 7. Unpack and extract HLS
                     let unpacked = scriptContent;
                     try { unpacked = unpack(scriptContent); } catch (e) {}
@@ -441,7 +441,7 @@ class Anikoto {
                     }
                     let hlsUrl = hlsMatch[1] || hlsMatch[0];
                     hlsUrl = hlsUrl.replace("/stream/", "/hls/").replace("uwu.m3u8", "owo.m3u8").replace(/\\+$/, '');
-
+    
                     const resolution = quality.replace("Kiwi-Stream-", "").replace("p", "p");
                     streams.push({
                         title: "Kiwi Hardsub (" + resolution + ")",
@@ -450,12 +450,12 @@ class Anikoto {
                     });
                 }
             }
-
+    
             if (streams.length === 0) {
                 console.error("[extractStreamUrl-Kwik] No valid qualities found");
                 return null;
             }
-
+    
             return streams;
         } catch (e) {
             console.error("[extractStreamUrl-Kwik] Error: " + e);

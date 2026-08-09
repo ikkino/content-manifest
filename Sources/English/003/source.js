@@ -1,289 +1,118 @@
-// IMDb Module for Sora / Luna
-
 async function searchResults(keyword) {
+    const regex = /<a href="([^"]*)" class="mse">[\s\S]*?<img src="([^"]*)" class="media-object">[\s\S]*?<h2>([^<]*?)<\/h2>/g;
+    const results = [];
     try {
-        let transformedResults = [];
+        const response = await fetchv2("https://www.animegg.org/search/?q=" + encodeURIComponent(keyword));
+        const html = await response.text();
 
-        const keywordGroups = {
-            trending: ["!trending", "!hot", "!tr", "!!"],
-            topRatedMovie: ["!top-rated-movie", "!topmovie", "!tm", "??"],
-            topRatedTV: ["!top-rated-tv", "!toptv", "!tt", "::"],
-            popularMovie: ["!popular-movie", "!popmovie", "!pm", ";;"],
-            popularTV: ["!popular-tv", "!poptv", "!pt", "++"],
-        };
-
-        const skipTitleFilter = Object.values(keywordGroups).flat();
-        const shouldFilter = !matchesKeyword(keyword, skipTitleFilter);
-
-        const encodedKeyword = encodeURIComponent(keyword);
-        let baseUrlTemplate = null;
-
-        if (matchesKeyword(keyword, keywordGroups.trending)) {
-            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/trending/all/week?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
-        } else if (matchesKeyword(keyword, keywordGroups.topRatedMovie)) {
-            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/top_rated?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
-        } else if (matchesKeyword(keyword, keywordGroups.topRatedTV)) {
-            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/top_rated?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
-        } else if (matchesKeyword(keyword, keywordGroups.popularMovie)) {
-            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/popular?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
-        } else if (matchesKeyword(keyword, keywordGroups.popularTV)) {
-            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/popular?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
-        } else {
-            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/search/multi?api_key=9801b6b0548ad57581d111ea690c85c8&query=${encodedKeyword}&include_adult=false&page=${page}`)}&simple=true`;
+        let match;
+        while ((match = regex.exec(html)) !== null) {
+            results.push({
+                title: match[3].trim(),
+                image: match[2].trim(),
+                href: "https://www.animegg.org" + match[1].trim()
+            });
         }
 
-        let dataResults = [];
-
-        if (baseUrlTemplate) {
-            const pagePromises = Array.from({ length: 3 }, (_, i) =>
-                soraFetch(baseUrlTemplate(i + 1)).then(r => r ? r.json() : { results: [] })
-            );
-            const pages = await Promise.all(pagePromises);
-            dataResults = pages.flatMap(p => p.results || []);
-        }
-
-        if (dataResults.length > 0) {
-            transformedResults = dataResults
-                .map(result => {
-                    if (result.media_type === "movie" || result.title) {
-                        return {
-                            title: result.title || result.name || result.original_title || result.original_name || "Untitled",
-                            image: result.poster_path ? `https://image.tmdb.org/t/p/w500${result.poster_path}` : "",
-                            href: `movie/${result.id}`,
-                        };
-                    } else if (result.media_type === "tv" || result.name) {
-                        return {
-                            title: result.name || result.title || result.original_name || result.original_title || "Untitled",
-                            image: result.poster_path ? `https://image.tmdb.org/t/p/w500${result.poster_path}` : "",
-                            href: `tv/${result.id}/1/1`,
-                        };
-                    }
-                })
-                .filter(Boolean)
-                .filter(r => !shouldFilter || r.title.toLowerCase().includes(keyword.toLowerCase()));
-        }
-
-        return JSON.stringify(transformedResults);
-    } catch (error) {
-        console.log("Fetch error in searchResults: " + error);
-        return JSON.stringify([]);
+        return JSON.stringify(results);
+    } catch (err) {
+        return JSON.stringify([{
+            title: "Error",
+            image: "Error",
+            href: "Error"
+        }]);
     }
-}
-
-function matchesKeyword(keyword, commands) {
-    const lower = keyword.toLowerCase();
-    return commands.some(cmd => lower.startsWith(cmd.toLowerCase()));
 }
 
 async function extractDetails(url) {
     try {
-        if (url.includes('movie')) {
-            const match = url.match(/movie\/([^\/]+)/);
-            if (!match) throw new Error("Invalid URL format");
+        const response = await fetchv2(url);
+        const html = await response.text();
 
-            const movieId = match[1];
-            const responseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/${movieId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
-            const data = await responseText.json();
+        const descMatch = html.match(/<p class="ptext">(.*?)<\/p>/s);
+        const description = descMatch ? descMatch[1].trim() : "N/A";
 
-            const transformedResults = [{
-                description: data.overview || 'No description available',
-                aliases: `Duration: ${data.runtime ? data.runtime + " minutes" : 'Unknown'}`,
-                airdate: `Released: ${data.release_date ? data.release_date : 'Unknown'}`
-            }];
-
-            return JSON.stringify(transformedResults);
-        } else if (url.includes('tv')) {
-            const match = url.match(/tv\/([^\/]+)/);
-            if (!match) throw new Error("Invalid URL format");
-
-            const showId = match[1];
-            const responseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
-            const data = await responseText.json();
-
-            const transformedResults = [{
-                description: data.overview || 'No description available',
-                aliases: `Duration: ${data.episode_run_time && data.episode_run_time.length ? data.episode_run_time.join(', ') + " minutes" : 'Unknown'}`,
-                airdate: `Aired: ${data.first_air_date ? data.first_air_date : 'Unknown'}`
-            }];
-
-            return JSON.stringify(transformedResults);
-        } else {
-            throw new Error("Invalid URL format");
-        }
-    } catch (error) {
-        console.log('Details error: ' + error);
         return JSON.stringify([{
-            description: 'Error loading description',
-            aliases: 'Duration: Unknown',
-            airdate: 'Aired/Released: Unknown'
+            description: description,
+            aliases: "N/A",
+            airdate: "N/A"
+        }]);
+    } catch (err) {
+        return JSON.stringify([{
+            description: "Error",
+            aliases: "Error",
+            airdate: "Error"
         }]);
     }
 }
 
 async function extractEpisodes(url) {
+    const results = [];
     try {
-        if (url.includes('movie')) {
-            const match = url.match(/movie\/([^\/]+)/);
-            if (!match) throw new Error("Invalid URL format");
+        const response = await fetchv2(url);
+        const html = await response.text();
 
-            const movieId = match[1];
-            const movie = [
-                { href: `/movie/${movieId}`, number: 1, title: "Full Movie" }
-            ];
-
-            return JSON.stringify(movie);
-        } else if (url.includes('tv')) {
-            const match = url.match(/tv\/([^\/]+)/);
-            if (!match) throw new Error("Invalid URL format");
-
-            const showId = match[1];
-            const showResponseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
-            const showData = await showResponseText.json();
-
-            let allEpisodes = [];
-            for (const season of showData.seasons) {
-                const seasonNumber = season.season_number;
-                if (seasonNumber === 0) continue;
-
-                const seasonResponseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}/season/${seasonNumber}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
-                const seasonData = await seasonResponseText.json();
-
-                if (seasonData.episodes && seasonData.episodes.length) {
-                    const episodes = seasonData.episodes.map(episode => ({
-                        href: `/tv/${showId}/${seasonNumber}/${episode.episode_number}`,
-                        number: episode.episode_number,
-                        title: episode.name || `Episode ${episode.episode_number}`
-                    }));
-                    allEpisodes = allEpisodes.concat(episodes);
-                }
+        const regex = /<a href="([^"]*)" class="anm_det_pop">[\s\S]*?<i class="anititle">(Episode (\d+)|Movie)<\/i>/g;
+        let match;
+        while ((match = regex.exec(html)) !== null) {
+            const href = "https://www.animegg.org" + match[1].trim();
+            let number;
+            if (match[2] === "Movie") {
+                number = 1;
+            } else {
+                number = parseInt(match[3], 10);
             }
-
-            return JSON.stringify(allEpisodes);
-        } else {
-            throw new Error("Invalid URL format");
-        }
-    } catch (error) {
-        console.log('Fetch error in extractEpisodes: ' + error);
-        return JSON.stringify([]);
-    }
-}
-
-function detectQuality(fileName, defaultQuality = "1080p") {
-    const qualities = ["2160p", "4k", "1080p", "720p", "480p", "360p"];
-    const lower = (fileName || "").toLowerCase();
-    for (const q of qualities) {
-        if (lower.includes(q)) {
-            return q === "4k" ? "2160p" : q;
-        }
-    }
-    return defaultQuality;
-}
-
-async function extractStreamUrl(ID) {
-    try {
-        let isMovie = ID.includes('movie');
-        let tmdbID, seasonNumber = "1", episodeNumber = "1";
-        let mediaType = "";
-
-        if (isMovie) {
-            const match = ID.match(/movie\/(\d+)/);
-            if (match) {
-                tmdbID = match[1];
-                mediaType = "movie";
-            }
-        } else if (ID.includes('tv')) {
-            const match = ID.match(/tv\/(\d+)\/(\d+)\/(\d+)/);
-            if (match) {
-                tmdbID = match[1];
-                seasonNumber = match[2];
-                episodeNumber = match[3];
-                mediaType = "tv";
-            }
-        }
-
-        if (!tmdbID) {
-            return JSON.stringify({ streams: [] });
-        }
-
-        const tmdbUrl = `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/${mediaType}/${tmdbID}?api_key=ad301b7cc82ffe19273e55e4d4206885&append_to_response=external_ids&language=en`)}&simple=true`;
-        const response = await soraFetch(tmdbUrl);
-        if (!response) throw new Error("Failed to fetch TMDB details");
-        const tmdbData = await response.json();
-
-        const imdbId = tmdbData.external_ids?.imdb_id || "";
-        if (!imdbId) {
-            return JSON.stringify({ streams: [] });
-        }
-
-        let streamApiUrl = "";
-        if (mediaType === "movie") {
-            streamApiUrl = `https://streamdata.vaplayer.ru/api.php?imdb=${imdbId}&type=movie`;
-        } else {
-            streamApiUrl = `https://streamdata.vaplayer.ru/api.php?imdb=${imdbId}&type=tv&season=${seasonNumber}&episode=${episodeNumber}`;
-        }
-
-        const fetchOpts = {
-            headers: {
-                "Referer": "https://nextgencloudfabric.com/",
-                "Origin": "https://nextgencloudfabric.com",
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-            }
-        };
-
-        const streamRes = await soraFetch(streamApiUrl, fetchOpts);
-        if (!streamRes) throw new Error("Failed to fetch stream details");
-        const streamJson = await streamRes.json();
-
-        let streamObjects = [];
-        let subtitleUrl = "";
-
-        if (streamJson && streamJson.status_code === "200" && streamJson.data && streamJson.data.stream_urls) {
-            const detectedQuality = detectQuality(streamJson.data.file_name || streamJson.data.title || "");
-            
-            streamJson.data.stream_urls.forEach((url, index) => {
-                streamObjects.push({
-                    title: `[IMDb] Server ${index + 1} (${detectedQuality})`,
-                    streamUrl: url,
-                    headers: {
-                        "Referer": "https://nextgencloudfabric.com/",
-                        "Origin": "https://nextgencloudfabric.com",
-                        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-                    }
-                });
+            results.push({
+                href: href,
+                number: number
             });
-
-            if (streamJson.default_subs && Array.isArray(streamJson.default_subs)) {
-                const englishSub = streamJson.default_subs.find(sub => 
-                    (sub.language || sub.lang || sub.label || "").toLowerCase().includes("eng")
-                );
-                if (englishSub && englishSub.url) {
-                    subtitleUrl = englishSub.url;
-                }
-            }
         }
 
-        return JSON.stringify({
-            streams: streamObjects,
-            subtitles: subtitleUrl
-        });
-    } catch (error) {
-        console.log('Fetch error in extractStreamUrl: ' + error);
-        return JSON.stringify({ streams: [], subtitles: "" });
+        return JSON.stringify(results.reverse());
+    } catch (err) {
+        return JSON.stringify([{
+            href: "Error",
+            number: "Error"
+        }]);
     }
 }
 
-async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
-    const headers = options.headers || {};
-    if (!headers["User-Agent"]) {
-        headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
-    }
+async function extractStreamUrl(url) {
     try {
-        return await fetchv2(url, headers, options.method || 'GET', options.body || null);
-    } catch (e) {
-        try {
-            return await fetch(url, options);
-        } catch (error) {
-            return null;
+        const response = await fetchv2(url);
+        const html = await response.text();
+        const ulMatch = html.match(/<ul id="videos"[^>]*>(.*?)<\/ul>/s);
+        if (!ulMatch) return JSON.stringify({streams: [], subtitle: "none"});
+        const ulHtml = ulMatch[1];
+        const liRegex = /<li><a[^>]*data-id='(\d+)'[^>]*data-version="(subbed|dubbed)"[^>]*>/g;
+        const versions = [];
+        let liMatch;
+        while ((liMatch = liRegex.exec(ulHtml)) !== null) {
+            versions.push({id: liMatch[1], type: liMatch[2]});
         }
+        const embedPromises = versions.map(async (ver) => {
+            const embedUrl = `https://www.animegg.org/embed/${ver.id}`;
+            const embedResponse = await fetchv2(embedUrl);
+            const embedHtml = await embedResponse.text();
+            const vsMatch = embedHtml.match(/(?:var|const|let) videoSources = (\[[\s\S]*?\]);/);
+            if (!vsMatch) return [];
+            const jsonString = vsMatch[1].replace(/([{,]\s*)([a-zA-Z_][a-zA-Z0-9_]*)\s*:/g, '$1"$2":');
+            const vsJson = JSON.parse(jsonString);
+            return vsJson.map(src => {
+                const quality = src.label;
+                const fileUrl = "https://www.animegg.org" + src.file;
+                const title = (ver.type === 'subbed' ? 'Sub' : 'Dub') + ' • ' + quality;
+                return {
+                    title: title,
+                    streamUrl: fileUrl,
+                    headers: { "Referer": "https://www.animegg.org/" }
+                };
+            });
+        });
+        const streamArrays = await Promise.all(embedPromises);
+        const streams = streamArrays.flat();
+        return JSON.stringify({streams: streams, subtitle: "none"});
+    } catch (err) {
+        return JSON.stringify({streams: [], subtitle: "none"});
     }
 }
