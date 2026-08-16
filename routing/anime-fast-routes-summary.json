@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-14T19:16:05.205Z",
+  "generatedAt": "2026-08-16T01:56:03.533Z",
   "mediaRequested": 5,
   "categories": {
     "trendingNow": {
@@ -24,54 +24,114 @@
   "routeCount": 258,
   "refreshedAnime": 0,
   "mergeExisting": true,
-  "unresolvedAnime": 45,
-  "rejectedAttempts": 45,
+  "unresolvedAnime": 42,
+  "rejectedAttempts": 42,
   "rejectedAttemptSummary": {
     "byReason": {
       "search_no_usable_result": 22,
-      "media_probe_failed": 16,
+      "media_probe_failed": 13,
       "implausible_match": 6,
       "other": 1
     },
     "topModules": [
       {
         "sourceName": "Anikoto",
-        "count": 15,
+        "count": 14,
         "reasons": {
-          "media_probe_failed": 14,
-          "implausible_match": 1
+          "media_probe_failed": 11,
+          "implausible_match": 3
         }
       },
       {
         "sourceName": "AnimeLand",
-        "count": 15,
+        "count": 14,
         "reasons": {
           "search_no_usable_result": 9,
-          "implausible_match": 3,
           "media_probe_failed": 2,
+          "implausible_match": 2,
           "other": 1
         }
       },
       {
         "sourceName": "IPTV-org",
-        "count": 15,
+        "count": 14,
         "reasons": {
           "search_no_usable_result": 13,
-          "implausible_match": 2
+          "implausible_match": 1
         }
       }
     ]
   },
   "mediaProbeBudget": 24,
-  "mediaProbesUsed": 16,
+  "mediaProbesUsed": 13,
   "hostHealth": {
     "successEvents": 0,
-    "failureEvents": 16,
+    "failureEvents": 13,
     "skippedByCooldown": 0,
-    "coolingDownHosts": 6
+    "coolingDownHosts": 2
   },
   "failures": [
     {
+      "aniListId": 195600,
+      "title": "Daemons of the Shadow Realm",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "Anikoto",
+      "errors": [
+        "media probe failed: host=cdn.watching.onl empty media response"
+      ]
+    },
+    {
+      "aniListId": 195600,
+      "title": "Daemons of the Shadow Realm",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/015",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 195600,
+      "title": "Daemons of the Shadow Realm",
+      "moduleId": "BiECa",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "IPTV-org",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 185874,
+      "title": "BLEACH: Thousand-Year Blood War - The Calamity",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "Anikoto",
+      "errors": [
+        "media probe failed: host=cdn.watching.onl empty media response"
+      ]
+    },
+    {
+      "aniListId": 185874,
+      "title": "BLEACH: Thousand-Year Blood War - The Calamity",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/015",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 185874,
+      "title": "BLEACH: Thousand-Year Blood War - The Calamity",
+      "moduleId": "BiECa",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "IPTV-org",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
       "aniListId": 182205,
       "title": "That Time I Got Reincarnated as a Slime Season 4",
       "moduleId": "jF12G",
@@ -102,8 +162,8 @@
       ]
     },
     {
-      "aniListId": 209983,
-      "title": "HELL MODE: The Hardcore Gamer Dominates in Another World with Garbage Balancing Season 2",
+      "aniListId": 201514,
+      "title": "Rich Girl Caretaker: I'm Secretly the Caregiver of the Most Popular Girl in This Rich Kid School",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/003",
       "sourceName": "Anikoto",
@@ -112,8 +172,8 @@
       ]
     },
     {
-      "aniListId": 209983,
-      "title": "HELL MODE: The Hardcore Gamer Dominates in Another World with Garbage Balancing Season 2",
+      "aniListId": 201514,
+      "title": "Rich Girl Caretaker: I'm Secretly the Caregiver of the Most Popular Girl in This Rich Kid School",
       "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/015",
       "sourceName": "AnimeLand",
@@ -122,8 +182,8 @@
       ]
     },
     {
-      "aniListId": 209983,
-      "title": "HELL MODE: The Hardcore Gamer Dominates in Another World with Garbage Balancing Season 2",
+      "aniListId": 201514,
+      "title": "Rich Girl Caretaker: I'm Secretly the Caregiver of the Most Popular Girl in This Rich Kid School",
       "moduleId": "BiECa",
       "catalogPath": "Sources/English/001",
       "sourceName": "IPTV-org",
@@ -132,8 +192,8 @@
       ]
     },
     {
-      "aniListId": 196218,
-      "title": "The Frontier Lord Begins with Zero Subjects",
+      "aniListId": 187538,
+      "title": "BLACK TORCH",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/003",
       "sourceName": "Anikoto",
@@ -142,8 +202,8 @@
       ]
     },
     {
-      "aniListId": 196218,
-      "title": "The Frontier Lord Begins with Zero Subjects",
+      "aniListId": 187538,
+      "title": "BLACK TORCH",
       "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/015",
       "sourceName": "AnimeLand",
@@ -152,73 +212,13 @@
       ]
     },
     {
-      "aniListId": 196218,
-      "title": "The Frontier Lord Begins with Zero Subjects",
+      "aniListId": 187538,
+      "title": "BLACK TORCH",
       "moduleId": "BiECa",
       "catalogPath": "Sources/English/001",
       "sourceName": "IPTV-org",
       "errors": [
         "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 199748,
-      "title": "I Became a Legend After My 10 Year-Long Last Stand",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/003",
-      "sourceName": "Anikoto",
-      "errors": [
-        "media probe failed: host=cdn.watching.onl empty media response"
-      ]
-    },
-    {
-      "aniListId": 199748,
-      "title": "I Became a Legend After My 10 Year-Long Last Stand",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/015",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 199748,
-      "title": "I Became a Legend After My 10 Year-Long Last Stand",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 21,
-      "title": "ONE PIECE",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/003",
-      "sourceName": "Anikoto",
-      "errors": [
-        "media probe failed: host=megap.akirax.buzz empty media response"
-      ]
-    },
-    {
-      "aniListId": 21,
-      "title": "ONE PIECE",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/015",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "implausible episode match: verified=1061 available=900 expected<=1173"
-      ]
-    },
-    {
-      "aniListId": 21,
-      "title": "ONE PIECE",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "implausible episode match: verified=1 available=1 expected<=1173"
       ]
     },
     {
@@ -228,7 +228,7 @@
       "catalogPath": "Sources/English/003",
       "sourceName": "Anikoto",
       "errors": [
-        "media probe failed: host=megap.shiora.top empty media response"
+        "implausible episode match: verified=7 available=12 expected<=7"
       ]
     },
     {
@@ -312,36 +312,6 @@
       ]
     },
     {
-      "aniListId": 185874,
-      "title": "BLEACH: Thousand-Year Blood War - The Calamity",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/003",
-      "sourceName": "Anikoto",
-      "errors": [
-        "media probe failed: host=megap.norami.top empty media response"
-      ]
-    },
-    {
-      "aniListId": 185874,
-      "title": "BLEACH: Thousand-Year Blood War - The Calamity",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/015",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 185874,
-      "title": "BLEACH: Thousand-Year Blood War - The Calamity",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
       "aniListId": 207141,
       "title": "Chainsmoker Cat",
       "moduleId": "jF12G",
@@ -378,7 +348,7 @@
       "catalogPath": "Sources/English/003",
       "sourceName": "Anikoto",
       "errors": [
-        "media probe failed: host=megap.mikora.top empty media response"
+        "implausible episode match: verified=12 available=12 expected<=25"
       ]
     },
     {
@@ -408,7 +378,7 @@
       "catalogPath": "Sources/English/003",
       "sourceName": "Anikoto",
       "errors": [
-        "media probe failed: host=megap.shiora.top empty media response"
+        "media probe failed: host=cdn.watching.onl empty media response"
       ]
     },
     {
@@ -438,7 +408,7 @@
       "catalogPath": "Sources/English/003",
       "sourceName": "Anikoto",
       "errors": [
-        "media probe failed: host=megap.shiora.top empty media response"
+        "media probe failed: host=cdn.watching.onl empty media response"
       ]
     },
     {
@@ -468,7 +438,7 @@
       "catalogPath": "Sources/English/003",
       "sourceName": "Anikoto",
       "errors": [
-        "media probe failed: host=megap.mikora.top empty media response"
+        "media probe failed: host=cdn.watching.onl empty media response"
       ]
     },
     {
@@ -498,7 +468,7 @@
       "catalogPath": "Sources/English/003",
       "sourceName": "Anikoto",
       "errors": [
-        "media probe failed: host=megap.shiora.top empty media response"
+        "media probe failed: host=cdn.watching.onl empty media response"
       ]
     },
     {
