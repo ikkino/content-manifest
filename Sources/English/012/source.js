@@ -1,4 +1,4 @@
-// thank you ibro for the search i love you!!
+// IMDb Module for Sora / Luna
 
 async function searchResults(keyword) {
     try {
@@ -13,10 +13,8 @@ async function searchResults(keyword) {
         };
 
         const skipTitleFilter = Object.values(keywordGroups).flat();
-
         const shouldFilter = !matchesKeyword(keyword, skipTitleFilter);
 
-        // --- TMDB Section ---
         const encodedKeyword = encodeURIComponent(keyword);
         let baseUrlTemplate = null;
 
@@ -37,44 +35,38 @@ async function searchResults(keyword) {
         let dataResults = [];
 
         if (baseUrlTemplate) {
-            const pagePromises = Array.from({ length: 2 }, (_, i) =>
-                soraFetch(baseUrlTemplate(i + 1)).then(r => r.json())
+            const pagePromises = Array.from({ length: 3 }, (_, i) =>
+                soraFetch(baseUrlTemplate(i + 1)).then(r => r ? r.json() : { results: [] })
             );
             const pages = await Promise.all(pagePromises);
             dataResults = pages.flatMap(p => p.results || []);
         }
 
         if (dataResults.length > 0) {
-            transformedResults = transformedResults.concat(
-                dataResults
-                    .filter(result => !Array.isArray(result.genre_ids) || result.genre_ids.includes(16))
-                    .map(result => {
-                        if (result.media_type === "movie" || result.title) {
-                            return {
-                                title: result.title || result.name || result.original_title || result.original_name || "Untitled",
-                                image: result.poster_path ? `https://image.tmdb.org/t/p/w500${result.poster_path}` : "",
-                                href: `movie/${result.id}`,
-                            };
-                        } else if (result.media_type === "tv" || result.name) {
-                            return {
-                                title: result.name || result.title || result.original_name || result.original_title || "Untitled",
-                                image: result.poster_path ? `https://image.tmdb.org/t/p/w500${result.poster_path}` : "",
-                                href: `tv/${result.id}/1/1`,
-                            };
-                        }
-                    })
-                    .filter(Boolean)
-                    .filter(result => result.title !== "Overflow")
-                    .filter(result => result.title !== "My Marriage Partner Is My Student, a Cocky Troublemaker")
-                    .filter(r => !shouldFilter || r.title.toLowerCase().includes(keyword.toLowerCase()))
-            );
+            transformedResults = dataResults
+                .map(result => {
+                    if (result.media_type === "movie" || result.title) {
+                        return {
+                            title: result.title || result.name || result.original_title || result.original_name || "Untitled",
+                            image: result.poster_path ? `https://image.tmdb.org/t/p/w500${result.poster_path}` : "",
+                            href: `movie/${result.id}`,
+                        };
+                    } else if (result.media_type === "tv" || result.name) {
+                        return {
+                            title: result.name || result.title || result.original_name || result.original_title || "Untitled",
+                            image: result.poster_path ? `https://image.tmdb.org/t/p/w500${result.poster_path}` : "",
+                            href: `tv/${result.id}/1/1`,
+                        };
+                    }
+                })
+                .filter(Boolean)
+                .filter(r => !shouldFilter || r.title.toLowerCase().includes(keyword.toLowerCase()));
         }
 
-        console.log("Transformed Results: " + JSON.stringify(transformedResults));
         return JSON.stringify(transformedResults);
     } catch (error) {
         console.log("Fetch error in searchResults: " + error);
-        return JSON.stringify([{ title: "Error", image: "", href: "" }]);
+        return JSON.stringify([]);
     }
 }
 
@@ -85,7 +77,7 @@ function matchesKeyword(keyword, commands) {
 
 async function extractDetails(url) {
     try {
-        if(url.includes('movie')) {
+        if (url.includes('movie')) {
             const match = url.match(/movie\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
 
@@ -100,7 +92,7 @@ async function extractDetails(url) {
             }];
 
             return JSON.stringify(transformedResults);
-        } else if(url.includes('tv')) {
+        } else if (url.includes('tv')) {
             const match = url.match(/tv\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
 
@@ -114,7 +106,6 @@ async function extractDetails(url) {
                 airdate: `Aired: ${data.first_air_date ? data.first_air_date : 'Unknown'}`
             }];
 
-            console.log(JSON.stringify(transformedResults));
             return JSON.stringify(transformedResults);
         } else {
             throw new Error("Invalid URL format");
@@ -131,49 +122,42 @@ async function extractDetails(url) {
 
 async function extractEpisodes(url) {
     try {
-        if(url.includes('movie')) {
+        if (url.includes('movie')) {
             const match = url.match(/movie\/([^\/]+)/);
-            
             if (!match) throw new Error("Invalid URL format");
-            
+
             const movieId = match[1];
-            
             const movie = [
                 { href: `/movie/${movieId}`, number: 1, title: "Full Movie" }
             ];
 
-            console.log(movie);
             return JSON.stringify(movie);
-        } else if(url.includes('tv')) {
-            const match = url.match(/tv\/([^\/]+)\/([^\/]+)\/([^\/]+)/);
-            
+        } else if (url.includes('tv')) {
+            const match = url.match(/tv\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
-            
+
             const showId = match[1];
-            
             const showResponseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
             const showData = await showResponseText.json();
-            
+
             let allEpisodes = [];
             for (const season of showData.seasons) {
                 const seasonNumber = season.season_number;
+                if (seasonNumber === 0) continue;
 
-                if(seasonNumber === 0) continue;
-                
                 const seasonResponseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}/season/${seasonNumber}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
                 const seasonData = await seasonResponseText.json();
-                
+
                 if (seasonData.episodes && seasonData.episodes.length) {
                     const episodes = seasonData.episodes.map(episode => ({
                         href: `/tv/${showId}/${seasonNumber}/${episode.episode_number}`,
                         number: episode.episode_number,
-                        title: episode.name || ""
+                        title: episode.name || `Episode ${episode.episode_number}`
                     }));
                     allEpisodes = allEpisodes.concat(episodes);
                 }
             }
-            
-            console.log(allEpisodes);
+
             return JSON.stringify(allEpisodes);
         } else {
             throw new Error("Invalid URL format");
@@ -181,83 +165,124 @@ async function extractEpisodes(url) {
     } catch (error) {
         console.log('Fetch error in extractEpisodes: ' + error);
         return JSON.stringify([]);
-    }    
+    }
+}
+
+function detectQuality(fileName, defaultQuality = "1080p") {
+    const qualities = ["2160p", "4k", "1080p", "720p", "480p", "360p"];
+    const lower = (fileName || "").toLowerCase();
+    for (const q of qualities) {
+        if (lower.includes(q)) {
+            return q === "4k" ? "2160p" : q;
+        }
+    }
+    return defaultQuality;
 }
 
 async function extractStreamUrl(ID) {
-  if (ID.includes('movie')) {
-    const parts = ID.split('/'); 
-    const tmdbID = parts[2];
-
-    const response = await fetchv2("https://enc-dec.app/api/enc-vidlink?text=" + tmdbID);
-    const data = await response.json();
-
-    console.log(data.result);
-    const responseTwo = await fetchv2(`https://vidlink.pro/api/b/movie/${data.result}?multiLang=0`);
-    const dataTwo = await responseTwo.json();
-    console.log('Data Two: ' + JSON.stringify(dataTwo));
-    const streamUrl = bestVidLinkStream(dataTwo.stream);
-    if (!streamUrl) return JSON.stringify({ streams: [], subtitles: "" });
-
-    const englishSubtitle = dataTwo.stream.captions.find(
-      sub => sub.language.toLowerCase().includes("english")
-    )?.url || null;
-
-    return JSON.stringify({
-      streams: ["Primary", streamUrl],
-      subtitles: englishSubtitle
-    });
-} else if (ID.includes('tv')) {
-    const parts = ID.split('/'); 
-    const tmdbID = parts[2];
-    const seasonNumber = parts[3];
-    const episodeNumber = parts[4];
-    console.log(`TMDB ID: ${tmdbID}, Season: ${seasonNumber}, Episode: ${episodeNumber}`);
-    const response = await fetchv2("https://enc-dec.app/api/enc-vidlink?text=" + tmdbID);
-    const data = await response.json();
-
-    console.log(data.result);
-    const responseTwo = await fetchv2(`https://vidlink.pro/api/b/tv/${data.result}/${seasonNumber}/${episodeNumber}?multiLang=0`);
-    const dataTwo = await responseTwo.json();
-    console.log('Data Two: ' + JSON.stringify(dataTwo));
-    const streamUrl = bestVidLinkStream(dataTwo.stream);
-    if (!streamUrl) return JSON.stringify({ streams: [], subtitles: "" });
-
-    const englishSubtitle = dataTwo.stream.captions.find(
-      sub => sub.language.toLowerCase().includes("english")
-    )?.url || null;
-
-    return JSON.stringify({
-      streams: ["Primary", streamUrl],
-      subtitles: englishSubtitle
-    });
-  }
-}
-
-function bestVidLinkStream(stream) {
-  if (!stream) return null;
-  if (typeof stream.playlist === 'string' && stream.playlist) return stream.playlist;
-  const qualities = stream.qualities || {};
-  return Object.keys(qualities)
-    .sort((a, b) => Number(b) - Number(a))
-    .map(key => qualities[key] && qualities[key].url)
-    .find(url => typeof url === 'string' && /^https?:\/\//i.test(url)) || null;
-}
-
-async function soraFetch(url, options = { headers: {}, method: 'GET', body: null, encoding: 'utf-8' }) {
     try {
-        return await fetchv2(
-            url,
-            options.headers ?? {},
-            options.method ?? 'GET',
-            options.body ?? null,
-            true,
-            options.encoding ?? 'utf-8'
-        );
-    } catch(e) {
+        let isMovie = ID.includes('movie');
+        let tmdbID, seasonNumber = "1", episodeNumber = "1";
+        let mediaType = "";
+
+        if (isMovie) {
+            const match = ID.match(/movie\/(\d+)/);
+            if (match) {
+                tmdbID = match[1];
+                mediaType = "movie";
+            }
+        } else if (ID.includes('tv')) {
+            const match = ID.match(/tv\/(\d+)\/(\d+)\/(\d+)/);
+            if (match) {
+                tmdbID = match[1];
+                seasonNumber = match[2];
+                episodeNumber = match[3];
+                mediaType = "tv";
+            }
+        }
+
+        if (!tmdbID) {
+            return JSON.stringify({ streams: [] });
+        }
+
+        const tmdbUrl = `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/${mediaType}/${tmdbID}?api_key=ad301b7cc82ffe19273e55e4d4206885&append_to_response=external_ids&language=en`)}&simple=true`;
+        const response = await soraFetch(tmdbUrl);
+        if (!response) throw new Error("Failed to fetch TMDB details");
+        const tmdbData = await response.json();
+
+        const imdbId = tmdbData.external_ids?.imdb_id || "";
+        if (!imdbId) {
+            return JSON.stringify({ streams: [] });
+        }
+
+        let streamApiUrl = "";
+        if (mediaType === "movie") {
+            streamApiUrl = `https://streamdata.vaplayer.ru/api.php?imdb=${imdbId}&type=movie`;
+        } else {
+            streamApiUrl = `https://streamdata.vaplayer.ru/api.php?imdb=${imdbId}&type=tv&season=${seasonNumber}&episode=${episodeNumber}`;
+        }
+
+        const fetchOpts = {
+            headers: {
+                "Referer": "https://nextgencloudfabric.com/",
+                "Origin": "https://nextgencloudfabric.com",
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+            }
+        };
+
+        const streamRes = await soraFetch(streamApiUrl, fetchOpts);
+        if (!streamRes) throw new Error("Failed to fetch stream details");
+        const streamJson = await streamRes.json();
+
+        let streamObjects = [];
+        let subtitleUrl = "";
+
+        if (streamJson && streamJson.status_code === "200" && streamJson.data && streamJson.data.stream_urls) {
+            const detectedQuality = detectQuality(streamJson.data.file_name || streamJson.data.title || "");
+            
+            streamJson.data.stream_urls.forEach((url, index) => {
+                streamObjects.push({
+                    title: `[IMDb] Server ${index + 1} (${detectedQuality})`,
+                    streamUrl: url,
+                    headers: {
+                        "Referer": "https://nextgencloudfabric.com/",
+                        "Origin": "https://nextgencloudfabric.com",
+                        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+                    }
+                });
+            });
+
+            if (streamJson.default_subs && Array.isArray(streamJson.default_subs)) {
+                const englishSub = streamJson.default_subs.find(sub => 
+                    (sub.language || sub.lang || sub.label || "").toLowerCase().includes("eng")
+                );
+                if (englishSub && englishSub.url) {
+                    subtitleUrl = englishSub.url;
+                }
+            }
+        }
+
+        return JSON.stringify({
+            streams: streamObjects,
+            subtitles: subtitleUrl
+        });
+    } catch (error) {
+        console.log('Fetch error in extractStreamUrl: ' + error);
+        return JSON.stringify({ streams: [], subtitles: "" });
+    }
+}
+
+async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
+    const headers = options.headers || {};
+    if (!headers["User-Agent"]) {
+        headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
+    }
+    try {
+        return await fetchv2(url, headers, options.method || 'GET', options.body || null);
+    } catch (e) {
         try {
             return await fetch(url, options);
-        } catch(error) {
+        } catch (error) {
             return null;
         }
     }

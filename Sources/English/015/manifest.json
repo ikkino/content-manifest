@@ -1,24 +1,25 @@
 {
-  "sourceName": "AnimeLand",
-  "iconUrl": "https://w7.animeland.tv/wp-content/themes/twentytwelve/SAO2.ico",
+  "sourceName": "AllManga",
+  "iconUrl": "https://allmanga.to/pics/avatar-w.png",
   "author": {
-    "name": "50/50",
-    "icon": "https://files.catbox.moe/741wp7.png"
+    "name": "xdfkenny",
+    "icon": "https://yt3.googleusercontent.com/NHr6Y6qhYIUeoyIBdgeEYArXI1_ebVcLAuf562jPB6WSFTunOwPVuWC90eAG1zmeD6_Wy9_0mTs=s160-c-k-c0x00ffffff-no-rj",
+    "url": "https://github.com/xdfkenny"
   },
-  "version": "1.0.0",
+  "description": "Módulo de AllManga (allmanga.to) — anime en inglés (sub/dub) vía el flow oficial AllAnime (aaReq + tobeparsed + clock). Si los relojes de AllAnime fallan, resuelve automáticamente fuentes iframe como mp4upload para mantener el flujo de video.",
+  "version": "1.8.0",
   "language": "English",
-  "languageType": [
-    "Subbed"
-  ],
-  "streamType": "mp4",
+  "streamType": "HLS/MP4",
   "quality": "1080p",
-  "baseUrl": "https://w7.animeland.tv/",
-  "searchBaseUrl": "https://w7.animeland.tv/",
+  "baseUrl": "https://allmanga.to/",
+  "searchBaseUrl": "https://allmanga.to/search-anime?keyword=%s",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/015/source.js",
   "type": "anime",
-  "asyncJS": true,
-  "softsub": false,
   "downloadSupport": true,
+  "combo": false,
+  "asyncJS": true,
+  "streamAsyncJS": false,
+  "softsub": false,
   "supportsMojuru": true,
   "supportsDartotsu": true,
   "supportsSora": true,
@@ -26,7 +27,5 @@
   "supportsAnymex": true,
   "supportsTsumi": true,
   "supportsHiyoku": true,
-  "supportsShirox": true,
-  "supportsEclipse": true,
-  "id": "mod_942337115"
+  "id": "jzppd"
 }

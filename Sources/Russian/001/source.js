@@ -204,7 +204,16 @@ async function extractStreamUrl(ID) {
             });
         
         const results = await Promise.all(parserPromises);
-        const streams = results.filter(stream => stream !== null);
+        let streams = results.filter(stream => stream !== null);
+        if (streams.length === 0) {
+            streams = [{
+                title: "Animelib Player",
+                streamUrl: "https://v3.animelib.org/anime/" + ID,
+                headers: {
+                    "Referer": "https://v3.animelib.org/"
+                }
+            }];
+        }
         return JSON.stringify({
             streams: streams,
             subtitle: "https://none.com"
