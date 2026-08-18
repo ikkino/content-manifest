@@ -1,28 +1,90 @@
 {
-  "generatedAt": "2026-08-17T16:48:12.419Z",
-  "mediaRequested": 60,
+  "generatedAt": "2026-08-18T13:06:38.437Z",
+  "mediaRequested": 5,
   "categories": {
     "trendingNow": {
-      "requested": 60,
+      "requested": 5,
       "mediaChecked": 50,
       "animeWithRoutes": 50
     },
     "popularThisSeason": {
-      "requested": 60,
+      "requested": 5,
       "mediaChecked": 49,
       "animeWithRoutes": 48
     },
     "popularAllTime": {
-      "requested": 60,
+      "requested": 5,
       "mediaChecked": 50,
       "animeWithRoutes": 47
     }
   },
-  "mediaChecked": 110,
-  "modulesChecked": 18,
+  "mediaChecked": 106,
+  "modulesChecked": 3,
   "animeWithRoutes": 106,
   "routeCount": 286,
+  "refreshedAnime": 0,
+  "mergeExisting": true,
+  "unresolvedAnime": 41,
+  "rejectedAttempts": 41,
+  "rejectedAttemptSummary": {
+    "byReason": {
+      "media_probe_failed": 24,
+      "implausible_match": 8,
+      "search_no_usable_result": 7,
+      "other": 1,
+      "media_probe_budget_exhausted": 1
+    },
+    "topModules": [
+      {
+        "sourceName": "Anikoto",
+        "count": 28,
+        "reasons": {
+          "media_probe_failed": 23,
+          "implausible_match": 4,
+          "media_probe_budget_exhausted": 1
+        }
+      },
+      {
+        "sourceName": "AnimeLand",
+        "count": 13,
+        "reasons": {
+          "implausible_match": 4,
+          "search_no_usable_result": 7,
+          "media_probe_failed": 1,
+          "other": 1
+        }
+      }
+    ]
+  },
+  "mediaProbeBudget": 24,
+  "mediaProbesUsed": 24,
+  "hostHealth": {
+    "successEvents": 0,
+    "failureEvents": 24,
+    "skippedByCooldown": 0,
+    "coolingDownHosts": 2
+  },
   "failures": [
+    {
+      "aniListId": 21,
+      "title": "ONE PIECE",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "Anikoto",
+      "errors": [
+        "media probe failed: host=cdn.watching.onl empty media response"
+      ]
+    },
+    {
+      "aniListId": 21,
+      "title": "ONE PIECE",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "Anikoto",
+      "errors": [
+        "media probe failed: host=cdn.watching.onl empty media response"
+      ]
+    },
     {
       "aniListId": 21,
       "title": "ONE PIECE",
@@ -36,59 +98,29 @@
     {
       "aniListId": 178789,
       "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/030",
-      "sourceName": "AnimeLand",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "Anikoto",
       "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 202269,
-      "title": "Love Unseen Beneath the Clear Night Sky",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/030",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 21,
-      "title": "ONE PIECE",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "implausible episode match: verified=1 available=1 expected<=1174"
-      ]
-    },
-    {
-      "aniListId": 21,
-      "title": "ONE PIECE",
-      "moduleId": "BNbnN",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "AnimeDefenders",
-      "errors": [
-        "implausible episode match: verified=1 available=1 expected<=1174"
+        "media probe failed: host=cdn.watching.onl empty media response"
       ]
     },
     {
       "aniListId": 178789,
       "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "Anikoto",
       "errors": [
-        "search: searchResults returned an unusable result"
+        "media probe failed: host=cdn.watching.onl empty media response"
       ]
     },
     {
-      "aniListId": 199408,
-      "title": "A Livid Lady’s Guide to Getting Even: How I Crushed My Homeland with My Mighty Grimoires",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
+      "aniListId": 178789,
+      "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/030",
+      "sourceName": "AnimeLand",
       "errors": [
         "search: searchResults returned an unusable result"
       ]
@@ -96,76 +128,26 @@
     {
       "aniListId": 202269,
       "title": "Love Unseen Beneath the Clear Night Sky",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 199408,
-      "title": "A Livid Lady’s Guide to Getting Even: How I Crushed My Homeland with My Mighty Grimoires",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/030",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 185542,
-      "title": "Skeleton Knight in Another World Season 2",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/030",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 199408,
-      "title": "A Livid Lady’s Guide to Getting Even: How I Crushed My Homeland with My Mighty Grimoires",
-      "moduleId": "mod_705386304",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Aniwave",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 185542,
-      "title": "Skeleton Knight in Another World Season 2",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 169582,
-      "title": "The Insipid Prince's Furtive Grab for the Throne",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 185542,
-      "title": "Skeleton Knight in Another World Season 2",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/001",
       "sourceName": "Anikoto",
       "errors": [
-        "stream: extractStreamUrl timed out"
+        "media probe failed: host=cdn.watching.onl empty media response"
       ]
     },
     {
-      "aniListId": 169583,
-      "title": "Oh Boy, Was I Wrong About Her",
+      "aniListId": 202269,
+      "title": "Love Unseen Beneath the Clear Night Sky",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "Anikoto",
+      "errors": [
+        "media probe failed: host=cdn.watching.onl empty media response"
+      ]
+    },
+    {
+      "aniListId": 202269,
+      "title": "Love Unseen Beneath the Clear Night Sky",
       "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/030",
       "sourceName": "AnimeLand",
@@ -174,78 +156,28 @@
       ]
     },
     {
-      "aniListId": 169583,
-      "title": "Oh Boy, Was I Wrong About Her",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 182205,
-      "title": "That Time I Got Reincarnated as a Slime Season 4",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/030",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 182205,
-      "title": "That Time I Got Reincarnated as a Slime Season 4",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 169582,
-      "title": "The Insipid Prince's Furtive Grab for the Throne",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/030",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 195600,
-      "title": "Daemons of the Shadow Realm",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/030",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 195600,
-      "title": "Daemons of the Shadow Realm",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 169582,
-      "title": "The Insipid Prince's Furtive Grab for the Throne",
+      "aniListId": 199111,
+      "title": "Grand Blue Dreaming Season 3",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/001",
       "sourceName": "Anikoto",
       "errors": [
-        "implausible episode match: verified=7 available=12 expected<=7"
+        "media probe failed: host=cdn.watching.onl empty media response"
       ]
     },
     {
-      "aniListId": 210031,
-      "title": "You and I Are Polar Opposites Season 2",
+      "aniListId": 199111,
+      "title": "Grand Blue Dreaming Season 3",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "Anikoto",
+      "errors": [
+        "media probe failed: host=cdn.watching.onl empty media response"
+      ]
+    },
+    {
+      "aniListId": 199111,
+      "title": "Grand Blue Dreaming Season 3",
       "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/030",
       "sourceName": "AnimeLand",
@@ -254,143 +186,23 @@
       ]
     },
     {
-      "aniListId": 210031,
-      "title": "You and I Are Polar Opposites Season 2",
-      "moduleId": "BNbnN",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "AnimeDefenders",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 210031,
-      "title": "You and I Are Polar Opposites Season 2",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 188139,
-      "title": "Though I Am an Inept Villainess",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/030",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 182205,
-      "title": "That Time I Got Reincarnated as a Slime Season 4",
+      "aniListId": 269,
+      "title": "Bleach",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/001",
       "sourceName": "Anikoto",
       "errors": [
-        "implausible episode match: verified=12 available=12 expected<=18"
+        "media probe failed: host=cdn.watching.onl empty media response"
       ]
     },
     {
-      "aniListId": 188139,
-      "title": "Though I Am an Inept Villainess",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 195600,
-      "title": "Daemons of the Shadow Realm",
+      "aniListId": 269,
+      "title": "Bleach",
       "moduleId": "jF12G",
-      "catalogPath": "Sources/English/001",
+      "catalogPath": "Sources/English/003",
       "sourceName": "Anikoto",
       "errors": [
-        "stream: extractStreamUrl timed out"
-      ]
-    },
-    {
-      "aniListId": 182205,
-      "title": "That Time I Got Reincarnated as a Slime Season 4",
-      "moduleId": "mod_705386304",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Aniwave",
-      "errors": [
-        "probe process hard timeout after 16000ms"
-      ]
-    },
-    {
-      "aniListId": 200637,
-      "title": "The 100 Girlfriends Who Really, Really, Really, Really, REALLY Love You Season 3",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/030",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 200637,
-      "title": "The 100 Girlfriends Who Really, Really, Really, Really, REALLY Love You Season 3",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 195600,
-      "title": "Daemons of the Shadow Realm",
-      "moduleId": "mod_705386304",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Aniwave",
-      "errors": [
-        "probe process hard timeout after 16000ms"
-      ]
-    },
-    {
-      "aniListId": 185874,
-      "title": "BLEACH: Thousand-Year Blood War - The Calamity",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/030",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 185874,
-      "title": "BLEACH: Thousand-Year Blood War - The Calamity",
-      "moduleId": "BNbnN",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "AnimeDefenders",
-      "errors": [
-        "implausible episode match: verified=4 available=44 expected<=4"
-      ]
-    },
-    {
-      "aniListId": 185874,
-      "title": "BLEACH: Thousand-Year Blood War - The Calamity",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 210031,
-      "title": "You and I Are Polar Opposites Season 2",
-      "moduleId": "mod_705386304",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Aniwave",
-      "errors": [
-        "probe process hard timeout after 16000ms"
+        "media probe failed: host=cdn.watching.onl empty media response"
       ]
     },
     {
@@ -404,38 +216,28 @@
       ]
     },
     {
-      "aniListId": 269,
-      "title": "Bleach",
-      "moduleId": "BNbnN",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "AnimeDefenders",
+      "aniListId": 196187,
+      "title": "Smoking Behind the Supermarket with You",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "Anikoto",
       "errors": [
-        "implausible episode match: verified=44 available=44 expected<=366"
+        "implausible episode match: verified=6 available=12 expected<=6"
       ]
     },
     {
-      "aniListId": 188139,
-      "title": "Though I Am an Inept Villainess",
-      "moduleId": "mod_705386304",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Aniwave",
+      "aniListId": 196187,
+      "title": "Smoking Behind the Supermarket with You",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "Anikoto",
       "errors": [
-        "probe process hard timeout after 16000ms"
+        "implausible episode match: verified=6 available=12 expected<=6"
       ]
     },
     {
-      "aniListId": 269,
-      "title": "Bleach",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 199111,
-      "title": "Grand Blue Dreaming Season 3",
+      "aniListId": 196187,
+      "title": "Smoking Behind the Supermarket with You",
       "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/030",
       "sourceName": "AnimeLand",
@@ -444,51 +246,31 @@
       ]
     },
     {
-      "aniListId": 199111,
-      "title": "Grand Blue Dreaming Season 3",
-      "moduleId": "BNbnN",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "AnimeDefenders",
-      "errors": [
-        "implausible episode match: verified=6 available=6 expected<=7"
-      ]
-    },
-    {
-      "aniListId": 199111,
-      "title": "Grand Blue Dreaming Season 3",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 200637,
-      "title": "The 100 Girlfriends Who Really, Really, Really, Really, REALLY Love You Season 3",
+      "aniListId": 135865,
+      "title": "Saga of Tanya the Evil Season 2",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/001",
       "sourceName": "Anikoto",
       "errors": [
-        "stream: extractStreamUrl timed out"
+        "media probe failed: host=cdn.watching.onl empty media response"
       ]
     },
     {
-      "aniListId": 200637,
-      "title": "The 100 Girlfriends Who Really, Really, Really, Really, REALLY Love You Season 3",
-      "moduleId": "mod_705386304",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Aniwave",
+      "aniListId": 135865,
+      "title": "Saga of Tanya the Evil Season 2",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "Anikoto",
       "errors": [
-        "probe process hard timeout after 16000ms"
+        "media probe failed: host=cdn.watching.onl empty media response"
       ]
     },
     {
-      "aniListId": 209504,
-      "title": "The Forsaken Saintess and Her Foodie Roadtrip in Another World",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
+      "aniListId": 135865,
+      "title": "Saga of Tanya the Evil Season 2",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/030",
+      "sourceName": "AnimeLand",
       "errors": [
         "search: searchResults returned an unusable result"
       ]
@@ -496,246 +278,26 @@
     {
       "aniListId": 185874,
       "title": "BLEACH: Thousand-Year Blood War - The Calamity",
-      "moduleId": "mod_705386304",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Aniwave",
-      "errors": [
-        "probe process hard timeout after 16000ms"
-      ]
-    },
-    {
-      "aniListId": 209504,
-      "title": "The Forsaken Saintess and Her Foodie Roadtrip in Another World",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/030",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 206521,
-      "title": "The World Is Dancing",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 269,
-      "title": "Bleach",
-      "moduleId": "mod_705386304",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Aniwave",
-      "errors": [
-        "probe process hard timeout after 16000ms"
-      ]
-    },
-    {
-      "aniListId": 103303,
-      "title": "Sparks of Tomorrow",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/030",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 206521,
-      "title": "The World Is Dancing",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/030",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 199111,
-      "title": "Grand Blue Dreaming Season 3",
-      "moduleId": "mod_705386304",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Aniwave",
-      "errors": [
-        "probe process hard timeout after 16000ms"
-      ]
-    },
-    {
-      "aniListId": 103303,
-      "title": "Sparks of Tomorrow",
-      "moduleId": "BNbnN",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "AnimeDefenders",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 187538,
-      "title": "BLACK TORCH",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/030",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 103303,
-      "title": "Sparks of Tomorrow",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 187538,
-      "title": "BLACK TORCH",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 209504,
-      "title": "The Forsaken Saintess and Her Foodie Roadtrip in Another World",
-      "moduleId": "mod_705386304",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Aniwave",
-      "errors": [
-        "probe process hard timeout after 16000ms"
-      ]
-    },
-    {
-      "aniListId": 201514,
-      "title": "Rich Girl Caretaker: I'm Secretly the Caregiver of the Most Popular Girl in This Rich Kid School",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/030",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 201514,
-      "title": "Rich Girl Caretaker: I'm Secretly the Caregiver of the Most Popular Girl in This Rich Kid School",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 206521,
-      "title": "The World Is Dancing",
-      "moduleId": "mod_705386304",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Aniwave",
-      "errors": [
-        "probe process hard timeout after 16000ms"
-      ]
-    },
-    {
-      "aniListId": 177637,
-      "title": "Goodbye, Lara",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/030",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 177637,
-      "title": "Goodbye, Lara",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 103303,
-      "title": "Sparks of Tomorrow",
-      "moduleId": "mod_705386304",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Aniwave",
-      "errors": [
-        "probe process hard timeout after 16000ms"
-      ]
-    },
-    {
-      "aniListId": 97940,
-      "title": "Black Clover",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 187538,
-      "title": "BLACK TORCH",
-      "moduleId": "mod_705386304",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Aniwave",
-      "errors": [
-        "probe process hard timeout after 16000ms"
-      ]
-    },
-    {
-      "aniListId": 198409,
-      "title": "The World's Strongest Rearguard",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/030",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 198409,
-      "title": "The World's Strongest Rearguard",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 201514,
-      "title": "Rich Girl Caretaker: I'm Secretly the Caregiver of the Most Popular Girl in This Rich Kid School",
-      "moduleId": "mod_705386304",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Aniwave",
-      "errors": [
-        "probe process hard timeout after 16000ms"
-      ]
-    },
-    {
-      "aniListId": 196187,
-      "title": "Smoking Behind the Supermarket with You",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/001",
       "sourceName": "Anikoto",
       "errors": [
-        "implausible episode match: verified=6 available=12 expected<=6"
+        "media probe failed: host=cdn.watching.onl empty media response"
       ]
     },
     {
-      "aniListId": 196187,
-      "title": "Smoking Behind the Supermarket with You",
+      "aniListId": 185874,
+      "title": "BLEACH: Thousand-Year Blood War - The Calamity",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "Anikoto",
+      "errors": [
+        "media probe failed: host=cdn.watching.onl empty media response"
+      ]
+    },
+    {
+      "aniListId": 185874,
+      "title": "BLEACH: Thousand-Year Blood War - The Calamity",
       "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/030",
       "sourceName": "AnimeLand",
@@ -744,183 +306,23 @@
       ]
     },
     {
-      "aniListId": 196187,
-      "title": "Smoking Behind the Supermarket with You",
-      "moduleId": "BNbnN",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "AnimeDefenders",
+      "aniListId": 207141,
+      "title": "Chainsmoker Cat",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "Anikoto",
       "errors": [
-        "implausible episode match: verified=6 available=18 expected<=6"
+        "media probe failed: host=cdn.watching.onl empty media response"
       ]
     },
     {
-      "aniListId": 196187,
-      "title": "Smoking Behind the Supermarket with You",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
+      "aniListId": 207141,
+      "title": "Chainsmoker Cat",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "Anikoto",
       "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 177637,
-      "title": "Goodbye, Lara",
-      "moduleId": "mod_705386304",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Aniwave",
-      "errors": [
-        "probe process hard timeout after 16000ms"
-      ]
-    },
-    {
-      "aniListId": 189046,
-      "title": "Re:ZERO -Starting Life in Another World- Season 4",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/030",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 189046,
-      "title": "Re:ZERO -Starting Life in Another World- Season 4",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 97940,
-      "title": "Black Clover",
-      "moduleId": "mod_705386304",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Aniwave",
-      "errors": [
-        "probe process hard timeout after 16000ms"
-      ]
-    },
-    {
-      "aniListId": 1735,
-      "title": "Naruto: Shippuden",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/030",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "implausible episode match: verified=1 available=1 expected<=500"
-      ]
-    },
-    {
-      "aniListId": 1735,
-      "title": "Naruto: Shippuden",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "implausible episode match: verified=1 available=1 expected<=500"
-      ]
-    },
-    {
-      "aniListId": 198409,
-      "title": "The World's Strongest Rearguard",
-      "moduleId": "mod_705386304",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Aniwave",
-      "errors": [
-        "probe process hard timeout after 16000ms"
-      ]
-    },
-    {
-      "aniListId": 190569,
-      "title": "Jaadugar: A Witch in Mongolia",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/030",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 190569,
-      "title": "Jaadugar: A Witch in Mongolia",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 196187,
-      "title": "Smoking Behind the Supermarket with You",
-      "moduleId": "mod_705386304",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Aniwave",
-      "errors": [
-        "implausible episode match: verified=6 available=12 expected<=6"
-      ]
-    },
-    {
-      "aniListId": 11061,
-      "title": "Hunter x Hunter (2011)",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/030",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 11061,
-      "title": "Hunter x Hunter (2011)",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 180136,
-      "title": "The Exiled Heavy Knight Knows How to Game the System",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/030",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 20,
-      "title": "Naruto",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "implausible episode match: verified=1 available=1 expected<=220"
-      ]
-    },
-    {
-      "aniListId": 180136,
-      "title": "The Exiled Heavy Knight Knows How to Game the System",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 1735,
-      "title": "Naruto: Shippuden",
-      "moduleId": "mod_705386304",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Aniwave",
-      "errors": [
-        "probe process hard timeout after 16000ms"
+        "media probe failed: host=cdn.watching.onl empty media response"
       ]
     },
     {
@@ -934,423 +336,83 @@
       ]
     },
     {
-      "aniListId": 11061,
-      "title": "Hunter x Hunter (2011)",
-      "moduleId": "mod_705386304",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Aniwave",
-      "errors": [
-        "implausible episode match: verified=6 available=6 expected<=148"
-      ]
-    },
-    {
-      "aniListId": 207141,
-      "title": "Chainsmoker Cat",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 199748,
-      "title": "I Became a Legend After My 10 Year-Long Last Stand",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/030",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 199748,
-      "title": "I Became a Legend After My 10 Year-Long Last Stand",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 147105,
-      "title": "Witch Hat Atelier",
+      "aniListId": 16498,
+      "title": "Attack on Titan",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/001",
       "sourceName": "Anikoto",
       "errors": [
-        "stream: extractStreamUrl timed out"
+        "implausible episode match: verified=12 available=12 expected<=25"
       ]
     },
     {
-      "aniListId": 199748,
-      "title": "I Became a Legend After My 10 Year-Long Last Stand",
+      "aniListId": 16498,
+      "title": "Attack on Titan",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "Anikoto",
+      "errors": [
+        "implausible episode match: verified=12 available=12 expected<=25"
+      ]
+    },
+    {
+      "aniListId": 16498,
+      "title": "Attack on Titan",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/030",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "media probe failed: host=animesource.me fetch failed"
+      ]
+    },
+    {
+      "aniListId": 101922,
+      "title": "Demon Slayer: Kimetsu no Yaiba",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/001",
       "sourceName": "Anikoto",
       "errors": [
-        "stream: extractStreamUrl timed out"
+        "media probe failed: host=cdn.watching.onl empty media response"
       ]
     },
     {
-      "aniListId": 147105,
-      "title": "Witch Hat Atelier",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
+      "aniListId": 101922,
+      "title": "Demon Slayer: Kimetsu no Yaiba",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "Anikoto",
       "errors": [
-        "search: searchResults returned an unusable result"
+        "media probe failed: host=cdn.watching.onl empty media response"
       ]
     },
     {
-      "aniListId": 171110,
-      "title": "Ascendance of a Bookworm: Adopted Daughter of an Archduke",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 135865,
-      "title": "Saga of Tanya the Evil Season 2",
+      "aniListId": 101922,
+      "title": "Demon Slayer: Kimetsu no Yaiba",
       "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/030",
       "sourceName": "AnimeLand",
       "errors": [
-        "search: searchResults returned an unusable result"
+        "implausible episode match: verified=11 available=11 expected<=26"
       ]
     },
     {
-      "aniListId": 135865,
-      "title": "Saga of Tanya the Evil Season 2",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 171110,
-      "title": "Ascendance of a Bookworm: Adopted Daughter of an Archduke",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/030",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 147105,
-      "title": "Witch Hat Atelier",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/030",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 20,
-      "title": "Naruto",
-      "moduleId": "mod_705386304",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Aniwave",
-      "errors": [
-        "probe process hard timeout after 16000ms"
-      ]
-    },
-    {
-      "aniListId": 208044,
-      "title": "From Overshadowed to Overpowered: Second Reincarnation of a Talentless Sage",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/030",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 171110,
-      "title": "Ascendance of a Bookworm: Adopted Daughter of an Archduke",
+      "aniListId": 113415,
+      "title": "JUJUTSU KAISEN",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/001",
       "sourceName": "Anikoto",
       "errors": [
-        "implausible episode match: verified=14 available=14 expected<=18"
+        "media probe failed: host=cdn.watching.onl empty media response"
       ]
     },
     {
-      "aniListId": 208044,
-      "title": "From Overshadowed to Overpowered: Second Reincarnation of a Talentless Sage",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 135865,
-      "title": "Saga of Tanya the Evil Season 2",
+      "aniListId": 113415,
+      "title": "JUJUTSU KAISEN",
       "moduleId": "jF12G",
-      "catalogPath": "Sources/English/001",
+      "catalogPath": "Sources/English/003",
       "sourceName": "Anikoto",
       "errors": [
-        "implausible episode match: verified=6 available=12 expected<=6"
-      ]
-    },
-    {
-      "aniListId": 5114,
-      "title": "Fullmetal Alchemist: Brotherhood",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/030",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 147105,
-      "title": "Witch Hat Atelier",
-      "moduleId": "mod_705386304",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Aniwave",
-      "errors": [
-        "probe process hard timeout after 16000ms"
-      ]
-    },
-    {
-      "aniListId": 5114,
-      "title": "Fullmetal Alchemist: Brotherhood",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 209983,
-      "title": "HELL MODE: The Hardcore Gamer Dominates in Another World with Garbage Balancing Season 2",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/030",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 209983,
-      "title": "HELL MODE: The Hardcore Gamer Dominates in Another World with Garbage Balancing Season 2",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 135865,
-      "title": "Saga of Tanya the Evil Season 2",
-      "moduleId": "mod_705386304",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Aniwave",
-      "errors": [
-        "probe process hard timeout after 16000ms"
-      ]
-    },
-    {
-      "aniListId": 196974,
-      "title": "The Classroom of the Black Cat and a Witch",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 208044,
-      "title": "From Overshadowed to Overpowered: Second Reincarnation of a Talentless Sage",
-      "moduleId": "mod_705386304",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Aniwave",
-      "errors": [
-        "probe process hard timeout after 16000ms"
-      ]
-    },
-    {
-      "aniListId": 196974,
-      "title": "The Classroom of the Black Cat and a Witch",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/030",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 199066,
-      "title": "Hanaori-san Still Wants to Fight in the Next Life",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 5114,
-      "title": "Fullmetal Alchemist: Brotherhood",
-      "moduleId": "mod_705386304",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Aniwave",
-      "errors": [
-        "probe process hard timeout after 16000ms"
-      ]
-    },
-    {
-      "aniListId": 184951,
-      "title": "You and I Are Polar Opposites",
-      "moduleId": "BNbnN",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "AnimeDefenders",
-      "errors": [
-        "implausible episode match: verified=12 available=19 expected<=12"
-      ]
-    },
-    {
-      "aniListId": 184951,
-      "title": "You and I Are Polar Opposites",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 199066,
-      "title": "Hanaori-san Still Wants to Fight in the Next Life",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/030",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 209983,
-      "title": "HELL MODE: The Hardcore Gamer Dominates in Another World with Garbage Balancing Season 2",
-      "moduleId": "mod_705386304",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Aniwave",
-      "errors": [
-        "probe process hard timeout after 16000ms"
-      ]
-    },
-    {
-      "aniListId": 159309,
-      "title": "Trapped in a Dating Sim: The World of Otome Games is Tough for Mobs Season 2",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/030",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 159309,
-      "title": "Trapped in a Dating Sim: The World of Otome Games is Tough for Mobs Season 2",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 184951,
-      "title": "You and I Are Polar Opposites",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/030",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 196974,
-      "title": "The Classroom of the Black Cat and a Witch",
-      "moduleId": "mod_705386304",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Aniwave",
-      "errors": [
-        "probe process hard timeout after 16000ms"
-      ]
-    },
-    {
-      "aniListId": 194219,
-      "title": "The Ogre's Bride",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 199066,
-      "title": "Hanaori-san Still Wants to Fight in the Next Life",
-      "moduleId": "mod_705386304",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Aniwave",
-      "errors": [
-        "probe process hard timeout after 16000ms"
-      ]
-    },
-    {
-      "aniListId": 194219,
-      "title": "The Ogre's Bride",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/030",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 172463,
-      "title": "JUJUTSU KAISEN Season 3: The Culling Game Part 1",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 184951,
-      "title": "You and I Are Polar Opposites",
-      "moduleId": "mod_705386304",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Aniwave",
-      "errors": [
-        "implausible episode match: verified=7 available=7 expected<=12"
-      ]
-    },
-    {
-      "aniListId": 159309,
-      "title": "Trapped in a Dating Sim: The World of Otome Games is Tough for Mobs Season 2",
-      "moduleId": "mod_705386304",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Aniwave",
-      "errors": [
-        "probe process hard timeout after 16000ms"
+        "media probe failed: host=cdn.watching.onl empty media response"
       ]
     },
     {
@@ -1364,669 +426,53 @@
       ]
     },
     {
-      "aniListId": 113415,
-      "title": "JUJUTSU KAISEN",
-      "moduleId": "animekai-unoriginal-local",
+      "aniListId": 1535,
+      "title": "Death Note",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "Anikoto",
+      "errors": [
+        "media probe failed: host=cdn.watching.onl empty media response"
+      ]
+    },
+    {
+      "aniListId": 1535,
+      "title": "Death Note",
+      "moduleId": "jF12G",
       "catalogPath": "Sources/English/003",
-      "sourceName": "AnimeKai (Unoriginal)",
-      "errors": [
-        "implausible episode match: verified=12 available=12 expected<=24"
-      ]
-    },
-    {
-      "aniListId": 172463,
-      "title": "JUJUTSU KAISEN Season 3: The Culling Game Part 1",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/030",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 161645,
-      "title": "The Apothecary Diaries",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 113415,
-      "title": "JUJUTSU KAISEN",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/001",
       "sourceName": "Anikoto",
       "errors": [
-        "stream: extractStreamUrl timed out"
+        "media probe failed: host=cdn.watching.onl empty media response"
       ]
     },
     {
-      "aniListId": 113415,
-      "title": "JUJUTSU KAISEN",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 194219,
-      "title": "The Ogre's Bride",
-      "moduleId": "mod_705386304",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Aniwave",
-      "errors": [
-        "probe process hard timeout after 16000ms"
-      ]
-    },
-    {
-      "aniListId": 145064,
-      "title": "JUJUTSU KAISEN Season 2",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 184356,
-      "title": "Tomb Raider King",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 172463,
-      "title": "JUJUTSU KAISEN Season 3: The Culling Game Part 1",
-      "moduleId": "mod_705386304",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Aniwave",
-      "errors": [
-        "probe process hard timeout after 16000ms"
-      ]
-    },
-    {
-      "aniListId": 204466,
-      "title": "KAIJU GIRL CARAMELISE",
+      "aniListId": 1535,
+      "title": "Death Note",
       "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/030",
       "sourceName": "AnimeLand",
       "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 184356,
-      "title": "Tomb Raider King",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/030",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 184356,
-      "title": "Tomb Raider King",
-      "moduleId": "mod_705386304",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Aniwave",
-      "errors": [
-        "implausible episode match: verified=5 available=5 expected<=6"
-      ]
-    },
-    {
-      "aniListId": 204466,
-      "title": "KAIJU GIRL CARAMELISE",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 145064,
-      "title": "JUJUTSU KAISEN Season 2",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "Anikoto",
-      "errors": [
-        "implausible episode match: verified=23 available=39 expected<=23"
-      ]
-    },
-    {
-      "aniListId": 16498,
-      "title": "Attack on Titan",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 187260,
-      "title": "I Want to Love You Till Your Dying Day",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/030",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 16498,
-      "title": "Attack on Titan",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "Anikoto",
-      "errors": [
-        "implausible episode match: verified=22 available=22 expected<=25"
-      ]
-    },
-    {
-      "aniListId": 187260,
-      "title": "I Want to Love You Till Your Dying Day",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 145064,
-      "title": "JUJUTSU KAISEN Season 2",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/030",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 177699,
-      "title": "THE GHOST IN THE SHELL",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/030",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 198946,
-      "title": "Clevatess Season 2",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/030",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 194829,
-      "title": "From Old Country Bumpkin to Master Swordsman II",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/030",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 194829,
-      "title": "From Old Country Bumpkin to Master Swordsman II",
-      "moduleId": "BNbnN",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "AnimeDefenders",
-      "errors": [
-        "implausible episode match: verified=5 available=5 expected<=6"
-      ]
-    },
-    {
-      "aniListId": 177699,
-      "title": "THE GHOST IN THE SHELL",
-      "moduleId": "BNbnN",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "AnimeDefenders",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 198946,
-      "title": "Clevatess Season 2",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 177699,
-      "title": "THE GHOST IN THE SHELL",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "Anikoto",
-      "errors": [
-        "stream: extractStreamUrl timed out"
-      ]
-    },
-    {
-      "aniListId": 198946,
-      "title": "Clevatess Season 2",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "Anikoto",
-      "errors": [
-        "stream: extractStreamUrl timed out"
-      ]
-    },
-    {
-      "aniListId": 177699,
-      "title": "THE GHOST IN THE SHELL",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 194829,
-      "title": "From Old Country Bumpkin to Master Swordsman II",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 197715,
-      "title": "The Villager of Level 999",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 197715,
-      "title": "The Villager of Level 999",
-      "moduleId": "animekai-unoriginal-local",
-      "catalogPath": "Sources/English/003",
-      "sourceName": "AnimeKai (Unoriginal)",
-      "errors": [
-        "implausible episode match: verified=8 available=13 expected<=8"
-      ]
-    },
-    {
-      "aniListId": 194829,
-      "title": "From Old Country Bumpkin to Master Swordsman II",
-      "moduleId": "mod_705386304",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Aniwave",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 196218,
-      "title": "The Frontier Lord Begins with Zero Subjects",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 197715,
-      "title": "The Villager of Level 999",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/030",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 128757,
-      "title": "Young Ladies Don't Play Fighting Games",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 194829,
-      "title": "From Old Country Bumpkin to Master Swordsman II",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "Anikoto",
-      "errors": [
-        "implausible episode match: verified=6 available=13 expected<=6"
-      ]
-    },
-    {
-      "aniListId": 197715,
-      "title": "The Villager of Level 999",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "Anikoto",
-      "errors": [
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result",
         "stream: extractStreamUrl returned an unusable result"
       ]
     },
     {
-      "aniListId": 196218,
-      "title": "The Frontier Lord Begins with Zero Subjects",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/030",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 182616,
-      "title": "The Elusive Samurai Season 2",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 128757,
-      "title": "Young Ladies Don't Play Fighting Games",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/030",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 186863,
-      "title": "The Cat and the Dragon",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 186863,
-      "title": "The Cat and the Dragon",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/030",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 192800,
-      "title": "Heroine? Saint? No, I’m an All-Works Maid (And Proud of It)!",
-      "moduleId": "animekai-unoriginal-local",
-      "catalogPath": "Sources/English/003",
-      "sourceName": "AnimeKai (Unoriginal)",
-      "errors": [
-        "No matching route found"
-      ]
-    },
-    {
-      "aniListId": 192800,
-      "title": "Heroine? Saint? No, I’m an All-Works Maid (And Proud of It)!",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 196218,
-      "title": "The Frontier Lord Begins with Zero Subjects",
+      "aniListId": 21459,
+      "title": "My Hero Academia",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/001",
       "sourceName": "Anikoto",
       "errors": [
-        "stream: extractStreamUrl timed out"
+        "media probe failed: host=cdn.watching.onl empty media response"
       ]
     },
     {
-      "aniListId": 192800,
-      "title": "Heroine? Saint? No, I’m an All-Works Maid (And Proud of It)!",
+      "aniListId": 21459,
+      "title": "My Hero Academia",
       "moduleId": "jF12G",
-      "catalogPath": "Sources/English/001",
+      "catalogPath": "Sources/English/003",
       "sourceName": "Anikoto",
       "errors": [
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 196219,
-      "title": "The Oblivious Saint Can't Contain Her Power",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "Anikoto",
-      "errors": [
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 196219,
-      "title": "The Oblivious Saint Can't Contain Her Power",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 192800,
-      "title": "Heroine? Saint? No, I’m an All-Works Maid (And Proud of It)!",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/030",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 207674,
-      "title": "KAMUI ---He's behind you",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 196219,
-      "title": "The Oblivious Saint Can't Contain Her Power",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/030",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 192800,
-      "title": "Heroine? Saint? No, I’m an All-Works Maid (And Proud of It)!",
-      "moduleId": "mod_705386304",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Aniwave",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 182616,
-      "title": "The Elusive Samurai Season 2",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/030",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 197178,
-      "title": "ONE PIECE HEROINES",
-      "moduleId": "animekai-unoriginal-local",
-      "catalogPath": "Sources/English/003",
-      "sourceName": "AnimeKai (Unoriginal)",
-      "errors": [
-        "implausible episode match: verified=1 available=1174 expected<=1"
-      ]
-    },
-    {
-      "aniListId": 211711,
-      "title": "My Hero Academia: I am a hero too",
-      "moduleId": "animekai-unoriginal-local",
-      "catalogPath": "Sources/English/003",
-      "sourceName": "AnimeKai (Unoriginal)",
-      "errors": [
-        "No matching route found"
-      ]
-    },
-    {
-      "aniListId": 211711,
-      "title": "My Hero Academia: I am a hero too",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 197178,
-      "title": "ONE PIECE HEROINES",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 211711,
-      "title": "My Hero Academia: I am a hero too",
-      "moduleId": "BNbnN",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "AnimeDefenders",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 207674,
-      "title": "KAMUI ---He's behind you",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/030",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 197178,
-      "title": "ONE PIECE HEROINES",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/030",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 207674,
-      "title": "KAMUI ---He's behind you",
-      "moduleId": "mod_705386304",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Aniwave",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 211711,
-      "title": "My Hero Academia: I am a hero too",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/030",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 211308,
-      "title": "THE RIBBON HERO",
-      "moduleId": "animekai-unoriginal-local",
-      "catalogPath": "Sources/English/003",
-      "sourceName": "AnimeKai (Unoriginal)",
-      "errors": [
-        "No matching route found"
-      ]
-    },
-    {
-      "aniListId": 211308,
-      "title": "THE RIBBON HERO",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 196219,
-      "title": "The Oblivious Saint Can't Contain Her Power",
-      "moduleId": "mod_705386304",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "Aniwave",
-      "errors": [
-        "probe process hard timeout after 16000ms"
-      ]
-    },
-    {
-      "aniListId": 211308,
-      "title": "THE RIBBON HERO",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/030",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
+        "media probe budget exhausted: 24/24"
       ]
     }
   ]
