@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-19T10:48:15.081Z",
+  "generatedAt": "2026-08-20T07:08:27.909Z",
   "mediaRequested": 5,
   "categories": {
     "trendingNow": {
@@ -24,50 +24,50 @@
   "routeCount": 286,
   "refreshedAnime": 0,
   "mergeExisting": true,
-  "unresolvedAnime": 41,
-  "rejectedAttempts": 41,
+  "unresolvedAnime": 42,
+  "rejectedAttempts": 42,
   "rejectedAttemptSummary": {
     "byReason": {
-      "media_probe_failed": 24,
-      "implausible_match": 8,
-      "search_no_usable_result": 7,
-      "other": 1,
-      "media_probe_budget_exhausted": 1
+      "media_probe_failed": 20,
+      "implausible_match": 11,
+      "search_no_usable_result": 9,
+      "stream_timeout": 1,
+      "other": 1
     },
     "topModules": [
       {
         "sourceName": "Anikoto",
         "count": 28,
         "reasons": {
-          "media_probe_failed": 23,
-          "implausible_match": 4,
-          "media_probe_budget_exhausted": 1
+          "media_probe_failed": 18,
+          "implausible_match": 9,
+          "stream_timeout": 1
         }
       },
       {
         "sourceName": "AnimeLand",
-        "count": 13,
+        "count": 14,
         "reasons": {
-          "implausible_match": 4,
-          "search_no_usable_result": 7,
-          "media_probe_failed": 1,
+          "search_no_usable_result": 9,
+          "media_probe_failed": 2,
+          "implausible_match": 2,
           "other": 1
         }
       }
     ]
   },
   "mediaProbeBudget": 24,
-  "mediaProbesUsed": 24,
+  "mediaProbesUsed": 21,
   "hostHealth": {
     "successEvents": 0,
-    "failureEvents": 24,
+    "failureEvents": 20,
     "skippedByCooldown": 0,
     "coolingDownHosts": 2
   },
   "failures": [
     {
-      "aniListId": 21,
-      "title": "ONE PIECE",
+      "aniListId": 189046,
+      "title": "Re:ZERO -Starting Life in Another World- Season 4",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/001",
       "sourceName": "Anikoto",
@@ -76,8 +76,8 @@
       ]
     },
     {
-      "aniListId": 21,
-      "title": "ONE PIECE",
+      "aniListId": 189046,
+      "title": "Re:ZERO -Starting Life in Another World- Season 4",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/003",
       "sourceName": "Anikoto",
@@ -86,38 +86,8 @@
       ]
     },
     {
-      "aniListId": 21,
-      "title": "ONE PIECE",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/030",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "implausible episode match: verified=1061 available=900 expected<=1174"
-      ]
-    },
-    {
-      "aniListId": 178789,
-      "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "Anikoto",
-      "errors": [
-        "media probe failed: host=cdn.watching.onl empty media response"
-      ]
-    },
-    {
-      "aniListId": 178789,
-      "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/003",
-      "sourceName": "Anikoto",
-      "errors": [
-        "media probe failed: host=cdn.watching.onl empty media response"
-      ]
-    },
-    {
-      "aniListId": 178789,
-      "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
+      "aniListId": 189046,
+      "title": "Re:ZERO -Starting Life in Another World- Season 4",
       "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/030",
       "sourceName": "AnimeLand",
@@ -126,58 +96,28 @@
       ]
     },
     {
-      "aniListId": 269,
-      "title": "Bleach",
+      "aniListId": 135865,
+      "title": "Saga of Tanya the Evil Season 2",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/001",
       "sourceName": "Anikoto",
       "errors": [
-        "media probe failed: host=cdn.watching.onl empty media response"
+        "implausible episode match: verified=7 available=12 expected<=7"
       ]
     },
     {
-      "aniListId": 269,
-      "title": "Bleach",
+      "aniListId": 135865,
+      "title": "Saga of Tanya the Evil Season 2",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/003",
       "sourceName": "Anikoto",
       "errors": [
-        "media probe failed: host=cdn.watching.onl empty media response"
+        "implausible episode match: verified=7 available=12 expected<=7"
       ]
     },
     {
-      "aniListId": 269,
-      "title": "Bleach",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/030",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "implausible episode match: verified=13 available=13 expected<=366"
-      ]
-    },
-    {
-      "aniListId": 187260,
-      "title": "I Want to Love You Till Your Dying Day",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "Anikoto",
-      "errors": [
-        "media probe failed: host=cdn.watching.onl empty media response"
-      ]
-    },
-    {
-      "aniListId": 187260,
-      "title": "I Want to Love You Till Your Dying Day",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/003",
-      "sourceName": "Anikoto",
-      "errors": [
-        "media probe failed: host=cdn.watching.onl empty media response"
-      ]
-    },
-    {
-      "aniListId": 187260,
-      "title": "I Want to Love You Till Your Dying Day",
+      "aniListId": 135865,
+      "title": "Saga of Tanya the Evil Season 2",
       "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/030",
       "sourceName": "AnimeLand",
@@ -186,8 +126,38 @@
       ]
     },
     {
-      "aniListId": 182205,
-      "title": "That Time I Got Reincarnated as a Slime Season 4",
+      "aniListId": 194829,
+      "title": "From Old Country Bumpkin to Master Swordsman II",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "Anikoto",
+      "errors": [
+        "implausible episode match: verified=2 available=2 expected<=7"
+      ]
+    },
+    {
+      "aniListId": 194829,
+      "title": "From Old Country Bumpkin to Master Swordsman II",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "Anikoto",
+      "errors": [
+        "implausible episode match: verified=2 available=2 expected<=7"
+      ]
+    },
+    {
+      "aniListId": 194829,
+      "title": "From Old Country Bumpkin to Master Swordsman II",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/030",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 159309,
+      "title": "Trapped in a Dating Sim: The World of Otome Games is Tough for Mobs Season 2",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/001",
       "sourceName": "Anikoto",
@@ -196,8 +166,8 @@
       ]
     },
     {
-      "aniListId": 182205,
-      "title": "That Time I Got Reincarnated as a Slime Season 4",
+      "aniListId": 159309,
+      "title": "Trapped in a Dating Sim: The World of Otome Games is Tough for Mobs Season 2",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/003",
       "sourceName": "Anikoto",
@@ -206,8 +176,68 @@
       ]
     },
     {
-      "aniListId": 182205,
-      "title": "That Time I Got Reincarnated as a Slime Season 4",
+      "aniListId": 159309,
+      "title": "Trapped in a Dating Sim: The World of Otome Games is Tough for Mobs Season 2",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/030",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 184356,
+      "title": "Tomb Raider King",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "Anikoto",
+      "errors": [
+        "media probe failed: host=cdn.watching.onl empty media response"
+      ]
+    },
+    {
+      "aniListId": 184356,
+      "title": "Tomb Raider King",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "Anikoto",
+      "errors": [
+        "media probe failed: host=cdn.watching.onl empty media response"
+      ]
+    },
+    {
+      "aniListId": 184356,
+      "title": "Tomb Raider King",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/030",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 178789,
+      "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "Anikoto",
+      "errors": [
+        "media probe failed: host=cdn.watching.onl empty media response"
+      ]
+    },
+    {
+      "aniListId": 178789,
+      "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "Anikoto",
+      "errors": [
+        "media probe failed: host=cdn.watching.onl empty media response"
+      ]
+    },
+    {
+      "aniListId": 178789,
+      "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
       "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/030",
       "sourceName": "AnimeLand",
@@ -238,36 +268,6 @@
     {
       "aniListId": 196187,
       "title": "Smoking Behind the Supermarket with You",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/030",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 135865,
-      "title": "Saga of Tanya the Evil Season 2",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "Anikoto",
-      "errors": [
-        "media probe failed: host=cdn.watching.onl empty media response"
-      ]
-    },
-    {
-      "aniListId": 135865,
-      "title": "Saga of Tanya the Evil Season 2",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/003",
-      "sourceName": "Anikoto",
-      "errors": [
-        "media probe failed: host=cdn.watching.onl empty media response"
-      ]
-    },
-    {
-      "aniListId": 135865,
-      "title": "Saga of Tanya the Evil Season 2",
       "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/030",
       "sourceName": "AnimeLand",
@@ -412,7 +412,7 @@
       "catalogPath": "Sources/English/003",
       "sourceName": "Anikoto",
       "errors": [
-        "media probe failed: host=cdn.watching.onl empty media response"
+        "stream: extractStreamUrl timed out"
       ]
     },
     {
@@ -432,7 +432,7 @@
       "catalogPath": "Sources/English/001",
       "sourceName": "Anikoto",
       "errors": [
-        "media probe failed: host=cdn.watching.onl empty media response"
+        "implausible episode match: verified=2 available=2 expected<=37"
       ]
     },
     {
@@ -472,7 +472,17 @@
       "catalogPath": "Sources/English/003",
       "sourceName": "Anikoto",
       "errors": [
-        "media probe budget exhausted: 24/24"
+        "media probe failed: host=cdn.watching.onl empty media response"
+      ]
+    },
+    {
+      "aniListId": 21459,
+      "title": "My Hero Academia",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/030",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "media probe failed: host=animesource.me fetch failed"
       ]
     }
   ]
