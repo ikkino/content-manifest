@@ -1,6 +1,6 @@
 {
-  "sourceName": "Otakutsu",
-  "iconUrl": "https://otakutsu.cc/favicon.ico",
+  "sourceName": "VidUp",
+  "iconUrl": "https://vidup.to/favicon.ico",
   "author": {
     "name": "50/50",
     "icon": "https://files.catbox.moe/741wp7.png"
@@ -8,25 +8,21 @@
   "version": "1.0.1",
   "language": "English",
   "languageType": [
-    "Dubbed",
-    "Subbed"
+    "Native"
   ],
-  "baseUrl": "https://otakutsu.cc/",
-  "searchBaseUrl": "https://otakutsu.cc/browse?query=%s",
-  "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/025/source.js",
-  "type": "anime",
-  "quality": "1080p",
   "streamType": "HLS",
+  "quality": "1080p",
+  "baseUrl": "https://vidup.to/",
+  "searchBaseUrl": "https://vidup.to/",
+  "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/025/source.js",
+  "type": "shows/movies/anime",
   "asyncJS": true,
-  "downloadSupport": true,
+  "softsub": true,
+  "downloadSupport": false,
   "supportsSora": true,
   "supportsLuna": true,
-  "supportsDartotsu": true,
-  "supportsAnymex": true,
   "supportsTsumi": true,
   "supportsHiyoku": true,
-  "supportsShirox": true,
-  "supportsMojuru": true,
   "supportsEclipse": true,
-  "id": "jAIou"
+  "id": "jwXaY"
 }

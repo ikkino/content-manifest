@@ -186,14 +186,10 @@ async function extractStreamUrl(ID) {
         let seasonNumber = "1";
         let episodeNumber = "1";
         let mediaType = "";
-        let reqUrl = "";
-        let referer = "";
 
         if (isMovie) {
             tmdbID = ID.replace('/movie/', '').replace('movie/', '');
             mediaType = "movie";
-            reqUrl = `https://play.xpass.top/data/movie/${tmdbID}?autostart=false`;
-            referer = `https://play.xpass.top/e/movie/${tmdbID}`;
         } else if (ID.includes('tv')) {
             const parts = ID.split('/');
             const cleanParts = parts.filter(p => p !== "");
@@ -201,92 +197,62 @@ async function extractStreamUrl(ID) {
             seasonNumber = cleanParts[2];
             episodeNumber = cleanParts[3];
             mediaType = "tv";
-            reqUrl = `https://play.xpass.top/data/tv/${tmdbID}/${seasonNumber}/${episodeNumber}?autostart=false`;
-            referer = `https://play.xpass.top/e/tv/${tmdbID}/${seasonNumber}/${episodeNumber}`;
         } else {
             return JSON.stringify({ streams: [] });
         }
 
-        const headers = {
-            "Cookie": "auth_token=c2685c63f0016d6ab3a3548eeb1e111551acfc1bbd65fc2b1e2b043af659b39a",
-            "Referer": referer,
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:152.0) Gecko/20100101 Firefox/152.0",
-            "Accept": "*/*"
+        let streamUrl = `https://streamdata.vaplayer.ru/api.php?tmdb=${tmdbID}&type=${mediaType}`;
+        if (mediaType === "tv") {
+            streamUrl += `&season=${seasonNumber}&episode=${episodeNumber}`;
+        }
+
+        const fetchOpts = {
+            headers: {
+                "Referer": "https://nextgencloudfabric.com/",
+                "Origin": "https://nextgencloudfabric.com",
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+            }
         };
 
-        const response = await soraFetch(reqUrl, { headers });
-        if (!response) throw new Error("Failed to fetch server list from XPass");
+        const response = await soraFetch(streamUrl, fetchOpts);
+        if (!response) throw new Error("Failed to fetch Airflix stream data");
 
-        const serverList = await response.json();
-        if (!Array.isArray(serverList)) throw new Error("Invalid server list response");
+        const streamData = await response.json();
+        let streamObjects = [];
+        let subtitleUrl = "";
 
-        const serverPromises = serverList.map(async (server) => {
-            try {
-                if (!server.url) return [];
-                const playlistUrl = `https://play.xpass.top${server.url}`;
-                const playlistResponse = await soraFetch(playlistUrl, { headers });
-                if (!playlistResponse) return [];
-                const playlistData = await playlistResponse.json();
-
-                let results = [];
-                if (playlistData && playlistData.playlist && playlistData.playlist.length > 0) {
-                    playlistData.playlist.forEach(item => {
-                        if (item.sources && Array.isArray(item.sources)) {
-                            item.sources.forEach(src => {
-                                if (src.file) {
-                                    const isTik = src.file.includes("tik.1x2.space") || 
-                                                  (src.label && src.label.toUpperCase().includes("TIK")) || 
-                                                  (server.name && server.name.toUpperCase().includes("TIK"));
-                                    if (!isTik) {
-                                        results.push({
-                                            title: `[XPass] ${server.name || 'Server'} - ${src.label || 'HLS'}`,
-                                            streamUrl: src.file,
-                                            headers: {
-                                                "Origin": "https://play.xpass.top",
-                                                "Connection": "keep-alive",
-                                                "Referer": "https://play.xpass.top/"
-                                            }
-                                        });
-                                    }
-                                }
-                            });
-                        }
-                    });
-                }
-                return results;
-            } catch (err) {
-                console.log(`Error fetching playlist for server ${server.name}: ` + err);
-                return [];
-            }
-        });
-
-        const resolvedStreams = await Promise.all(serverPromises);
-        if (streamObjects.length === 0) {
-            const fallbackUrl = mediaType === "movie"
-                ? `https://vidlink.pro/movie/${tmdbID}`
-                : `https://vidlink.pro/tv/${tmdbID}/${seasonNumber}/${episodeNumber}`;
-            streamObjects.push({
-                title: "XPass Backup",
-                streamUrl: fallbackUrl,
-                headers: { "Referer": "https://vidlink.pro/" }
+        if (streamData && streamData.status_code === "200" && streamData.data) {
+            const urls = streamData.data.stream_urls || [];
+            urls.forEach((url, index) => {
+                streamObjects.push({
+                    title: `[Airflix] Server ${index + 1}`,
+                    streamUrl: url,
+                    headers: {
+                        "Referer": "https://nextgencloudfabric.com/",
+                        "Origin": "https://nextgencloudfabric.com",
+                        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+                    }
+                });
             });
+
+            if (streamData.data.default_subs && Array.isArray(streamData.data.default_subs) && streamData.data.default_subs.length > 0) {
+                const engSub = streamData.data.default_subs.find(sub => {
+                    if (typeof sub === 'string') return sub.toLowerCase().includes('eng');
+                    const lang = (sub.label || sub.language || sub.lang || "").toLowerCase();
+                    return lang.includes('eng');
+                });
+                const chosenSub = engSub || streamData.data.default_subs[0];
+                subtitleUrl = typeof chosenSub === 'string' ? chosenSub : (chosenSub.url || chosenSub.file || "");
+            }
         }
 
         return JSON.stringify({
             streams: streamObjects,
-            subtitles: ""
+            subtitles: subtitleUrl
         });
     } catch (error) {
         console.log('Fetch error in extractStreamUrl: ' + error);
-        let fallbackUrl = "https://vidlink.pro/";
-        if (ID.includes('movie')) {
-            const mId = ID.replace('/movie/', '').replace('/', '');
-            fallbackUrl = `https://vidlink.pro/movie/${mId}`;
-        } else if (ID.includes('tv')) {
-            const parts = ID.split('/');
-            fallbackUrl = `https://vidlink.pro/tv/${parts[2]}/${parts[3]}/${parts[4]}`;
-        }
-        return JSON.stringify({ streams: [{ title: "XPass Backup", streamUrl: fallbackUrl, headers: { Referer: "https://vidlink.pro/" } }], subtitles: "" });
+        return JSON.stringify({ streams: [], subtitles: "" });
     }
 }
 

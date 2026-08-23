@@ -556,17 +556,17 @@ async function multiExtractor(providers) {
         providersCount[provider] = 1;
         title = provider.charAt(0).toUpperCase() + provider.slice(1);
       }
-
+      
       const streamObject = {
         title: title,
         streamUrl: streamUrl
       };
-
+      
       // Add headers if they exist
       if (headers && typeof headers === "object" && Object.keys(headers).length > 0) {
         streamObject.headers = headers;
       }
-
+      
       streams.push(streamObject);
     } catch (error) {
       // Ignore the error and try the next provider
@@ -906,7 +906,7 @@ async function sibnetExtractor(html, embedUrl) {
 /* --- streamtape --- */
 
 /**
- *
+ * 
  * @name streamTapeExtractor
  * @author ShadeOfChaos
  */
@@ -1039,7 +1039,7 @@ async function vidmolyExtractor(html, url = null) {
     };
     const response = await soraFetch(url, { headers });
     html = await response.text();
-  }
+  } 
     console.log("Vidmoly extractor: No match found, using fallback");
     //  regex the sources: [{file:"this_is_the_link"}]
     const sourcesRegex = /sources:\s*\[\s*\{\s*file:\s*['"](https?:\/\/[^'"]+)['"]\s*\}/;
@@ -1048,7 +1048,7 @@ async function vidmolyExtractor(html, url = null) {
       ? sourcesMatch[1].replace(/'/g, '"')
       : null;
     return sourcesString;
-
+  
 }
 /* --- vidoza --- */
 
