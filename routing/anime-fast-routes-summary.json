@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-24T07:30:53.558Z",
+  "generatedAt": "2026-08-25T04:55:27.377Z",
   "mediaRequested": 5,
   "categories": {
     "trendingNow": {
@@ -28,8 +28,8 @@
   "rejectedAttempts": 42,
   "rejectedAttemptSummary": {
     "byReason": {
-      "media_probe_failed": 16,
-      "implausible_match": 13,
+      "media_probe_failed": 17,
+      "implausible_match": 12,
       "search_no_usable_result": 11,
       "other": 2
     },
@@ -57,18 +57,18 @@
         "count": 14,
         "reasons": {
           "search_no_usable_result": 3,
-          "implausible_match": 8,
-          "media_probe_failed": 2,
+          "media_probe_failed": 3,
+          "implausible_match": 7,
           "other": 1
         }
       }
     ]
   },
   "mediaProbeBudget": 24,
-  "mediaProbesUsed": 16,
+  "mediaProbesUsed": 17,
   "hostHealth": {
     "successEvents": 0,
-    "failureEvents": 16,
+    "failureEvents": 17,
     "skippedByCooldown": 0,
     "coolingDownHosts": 3
   },
@@ -96,6 +96,36 @@
     {
       "aniListId": 178789,
       "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/033",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 202269,
+      "title": "Love Unseen Beneath the Clear Night Sky",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "Anikoto",
+      "errors": [
+        "media probe failed: host=cdn.watching.onl empty media response"
+      ]
+    },
+    {
+      "aniListId": 202269,
+      "title": "Love Unseen Beneath the Clear Night Sky",
+      "moduleId": "jWuL6",
+      "catalogPath": "Sources/English/017",
+      "sourceName": "Bingebox",
+      "errors": [
+        "media probe failed: host=api.dlproxy.com empty media response; host=api.dlproxy.com empty media response"
+      ]
+    },
+    {
+      "aniListId": 202269,
+      "title": "Love Unseen Beneath the Clear Night Sky",
       "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/033",
       "sourceName": "AnimeLand",
@@ -134,8 +164,8 @@
       ]
     },
     {
-      "aniListId": 210031,
-      "title": "You and I Are Polar Opposites Season 2",
+      "aniListId": 169583,
+      "title": "Oh Boy, Was I Wrong About Her",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/001",
       "sourceName": "Anikoto",
@@ -144,38 +174,8 @@
       ]
     },
     {
-      "aniListId": 210031,
-      "title": "You and I Are Polar Opposites Season 2",
-      "moduleId": "jWuL6",
-      "catalogPath": "Sources/English/017",
-      "sourceName": "Bingebox",
-      "errors": [
-        "implausible episode match: verified=8 available=25 expected<=8"
-      ]
-    },
-    {
-      "aniListId": 210031,
-      "title": "You and I Are Polar Opposites Season 2",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/033",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 188139,
-      "title": "Though I Am an Inept Villainess",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "Anikoto",
-      "errors": [
-        "media probe failed: host=cdn.watching.onl empty media response"
-      ]
-    },
-    {
-      "aniListId": 188139,
-      "title": "Though I Am an Inept Villainess",
+      "aniListId": 169583,
+      "title": "Oh Boy, Was I Wrong About Her",
       "moduleId": "jWuL6",
       "catalogPath": "Sources/English/017",
       "sourceName": "Bingebox",
@@ -184,8 +184,8 @@
       ]
     },
     {
-      "aniListId": 188139,
-      "title": "Though I Am an Inept Villainess",
+      "aniListId": 169583,
+      "title": "Oh Boy, Was I Wrong About Her",
       "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/033",
       "sourceName": "AnimeLand",
@@ -194,8 +194,8 @@
       ]
     },
     {
-      "aniListId": 182205,
-      "title": "That Time I Got Reincarnated as a Slime Season 4",
+      "aniListId": 185542,
+      "title": "Skeleton Knight in Another World Season 2",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/001",
       "sourceName": "Anikoto",
@@ -204,8 +204,8 @@
       ]
     },
     {
-      "aniListId": 182205,
-      "title": "That Time I Got Reincarnated as a Slime Season 4",
+      "aniListId": 185542,
+      "title": "Skeleton Knight in Another World Season 2",
       "moduleId": "jWuL6",
       "catalogPath": "Sources/English/017",
       "sourceName": "Bingebox",
@@ -214,8 +214,8 @@
       ]
     },
     {
-      "aniListId": 182205,
-      "title": "That Time I Got Reincarnated as a Slime Season 4",
+      "aniListId": 185542,
+      "title": "Skeleton Knight in Another World Season 2",
       "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/033",
       "sourceName": "AnimeLand",
@@ -452,7 +452,7 @@
       "catalogPath": "Sources/English/017",
       "sourceName": "Bingebox",
       "errors": [
-        "media probe failed: host=api.dlproxy.com empty media response; host=api.dlproxy.com empty media response"
+        "media probe failed: host=api.dlproxy.com Timeout after 5000ms; host=api.dlproxy.com empty media response"
       ]
     },
     {
