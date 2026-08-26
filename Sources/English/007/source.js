@@ -177,7 +177,7 @@ async function extractStreamUrl(url) {
                 if (!embedResp) { console.log("No response for embed page"); return null; }
                 const embedHtml = await embedResp.text();
                 console.log("Embed HTML (first 500 chars): " + embedHtml.substring(0, 500));
-                
+
                 // NEW: extract data-id from the player div
                 const dataIdMatch = embedHtml.match(/data-id="([^"]+)"/);
                 if (!dataIdMatch) { console.log("No data-id found in embed page"); return null; }

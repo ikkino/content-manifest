@@ -1,32 +1,31 @@
 {
-  "sourceName": "Hexa",
-  "iconUrl": "https://hexa.su/favicon.ico",
+  "sourceName": "AllManga",
+  "iconUrl": "https://allmanga.to/pics/avatar-w.png",
   "author": {
-    "name": "50/50",
-    "icon": "https://files.catbox.moe/741wp7.png"
+    "name": "xdfkenny",
+    "icon": "https://yt3.googleusercontent.com/NHr6Y6qhYIUeoyIBdgeEYArXI1_ebVcLAuf562jPB6WSFTunOwPVuWC90eAG1zmeD6_Wy9_0mTs=s160-c-k-c0x00ffffff-no-rj",
+    "url": "https://github.com/xdfkenny"
   },
-  "version": "1.1.1",
+  "description": "Módulo de AllManga (allmanga.to) — anime en inglés (sub/dub) vía el flow oficial AllAnime (aaReq + tobeparsed + clock). Auto-bootstrap de claves aaReq cuando rotan (build 136, epochs semanales), con fallback a keygen remoto y fuentes iframe (mp4upload/ok.ru) para mantener el flujo de video.",
+  "version": "1.9.0",
   "language": "English",
-  "languageType": [
-    "Native"
-  ],
-  "streamType": "HLS",
+  "streamType": "HLS/MP4",
   "quality": "1080p",
-  "baseUrl": "https://hexa.su/",
-  "searchBaseUrl": "https://hexa.su/",
+  "baseUrl": "https://allmanga.to/",
+  "searchBaseUrl": "https://allmanga.to/search-anime?keyword=%s",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/018/source.js",
-  "type": "shows/movies/anime",
-  "asyncJS": true,
-  "softsub": true,
+  "type": "anime",
   "downloadSupport": true,
+  "combo": false,
+  "asyncJS": true,
+  "streamAsyncJS": false,
+  "softsub": false,
+  "supportsMojuru": true,
+  "supportsDartotsu": true,
   "supportsSora": true,
   "supportsLuna": true,
-  "supportsDartotsu": true,
   "supportsAnymex": true,
   "supportsTsumi": true,
   "supportsHiyoku": true,
-  "supportsShirox": true,
-  "supportsMojuru": true,
-  "supportsEclipse": true,
-  "id": "Bvc4f"
+  "id": "jzppd"
 }

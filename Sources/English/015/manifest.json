@@ -1,21 +1,28 @@
 {
-  "sourceName": "FireAnime English (SUB)",
-  "iconUrl": "https://i.ibb.co/dJ1SN5ch/favicon.png",
+  "sourceName": "IMDb",
+  "iconUrl": "https://m.media-amazon.com/images/G/01/imdb/images-ANDW73HA/favicon_iPhone_retina_180x180._CB1582158069_UX196_.png",
   "author": {
-    "name": "Cufiy & 50/50",
-    "icon": "https://files.catbox.moe/ttj4fc.gif"
+    "name": "50/50",
+    "icon": "https://files.catbox.moe/741wp7.png"
   },
-  "version": "1.1.7",
+  "version": "1.0.0",
   "language": "English",
+  "languageType": [
+    "Native"
+  ],
   "streamType": "HLS",
   "quality": "1080p",
-  "baseUrl": "https://fireani.me/",
-  "searchBaseUrl": "https://fireani.me/api/anime/search?q=%s",
+  "baseUrl": "https://www.imdb.com/",
+  "searchBaseUrl": "https://www.imdb.com/",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/015/source.js",
+  "type": "shows/movies/anime",
   "asyncJS": true,
-  "type": "anime",
-  "supportsMojuru": true,
+  "softsub": true,
+  "downloadSupport": false,
   "supportsSora": true,
   "supportsLuna": true,
-  "id": "8NDe"
+  "supportsTsumi": true,
+  "supportsHiyoku": true,
+  "supportsEclipse": true,
+  "id": "mod_336052763"
 }

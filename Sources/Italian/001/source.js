@@ -78,7 +78,7 @@ async function extractEpisodes(url) {
         number: parseInt(episode.number),
       });
     });
-    
+
     return JSON.stringify(episodes);
   } catch (error) {
     console.log("Error extracting episodes:", error);

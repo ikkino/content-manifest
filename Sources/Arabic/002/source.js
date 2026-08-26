@@ -87,11 +87,11 @@ async function extractEpisodes(url) {
         const id = matchId[1];
 
         const targetUrl = url.startsWith('http') ? url : `https://kawaii-anime.com/anime/${id}`;
-        
+
         const res = await soraFetch(targetUrl, {
             method: 'GET',
-            headers: { 
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36' 
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
             }
         });
         const html = await res.text();

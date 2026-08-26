@@ -1,240 +1,258 @@
-const BASE_URL = "https://topcinemaa.co";
-const USER_AGENT = "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Mobile Safari/537.36";
-
-async function getText(url, referer, method, body) {
-    const headers = {
-        "User-Agent": USER_AGENT,
-        "Accept-Language": "ar-EG,ar;q=0.9,en-US;q=0.8,en;q=0.7",
-        "Referer": referer || BASE_URL + "/"
-    };
-    if (method === "POST") {
-        headers["X-Requested-With"] = "XMLHttpRequest";
-        headers["Content-Type"] = "application/x-www-form-urlencoded; charset=UTF-8";
-        headers["Accept"] = "*/*";
+async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
+    try {
+        return await fetchv2(url, options.headers ?? {}, options.method ?? 'GET', options.body ?? null);
+    } catch (e) {
+        try { return await fetch(url, options); } catch (_) { return null; }
     }
-    const response = await fetchv2(url, headers, method || "GET", body);
-    return response.text();
 }
 
-function text(value) {
-    return (value || "")
-        .replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, "\"")
-        .replace(/&#039;|&apos;/g, "'").replace(/&amp;/g, "&")
-        .replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+function customAtob(base64Str) {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+    let str = String(base64Str).replace(/=+$/, '');
+    let output = '';
+    if (str.length % 4 === 1) throw new Error('Base64 string non-conforming');
+
+    for (
+        let bc = 0, bs, buffer, idx = 0;
+        (buffer = str.charAt(idx++));
+        ~buffer && ((bs = bc % 4 ? bs * 64 + buffer : buffer), bc++ % 4)
+            ? (output += String.fromCharCode(255 & (bs >> ((-2 * bc) & 6))))
+            : 0
+    ) {
+        buffer = chars.indexOf(buffer);
+    }
+    return output;
 }
 
-function searchTitle(value, keyword) {
-    const requestedYears = keyword.match(/\b20(?:0[1-9]|[1-9]\d)\b/g) || [];
-    return value
-        .replace(/اون\s+لاين|اونلاين|اولاين|مترجمة|مترجم|فيلم|مسلسل|انمي|أنمي|كامل|الأول|الاول|الأخيرة|الاخيرة|و|الأخير|الاخير/g, " ")
-        .replace(/\b20(?:0[1-9]|[1-9]\d)\b/g, (year) => requestedYears.includes(year) ? year : " ")
-        .replace(/\s+/g, " ").trim();
+function TestAtob(base64Str) {
+    try { return atob(base64Str); } catch (e) { return customAtob(base64Str); }
+}
+
+function xorDecode(encoded, key) {
+    try {
+        if (!encoded) return '';
+        const decoded = TestAtob(encoded);
+        let result = '';
+        for (let i = 0; i < decoded.length; i++) {
+            result += String.fromCharCode(decoded.charCodeAt(i) ^ key.charCodeAt(i % key.length));
+        }
+        return result;
+    } catch (e) { return ''; }
+}
+
+const hrefXor = (encoded, key = 'asxwqa147') => xorDecode(encoded, key);
+const decryptXorBase64 = (data, key = 'AQWXZSCED@@POIUYTRR159') =>
+    data ? xorDecode(data, key).replace(/^"|"$/g, '') : null;
+
+const buildQueryString = obj =>
+    Object.entries(obj).map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v ?? '')}`).join('&');
+
+const grab = (html, re) => (html.match(re) || [])[1]?.trim() || '';
+
+function numberToAlphabet(number) {
+    let result = "";
+    number = parseInt(number, 10);
+    while (number > 0) {
+        const remainder = (number - 1) % 26;
+        result = String.fromCharCode(remainder + 97) + result;
+        number = Math.floor((number - 1) / 26);
+    }
+    return result;
+}
+
+function generateAnimeUrlPath(animeName) {
+    return (animeName || "")
+        .replace(/[^a-zA-Z0-9\s-]/g, "")
+        .trim()
+        .replace(/\s+/g, "-")
+        .replace(/-+/g, "-")
+        .toLowerCase();
+}
+
+function animeUrl(name, id) {
+    return generateAnimeUrlPath(name) + "-" + numberToAlphabet(id);
 }
 
 async function searchResults(keyword) {
     try {
-        const html = await getText(BASE_URL + "/search/?query=" + encodeURIComponent(keyword) + "&type=all");
-        const results = [];
-        const entries = [];
-        const series = {};
-        const pattern = /<div class="Small--Box">\s*<a href="([^"]+)" title="([^"]*)" class="recent--block">[\s\S]*?<div class="Poster">\s*<img[^>]+(?:data-src="([^"]+)"[^>]*|src="([^"]+)"[^>]*)>[\s\S]*?<h3 class="title">([\s\S]*?)<\/h3>\s*<\/a>\s*<\/div>/g;
-        let match;
+        const pageNumbers = Array.from({ length: 30 }, (_, i) => i + 1);
 
-        while ((match = pattern.exec(html)) !== null) {
-            const result = {
-                title: text(match[2] || match[5]),
-                image: match[3] || match[4],
-                href: match[1]
-            };
-            if (/^(?:مسلسل|انمي|أنمي)\s/i.test(result.title)) {
-                const key = result.title
-                    .replace(/\s+(?:الموسم|الحلقة)[\s\S]*$/, "")
-                    .replace(/\s+(?:مترجم(?:ة)?|مدبلج(?:ة)?)[\s\S]*$/, "")
-                    .toLowerCase();
-                if (!series[key]) {
-                    series[key] = result;
-                    entries.push(key);
-                }
-            } else {
-                entries.push(result);
+        const requests = pageNumbers.map(async (page) => {
+            try {
+                const qs = buildQueryString({ _api: 1, keyword, page });
+                const res = await soraFetch(`https://animeslayer.to/browse?${qs}`, {
+                    headers: { 'User-Agent': 'Mozilla/5.0', 'Referer': 'https://animeslayer.to/' }
+                });
+                if (!res) return [];
+
+                const json = JSON.parse(await res.text());
+                if (!json.success || !Array.isArray(json.data)) return [];
+
+                return json.data.map(item => ({
+                    title: item.anime_name,
+                    image: item.anime_cover_image_url,
+                    href: `https://animeslayer.to/title/${animeUrl(item.anime_name, item.anime_id)}`
+                }));
+            } catch (_) {
+                return [];
             }
-        }
+        });
 
-        for (const entry of entries) {
-            if (typeof entry !== "string") {
-                results.push(entry);
-                continue;
-            }
+        const pagesResults = await Promise.all(requests);
+        const flatResults = pagesResults.flat();
 
-            const result = series[entry];
-            if (!result.href.includes("/series/")) {
-                const episodeHtml = await getText(result.href);
-                const parentPattern = /<a href="(https?:\/\/topcinemaa\.co\/series\/[^"]+)"[^>]*>\s*<span>([^<]+)<\/span>\s*<\/a>/gi;
-                let parent;
-                while ((parent = parentPattern.exec(episodeHtml)) !== null) {
-                    if (!/الموسم/.test(parent[2])) {
-                        result.href = parent[1];
-                        result.title = text(parent[2]);
-                        break;
-                    }
-                }
-            }
-            results.push(result);
-        }
-
-        for (const result of results) result.title = searchTitle(result.title, keyword);
-
-        return JSON.stringify(results);
-    } catch (error) {
-        console.log("TopCinema search error: " + error);
-        return JSON.stringify([]);
+        return JSON.stringify(flatResults);
+    } catch (e) {
+        return JSON.stringify([{ title: 'Error', image: '', href: '' }]);
     }
 }
 
 async function extractDetails(url) {
     try {
-        const html = await getText(url);
-        const description = text((html.match(/<div class="story">\s*<p>([\s\S]*?)<\/p>/i) || [])[1]
-            || (html.match(/<meta property="og:description" content="([^"]*)"/i) || [])[1])
-            || "No description available";
-        const year = ((html.match(/href="[^"]*\/release-year\/(\d{4})\/?"/i) || [])[1]) || "Unknown";
-        const genres = [];
-        const genrePattern = /<a href="[^"]*\/genre\/[^"]+">([\s\S]*?)<\/a>/gi;
-        let genre;
+        const html = await (await soraFetch(url, { headers: { 'User-Agent': 'Mozilla/5.0', 'Referer': 'https://animeslayer.to/' } })).text();
 
-        while ((genre = genrePattern.exec(html)) !== null) genres.push(text(genre[1]));
+        const description = grab(html, /property=["']og:description["']\s+content=["']([^"']+)["']/i)
+            .replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#039;/g, "'") || 'لا يوجد وصف';
 
-        return JSON.stringify([{
-            description: description,
-            aliases: genres.join(", ") || "N/A",
-            airdate: year
-        }]);
-    } catch (error) {
-        console.log("TopCinema details error: " + error);
-        return JSON.stringify([]);
-    }
-}
+        const studio = grab(html, /الاستوديو<\/span>\s*<div class="tag-list"><span class="tag">([^<]+)/) || 'Unknown';
+        const source = grab(html, /مقتبس من<\/span><span>([^<]+)/);
+        const status = grab(html, /حالة الأنمي<\/span><span><a[^>]*>([^<]+)/) || 'Unknown';
+        const airdate = grab(html, /الحلقة الأولى<\/span><span>([^<]+)/) || 'Unknown';
 
-function episodesFromHtml(html, season) {
-    const episodes = [];
-    const pattern = /<a href="([^"]+)" title="([^"]*)">[\s\S]*?<div class="ep-info"><h2>([\s\S]*?)<\/h2><\/div>\s*<div class="epnum">\s*<span>الحلقة<\/span>\s*(\d+)\s*<\/div>\s*<\/a>/gi;
-    let match;
-
-    while ((match = pattern.exec(html)) !== null) {
-        episodes.push({
-            href: match[1],
-            number: Number(match[4]),
-            season: season,
-            title: text(match[3] || match[2])
+        return JSON.stringify({
+            description,
+            aliases: source ? `${studio} | ${source}` : studio,
+            airdate: `${status} | ${airdate}`
         });
+    } catch (e) {
+        return JSON.stringify({ description: 'Error loading description', aliases: 'Unknown', airdate: 'Unknown' });
     }
-    return episodes;
 }
 
 async function extractEpisodes(url) {
     try {
-        const html = await getText(url);
-        let episodes = episodesFromHtml(html, Number((text((html.match(/<h1 class="post-title">[\s\S]*?<a[^>]*>([\s\S]*?)<\/a>/i) || [])[1]).match(/الموسم\s+(\d+)/) || [])[1]) || 1);
-        const seasons = [];
-        const seasonPattern = /<div class="Small--Box Season">\s*<a href="([^"]+)"[\s\S]*?<div class="epnum"><span>الموسم<\/span>\s*(\d+)<\/div>/gi;
-        let season;
+        const res = await soraFetch(url, { headers: { 'User-Agent': 'Mozilla/5.0', 'Referer': 'https://animeslayer.to/' } });
+        if (!res) return JSON.stringify([]);
 
-        while ((season = seasonPattern.exec(html)) !== null) {
-            seasons.push({ href: season[1], number: Number(season[2]) });
-        }
-        for (const item of seasons) {
-            episodes = episodes.concat(episodesFromHtml(await getText(item.href), item.number));
-        }
+        const html = typeof res.text === 'function' ? await res.text() : String(res);
+        if (!html || html.length < 100) return JSON.stringify([]);
 
-        if (episodes.length === 0) {
-            const title = text((html.match(/<h1 class="post-title">[\s\S]*?<a[^>]*>([\s\S]*?)<\/a>/i) || [])[1]);
-            const number = Number((title.match(/الحلقة\s+(\d+)/) || [])[1]) || 1;
-            episodes.push({ href: url, number: number, title: title || "Full Movie" });
+        const epBlockMatch = html.match(/const\s+episodes\s*=\s*(\[[\s\S]*?\])/);
+        if (epBlockMatch) {
+            const epMatches = [...epBlockMatch[1].matchAll(/{\s*n\s*:\s*(\d+)\s*,[\s\S]*?href\s*:\s*["']([^"']+)["']/g)];
+            if (epMatches.length > 0) {
+                return JSON.stringify(epMatches.map(m => ({
+                    href: 'https://animeslayer.to' + hrefXor(m[2]),
+                    number: parseInt(m[1], 10)
+                })));
+            }
         }
 
-        episodes.sort((a, b) => (a.season || 1) - (b.season || 1) || a.number - b.number);
-        return JSON.stringify(episodes);
-    } catch (error) {
-        console.log("TopCinema episodes error: " + error);
+        const cards = [...html.matchAll(/class="ep-card[^"]*"[^>]*data-href="([^"]+)"[\s\S]*?الحلقة\s*(\d+)/g)];
+        if (cards.length > 0) {
+            return JSON.stringify(cards.map(m => ({
+                href: 'https://animeslayer.to' + hrefXor(m[1]),
+                number: parseInt(m[2], 10)
+            })));
+        }
+
+        return JSON.stringify([]);
+    } catch (e) {
         return JSON.stringify([]);
     }
 }
 
-function decodeJsString(value) {
-    const escapes = { "0": "\0", "b": "\b", "f": "\f", "n": "\n", "r": "\r", "t": "\t", "v": "\v" };
-    return value.replace(/\\(?:u([0-9a-fA-F]{4})|x([0-9a-fA-F]{2})|(\r\n|[\r\n])|([\s\S]))/g, (_, unicode, hex, continuation, escaped) => {
-        if (unicode) return String.fromCharCode(parseInt(unicode, 16));
-        if (hex) return String.fromCharCode(parseInt(hex, 16));
-        if (continuation) return "";
-        return Object.prototype.hasOwnProperty.call(escapes, escaped) ? escapes[escaped] : escaped;
-    });
-}
+async function fetchVideoLinks(url) {
+    if (!url || typeof url !== 'string' || !url.startsWith('http')) return null;
+    try {
+        const res = await soraFetch(url, { headers: { 'Referer': 'https://animeslayer.to/' } });
+        if (!res) return null;
 
-function unpack(source) {
-    const match = /}\s*\(\s*'((?:\\[\s\S]|[^'\\])*)'\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*'((?:\\[\s\S]|[^'\\])*)'\s*\.split\s*\(\s*'\|'\s*\)/.exec(source);
-    if (!match) return "";
-
-    const payload = decodeJsString(match[1]);
-    const radix = Number(match[2]);
-    const count = Number(match[3]);
-    const symbols = decodeJsString(match[4]).split("|");
-    const alphabet = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
-    return payload.replace(/\b[0-9A-Za-z]+\b/g, (word) => {
-        let value = 0;
-        for (const rawCharacter of word) {
-            const character = radix <= 36 ? rawCharacter.toLowerCase() : rawCharacter;
-            const digit = alphabet.indexOf(character);
-            if (digit < 0 || digit >= radix) return word;
-            value = value * radix + digit;
+        const html = typeof res.text === 'function' ? await res.text() : String(res);
+        const videos = [];
+        const regex = /src:\s*['"]([^'"]+)['"][\s\S]*?res:\s*['"]([^'"]+)['"]/g;
+        let match;
+        while ((match = regex.exec(html)) !== null) {
+            videos.push({ url: match[1], quality: match[2] });
         }
-        return value < count && symbols[value] ? symbols[value] : word;
-    });
+        return videos.length > 0 ? videos : null;
+    } catch (e) {
+        return null;
+    }
 }
 
 async function extractStreamUrl(url) {
     try {
-        const pageUrl = url.replace(/\/(?:watch|download)\/?$/, "/");
-        const watchUrl = pageUrl.replace(/\/?$/, "/watch/");
-        const watchHtml = await getText(watchUrl, pageUrl);
-        const serverPattern = /<li[^>]+data-id="([^"]+)"[^>]+data-server="([^"]+)"[^>]*>[\s\S]*?<span>([^<]+)<\/span>/gi;
-        let server;
-        let streamWish;
+        if (!url) return JSON.stringify({ type: "servers", streams: [], subtitle: null });
 
-        while ((server = serverPattern.exec(watchHtml)) !== null) {
-            if (/streamwish/i.test(server[3])) streamWish = { id: server[1], index: server[2] };
-        }
-        if (!streamWish) return JSON.stringify({ streams: [], subtitles: "" });
+        const hash = (url.match(/#([^?#]+)/) || [])[1] || "";
+        const cleanPath = url.split('#')[0].split('?')[0];
+        const parts = cleanPath.split('/');
+        const lastSegment = parts[parts.length - 1] || parts[parts.length - 2] || "";
+        const dashParts = lastSegment.split('-');
+        const ep = dashParts.length > 1 ? dashParts[dashParts.length - 1] : "";
 
-        const ajaxHtml = await getText(
-            BASE_URL + "/wp-content/themes/movies2023/Ajaxat/Single/Server.php",
-            watchUrl,
-            "POST",
-            "id=" + encodeURIComponent(streamWish.id) + "&i=" + encodeURIComponent(streamWish.index)
-        );
-        const embedUrl = (ajaxHtml.match(/<iframe[^>]+src="([^"]+)"/i) || [])[1];
-        if (!embedUrl) return JSON.stringify({ streams: [], subtitles: "" });
+        const flareRes = await soraFetch("https://patrimoines-en-mouvement.org/lib/flare/v3.php", {
+            headers: { 'Referer': 'https://animeslayer.to/' }
+        });
+        if (!flareRes) throw new Error("Flare API null");
+        const apiUrls = JSON.parse(await flareRes.text());
 
-        const embedHtml = await getText(embedUrl, watchUrl);
-        const decoded = unpack(embedHtml) || embedHtml;
+        const firstRes = await soraFetch(apiUrls.first, {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: buildQueryString({ pe: ep, hash })
+        });
+        if (!firstRes) throw new Error("First API null");
+        const firstData = JSON.parse(await firstRes.text());
+
+        const pageRes = await soraFetch(url, { headers: { 'User-Agent': 'Mozilla/5.0', 'Referer': 'https://animeslayer.to/' } });
+        if (!pageRes) throw new Error("Page null");
+        const pageHtml = await pageRes.text();
+
+        const extract = k => (pageHtml.match(new RegExp(`const\\s+${k}\\s*=\\s*(['"])(.*?)\\1`)) || [])[2] || "";
+
+        const secRes = await soraFetch(apiUrls.sec, {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: buildQueryString({
+                keyn: firstData.d,
+                name: extract("name"),
+                pe: firstData.c,
+                bool: extract("bool") || "yes",
+                id: firstData.a,
+                info: firstData.b,
+                san: extract("san"),
+                mwsem: extract("mwsem")
+            })
+        });
+        if (!secRes) throw new Error("Second API null");
+        const finalObj = JSON.parse(await secRes.text());
         const streams = [];
-        const urlPattern = /https?:\/\/[^"'\\\s]+\.m3u8[^"'\\\s]*/gi;
-        let stream;
 
-        while ((stream = urlPattern.exec(decoded)) !== null) {
-            const streamUrl = stream[0].replace(/&amp;/g, "&");
-            if (!streams.some((item) => item.streamUrl === streamUrl)) {
-                streams.push({
-                    title: "TopCinema StreamWish HLS",
-                    streamUrl: streamUrl,
-                    headers: { "Referer": embedUrl, "User-Agent": USER_AGENT }
-                });
+        const processDecryptedUrl = async (decryptedUrl, titlePrefix) => {
+            if (!decryptedUrl) return;
+            const videos = await fetchVideoLinks(decryptedUrl);
+            if (videos) {
+                videos.forEach(v => streams.push({
+                    title: `${titlePrefix} - ${v.quality}p`,
+                    streamUrl: v.url,
+                    headers: { Referer: "https://animeslayer.to/" }
+                }));
+            } else {
+                streams.push({ title: titlePrefix, streamUrl: decryptedUrl, headers: { Referer: "https://animeslayer.to/" } });
+            }
+        };
+
+        if (finalObj.data) await processDecryptedUrl(decryptXorBase64(finalObj.data), "Main");
+        if (finalObj.servers && typeof finalObj.servers === 'object') {
+            for (const [serverName, encLink] of Object.entries(finalObj.servers)) {
+                await processDecryptedUrl(decryptXorBase64(encLink), serverName);
             }
         }
 
-        return JSON.stringify({ streams: streams, subtitles: "" });
+        return JSON.stringify({ type: "servers", streams, subtitle: null });
     } catch (error) {
-        console.log("TopCinema stream error: " + error);
-        return JSON.stringify({ streams: [], subtitles: "" });
+        return JSON.stringify({ type: "servers", streams: [], subtitle: null });
     }
 }

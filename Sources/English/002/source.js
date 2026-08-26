@@ -1,611 +1,152 @@
+const ANIKOTO_BASE = "https://animekaitv.to";
+const ANIKOTO_NAME = "AnimeKai (Unoriginal)";
 
-class MProvider {
-  constructor() {
-    this.source = typeof mangayomiSources !== "undefined" && Array.isArray(mangayomiSources) ? mangayomiSources[0] : {};
-    globalThis.__mangayomiBaseUrl = this.source.baseUrl || this.source.apiUrl || "";
-  }
-}
-
-class SharedPreferences {
-  get(key) {
-    const defaults = {
-      pref_content_priority: "series",
-      pref_latest_time_window: "day",
-      pref_video_resolution: "1080",
-      autoembed_stream_source_4: "4",
-      autoembed_pref_navtive_subtitle: false,
-      autoembed_split_stream_quality: false,
-      autoembed_pref_subtitle_source_2: "1"
-    };
-    return defaults[key] ?? "";
-  }
-
-  getString(key) {
-    return String(this.get(key) ?? "");
-  }
-
-  getInt(key) {
-    return Number.parseInt(this.get(key), 10) || 0;
-  }
-
-  getBool(key) {
-    return Boolean(this.get(key));
-  }
-}
-
-class Client {
-  async get(url, headers = {}) {
-    const response = await fetchv2(this.normalizeUrl(url), { headers });
-    return {
-      body: await response.text(),
-      statusCode: response.status,
-      headers: Object.fromEntries(response.headers?.entries?.() ?? [])
-    };
-  }
-
-  async post(url, headers = {}, body = null) {
-    const response = await fetchv2(this.normalizeUrl(url), {
-      method: "POST",
-      headers,
-      body
-    });
-    return {
-      body: await response.text(),
-      statusCode: response.status,
-      headers: Object.fromEntries(response.headers?.entries?.() ?? [])
-    };
-  }
-
-  normalizeUrl(url) {
-    const value = String(url ?? "");
-    if (/^https?:\/\//i.test(value)) return value;
-    const base = globalThis.__mangayomiBaseUrl || "";
-    if (!base) return value;
-    return new URL(value, base.endsWith("/") ? base : base + "/").toString();
-  }
-}
-
-
-const mangayomiSources = [
-  {
-    "name": "JustAnime",
-    "id": 892345671,
-    "lang": "en",
-    "baseUrl": "https://justanime.to",
-    "apiUrl": "https://core.justanime.to/api",
-    "iconUrl": "https://www.google.com/s2/favicons?sz=256&domain=https://justanime.to",
-    "typeSource": "single",
-    "itemType": 1,
-    "version": "0.2.8",
-    "pkgPath": "anime/src/en/justanime.js",
-    "isManga": false,
-    "isNsfw": false,
-    "hasCloudflare": false,
-    "isFullData": false,
-    "appMinVerReq": "0.5.0",
-    "sourceCodeUrl": "https://raw.githubusercontent.com/Mallyd11/mangayomi-anime-extensions/refs/heads/main/javascript/anime/src/en/justanime.js",
-    "dateFormat": "",
-    "dateFormatLocale": "",
-    "additionalParams": "",
-    "sourceCodeLanguage": 1,
-    "notes": "",
-  },
-];
-
-class DefaultExtension extends MProvider {
-  get headers() {
-    return {
-      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
-      "Origin": "https://justanime.to",
-      "Referer": "https://justanime.to/",
-      "Accept": "application/json",
-    };
-  }
-
-  async apiGet(path) {
-    var res = await new Client().get(this.source.apiUrl + path, this.headers);
-    return JSON.parse(res.body);
-  }
-
-  animeTitle(item) {
-    if (!item.title) return item.name || "";
-    if (typeof item.title === "string") return item.title;
-    return item.title.english || item.title.romaji || "";
-  }
-
-  parseAnimeList(items) {
-    var list = [];
-    for (var i = 0; i < items.length; i++) {
-      var item = items[i];
-      list.push({
-        name: this.animeTitle(item),
-        link: String(item.id),
-        imageUrl: item.cover || (item.coverImage && item.coverImage.extraLarge) || "",
-      });
+async function anikotoText(url, headers) {
+  const response = await fetchv2(url, {
+    headers: {
+      "Accept": "text/html,application/xhtml+xml,application/json,*/*",
+      "Referer": ANIKOTO_BASE + "/",
+      "X-Requested-With": "XMLHttpRequest",
+      ...(headers || {})
     }
-    return list;
-  }
+  });
+  if (!response.ok) throw new Error(`${ANIKOTO_NAME} HTTP ${response.status}`);
+  return response.text();
+}
 
-  statusCode(status) {
-    return ({
-      "RELEASING": 0,
-      "FINISHED": 1,
-      "NOT_YET_RELEASED": 4,
-      "CANCELLED": 5,
-      "HIATUS": 6,
-    }[status]) || 5;
+function rc4Base64Url(key, input) {
+  const s = Array.from({ length: 256 }, (_, i) => i);
+  const k = Array.from(String(key), (c) => c.charCodeAt(0));
+  let j = 0;
+  for (let i = 0; i < 256; i += 1) {
+    j = (j + s[i] + k[i % k.length]) & 255;
+    const tmp = s[i]; s[i] = s[j]; s[j] = tmp;
   }
-
-  stripHtml(str) {
-    return (str || "").replace(/<[^>]*>/g, " ").replace(/\s{2,}/g, " ").trim();
+  let i = 0; j = 0;
+  let binary = "";
+  for (const ch of String(input)) {
+    i = (i + 1) & 255;
+    j = (j + s[i]) & 255;
+    const tmp = s[i]; s[i] = s[j]; s[j] = tmp;
+    binary += String.fromCharCode(ch.charCodeAt(0) ^ s[(s[i] + s[j]) & 255]);
   }
+  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+}
 
-  titleToSlug(title) {
-    return (title || "")
-      .toLowerCase()
-      .replace(/[^a-z0-9\s]/g, "")
-      .trim()
-      .replace(/\s+/g, "-");
+function exchange(input, from, to) {
+  return Array.from(String(input), (ch) => {
+    const index = from.indexOf(ch);
+    return index >= 0 ? to[index] : ch;
+  }).join("");
+}
+
+function vrfEncrypt(value) {
+  let vrf = String(value);
+  vrf = exchange(vrf, "AP6GeR8H0lwUz1", "UAz8Gwl10P6ReH");
+  vrf = rc4Base64Url("ItFKjuWokn4ZpB", vrf);
+  vrf = rc4Base64Url("fOyt97QWFB3", vrf);
+  vrf = exchange(vrf, "1majSlPQd2M5", "da1l2jSmP5QM");
+  vrf = exchange(vrf, "CPYvHj09Au3", "0jHA9CPYu3v");
+  vrf = Array.from(vrf).reverse().join("");
+  vrf = rc4Base64Url("736y1uTJpBLUX", vrf);
+  return encodeURIComponent(btoa(vrf).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, ""));
+}
+
+function stripTags(html) {
+  return String(html || "").replace(/<script[\s\S]*?<\/script>/gi, "").replace(/<style[\s\S]*?<\/style>/gi, "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+}
+
+function decodeHtml(value) {
+  return String(value || "").replace(/&#39;/g, "'").replace(/&quot;/g, '"').replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+}
+
+function showPath(href) {
+  const path = String(href || "").replace(ANIKOTO_BASE, "").split("?")[0];
+  return path.replace(/\/ep-\d+.*$/, "");
+}
+
+function titleFromPath(path) {
+  const slug = String(path || "").split("/watch/").pop() || "";
+  return slug
+    .replace(/-[a-z0-9]{5}$/i, "")
+    .replace(/-/g, " ")
+    .replace(/\b\w/g, (ch) => ch.toUpperCase())
+    .trim();
+}
+
+async function searchResults(query) {
+  const html = await anikotoText(`${ANIKOTO_BASE}/filter?keyword=${encodeURIComponent(query)}&page=1&vrf=${vrfEncrypt(query)}`);
+  const seen = new Set();
+  const results = [];
+  const regex = /<a\b[^>]*href=["']([^"']*\/watch\/[^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi;
+  let match;
+  while ((match = regex.exec(html)) && results.length < 20) {
+    const path = showPath(match[1]);
+    if (!path || seen.has(path)) continue;
+    seen.add(path);
+    const block = match[2];
+    const rawTitle = decodeHtml((block.match(/class=["'][^"']*(?:name|title)[^"']*["'][^>]*>([^<]+)/i) || [])[1] || stripTags(block));
+    const title = /[a-z]{3,}/i.test(rawTitle) ? rawTitle : titleFromPath(path);
+    results.push({ title, href: JSON.stringify({ path, title }), image: ((block.match(/(?:data-src|src)=["']([^"']+)/i) || [])[1] || ""), source: ANIKOTO_NAME });
   }
+  return results.filter((item) => item.title && item.href);
+}
 
-  // Accepts bare ID, /anime/{id}/slug, or legacy /{slug}-{id}
-  extractId(url) {
-    var base = this.source.baseUrl;
-    if (url.startsWith(base)) {
-      var path = url.slice(base.length).replace(/^\//, "");
-      if (path.startsWith("anime/")) {
-        return path.split("/")[1];
-      }
-      return path.split("-").pop();
+async function extractDetails(href) {
+  const data = JSON.parse(href);
+  const html = await anikotoText(ANIKOTO_BASE + data.path);
+  const id = (html.match(/data-id=["']([^"']+)/i) || [])[1] || (html.match(/data-tip=["']([^"']+)/i) || [])[1] || "";
+  const title = decodeHtml((html.match(/<h[12][^>]*class=["'][^"']*title[^"']*["'][^>]*>([^<]+)/i) || [])[1] || data.title || "");
+  const description = decodeHtml(stripTags((html.match(/<(?:div|p)[^>]*class=["'][^"']*(?:synopsis|description|content)[^"']*["'][^>]*>([\s\S]*?)<\/(?:div|p)>/i) || [])[1] || title));
+  return [{ title, description, aliases: id ? `${title}, ${id}` : title, airdate: "", href: JSON.stringify({ ...data, id }) }];
+}
+
+async function extractEpisodes(href) {
+  const data = JSON.parse(href);
+  let id = data.id;
+  if (!id) {
+    const detail = await extractDetails(href);
+    id = JSON.parse(detail[0].href).id;
+  }
+  if (!id) throw new Error(`${ANIKOTO_NAME}: missing anime id`);
+  const text = await anikotoText(`${ANIKOTO_BASE}/ajax/episode/list/${id}?vrf=${vrfEncrypt(id)}`, { "Referer": ANIKOTO_BASE + data.path });
+  const payload = JSON.parse(text);
+  const html = payload.result || "";
+  const episodes = [];
+  const regex = /<a\b([^>]*data-num=["'][^"']+["'][^>]*)>/gi;
+  let match;
+  while ((match = regex.exec(html))) {
+    const attrs = match[1];
+    const number = Number((attrs.match(/data-num=["']([^"']+)/i) || [])[1]);
+    const ids = (attrs.match(/data-ids=["']([^"']+)/i) || [])[1] || "";
+    const title = decodeHtml((html.slice(Math.max(0, match.index - 180), match.index).match(/<li[^>]*title=["']([^"']+)/i) || [])[1] || `Episode ${number}`);
+    if (Number.isFinite(number) && ids) {
+      episodes.push({ number, title, href: JSON.stringify({ ...data, id, number, ids }) });
     }
-    return url;
   }
+  return episodes.sort((lhs, rhs) => lhs.number - rhs.number);
+}
 
-  // ── Listings ──────────────────────────────────────────────────────────────
-
-  get supportsLatest() { return true; }
-
-  // /search with no keyword returns ~5000 anime paginated by popularity (24/page)
-  async getPopular(page) {
+async function extractStreamUrl(href) {
+  const data = JSON.parse(href);
+  const epPath = `${data.path}/ep-${data.number}`;
+  const text = await anikotoText(`${ANIKOTO_BASE}/ajax/server/list?servers=${encodeURIComponent(data.ids)}`, { "Referer": ANIKOTO_BASE + epPath });
+  const payload = JSON.parse(text);
+  const html = payload.result || "";
+  const serverIds = Array.from(html.matchAll(/data-link-id=["']([^"']+)["'][^>]*>([\s\S]*?)<\/(?:li|a)>/gi))
+    .map((match) => ({ id: match[1], name: stripTags(match[2]) }))
+    .filter((item) => item.id);
+  for (const server of serverIds.slice(0, 5)) {
     try {
-      var data = await this.apiGet("/search?page=" + page);
-      var items = data.results || [];
-      var hasNextPage = !!(data.pageInfo && data.pageInfo.hasNextPage);
-      return { list: this.parseAnimeList(items), hasNextPage: hasNextPage };
-    } catch (e) {
-      return { list: [], hasNextPage: false };
-    }
+      const serverText = await anikotoText(`${ANIKOTO_BASE}/ajax/server?get=${encodeURIComponent(server.id)}`, { "Referer": ANIKOTO_BASE + epPath });
+      const serverPayload = JSON.parse(serverText);
+      const url = serverPayload?.result?.url || serverPayload?.url || "";
+      if (!url) continue;
+      if (/\.m3u8|\/stream\//i.test(url)) return [{ title: `${ANIKOTO_NAME} ${server.name}`.trim(), streamUrl: url, headers: { "Referer": ANIKOTO_BASE + "/" } }];
+      const page = await anikotoText(url, { "Referer": ANIKOTO_BASE + "/" });
+      const m3u8 = (page.match(/https?:\/\/[^\s"'<>]+\.m3u8[^\s"'<>]*/i) || [])[0];
+      if (m3u8) return [{ title: `${ANIKOTO_NAME} ${server.name}`.trim(), streamUrl: m3u8, headers: { "Referer": url } }];
+    } catch (_) {}
   }
-
-  // /home latestEpisode is the only source for recently-updated anime; no paginated endpoint exists
-  async getLatestUpdates(page) {
-    if (page > 1) return { list: [], hasNextPage: false };
-    try {
-      var data = await this.apiGet("/home");
-      var items = data.latestEpisode || data.airing || [];
-      return { list: this.parseAnimeList(items), hasNextPage: false };
-    } catch (e) {
-      return { list: [], hasNextPage: false };
-    }
-  }
-
-  async search(query, page, filters) {
-    var encoded = encodeURIComponent(query.replace(/[?!]/g, "").trim());
-    var items = [];
-    var hasNextPage = false;
-    try {
-      var data = await this.apiGet("/search?query=" + encoded + "&page=" + page);
-      items = data.results || [];
-      hasNextPage = !!(data.pageInfo && data.pageInfo.hasNextPage);
-    } catch (e) {}
-    return { list: this.parseAnimeList(items), hasNextPage: hasNextPage };
-  }
-
-  // ── Detail ────────────────────────────────────────────────────────────────
-
-  async getDetail(url) {
-    var id = this.extractId(url);
-
-    var infoData = await this.apiGet("/anime/" + id);
-    var anime = infoData.data || {};
-
-    var title = this.animeTitle(anime) || id;
-    var imageUrl = (anime.coverImage && anime.coverImage.extraLarge) || anime.cover || "";
-    var description = this.stripHtml(anime.description || "");
-    var genres = anime.genres || [];
-    var total = anime.episodes || 0;
-
-    var chapters = [];
-    for (var i = 1; i <= total; i++) {
-      chapters.push({ name: "Episode " + i, url: id + "||" + i });
-    }
-
-    return {
-      name: title,
-      imageUrl: imageUrl,
-      description: description,
-      genre: genres,
-      status: this.statusCode(anime.status || ""),
-      link: this.source.baseUrl + "/anime/" + id + "/" + this.titleToSlug(title),
-      chapters: chapters.reverse(),
-    };
-  }
-
-  // ── HLS helpers ───────────────────────────────────────────────────────────
-
-  // Fetch a master HLS playlist and return absolute variant URLs with quality.
-  // Returns [] if the URL is already a flat playlist (no #EXT-X-STREAM-INF).
-  async resolveMasterPlaylist(masterUrl, headers) {
-    try {
-      var res = await new Client().get(masterUrl, headers);
-      var body = res.body || "";
-      if (body.indexOf("#EXT-X-STREAM-INF") < 0) return [];
-
-      var base = masterUrl.substring(0, masterUrl.lastIndexOf("/") + 1);
-      var variants = [];
-      var lines = body.split("\n");
-      for (var i = 0; i < lines.length; i++) {
-        var line = lines[i].trim();
-        if (line.indexOf("#EXT-X-STREAM-INF") !== 0) continue;
-        var resMatch = line.match(/RESOLUTION=\d+x(\d+)/);
-        var quality = resMatch ? resMatch[1] + "p" : "auto";
-        for (var j = i + 1; j < lines.length; j++) {
-          var u = lines[j].trim();
-          if (!u || u.charAt(0) === "#") continue;
-          variants.push({ url: u.indexOf("http") === 0 ? u : base + u, quality: quality });
-          break;
-        }
-      }
-      // Sort highest resolution first
-      variants.sort(function(a, b) {
-        return (parseInt(b.quality) || 0) - (parseInt(a.quality) || 0);
-      });
-      return variants;
-    } catch (e) {
-      return [];
-    }
-  }
-
-  // Returns false if the playlist body contains ByteDance/ibyteimg ad segments.
-  async isPlaylistClean(url, headers) {
-    try {
-      var res = await new Client().get(url, headers);
-      var body = res.body || "";
-      return body.indexOf("ibyteimg") < 0 && body.indexOf("p16-ad-") < 0;
-    } catch (e) {
-      return false;
-    }
-  }
-
-  // anineko uses a two-step API:
-  //   Step 1: /watch/{id}/episode/{ep}/anineko → {langs: {sub:[{server,name}...], dub:[...]}}
-  //   Step 2: /watch/{id}/episode/{ep}/anineko/{lang}/{server} → {sources, subtitles, headers}
-  // HLS streams are checked for ad-poisoning before being included.
-  async getAninekoStreams(animeId, epNum, ua, autoSubs) {
-    var subVideos = [];
-    var dubVideos = [];
-    try {
-      var avail = await this.apiGet("/watch/" + animeId + "/episode/" + epNum + "/anineko");
-      var langs = avail.langs || {};
-      var langKeys = ["sub", "dub"];
-      for (var li = 0; li < langKeys.length; li++) {
-        var lang = langKeys[li];
-        var servers = langs[lang] || [];
-        for (var si = 0; si < servers.length; si++) {
-          var serverName = servers[si].server;
-          var serverLabel = servers[si].name || serverName;
-          try {
-            var data = await this.apiGet(
-              "/watch/" + animeId + "/episode/" + epNum + "/anineko/" + lang + "/" + serverName
-            );
-            if (!data || data.error || !Array.isArray(data.sources) || !data.sources.length) continue;
-
-            var apiHeaders = data.headers || {};
-            var streamHeaders = {
-              "User-Agent": ua,
-              "Referer": apiHeaders["Referer"] || "https://justanime.to/",
-              "Origin": apiHeaders["Origin"] || "https://justanime.to",
-            };
-
-            // anineko returns subtitles[].url + .lang (not .file + .label)
-            var rawSubs = data.subtitles || [];
-            var subtitles = [];
-            for (var ti = 0; ti < rawSubs.length; ti++) {
-              var t = rawSubs[ti];
-              var fileUrl = t.file || t.url;
-              if (!fileUrl) continue;
-              subtitles.push({ file: fileUrl, label: t.label || t.lang || "Unknown" });
-            }
-            if (autoSubs && subtitles.length > 0) subtitles[0].default = true;
-
-            for (var i = 0; i < data.sources.length; i++) {
-              var s = data.sources[i];
-              var streamUrl = s.url || s.file;
-              if (!streamUrl) continue;
-
-              var isHls = s.isM3U8 || streamUrl.indexOf(".m3u8") >= 0;
-              if (isHls) {
-                var variants = await this.resolveMasterPlaylist(streamUrl, streamHeaders);
-                if (variants.length > 0) {
-                  var clean = await this.isPlaylistClean(variants[0].url, streamHeaders);
-                  if (!clean) continue;
-                  for (var vi = 0; vi < variants.length; vi++) {
-                    var entry = {
-                      url: variants[vi].url,
-                      originalUrl: streamUrl,
-                      quality: "anineko " + serverLabel + " " + lang.toUpperCase() + " [" + variants[vi].quality + "]",
-                      headers: streamHeaders,
-                      subtitles: subtitles,
-                    };
-                    if (lang === "dub") dubVideos.push(entry); else subVideos.push(entry);
-                  }
-                } else {
-                  // Flat playlist
-                  var clean = await this.isPlaylistClean(streamUrl, streamHeaders);
-                  if (!clean) continue;
-                  var qual = s.quality || "auto";
-                  if (qual !== "auto" && !/p$/i.test(qual)) qual += "p";
-                  var entry = {
-                    url: streamUrl,
-                    originalUrl: streamUrl,
-                    quality: "anineko " + serverLabel + " " + lang.toUpperCase() + " [" + qual + "]",
-                    headers: streamHeaders,
-                    subtitles: subtitles,
-                  };
-                  if (lang === "dub") dubVideos.push(entry); else subVideos.push(entry);
-                }
-              } else {
-                var qual = s.quality || "auto";
-                if (qual !== "auto" && !/p$/i.test(qual)) qual += "p";
-                var entry = {
-                  url: streamUrl,
-                  originalUrl: streamUrl,
-                  quality: "anineko " + serverLabel + " " + lang.toUpperCase() + " [" + qual + "]",
-                  headers: streamHeaders,
-                  subtitles: subtitles,
-                };
-                if (lang === "dub") dubVideos.push(entry); else subVideos.push(entry);
-              }
-            }
-          } catch (e) {}
-        }
-      }
-    } catch (e) {}
-    return { subVideos: subVideos, dubVideos: dubVideos };
-  }
-
-  // ── Video sources ─────────────────────────────────────────────────────────
-
-  async getVideoList(url) {
-    // url format: "{animeId}||{epNum}"
-    var parts = url.split("||");
-    var animeId = parts[0];
-    var epNum = parts[1];
-
-    var subVideos = [];
-    var dubVideos = [];
-    var ua = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36";
-
-    var autoSubs = false;
-    try { autoSubs = new SharedPreferences().get("justanime_pref_auto_subs") === "true"; } catch (e) {}
-
-    var serverPref = "megaplay";
-    try { serverPref = new SharedPreferences().get("justanime_pref_server") || "megaplay"; } catch (e) {}
-
-    // Resolve which simple providers (megaplay/animegg) to query
-    var providers = [];
-    if (serverPref === "megaplay" || serverPref === "all") providers.push("megaplay");
-    if (serverPref === "animegg"  || serverPref === "all") providers.push("animegg");
-
-    for (var pi = 0; pi < providers.length; pi++) {
-      var provider = providers[pi];
-      try {
-        var data = await this.apiGet("/watch/" + animeId + "/episode/" + epNum + "/" + provider);
-        if (data.error || (!data.sub && !data.dub)) continue;
-
-        var types = ["sub", "dub"];
-        for (var ti = 0; ti < types.length; ti++) {
-          var type = types[ti];
-          var typeData = data[type];
-          if (!typeData || !typeData.sources) continue;
-
-          // MegaPlay CDN requires hardcoded headers; other providers use what the API returns
-          var apiHeaders = typeData.headers || {};
-          var streamHeaders = provider === "megaplay"
-            ? { "User-Agent": ua, "Referer": "https://megaplay.buzz/", "Origin": "https://megaplay.buzz" }
-            : { "User-Agent": ua, "Referer": apiHeaders["Referer"] || "https://justanime.to/" };
-
-          // Collect subtitles — sort so Crunchyroll > English 2 > other English > rest.
-          // Drop bare "English" when a Crunchyroll track exists (they share the same content).
-          var rawTracks = typeData.subtitles || typeData.tracks || [];
-          var hasCR = false;
-          for (var sti = 0; sti < rawTracks.length; sti++) {
-            if ((rawTracks[sti].label || "").toLowerCase().indexOf("crunchyroll") >= 0) { hasCR = true; break; }
-          }
-          var subtitles = [];
-          var trackOrder = ["crunchyroll", "english 2", "english", ""];
-          for (var oi = 0; oi < trackOrder.length; oi++) {
-            for (var sti = 0; sti < rawTracks.length; sti++) {
-              var track = rawTracks[sti];
-              if (!track.file) continue;
-              if (track.kind && track.kind !== "captions" && track.kind !== "subtitles") continue;
-              var lbl = (track.label || "").toLowerCase();
-              var tier = oi === 0 ? lbl.indexOf("crunchyroll") >= 0
-                       : oi === 1 ? lbl === "english 2"
-                       : oi === 2 ? lbl === "english"
-                       : lbl.indexOf("crunchyroll") < 0 && lbl !== "english 2" && lbl !== "english";
-              if (!tier) continue;
-              // skip bare "English" when Crunchyroll is present — same content, avoid duplicate
-              if (oi === 2 && hasCR) continue;
-              subtitles.push({ file: track.file, label: track.label || "Unknown" });
-            }
-          }
-          if (autoSubs && subtitles.length > 0) subtitles[0].default = true;
-
-          var sources = typeData.sources;
-          for (var si = 0; si < sources.length; si++) {
-            var s = sources[si];
-            var streamUrl = s.url || s.file;
-            if (!streamUrl) continue;
-
-            // For master HLS playlists resolve to absolute variant URLs so
-            // Mangayomi's player gets direct variant URLs. This avoids the
-            // cross-domain Referer propagation issue (mewstream → ovexa).
-            if (s.isM3U8 || streamUrl.indexOf(".m3u8") >= 0) {
-              var variants = await this.resolveMasterPlaylist(streamUrl, streamHeaders);
-              if (variants.length > 0) {
-                for (var vi = 0; vi < variants.length; vi++) {
-                  var v = variants[vi];
-                  var entry = {
-                    url: v.url,
-                    originalUrl: streamUrl,
-                    quality: provider + " " + type.toUpperCase() + " [" + v.quality + "]",
-                    headers: streamHeaders,
-                    subtitles: subtitles,
-                  };
-                  if (type === "dub") dubVideos.push(entry);
-                  else subVideos.push(entry);
-                }
-                continue;
-              }
-              // Already a flat playlist — fall through and use as-is
-            }
-
-            // Non-HLS or flat playlist
-            var qual = (s.quality || "auto");
-            if (qual !== "auto" && !/p$/i.test(qual)) qual += "p";
-            var entry = {
-              url: streamUrl,
-              originalUrl: streamUrl,
-              quality: provider + " " + type.toUpperCase() + " [" + qual + "]",
-              headers: streamHeaders,
-              subtitles: subtitles,
-            };
-            if (type === "dub") dubVideos.push(entry);
-            else subVideos.push(entry);
-          }
-        }
-      } catch (e) {}
-    }
-
-    // anineko: two-step API with ad-poisoning filter — adds clean HLS streams
-    if (serverPref === "anineko" || serverPref === "all") {
-      var nekoResult = await this.getAninekoStreams(animeId, epNum, ua, autoSubs);
-      subVideos = subVideos.concat(nekoResult.subVideos);
-      dubVideos = dubVideos.concat(nekoResult.dubVideos);
-    }
-
-    // Sort highest quality first (1080p → 720p → 360p → auto)
-    function sortByQuality(arr) {
-      return arr.sort(function(a, b) {
-        var qa = parseInt((a.quality.match(/\[(\d+)p\]/) || [0, 0])[1], 10) || 0;
-        var qb = parseInt((b.quality.match(/\[(\d+)p\]/) || [0, 0])[1], 10) || 0;
-        return qb - qa;
-      });
-    }
-    subVideos = sortByQuality(subVideos);
-    dubVideos = sortByQuality(dubVideos);
-
-    var pref = "sub";
-    try { pref = new SharedPreferences().get("justanime_pref_audio") || "sub"; } catch (e) {}
-    if (pref === "dub") {
-      return dubVideos.concat(subVideos);
-    }
-    return subVideos.concat(dubVideos);
-  }
-
-  // ── Preferences ───────────────────────────────────────────────────────────
-
-  getFilterList() {
-    return [];
-  }
-
-  getSourcePreferences() {
-    return [
-      {
-        key: "justanime_pref_server",
-        listPreference: {
-          title: "Preferred server",
-          summary: "Which streaming server to use. MegaPlay is default; AnimeGG is a clean 360p fallback; AniNeko filters out ad-poisoned streams automatically.",
-          valueIndex: 0,
-          entries: ["MegaPlay (default)", "AnimeGG (clean MP4, 360p)", "AniNeko (clean HLS, ad-filtered)", "All servers"],
-          entryValues: ["megaplay", "animegg", "anineko", "all"],
-        },
-      },
-      {
-        key: "justanime_pref_audio",
-        listPreference: {
-          title: "Preferred language",
-          summary: "Primary language to use. If unavailable, the other will be used as fallback.",
-          valueIndex: 0,
-          entries: ["Sub first, Dub fallback", "Dub first, Sub fallback"],
-          entryValues: ["sub", "dub"],
-        },
-      },
-      {
-        key: "justanime_pref_auto_subs",
-        checkBoxPreference: {
-          title: "Auto-enable subtitles",
-          summary: "Automatically activate English subtitles when playing an episode.",
-          value: false,
-        },
-      },
-    ];
-  }
-}
-
-
-const __mangayomiExtension = new DefaultExtension();
-
-function __list(value) {
-  if (!value) return [];
-  if (Array.isArray(value)) return value;
-  if (Array.isArray(value.list)) return value.list;
-  return [];
-}
-
-function __text(value) {
-  return String(value ?? "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
-}
-
-async function searchResults(keyword) {
-  const result = await __mangayomiExtension.search(keyword, 1, []);
-  return JSON.stringify(__list(result).map((item) => ({
-    title: __text(item.name || item.title),
-    image: item.imageUrl || item.image || "",
-    href: item.link || item.url || ""
-  })).filter((item) => item.title && item.href));
-}
-
-async function extractDetails(url) {
-  const detail = await __mangayomiExtension.getDetail(url);
-  return JSON.stringify([{
-    description: __text(detail.description || "Not available"),
-    aliases: Array.isArray(detail.genre) ? detail.genre.join(", ") : __text(detail.genre || detail.name || "Not available"),
-    airdate: detail.status != null ? "Status: " + detail.status : "Not available"
-  }]);
-}
-
-async function extractEpisodes(url) {
-  const detail = await __mangayomiExtension.getDetail(url);
-  const chapters = Array.isArray(detail.chapters) ? detail.chapters : [];
-  return JSON.stringify(chapters.map((chapter, index) => {
-    const label = String(chapter.name || chapter.title || "");
-    const parsed = label.match(/(?:episode|ep|capitulo|chapter)\s*([\d.]+)/i)?.[1] || label.match(/\b([\d.]+)\b/)?.[1];
-    return {
-      href: chapter.url || chapter.link || "",
-      number: Number.parseFloat(parsed) || index + 1
-    };
-  }).filter((item) => item.href));
-}
-
-async function extractStreamUrl(url) {
-  const videos = await __mangayomiExtension.getVideoList(url);
-  const streams = __list(videos).map((video) => ({
-    title: video.quality || video.name || video.label || "Stream",
-    streamUrl: video.url || video.originalUrl || video.file || "",
-    url: video.url || video.originalUrl || video.file || "",
-    headers: video.headers || {}
-  })).filter((item) => /^https?:\/\//i.test(item.streamUrl));
-  return JSON.stringify({ streams, subtitles: "" });
+  throw new Error(`${ANIKOTO_NAME}: no playable streams`);
 }

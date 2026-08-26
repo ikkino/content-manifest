@@ -17,20 +17,20 @@ async function sendSupabaseLog(moduleName, actionType, dataPayload) {
             data: dataPayload
         };
 
-        const headers = { 
+        const headers = {
             "Content-Type": "application/json",
             "apikey": SUPABASE_ANON_KEY,
             "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
-            "Prefer": "return=minimal" 
+            "Prefer": "return=minimal"
         };
-        
+
         if (typeof fetchv2 !== 'undefined') {
             await fetchv2(`${SUPABASE_URL}/rest/v1/app_logs`, headers, "POST", JSON.stringify(payload));
         } else {
             await fetch(`${SUPABASE_URL}/rest/v1/app_logs`, { method: "POST", headers: headers, body: JSON.stringify(payload) });
         }
-    } catch (e) { 
-        console.log(`[Tracker] 🚨 Erreur d'envoi vers Supabase : ${e.message}`); 
+    } catch (e) {
+        console.log(`[Tracker] 🚨 Erreur d'envoi vers Supabase : ${e.message}`);
     }
 }
 
@@ -41,18 +41,18 @@ async function sendSupabaseLog(moduleName, actionType, dataPayload) {
 let WORKING_DOMAIN = null;
 
 async function getWorkingDomain() {
-    if (WORKING_DOMAIN) return WORKING_DOMAIN; 
+    if (WORKING_DOMAIN) return WORKING_DOMAIN;
 
     // 🌟 1. PLAN A : Utilisation de l'API Serveur de Purstream (Super Rapide)
     try {
         console.log("[Purstream] Vérification de l'API de statut (purstream.wiki/api/server-status)...");
         const response = await soraFetch("https://purstream.wiki/api/server-status");
         const json = await response.json();
-        
+
         if (json && json.servers && Array.isArray(json.servers)) {
             // On cherche le serveur principal
             const mainServer = json.servers.find(s => s.id === "main");
-            
+
             if (mainServer && mainServer.url) {
                 // Nettoyage de "https://purstream.ac/" pour ne garder que "purstream.ac"
                 let cleanDomain = mainServer.url.replace(/^https?:\/\//, '').replace(/\/$/, '');
@@ -62,18 +62,18 @@ async function getWorkingDomain() {
             }
         }
         throw new Error("Serveur principal introuvable dans le JSON.");
-        
+
     } catch (err) {
         console.log(`[Purstream] Échec de l'API de statut, tentative de secours via HTML... (${err.message})`);
-        
+
         // 🚨 2. PLAN B : Lecture HTML (En cas de panne de l'API JSON)
         try {
             const response = await soraFetch("https://purstream.wiki/");
             const html = await response.text();
             const match = html.match(/https:\/\/(purstream\.[a-z]+)/);
-            
+
             if (match && match[1]) {
-                WORKING_DOMAIN = match[1]; 
+                WORKING_DOMAIN = match[1];
                 console.log(`[Purstream] Domaine officiel trouvé via HTML : ${WORKING_DOMAIN}`);
                 return WORKING_DOMAIN;
             } else {
@@ -110,7 +110,7 @@ async function searchResults(keyword) {
             else if (cleanKeyword.includes("!new")) sortParam = "newest";
 
             apiUrl = `https://api.${domain}/api/v1/catalog/movies?page=1&sortBy=${sortParam}&types=${typeParam}&categoriesIds=*&franchisesIds=*&displayMode=large&perPage=50`;
-        } 
+        }
         else {
             // --- RECHERCHE NORMALE ---
             const encodedKeyword = encodeURIComponent(keyword);
@@ -163,14 +163,14 @@ async function searchResults(keyword) {
         }).filter(Boolean);
 
         // 📡 Log Supabase (Recherche)
-        sendSupabaseLog("Purstream", "SEARCH", { 
-            keyword: keyword, 
+        sendSupabaseLog("Purstream", "SEARCH", {
+            keyword: keyword,
             results_count: transformedResults.length,
             top_results: transformedResults.slice(0, 3).map(r => r.title)
         });
 
         return JSON.stringify(transformedResults);
-        
+
     } catch (error) {
         console.log('Fetch error in searchResults: ' + error);
         // 🌟 Tracker d'erreur ajouté
@@ -182,18 +182,18 @@ async function searchResults(keyword) {
 function slugify(title) {
     return title
       .toLowerCase()
-      .normalize("NFKD")                 
+      .normalize("NFKD")
       .replace(/[\u0300-\u036f]/g, "")
-      .replace(/[^a-z0-9\s-]/g, "")      
+      .replace(/[^a-z0-9\s-]/g, "")
       .trim()
-      .replace(/\s+/g, "-")              
-      .replace(/-+/g, "-");              
+      .replace(/\s+/g, "-")
+      .replace(/-+/g, "-");
 }
 
 // --- 2. DÉTAILS ---
 async function extractDetails(url) {
     console.log(`[Détails] 📖 Chargement des infos pour : ${url}`);
-    
+
     // 📡 Log Supabase (Détails)
     sendSupabaseLog("Purstream", "DETAILS", { media_url: url });
 
@@ -222,8 +222,8 @@ async function extractDetails(url) {
         const json = await responseText.json();
         const data = json.data.items;
 
-        const duration = url.includes('movie') && data.runtime?.minutes 
-            ? `${data.runtime.minutes} minutes` 
+        const duration = url.includes('movie') && data.runtime?.minutes
+            ? `${data.runtime.minutes} minutes`
             : 'N/A';
 
         const transformedResults = [{
@@ -254,7 +254,7 @@ async function extractEpisodes(url) {
         // 🌟 Nouveau Regex qui capture l'ID ET le nom complet (ex: 3914-alice-in-borderland)
         const match = url.match(/\/(movie|serie)\/([a-z0-9-]+)/i);
         if (!match) throw new Error("Invalid URL format");
-        
+
         const type = match[1];
         const fullId = match[2]; // "3914-alice-in-borderland"
         const showId = fullId.split('-')[0]; // "3914" (pour interroger l'API)
@@ -268,15 +268,15 @@ async function extractEpisodes(url) {
             const data = json.data.items;
 
             return JSON.stringify([
-                { 
+                {
                     href: `${fullId}/movie`, // 🌟 On fait passer le nom complet au lecteur !
-                    number: 1, season: 1, 
-                    title: data.title || data.name || "Film complet", 
-                    image: data.posters ? (data.posters.large || data.posters.small) : "", 
+                    number: 1, season: 1,
+                    title: data.title || data.name || "Film complet",
+                    image: data.posters ? (data.posters.large || data.posters.small) : "",
                     duration: data.runtime ? data.runtime.human : ""
                 }
             ]);
-            
+
         // 2. SI C'EST UNE SÉRIE / UN ANIME
         } else if(type === 'serie') {
             const responseText = await soraFetch(`https://api.${domain}/api/v1/media/${showId}/sheet`, {
@@ -292,7 +292,7 @@ async function extractEpisodes(url) {
                         headers: { "Referer": `https://${domain}/`, "Origin": `https://${domain}` }
                     });
                     const seasonJson = await seasonResponseText.json();
-                    
+
                     if (seasonJson && seasonJson.data && seasonJson.data.items) {
                         const seasonData = seasonJson.data.items;
                         for (const episode of seasonData.episodes) {
@@ -319,7 +319,7 @@ async function extractEpisodes(url) {
     } catch (error) {
         sendSupabaseLog("Purstream", "ERROR", { media_url: url, error_message: String(error) });
         return JSON.stringify([]);
-    }   
+    }
 }
 
 // --- 4. LECTEUR (Tracker Pro + Sous-titres VTT) ---
@@ -336,14 +336,14 @@ async function extractStreamUrl(url) {
 
         // url ressemble à "3914-alice-in-borderland/1/1" ou "3914-film/movie"
         const parts = url.split('/');
-        const fullId = parts[0]; 
+        const fullId = parts[0];
         const showId = fullId.split('-')[0]; // "3914"
 
         // 🌟 On extrait le vrai titre (Alice In Borderland)
         let mediaTitle = showId;
         if (fullId.includes('-')) {
             let cleanStr = fullId.substring(fullId.indexOf('-') + 1).replace(/-/g, ' ');
-            mediaTitle = cleanStr.replace(/\b\w/g, c => c.toUpperCase()); 
+            mediaTitle = cleanStr.replace(/\b\w/g, c => c.toUpperCase());
         }
 
         let seasonNumber = "";
@@ -360,14 +360,14 @@ async function extractStreamUrl(url) {
 
         finalMediaUrl = `https://${domain}/${typePath}/${fullId}`;
 
-        let apiUrl = episodeNumber === "movie" 
+        let apiUrl = episodeNumber === "movie"
             ? `https://api.${domain}/api/v1/stream/${showId}`
             : `https://api.${domain}/api/v1/stream/${showId}/episode?season=${seasonNumber}&episode=${episodeNumber}`;
 
         const response = await soraFetch(apiUrl, {
             headers: { "Referer": `https://${domain}/`, "Origin": `https://${domain}` }
         });
-        
+
         let json = {};
         try { json = await response.json(); } catch(e) {
             failedLinks.push({ server_name: "API Purstream (Crash)", url: apiUrl, reason: "Response JSON Parse failed" });
@@ -407,14 +407,14 @@ async function extractStreamUrl(url) {
                                 if (uriMatch) {
                                     const uri = uriMatch[1];
                                     const langName = nameMatch ? nameMatch[1] : (langMatch ? langMatch[1] : "Inconnu");
-                                    const folderPath = uri.split('/')[0]; 
+                                    const folderPath = uri.split('/')[0];
                                     const vttUrl = `${baseUrl}${folderPath}/subtitle.vtt`;
 
                                     const isFrench = langName.toLowerCase().includes("fra") || langName.toLowerCase().includes("fre");
                                     const isForced = langName.toLowerCase().includes("forced");
 
                                     if (subtitleUrl === "") {
-                                        subtitleUrl = vttUrl; 
+                                        subtitleUrl = vttUrl;
                                     } else if (isFrench && !isForced) {
                                         subtitleUrl = vttUrl;
                                     }
@@ -431,9 +431,9 @@ async function extractStreamUrl(url) {
         }
 
         // 📡 Log Supabase (Player)
-        sendSupabaseLog("Purstream", "PLAYER", { 
-            media_title: mediaTitle, 
-            media_url: finalMediaUrl, 
+        sendSupabaseLog("Purstream", "PLAYER", {
+            media_title: mediaTitle,
+            media_url: finalMediaUrl,
             season_number: seasonNumber,
             ep_number: episodeNumber,
             streams_found: streams.length,

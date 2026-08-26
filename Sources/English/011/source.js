@@ -234,8 +234,8 @@ async function extractStreamUrl(ID) {
                         if (item.sources && Array.isArray(item.sources)) {
                             item.sources.forEach(src => {
                                 if (src.file) {
-                                    const isTik = src.file.includes("tik.1x2.space") || 
-                                                  (src.label && src.label.toUpperCase().includes("TIK")) || 
+                                    const isTik = src.file.includes("tik.1x2.space") ||
+                                                  (src.label && src.label.toUpperCase().includes("TIK")) ||
                                                   (server.name && server.name.toUpperCase().includes("TIK"));
                                     if (!isTik) {
                                         results.push({

@@ -1,22 +1,25 @@
 {
-  "sourceName": "AnimeAV1",
-  "iconUrl": "https://animeav1.com/favicon.png",
+  "sourceName": "AnimeJara",
+  "iconUrl": "https://animejara.com/wp-content/uploads/2025/12/cropped-LOGO_ANIJARA7.png",
   "author": {
-    "name": "50/50",
-    "icon": "https://files.catbox.moe/741wp7.png"
+    "name": "xdfkenny",
+    "icon": "https://yt3.googleusercontent.com/NHr6Y6qhYIUeoyIBdgeEYArXI1_ebVcLAuf562jPB6WSFTunOwPVuWC90eAG1zmeD6_Wy9_0mTs=s160-c-k-c0x00ffffff-no-rj",
+    "url": "https://github.com/xdfkenny"
   },
-  "version": "1.0.1",
+  "description": "Módulo de AnimeJara — anime y películas en español latino, sub y japones (AnimeJara.com)",
+  "version": "1.1.8",
   "language": "Spanish",
   "streamType": "HLS",
   "quality": "1080p",
-  "baseUrl": "https://animeav1.com/",
-  "searchBaseUrl": "https://animeav1.com/search?q=%s",
+  "baseUrl": "https://animejara.com/",
+  "searchBaseUrl": "https://animejara.com/catalogo/?q=%s",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/003/source.js",
-  "type": "anime",
+  "type": "anime/movies",
+  "downloadSupport": true,
+  "combo": false,
   "asyncJS": true,
-  "softsub": true,
-  "downloadSupport": false,
-  "note": "Use external player.",
+  "streamAsyncJS": false,
+  "softsub": false,
   "supportsMojuru": true,
   "supportsDartotsu": true,
   "supportsSora": true,
@@ -24,7 +27,5 @@
   "supportsAnymex": true,
   "supportsTsumi": true,
   "supportsHiyoku": true,
-  "supportsShirox": true,
-  "supportsEclipse": true,
-  "id": "mod_1833550373"
+  "id": "jkKSV"
 }

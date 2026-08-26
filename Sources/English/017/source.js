@@ -1,296 +1,709 @@
-// ==========================================
-// ⚙️ SORA MODULE — BINGEBOX v3 (API .ac Unifiée)
-// ==========================================
 
-const TMDB_API_KEY = "f5b2cdde0b678e87f5c68b61b43c688c";
-const BINGEBOX_API = "https://bingebox.ac/api/sources";
-const BINGEBOX_REFERER = "https://bingebox.ac/";
-const DEFAULT_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
-
-// Priorité des langues pour le sous-titre par défaut (Seulement Anglais)
-const SUB_PRIORITY = ["eng", "english", "en"];
-
-// ==========================================
-// 🛠️ HELPERS
-// ==========================================
-
-function parseQuery(queryString) {
-    const params = {};
-    const pairs = queryString.split('&');
-    for (let pair of pairs) {
-        const idx = pair.indexOf('=');
-        if (idx === -1) continue;
-        const key = decodeURIComponent(pair.slice(0, idx));
-        const val = decodeURIComponent(pair.slice(idx + 1));
-        params[key] = val;
-    }
-    return params;
+class MProvider {
+  constructor() {
+    this.source = typeof mangayomiSources !== "undefined" && Array.isArray(mangayomiSources) ? mangayomiSources[0] : {};
+    globalThis.__mangayomiBaseUrl = this.source.baseUrl || this.source.apiUrl || "";
+  }
 }
 
-// Sélection du meilleur sous-titre selon priorité de langue
-function selectBestSubtitle(allSubtitles) {
-    for (let lang of SUB_PRIORITY) {
-        const found = allSubtitles.find(s =>
-            (s.label || "").toLowerCase().includes(lang) ||
-            (s.language || "").toLowerCase().includes(lang)
-        );
-        if (found) return found.url;
-    }
-    return allSubtitles.length > 0 ? allSubtitles[0].url : "";
+class SharedPreferences {
+  get(key) {
+    const defaults = {
+      pref_content_priority: "series",
+      pref_latest_time_window: "day",
+      pref_video_resolution: "1080",
+      autoembed_stream_source_4: "4",
+      autoembed_pref_navtive_subtitle: false,
+      autoembed_split_stream_quality: false,
+      autoembed_pref_subtitle_source_2: "1"
+    };
+    return defaults[key] ?? "";
+  }
+
+  getString(key) {
+    return String(this.get(key) ?? "");
+  }
+
+  getInt(key) {
+    return Number.parseInt(this.get(key), 10) || 0;
+  }
+
+  getBool(key) {
+    return Boolean(this.get(key));
+  }
 }
 
-function makeHeaders(referer) {
-    return { "User-Agent": DEFAULT_USER_AGENT, "Referer": referer || BINGEBOX_REFERER };
+class Client {
+  async get(url, headers = {}) {
+    const response = await fetchv2(this.normalizeUrl(url), { headers });
+    return {
+      body: await response.text(),
+      statusCode: response.status,
+      headers: Object.fromEntries(response.headers?.entries?.() ?? [])
+    };
+  }
+
+  async post(url, headers = {}, body = null) {
+    const response = await fetchv2(this.normalizeUrl(url), {
+      method: "POST",
+      headers,
+      body
+    });
+    return {
+      body: await response.text(),
+      statusCode: response.status,
+      headers: Object.fromEntries(response.headers?.entries?.() ?? [])
+    };
+  }
+
+  normalizeUrl(url) {
+    const value = String(url ?? "");
+    if (/^https?:\/\//i.test(value)) return value;
+    const base = globalThis.__mangayomiBaseUrl || "";
+    if (!base) return value;
+    return new URL(value, base.endsWith("/") ? base : base + "/").toString();
+  }
 }
 
-// ==========================================
-// ⚙️ CORE LOGIC
-// ==========================================
 
-// 1. RECHERCHE (Via TMDB)
-async function searchResults(keyword) {
-    console.log(`[Bingebox] 🔍 Recherche de : "${keyword}"`);
+const mangayomiSources = [
+  {
+    "name": "AniNeko",
+    "id": 782451093,
+    "lang": "en",
+    "baseUrl": "https://anineko.to",
+    "iconUrl": "https://anineko.to/icon/android-chrome-192x192.png",
+    "typeSource": "single",
+    "itemType": 1,
+    "version": "0.1.1",
+    "pkgPath": "anime/src/en/anineko.js",
+    "isManga": false,
+    "isNsfw": false,
+    "hasCloudflare": false,
+    "isFullData": false,
+    "appMinVerReq": "0.5.0",
+    "sourceCodeUrl": "https://raw.githubusercontent.com/Mallyd11/mangayomi-anime-extensions/refs/heads/main/javascript/anime/src/en/anineko.js",
+    "dateFormat": "",
+    "dateFormatLocale": "",
+    "additionalParams": "",
+    "sourceCodeLanguage": 1,
+    "notes": "",
+  },
+];
+
+// AniNeko is a plain server-rendered PHP site — every list, the episode list
+// and the full server table are already in the HTML, so there is no JSON API
+// and no token/vrf handshake to reproduce. Pages are parsed with regex.
+//
+// Episode pages expose each server as
+//   <button class="... server-video ..." data-video="EMBED" data-tab="tab_N">
+// where tab_N maps to a language via
+//   <button class="nv-server-tab tab tab_N" data-id="hsub|sub|dub">
+//
+// Of the five embed hosts only HD-2 (bibiemb) is used. It is a VibePlayer
+// instance that prints the playlist as a bare `const src = "...master.m3u8"`,
+// and its segments are ordinary .ts MPEG-TS served from its own CDN.
+//
+// The others are deliberately not used:
+//   • HD-1 (vivibebe)  — same easy `const src`, but the segments it serves are
+//     MPEG-TS hidden behind a ~252-byte PNG header, hosted on an ad CDN
+//     (p16-ad-sg.ibyteimg.com), at extension-less URLs, and it 403s on a
+//     portion of them. libmpv refuses those, which shows up in-app as the
+//     player skipping straight through every episode.
+//   • StreamHG / Earnvids — playlist is behind packed (p,a,c,k,e,d) JS.
+//   • Doodstream — needs a token handshake.
+// HD-2 is present on all three language tabs, so sub, hardsub and dub all work.
+
+// tab_N id -> [preference value, display label]
+var LANG_LABELS = {
+  hsub: "Hardsub",
+  sub: "Sub",
+  dub: "Dub",
+};
+
+var GENRES = [
+  "action", "adventure", "cars", "comedy", "dementia", "demons", "drama",
+  "ecchi", "fantasy", "game", "harem", "historical", "horror", "isekai",
+  "josei", "kids", "magic", "mahou-shoujo", "martial-arts", "mecha",
+  "military", "music", "mystery", "parody", "police", "psychological",
+  "romance", "samurai", "school", "sci-fi", "seinen", "shoujo", "shoujo-ai",
+  "shounen", "shounen-ai", "slice-of-life", "space", "sports", "super-power",
+  "supernatural", "thriller", "vampire",
+];
+
+var TYPES = [
+  ["TV", "1"], ["Movie", "2"], ["OVA", "3"], ["ONA", "4"],
+  ["Special", "5"], ["Music", "6"], ["TV Short", "7"],
+];
+
+var SORTS = [
+  ["Latest Update", "recently_updated"],
+  ["Release Date", "release_date"],
+  ["Recently Added", "recently_added"],
+  ["A-Z", "title_az"],
+];
+
+class DefaultExtension extends MProvider {
+  constructor() {
+    super();
+    this.client = new Client();
+  }
+
+  get ua() {
+    return "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36";
+  }
+
+  get headers() {
+    return {
+      "User-Agent": this.ua,
+      "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+      "Accept-Language": "en-US,en;q=0.9",
+      "Referer": this.source.baseUrl + "/",
+    };
+  }
+
+  getPreference(key) {
     try {
-        const url = `https://api.themoviedb.org/3/search/multi?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(keyword)}&page=1&include_adult=false&language=en-US`;
-        const res = await soraFetch(url);
-        if (!res) return JSON.stringify([]);
-
-        const data = JSON.parse(await res.text());
-        const results = [];
-
-        for (let item of (data.results || [])) {
-            if (item.media_type !== 'movie' && item.media_type !== 'tv') continue;
-
-            const title = item.title || item.name || "Titre inconnu";
-            const year = (item.release_date || item.first_air_date || '').split('-')[0];
-            const image = item.poster_path
-                ? `https://image.tmdb.org/t/p/w500${item.poster_path}`
-                : 'https://via.placeholder.com/500x750?text=No+Image';
-
-            const href = `bingebox://${item.media_type}/${item.id}?title=${encodeURIComponent(title)}&year=${year}`;
-
-            results.push({
-                title: year ? `${title} (${year})` : title,
-                image,
-                href
-            });
-        }
-
-        console.log(`[Bingebox] ✅ ${results.length} résultats trouvés.`);
-        return JSON.stringify(results);
+      return new SharedPreferences().get(key);
     } catch (e) {
-        console.error(`[Bingebox] ❌ Erreur Recherche: ${e.message}`);
-        return JSON.stringify([]);
+      return null;
     }
-}
+  }
 
-// 2. DÉTAILS (Via TMDB)
-async function extractDetails(url) {
-    console.log(`[Bingebox] 📖 Chargement détails : ${url}`);
-    try {
-        const match = url.match(/bingebox:\/\/([^/]+)\/([^?]+)/);
-        if (!match) throw new Error("URL invalide");
+  abs(path) {
+    if (!path) return "";
+    if (path.indexOf("http") === 0) return path;
+    return this.source.baseUrl + "/" + String(path).replace(/^\/+/, "");
+  }
 
-        const [, type, id] = match;
-        const res = await soraFetch(`https://api.themoviedb.org/3/${type}/${id}?api_key=${TMDB_API_KEY}&language=en-US`);
-        if (!res) throw new Error("Échec réseau TMDB");
+  async fetchHtml(path) {
+    var res = await this.client.get(this.abs(path), this.headers);
+    return (res && res.body) || "";
+  }
 
-        const data = JSON.parse(await res.text());
+  decode(s) {
+    return (s || "")
+      .replace(/&#0*39;|&apos;|&rsquo;/g, "'")
+      .replace(/&#0*34;|&quot;|&ldquo;|&rdquo;/g, '"')
+      .replace(/&middot;/g, "·")
+      .replace(/&nbsp;/g, " ")
+      .replace(/&#0*60;|&lt;/g, "<")
+      .replace(/&#0*62;|&gt;/g, ">")
+      .replace(/&#(\d+);/g, function (_m, n) { return String.fromCharCode(parseInt(n, 10)); })
+      .replace(/&#x([0-9a-fA-F]+);/g, function (_m, n) { return String.fromCharCode(parseInt(n, 16)); })
+      .replace(/&#0*38;|&amp;/g, "&")
+      .trim();
+  }
 
-        return JSON.stringify([{
-            description: data.overview || "No description available.",
-            aliases: `Rating: ${data.vote_average ? data.vote_average.toFixed(1) + '/10' : 'N/A'}`,
-            airdate: `Released: ${data.release_date || data.first_air_date || 'Unknown'}`
-        }]);
-    } catch (e) {
-        console.error(`[Bingebox] ❌ Erreur Détails: ${e.message}`);
-        return JSON.stringify([{ description: "Erreur lors du chargement des détails." }]);
+  stripTags(s) {
+    return this.decode(String(s || "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " "));
+  }
+
+  // ── List pages ──────────────────────────────────────────────────────────────
+
+  // Cards look like:
+  //   <article class="nv-anime-card ...">
+  //     <a class="nv-anime-thumb ..." href="/watch/slug">
+  //       <img src="COVER" alt="Title" ...>
+  //     ...
+  //     <h3 class="nv-anime-title"><a href="/watch/slug">Title</a></h3>
+  parseList(html) {
+    var list = [];
+    var seen = {};
+
+    // Prefer the <h3> title (exact) and fall back to the img alt attribute.
+    var titles = {};
+    var tRx = /<h3[^>]*class="[^"]*nv-anime-title[^"]*"[^>]*>\s*<a[^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/g;
+    var tm;
+    while ((tm = tRx.exec(html)) !== null) {
+      var thref = tm[1].replace(/^https?:\/\/[^/]+/, "");
+      if (!titles[thref]) titles[thref] = this.stripTags(tm[2]);
     }
-}
 
-// 3. ÉPISODES / FILM
-async function extractEpisodes(url) {
-    console.log(`[Bingebox] 📂 Chargement épisodes : ${url}`);
+    var rx = /<a[^>]*class="[^"]*nv-anime-thumb[^"]*"[^>]*href="([^"]+)"[^>]*>\s*<img[^>]*src="([^"]+)"[^>]*alt="([^"]*)"/g;
+    var m;
+    while ((m = rx.exec(html)) !== null) {
+      var href = m[1].replace(/^https?:\/\/[^/]+/, "");
+      if (!href || seen[href]) continue;
+      seen[href] = true;
+      var name = titles[href] || this.decode(m[3]);
+      if (!name) continue;
+      list.push({ name: name, link: this.abs(href), imageUrl: m[2] });
+    }
+    return list;
+  }
+
+  // The pager renders a "next" link only while more pages exist.
+  hasNext(html, page) {
+    if (/class='page-item next'/.test(html) || /class="page-item next"/.test(html)) return true;
+    var max = 0;
+    var rx = /data-page='(\d+)'|data-page="(\d+)"/g;
+    var m;
+    while ((m = rx.exec(html)) !== null) {
+      var n = parseInt(m[1] || m[2], 10);
+      if (n > max) max = n;
+    }
+    return max > (page || 1);
+  }
+
+  async listPage(path, page) {
+    var sep = path.indexOf("?") >= 0 ? "&" : "?";
+    var html = await this.fetchHtml(path + sep + "page=" + (page || 1));
+    return { list: this.parseList(html), hasNextPage: this.hasNext(html, page) };
+  }
+
+  get supportsLatest() {
+    return true;
+  }
+
+  async getPopular(page) {
+    return await this.listPage("/ongoing", page);
+  }
+
+  async getLatestUpdates(page) {
+    return await this.listPage("/updates", page);
+  }
+
+  async search(query, page, filters) {
+    var parts = [];
+    if (query) parts.push("keyword=" + encodeURIComponent(query));
+
+    // Filters arrive positionally, in the same order as getFilterList().
     try {
-        const match = url.match(/bingebox:\/\/([^/]+)\/([^?]+)\?(.+)/);
-        if (!match) throw new Error("URL invalide");
-
-        const type = match[1];
-        const id   = match[2];
-        const params = parseQuery(match[3]);
-        const title = params['title'] || "";
-        const year  = params['year']  || "";
-
-        // CAS A : Film
-        if (type === 'movie') {
-            return JSON.stringify([{
-                href: `bingebox-play://movie/${id}?title=${encodeURIComponent(title)}&year=${year}`,
-                title: "Full Movie",
-                number: 1,
-                season: 1
-            }]);
-        }
-
-        // CAS B : Série
-        const res = await soraFetch(`https://api.themoviedb.org/3/tv/${id}?api_key=${TMDB_API_KEY}&language=en-US`);
-        if (!res) throw new Error("Échec réseau TMDB");
-        const data = JSON.parse(await res.text());
-
-        let episodes = [];
-
-        const seasonPromises = (data.seasons || []).map(async (season) => {
-            if (season.season_number === 0) return;
-
-            const sRes = await soraFetch(
-                `https://api.themoviedb.org/3/tv/${id}/season/${season.season_number}?api_key=${TMDB_API_KEY}&language=en-US`
-            );
-            if (!sRes) return;
-
-            const sData = JSON.parse(await sRes.text());
-            for (let ep of (sData.episodes || [])) {
-                episodes.push({
-                    href: `bingebox-play://tv/${id}?title=${encodeURIComponent(title)}&year=${year}&s=${season.season_number}&e=${ep.episode_number}`,
-                    title: ep.name || `Episode ${ep.episode_number}`,
-                    number: ep.episode_number,
-                    season: season.season_number,
-                    image: ep.still_path ? `https://image.tmdb.org/t/p/w500${ep.still_path}` : ''
-                });
+      var defs = this.filterDefs();
+      for (var i = 0; i < defs.length; i++) {
+        var f = (filters || [])[i];
+        if (!f) continue;
+        var def = defs[i];
+        if (def.kind === "group") {
+          var st = f.state || [];
+          for (var j = 0; j < st.length; j++) {
+            if (st[j] && st[j].state === true && st[j].value) {
+              parts.push(encodeURIComponent(def.param) + "=" + encodeURIComponent(st[j].value));
             }
-        });
+          }
+        } else {
+          var opt = (f.values || [])[f.state || 0];
+          if (opt && opt.value) {
+            parts.push(encodeURIComponent(def.param) + "=" + encodeURIComponent(opt.value));
+          }
+        }
+      }
+    } catch (e) { /* fall back to a plain keyword search */ }
 
-        await Promise.all(seasonPromises);
-        episodes.sort((a, b) => a.season !== b.season ? a.season - b.season : a.number - b.number);
+    return await this.listPage("/browse?" + parts.join("&"), page);
+  }
 
-        console.log(`[Bingebox] ✅ ${episodes.length} épisodes chargés.`);
-        return JSON.stringify(episodes);
+  // ── Detail ──────────────────────────────────────────────────────────────────
 
-    } catch (e) {
-        console.error(`[Bingebox] ❌ Erreur Épisodes: ${e.message}`);
-        return JSON.stringify([]);
+  statusCode(s) {
+    var t = (s || "").toLowerCase();
+    if (t.indexOf("airing") >= 0 && t.indexOf("finished") < 0) return 0; // Currently Airing
+    if (t.indexOf("ongoing") >= 0) return 0;
+    if (t.indexOf("completed") >= 0 || t.indexOf("finished") >= 0) return 1;
+    if (t.indexOf("not yet") >= 0 || t.indexOf("upcoming") >= 0) return 4;
+    return 5;
+  }
+
+  async getDetail(url) {
+    var html = await this.fetchHtml(url);
+
+    var name = "";
+    var nm = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/);
+    if (nm) name = this.stripTags(nm[1]);
+
+    var imageUrl = "";
+    var im = html.match(/<meta[^>]+property="og:image"[^>]+content="([^"]+)"/) ||
+             html.match(/(https:\/\/cdn\.anizara\.store\/cover\/[^"']+)/);
+    if (im) imageUrl = im[1];
+    // og:image is the generic site preview on some pages — prefer a real cover.
+    var cover = html.match(/(https:\/\/cdn\.anizara\.store\/cover\/[^"']+)/);
+    if (cover) imageUrl = cover[1];
+
+    var description = "";
+    var dm = html.match(/<div[^>]*class="[^"]*nv-info-synopsis[^"]*"[^>]*>([\s\S]*?)<\/div>/);
+    if (dm) description = this.stripTags(dm[1]);
+    if (!description) {
+      var meta = html.match(/<meta[^>]+name="description"[^>]+content="([^"]*)"/);
+      if (meta) description = this.decode(meta[1]);
     }
-}
 
-// 4. LECTEUR VIDÉO
-async function extractStreamUrl(url) {
-    console.log(`[Bingebox] 🎬 Extraction vidéo : ${url}`);
-    try {
-        const match = url.match(/bingebox-play:\/\/([^/]+)\/([^?]+)\?(.+)/);
-        if (!match) throw new Error("URL Play invalide");
+    var genre = [];
+    var gm = html.match(/<div[^>]*class="[^"]*nv-info-genres[^"]*"[^>]*>([\s\S]*?)<\/div>/);
+    if (gm) {
+      var grx = /<(?:span|a)[^>]*>([^<]+)<\/(?:span|a)>/g;
+      var g;
+      while ((g = grx.exec(gm[1])) !== null) {
+        var gv = this.decode(g[1]);
+        if (gv) genre.push(gv);
+      }
+    }
 
-        const type   = match[1];
-        const id     = match[2];
-        const params = parseQuery(match[3]);
-        const title  = params['title'] || "";
-        const year   = params['year']  || "";
-        const s      = params['s'];
-        const e      = params['e'];
+    // Sidebar rows: <div><span>Status</span><strong>Currently Airing</strong></div>
+    var info = {};
+    var irx = /<div><span>([^<]+)<\/span><strong>([\s\S]*?)<\/strong><\/div>/g;
+    var r;
+    while ((r = irx.exec(html)) !== null) {
+      info[this.decode(r[1]).toLowerCase()] = this.stripTags(r[2]);
+    }
+    var status = this.statusCode(info["status"]);
 
-        const apiMediaType = type === 'tv' ? 'show' : 'movie';
+    // Episodes: <a class="nv-info-episode-main" href="/watch/slug/ep-9">
+    //             <strong>Episode 9</strong><span>Real Title</span></a>
+    var chapters = [];
+    var seen = {};
+    var erx = /<a[^>]*class="[^"]*nv-info-episode-main[^"]*"[^>]*href="([^"]+)"[^>]*>\s*<strong>([\s\S]*?)<\/strong>\s*(?:<span>([\s\S]*?)<\/span>)?/g;
+    var e;
+    while ((e = erx.exec(html)) !== null) {
+      var href = e[1].replace(/^https?:\/\/[^/]+/, "");
+      if (!href || seen[href]) continue;
+      seen[href] = true;
+      var label = this.stripTags(e[2]);          // "Episode 12"
+      var epTitle = this.stripTags(e[3] || "");  // "12 Real Title" | "Episode 12"
+      // The title span often repeats the episode number ("12 Real Title");
+      // drop that prefix so the label doesn't read "Episode 12: 12 Real Title".
+      var numMatch = label.match(/([0-9.]+)\s*$/);
+      if (numMatch && epTitle) {
+        epTitle = epTitle
+          .replace(new RegExp("^" + numMatch[1].replace(".", "\\.") + "\\s*[-–:.]?\\s+"), "")
+          .trim();
+      }
+      if (epTitle && epTitle !== label) label = label + ": " + epTitle;
+      chapters.push({ name: label || href, url: this.abs(href) });
+    }
 
-        // Nouvelle API Bingebox unifiée qui renvoie toutes les sources d'un coup
-        let apiUrl = `${BINGEBOX_API}?tmdbId=${id}&mediaType=${apiMediaType}&title=${encodeURIComponent(title)}&year=${year}`;
-        if (type === 'tv' && s && e) apiUrl += `&season=${s}&episode=${e}`;
+    // Fall back to plain /ep-N links if the episode panel markup ever changes.
+    if (chapters.length === 0) {
+      var frx = /href="([^"]*\/watch\/[^"]*\/ep-([0-9.]+))"/g;
+      var f2;
+      var fseen = {};
+      while ((f2 = frx.exec(html)) !== null) {
+        var fh = f2[1].replace(/^https?:\/\/[^/]+/, "");
+        if (fseen[fh]) continue;
+        fseen[fh] = true;
+        chapters.push({ name: "Episode " + f2[2], url: this.abs(fh) });
+      }
+    }
 
-        console.log(`[Bingebox] 📡 Appel API globale : ${apiUrl}`);
+    chapters.reverse();
+    return {
+      name: name,
+      imageUrl: imageUrl,
+      description: description,
+      genre: genre,
+      status: status,
+      link: this.abs(url),
+      chapters: chapters,
+    };
+  }
 
-        const res = await soraFetch(apiUrl, { headers: makeHeaders(BINGEBOX_REFERER) });
-        if (!res) throw new Error("Pas de réponse de l'API Bingebox");
+  // ── Streaming ───────────────────────────────────────────────────────────────
 
-        const text = await res.text();
-        const json = JSON.parse(text);
+  // tab_N -> hsub | sub | dub
+  parseTabs(html) {
+    var map = {};
+    var rx = /<button[^>]*class="[^"]*nv-server-tab[^"]*\btab_(\d+)\b[^"]*"[^>]*data-id="([^"]+)"/g;
+    var m;
+    while ((m = rx.exec(html)) !== null) map["tab_" + m[1]] = m[2];
+    return map;
+  }
 
-        if (!json.success || !json.sources || json.sources.length === 0) {
-            console.log(`[Bingebox] ⚠️ Aucune source retournée par l'API.`);
-            return JSON.stringify({ type: "none" });
-        }
+  parseServers(html) {
+    var tabs = this.parseTabs(html);
+    var out = [];
+    var rx = /<button[^>]*class="[^"]*server-video[^"]*"[^>]*data-video="([^"]+)"[^>]*data-tab="([^"]+)"[^>]*>([\s\S]*?)<\/button>/g;
+    var m;
+    while ((m = rx.exec(html)) !== null) {
+      var label = this.stripTags(m[3]).split(/\s{2,}/)[0].trim();
+      out.push({
+        embed: this.decode(m[1]),
+        lang: tabs[m[2]] || m[2],
+        name: label || "Server",
+      });
+    }
+    return out;
+  }
 
-        let streams = [];
-        let allSubtitles = [];
-        const seenUrls = new Set();
-        const seenSubUrls = new Set();
+  // Subtitle track is passed to the embed as a query param, named differently
+  // per host: ?sub= (VibePlayer), ?caption_1= (StreamHG/Earnvids), ?c1_file=.
+  subsFromEmbed(embed) {
+    var m = embed.match(/[?&](?:sub|caption_1|c1_file)=([^&]+)/);
+    if (!m) return [];
+    var file = decodeURIComponent(m[1]);
+    if (!/^https?:\/\//.test(file)) return [];
+    var lm = embed.match(/[?&](?:sub_1|c1_label)=([^&]+)/);
+    var label = lm ? decodeURIComponent(lm[1]) : "English";
+    return [{ file: file, label: label }];
+  }
 
-        // Parcourir le tableau `sources`
-        for (let source of json.sources) {
-            const serverName = source.label || source.sourceId || "Serveur inconnu";
-            
-            if (source.stream) {
-                // Flux vidéo (priorité à `playlist`, fallback sur `url`)
-                const videoUrl = source.stream.playlist || source.stream.url;
-                
-                if (videoUrl && !seenUrls.has(videoUrl)) {
-                    seenUrls.add(videoUrl);
-                    
-                    streams.push({
-                        title: `Bingebox ${serverName.toUpperCase()}`,
-                        streamUrl: videoUrl,
-                        headers: makeHeaders(BINGEBOX_REFERER)
-                    });
-                    
-                    console.log(`   ✅ [${serverName}] Ajouté : ${videoUrl.split('?')[0]}`);
-                }
+  resolveUrl(base, rel) {
+    if (/^https?:\/\//.test(rel)) return rel;
+    var origin = (base.match(/^(https?:\/\/[^/]+)/) || [])[1] || "";
+    if (rel.charAt(0) === "/") return origin + rel;
+    var i = base.split("?")[0].lastIndexOf("/");
+    return (i > 0 ? base.split("?")[0].substring(0, i + 1) : base) + rel;
+  }
 
-                // Sous-titres
-                if (Array.isArray(source.stream.captions)) {
-                    for (let cap of source.stream.captions) {
-                        if (!cap.url || seenSubUrls.has(cap.url)) continue;
-                        seenSubUrls.add(cap.url);
+  // Expand a master playlist into its per-quality media playlists.
+  //
+  // Returning the master directly plays fine, but the app counts #EXTINF
+  // entries to drive the download progress bar and a master has none — so
+  // downloads run with progress stuck at 0 until they suddenly finish.
+  // Handing back the media playlists fixes progress and gives a real quality
+  // picker at the same time.
+  async resolveVariants(masterUrl, headers) {
+    var res = await this.client.get(masterUrl, headers);
+    var body = (res && res.body) || "";
+    if (body.indexOf("#EXTM3U") < 0) return [];
+    // Already a media playlist — hand it back as-is.
+    if (body.indexOf("#EXT-X-STREAM-INF") < 0) {
+      return [{ url: masterUrl, label: "Auto", height: 0 }];
+    }
 
-                        const subReferer = (cap.url.match(/https?:\/\/[^/]+/) || [BINGEBOX_REFERER])[0] + "/";
+    var lines = body.split("\n");
+    var out = [];
+    for (var i = 0; i < lines.length; i++) {
+      var line = lines[i].trim();
+      if (line.indexOf("#EXT-X-STREAM-INF:") !== 0) continue;
+      var target = "";
+      for (var j = i + 1; j < lines.length; j++) {
+        var l2 = lines[j].trim();
+        if (!l2 || l2.charAt(0) === "#") continue;
+        target = l2;
+        break;
+      }
+      if (!target) continue;
+      var rm = line.match(/RESOLUTION=\d+x(\d+)/);
+      var nm = line.match(/NAME="([^"]+)"/);
+      var height = rm ? parseInt(rm[1], 10) : 0;
+      out.push({
+        url: this.resolveUrl(masterUrl, target),
+        label: (nm && nm[1]) || (height ? height + "p" : "Auto"),
+        height: height,
+      });
+    }
+    out.sort(function (a, b) { return b.height - a.height; });
+    return out;
+  }
 
-                        allSubtitles.push({
-                            url: cap.url,
-                            label: cap.label || cap.language || "SUB",
-                            language: cap.language || "",
-                            kind: cap.type === 'srt' ? 'subtitles' : 'captions',
-                            headers: { "Referer": subReferer }
-                        });
-                    }
-                }
-            }
-        }
+  // Both supported hosts are VibePlayer: the playlist sits in the page as a
+  // bare `const src = "..."`, no packing and no second request.
+  async resolveEmbed(embed) {
+    var origin = "";
+    var om = embed.match(/^(https?:\/\/[^/]+)/);
+    if (om) origin = om[1];
 
-        console.log(`[Bingebox] 📊 ${streams.length} streams | ${allSubtitles.length} sous-titres`);
+    var res = await this.client.get(embed, {
+      "User-Agent": this.ua,
+      "Referer": this.source.baseUrl + "/",
+      "Accept": "text/html,application/xhtml+xml,*/*;q=0.8",
+    });
+    var body = (res && res.body) || "";
 
-        if (streams.length === 0) return JSON.stringify({ type: "none" });
+    var m = body.match(/const\s+src\s*=\s*["']([^"']+)["']/);
+    if (!m) m = body.match(/(https?:\\?\/\\?\/[^"'\s]+\.m3u8[^"'\s]*)/);
+    if (!m) return null;
 
-        // Trier les sous-titres selon la priorité (Anglais)
-        allSubtitles.sort((a, b) => {
-            const getPrio = (s) => {
-                const lang = (s.label || s.language || "").toLowerCase();
-                for (let i = 0; i < SUB_PRIORITY.length; i++) {
-                    if (lang.includes(SUB_PRIORITY[i])) return i;
-                }
-                return 99; // Priorité la plus basse
+    var file = m[1].replace(/\\\//g, "/");
+    if (!/^https?:\/\//.test(file)) return null;
+    return { file: file, origin: origin };
+  }
+
+  async getVideoList(url) {
+    var html = await this.fetchHtml(url);
+    var servers = this.parseServers(html);
+    if (servers.length === 0) return [];
+
+    var prefLang = this.getPreference("anineko_pref_lang") || "sub";
+    var self = this;
+
+    // HD-2 only — see the note at the top of this file for why the other four
+    // servers are skipped.
+    var supported = servers.filter(function (s) {
+      return /^https?:\/\/(?:[a-z0-9-]+\.)?bibiemb\.xyz\//i.test(s.embed);
+    });
+    if (supported.length === 0) return [];
+
+    var results = await Promise.all(supported.map(function (s) {
+      return self.resolveEmbed(s.embed)
+        .then(async function (r) {
+          if (!r) return [];
+          var langLabel = LANG_LABELS[s.lang] || s.lang.toUpperCase();
+          var hdrs = {
+            "Referer": r.origin + "/",
+            "Origin": r.origin,
+            "User-Agent": self.ua,
+          };
+          var subs = self.subsFromEmbed(s.embed);
+
+          var variants = [];
+          try {
+            variants = await self.resolveVariants(r.file, hdrs);
+          } catch (e) { /* fall back to the master below */ }
+          if (!variants.length) {
+            variants = [{ url: r.file, label: "Auto", height: 0 }];
+          }
+
+          return variants.map(function (v) {
+            return {
+              url: v.url,
+              originalUrl: r.file,
+              quality: s.name + " " + v.label + " [" + langLabel + "]",
+              headers: hdrs,
+              subtitles: subs,
+              _lang: s.lang,
+              _height: v.height,
             };
-            return getPrio(a) - getPrio(b);
-        });
+          });
+        })
+        .catch(function () { return []; });
+    }));
 
-        return JSON.stringify({
-            type: "servers",
-            streams,
-            subtitles: selectBestSubtitle(allSubtitles),
-            subtitlesHeaders: allSubtitles.length > 0
-                ? allSubtitles.find(s => s.url === selectBestSubtitle(allSubtitles))?.headers || {}
-                : {},
-            allSubtitles
-        });
+    var videos = results.reduce(function (acc, r) { return acc.concat(r); }, []);
 
-    } catch (e) {
-        console.error(`[Bingebox] ❌ Erreur Stream: ${e.message}`);
-        return JSON.stringify({ type: "none" });
-    }
+    // Put the preferred audio/subtitle flavour first — Mangayomi plays the
+    // first entry and only auto-enables subtitles from that same entry.
+    var rank = function (lang) {
+      if (lang === prefLang) return 0;
+      if (prefLang === "dub") return lang === "sub" ? 1 : 2;
+      if (prefLang === "hsub") return lang === "sub" ? 1 : 2;
+      return lang === "hsub" ? 1 : 2;
+    };
+    videos.sort(function (a, b) {
+      var d = rank(a._lang) - rank(b._lang);
+      return d !== 0 ? d : (b._height - a._height);
+    });
+    videos.forEach(function (v) { delete v._lang; delete v._height; });
+
+    return videos;
+  }
+
+  // ── Filters & preferences ───────────────────────────────────────────────────
+
+  filterDefs() {
+    var cap = function (s) {
+      return s.split("-").map(function (w) {
+        return w.charAt(0).toUpperCase() + w.slice(1);
+      }).join(" ");
+    };
+    return [
+      {
+        kind: "group", param: "genre[]", name: "Genre",
+        options: GENRES.map(function (g) { return [cap(g), g]; }),
+      },
+      { kind: "group", param: "type[]", name: "Type", options: TYPES },
+      {
+        kind: "select", param: "status", name: "Status",
+        options: [["Ongoing", "Ongoing"], ["Completed", "Completed"]],
+      },
+      {
+        kind: "select", param: "language", name: "Language",
+        options: [["Sub", "sub"], ["Dub", "dub"]],
+      },
+      {
+        kind: "select", param: "year", name: "Year",
+        options: (function () {
+          var out = [];
+          for (var y = 2026; y >= 2009; y--) out.push([String(y), String(y)]);
+          return out;
+        })(),
+      },
+      { kind: "select", param: "sort", name: "Sort by", options: SORTS },
+    ];
+  }
+
+  getFilterList() {
+    return this.filterDefs().map(function (def) {
+      if (def.kind === "group") {
+        return {
+          type_name: "GroupFilter",
+          name: def.name,
+          state: def.options.map(function (o) {
+            return { type_name: "CheckBox", name: o[0], value: o[1] };
+          }),
+        };
+      }
+      return {
+        type_name: "SelectFilter",
+        name: def.name,
+        state: 0,
+        values: [{ type_name: "SelectOption", name: "Any", value: "" }].concat(
+          def.options.map(function (o) {
+            return { type_name: "SelectOption", name: o[0], value: o[1] };
+          })
+        ),
+      };
+    });
+  }
+
+  getSourcePreferences() {
+    return [
+      {
+        key: "anineko_pref_lang",
+        listPreference: {
+          title: "Preferred version",
+          summary: "Which version is listed first (and supplies auto-play subtitles)",
+          valueIndex: 0,
+          entries: ["Sub (soft subtitles)", "Hardsub (burned in)", "Dub"],
+          entryValues: ["sub", "hsub", "dub"],
+        },
+      },
+    ];
+  }
 }
 
-// ==========================================
-// 🛠️ OUTIL RÉSEAU
-// ==========================================
-async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
-    try {
-        if (typeof fetchv2 !== 'undefined') {
-            return await fetchv2(url, options.headers ?? {}, options.method ?? 'GET', options.body ?? null);
-        }
-        return await fetch(url, options);
-    } catch(e) {
-        try { return await fetch(url, options); } catch { return null; }
-    }
+
+const __mangayomiExtension = new DefaultExtension();
+
+function __list(value) {
+  if (!value) return [];
+  if (Array.isArray(value)) return value;
+  if (Array.isArray(value.list)) return value.list;
+  return [];
+}
+
+function __text(value) {
+  return String(value ?? "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+}
+
+async function searchResults(keyword) {
+  const result = await __mangayomiExtension.search(keyword, 1, []);
+  return JSON.stringify(__list(result).map((item) => ({
+    title: __text(item.name || item.title),
+    image: item.imageUrl || item.image || "",
+    href: item.link || item.url || ""
+  })).filter((item) => item.title && item.href));
+}
+
+async function extractDetails(url) {
+  const detail = await __mangayomiExtension.getDetail(url);
+  return JSON.stringify([{
+    description: __text(detail.description || "Not available"),
+    aliases: Array.isArray(detail.genre) ? detail.genre.join(", ") : __text(detail.genre || detail.name || "Not available"),
+    airdate: detail.status != null ? "Status: " + detail.status : "Not available"
+  }]);
+}
+
+async function extractEpisodes(url) {
+  const detail = await __mangayomiExtension.getDetail(url);
+  const chapters = Array.isArray(detail.chapters) ? detail.chapters : [];
+  return JSON.stringify(chapters.map((chapter, index) => {
+    const label = String(chapter.name || chapter.title || "");
+    const parsed = label.match(/(?:episode|ep|capitulo|chapter)\s*([\d.]+)/i)?.[1] || label.match(/\b([\d.]+)\b/)?.[1];
+    return {
+      href: chapter.url || chapter.link || "",
+      number: Number.parseFloat(parsed) || index + 1
+    };
+  }).filter((item) => item.href));
+}
+
+async function extractStreamUrl(url) {
+  const videos = await __mangayomiExtension.getVideoList(url);
+  const streams = __list(videos).map((video) => ({
+    title: video.quality || video.name || video.label || "Stream",
+    streamUrl: video.url || video.originalUrl || video.file || "",
+    url: video.url || video.originalUrl || video.file || "",
+    headers: video.headers || {}
+  })).filter((item) => /^https?:\/\//i.test(item.streamUrl));
+  return JSON.stringify({ streams, subtitles: "" });
 }
