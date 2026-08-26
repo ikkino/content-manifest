@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-25T04:55:27.377Z",
+  "generatedAt": "2026-08-26T01:56:39.623Z",
   "mediaRequested": 5,
   "categories": {
     "trendingNow": {
@@ -28,10 +28,12 @@
   "rejectedAttempts": 42,
   "rejectedAttemptSummary": {
     "byReason": {
-      "media_probe_failed": 17,
-      "implausible_match": 12,
-      "search_no_usable_result": 11,
-      "other": 2
+      "media_probe_failed": 14,
+      "implausible_match": 14,
+      "search_no_usable_result": 9,
+      "media_host_blocked": 2,
+      "other": 2,
+      "media_not_found": 1
     },
     "topModules": [
       {
@@ -46,8 +48,8 @@
         "sourceName": "AnimeLand",
         "count": 14,
         "reasons": {
-          "search_no_usable_result": 8,
-          "implausible_match": 3,
+          "implausible_match": 4,
+          "search_no_usable_result": 7,
           "media_probe_failed": 2,
           "other": 1
         }
@@ -56,9 +58,10 @@
         "sourceName": "Bingebox",
         "count": 14,
         "reasons": {
-          "search_no_usable_result": 3,
-          "media_probe_failed": 3,
-          "implausible_match": 7,
+          "implausible_match": 8,
+          "search_no_usable_result": 2,
+          "media_host_blocked": 2,
+          "media_not_found": 1,
           "other": 1
         }
       }
@@ -73,66 +76,6 @@
     "coolingDownHosts": 3
   },
   "failures": [
-    {
-      "aniListId": 178789,
-      "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "Anikoto",
-      "errors": [
-        "media probe failed: host=cdn.watching.onl empty media response"
-      ]
-    },
-    {
-      "aniListId": 178789,
-      "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
-      "moduleId": "jWuL6",
-      "catalogPath": "Sources/English/017",
-      "sourceName": "Bingebox",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 178789,
-      "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/033",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 202269,
-      "title": "Love Unseen Beneath the Clear Night Sky",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "Anikoto",
-      "errors": [
-        "media probe failed: host=cdn.watching.onl empty media response"
-      ]
-    },
-    {
-      "aniListId": 202269,
-      "title": "Love Unseen Beneath the Clear Night Sky",
-      "moduleId": "jWuL6",
-      "catalogPath": "Sources/English/017",
-      "sourceName": "Bingebox",
-      "errors": [
-        "media probe failed: host=api.dlproxy.com empty media response; host=api.dlproxy.com empty media response"
-      ]
-    },
-    {
-      "aniListId": 202269,
-      "title": "Love Unseen Beneath the Clear Night Sky",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/033",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
     {
       "aniListId": 21,
       "title": "ONE PIECE",
@@ -164,8 +107,8 @@
       ]
     },
     {
-      "aniListId": 169583,
-      "title": "Oh Boy, Was I Wrong About Her",
+      "aniListId": 178789,
+      "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/001",
       "sourceName": "Anikoto",
@@ -174,18 +117,18 @@
       ]
     },
     {
-      "aniListId": 169583,
-      "title": "Oh Boy, Was I Wrong About Her",
+      "aniListId": 178789,
+      "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
       "moduleId": "jWuL6",
       "catalogPath": "Sources/English/017",
       "sourceName": "Bingebox",
       "errors": [
-        "media probe failed: host=api.dlproxy.com empty media response; host=api.dlproxy.com empty media response"
+        "search: searchResults returned an unusable result"
       ]
     },
     {
-      "aniListId": 169583,
-      "title": "Oh Boy, Was I Wrong About Her",
+      "aniListId": 178789,
+      "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
       "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/033",
       "sourceName": "AnimeLand",
@@ -194,8 +137,8 @@
       ]
     },
     {
-      "aniListId": 185542,
-      "title": "Skeleton Knight in Another World Season 2",
+      "aniListId": 187260,
+      "title": "I Want to Love You Till Your Dying Day",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/001",
       "sourceName": "Anikoto",
@@ -204,23 +147,83 @@
       ]
     },
     {
-      "aniListId": 185542,
-      "title": "Skeleton Knight in Another World Season 2",
+      "aniListId": 187260,
+      "title": "I Want to Love You Till Your Dying Day",
       "moduleId": "jWuL6",
       "catalogPath": "Sources/English/017",
       "sourceName": "Bingebox",
       "errors": [
-        "search: searchResults returned an unusable result"
+        "implausible episode match: verified=8 available=13 expected<=8"
       ]
     },
     {
-      "aniListId": 185542,
-      "title": "Skeleton Knight in Another World Season 2",
+      "aniListId": 187260,
+      "title": "I Want to Love You Till Your Dying Day",
       "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/033",
       "sourceName": "AnimeLand",
       "errors": [
         "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 177699,
+      "title": "THE GHOST IN THE SHELL",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "Anikoto",
+      "errors": [
+        "media probe failed: host=cdn.watching.onl empty media response"
+      ]
+    },
+    {
+      "aniListId": 177699,
+      "title": "THE GHOST IN THE SHELL",
+      "moduleId": "jWuL6",
+      "catalogPath": "Sources/English/017",
+      "sourceName": "Bingebox",
+      "errors": [
+        "media probe failed: host=api.dlproxy.com HTTP 403; host=api.dlproxy.com empty media response"
+      ]
+    },
+    {
+      "aniListId": 177699,
+      "title": "THE GHOST IN THE SHELL",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/033",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 269,
+      "title": "Bleach",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "Anikoto",
+      "errors": [
+        "media probe failed: host=cdn.watching.onl empty media response"
+      ]
+    },
+    {
+      "aniListId": 269,
+      "title": "Bleach",
+      "moduleId": "jWuL6",
+      "catalogPath": "Sources/English/017",
+      "sourceName": "Bingebox",
+      "errors": [
+        "media probe failed: host=api.dlproxy.com empty media response; host=api.dlproxy.com HTTP 404 media_not_found"
+      ]
+    },
+    {
+      "aniListId": 269,
+      "title": "Bleach",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/033",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "implausible episode match: verified=13 available=13 expected<=366"
       ]
     },
     {
@@ -452,7 +455,7 @@
       "catalogPath": "Sources/English/017",
       "sourceName": "Bingebox",
       "errors": [
-        "media probe failed: host=api.dlproxy.com Timeout after 5000ms; host=api.dlproxy.com empty media response"
+        "media probe failed: host=api.dlproxy.com HTTP 403; host=api.dlproxy.com empty media response; host=api.dlproxy.com empty media response; host=api.dlproxy.com HTTP 404 media_not_found"
       ]
     },
     {
