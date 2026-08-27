@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-26T01:56:39.623Z",
+  "generatedAt": "2026-08-27T09:44:22.716Z",
   "hosts": {
     "cdn.watching.onl": {
       "lastFailureAt": "2026-08-26T01:56:39.623Z",
@@ -10,18 +10,25 @@
       "cooldownUntil": "2026-08-26T07:59:44.541Z"
     },
     "api.dlproxy.com": {
-      "lastFailureAt": "2026-08-26T01:56:39.623Z",
-      "lastFailure": "media probe failed: host=api.dlproxy.com HTTP 403; host=api.dlproxy.com empty media response; host=api.dlproxy.com empty media response; host=api.dlproxy.com HTTP 404 media_not_found",
-      "failureCount": 8,
-      "consecutiveFailures": 8,
-      "cooldownUntil": "2026-08-27T01:59:30.640Z"
+      "lastFailureAt": "2026-08-27T09:44:22.716Z",
+      "lastFailure": "media probe failed: host=api.dlproxy.com empty media response; host=api.dlproxy.com empty media response; host=api.dlproxy.com empty media response; host=api.dlproxy.com HTTP 404 media_not_found",
+      "failureCount": 9,
+      "consecutiveFailures": 9,
+      "cooldownUntil": "2026-08-28T09:47:17.226Z"
     },
     "animesource.me": {
-      "lastFailureAt": "2026-08-26T01:56:39.623Z",
+      "lastFailureAt": "2026-08-27T09:44:22.716Z",
       "lastFailure": "media probe failed: host=animesource.me fetch failed",
-      "failureCount": 6,
-      "consecutiveFailures": 6,
-      "cooldownUntil": "2026-08-26T08:00:34.479Z"
+      "failureCount": 8,
+      "consecutiveFailures": 8,
+      "cooldownUntil": "2026-08-27T15:48:23.989Z"
+    },
+    "cdn.kryntal.top": {
+      "lastFailureAt": "2026-08-27T09:44:22.716Z",
+      "lastFailure": "media probe failed: host=cdn.kryntal.top empty media response",
+      "failureCount": 11,
+      "consecutiveFailures": 11,
+      "cooldownUntil": "2026-08-27T15:47:32.594Z"
     }
   }
 }
