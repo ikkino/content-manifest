@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-27T09:44:22.716Z",
+  "generatedAt": "2026-08-28T06:07:34.889Z",
   "mediaRequested": 5,
   "categories": {
     "trendingNow": {
@@ -28,19 +28,18 @@
   "rejectedAttempts": 42,
   "rejectedAttemptSummary": {
     "byReason": {
-      "implausible_match": 14,
-      "media_probe_failed": 13,
-      "search_no_usable_result": 12,
-      "other": 2,
-      "media_not_found": 1
+      "media_probe_failed": 15,
+      "other": 12,
+      "search_no_usable_result": 11,
+      "implausible_match": 4
     },
     "topModules": [
       {
         "sourceName": "Anikoto",
         "count": 14,
         "reasons": {
-          "media_probe_failed": 11,
-          "implausible_match": 3
+          "media_probe_failed": 13,
+          "implausible_match": 1
         }
       },
       {
@@ -57,23 +56,117 @@
         "sourceName": "Bingebox",
         "count": 14,
         "reasons": {
-          "search_no_usable_result": 4,
-          "implausible_match": 8,
-          "other": 1,
-          "media_not_found": 1
+          "other": 11,
+          "search_no_usable_result": 3
         }
       }
     ]
   },
   "mediaProbeBudget": 24,
-  "mediaProbesUsed": 14,
+  "mediaProbesUsed": 15,
   "hostHealth": {
     "successEvents": 0,
-    "failureEvents": 14,
+    "failureEvents": 15,
     "skippedByCooldown": 0,
     "coolingDownHosts": 3
   },
   "failures": [
+    {
+      "aniListId": 180136,
+      "title": "The Exiled Heavy Knight Knows How to Game the System",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/008",
+      "sourceName": "Anikoto",
+      "errors": [
+        "media probe failed: host=cdn.kryntal.top empty media response"
+      ]
+    },
+    {
+      "aniListId": 180136,
+      "title": "The Exiled Heavy Knight Knows How to Game the System",
+      "moduleId": "jWuL6",
+      "catalogPath": "Sources/English/023",
+      "sourceName": "Bingebox",
+      "errors": [
+        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 180136,
+      "title": "The Exiled Heavy Knight Knows How to Game the System",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/024",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 196187,
+      "title": "Smoking Behind the Supermarket with You",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/008",
+      "sourceName": "Anikoto",
+      "errors": [
+        "media probe failed: host=cdn.kryntal.top empty media response"
+      ]
+    },
+    {
+      "aniListId": 196187,
+      "title": "Smoking Behind the Supermarket with You",
+      "moduleId": "jWuL6",
+      "catalogPath": "Sources/English/023",
+      "sourceName": "Bingebox",
+      "errors": [
+        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 196187,
+      "title": "Smoking Behind the Supermarket with You",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/024",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 208044,
+      "title": "From Overshadowed to Overpowered: Second Reincarnation of a Talentless Sage",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/008",
+      "sourceName": "Anikoto",
+      "errors": [
+        "media probe failed: host=cdn.kryntal.top empty media response"
+      ]
+    },
+    {
+      "aniListId": 208044,
+      "title": "From Overshadowed to Overpowered: Second Reincarnation of a Talentless Sage",
+      "moduleId": "jWuL6",
+      "catalogPath": "Sources/English/023",
+      "sourceName": "Bingebox",
+      "errors": [
+        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 208044,
+      "title": "From Overshadowed to Overpowered: Second Reincarnation of a Talentless Sage",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/024",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
     {
       "aniListId": 189046,
       "title": "Re:ZERO -Starting Life in Another World- Season 4",
@@ -121,7 +214,9 @@
       "catalogPath": "Sources/English/023",
       "sourceName": "Bingebox",
       "errors": [
-        "implausible episode match: verified=8 available=17 expected<=1175"
+        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl returned an unusable result"
       ]
     },
     {
@@ -135,96 +230,6 @@
       ]
     },
     {
-      "aniListId": 194829,
-      "title": "From Old Country Bumpkin to Master Swordsman II",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/008",
-      "sourceName": "Anikoto",
-      "errors": [
-        "implausible episode match: verified=2 available=2 expected<=8"
-      ]
-    },
-    {
-      "aniListId": 194829,
-      "title": "From Old Country Bumpkin to Master Swordsman II",
-      "moduleId": "jWuL6",
-      "catalogPath": "Sources/English/023",
-      "sourceName": "Bingebox",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 194829,
-      "title": "From Old Country Bumpkin to Master Swordsman II",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/024",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 159309,
-      "title": "Trapped in a Dating Sim: The World of Otome Games is Tough for Mobs Season 2",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/008",
-      "sourceName": "Anikoto",
-      "errors": [
-        "media probe failed: host=cdn.kryntal.top empty media response"
-      ]
-    },
-    {
-      "aniListId": 159309,
-      "title": "Trapped in a Dating Sim: The World of Otome Games is Tough for Mobs Season 2",
-      "moduleId": "jWuL6",
-      "catalogPath": "Sources/English/023",
-      "sourceName": "Bingebox",
-      "errors": [
-        "implausible episode match: verified=8 available=24 expected<=8"
-      ]
-    },
-    {
-      "aniListId": 159309,
-      "title": "Trapped in a Dating Sim: The World of Otome Games is Tough for Mobs Season 2",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/024",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 135865,
-      "title": "Saga of Tanya the Evil Season 2",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/008",
-      "sourceName": "Anikoto",
-      "errors": [
-        "media probe failed: host=cdn.kryntal.top empty media response"
-      ]
-    },
-    {
-      "aniListId": 135865,
-      "title": "Saga of Tanya the Evil Season 2",
-      "moduleId": "jWuL6",
-      "catalogPath": "Sources/English/023",
-      "sourceName": "Bingebox",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 135865,
-      "title": "Saga of Tanya the Evil Season 2",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/024",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
       "aniListId": 178789,
       "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
       "moduleId": "jF12G",
@@ -255,28 +260,28 @@
       ]
     },
     {
-      "aniListId": 196187,
-      "title": "Smoking Behind the Supermarket with You",
+      "aniListId": 135865,
+      "title": "Saga of Tanya the Evil Season 2",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/008",
       "sourceName": "Anikoto",
       "errors": [
-        "implausible episode match: verified=7 available=12 expected<=7"
+        "media probe failed: host=cdn.kryntal.top empty media response"
       ]
     },
     {
-      "aniListId": 196187,
-      "title": "Smoking Behind the Supermarket with You",
+      "aniListId": 135865,
+      "title": "Saga of Tanya the Evil Season 2",
       "moduleId": "jWuL6",
       "catalogPath": "Sources/English/023",
       "sourceName": "Bingebox",
       "errors": [
-        "implausible episode match: verified=7 available=12 expected<=7"
+        "search: searchResults returned an unusable result"
       ]
     },
     {
-      "aniListId": 196187,
-      "title": "Smoking Behind the Supermarket with You",
+      "aniListId": 135865,
+      "title": "Saga of Tanya the Evil Season 2",
       "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/024",
       "sourceName": "AnimeLand",
@@ -301,7 +306,9 @@
       "catalogPath": "Sources/English/023",
       "sourceName": "Bingebox",
       "errors": [
-        "implausible episode match: verified=1 available=1 expected<=5"
+        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl returned an unusable result"
       ]
     },
     {
@@ -363,7 +370,9 @@
       "catalogPath": "Sources/English/023",
       "sourceName": "Bingebox",
       "errors": [
-        "implausible episode match: verified=25 available=87 expected<=25"
+        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl returned an unusable result"
       ]
     },
     {
@@ -393,7 +402,9 @@
       "catalogPath": "Sources/English/023",
       "sourceName": "Bingebox",
       "errors": [
-        "implausible episode match: verified=1 available=1 expected<=26"
+        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl returned an unusable result"
       ]
     },
     {
@@ -423,7 +434,9 @@
       "catalogPath": "Sources/English/023",
       "sourceName": "Bingebox",
       "errors": [
-        "implausible episode match: verified=24 available=59 expected<=24"
+        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl returned an unusable result"
       ]
     },
     {
@@ -453,7 +466,9 @@
       "catalogPath": "Sources/English/023",
       "sourceName": "Bingebox",
       "errors": [
-        "media probe failed: host=api.dlproxy.com empty media response; host=api.dlproxy.com empty media response; host=api.dlproxy.com empty media response; host=api.dlproxy.com HTTP 404 media_not_found"
+        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl returned an unusable result"
       ]
     },
     {
@@ -483,7 +498,9 @@
       "catalogPath": "Sources/English/023",
       "sourceName": "Bingebox",
       "errors": [
-        "implausible episode match: verified=13 available=170 expected<=13"
+        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl returned an unusable result"
       ]
     },
     {
