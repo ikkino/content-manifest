@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-28T06:07:34.889Z",
+  "generatedAt": "2026-08-29T02:48:40.396Z",
   "mediaRequested": 5,
   "categories": {
     "trendingNow": {
@@ -29,8 +29,8 @@
   "rejectedAttemptSummary": {
     "byReason": {
       "media_probe_failed": 15,
-      "other": 12,
-      "search_no_usable_result": 11,
+      "search_no_usable_result": 12,
+      "other": 11,
       "implausible_match": 4
     },
     "topModules": [
@@ -56,8 +56,8 @@
         "sourceName": "Bingebox",
         "count": 14,
         "reasons": {
-          "other": 11,
-          "search_no_usable_result": 3
+          "search_no_usable_result": 4,
+          "other": 10
         }
       }
     ]
@@ -68,12 +68,12 @@
     "successEvents": 0,
     "failureEvents": 15,
     "skippedByCooldown": 0,
-    "coolingDownHosts": 3
+    "coolingDownHosts": 2
   },
   "failures": [
     {
-      "aniListId": 180136,
-      "title": "The Exiled Heavy Knight Knows How to Game the System",
+      "aniListId": 182205,
+      "title": "That Time I Got Reincarnated as a Slime Season 4",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/008",
       "sourceName": "Anikoto",
@@ -82,20 +82,48 @@
       ]
     },
     {
-      "aniListId": 180136,
-      "title": "The Exiled Heavy Knight Knows How to Game the System",
+      "aniListId": 182205,
+      "title": "That Time I Got Reincarnated as a Slime Season 4",
       "moduleId": "jWuL6",
       "catalogPath": "Sources/English/023",
       "sourceName": "Bingebox",
       "errors": [
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result"
+        "search: searchResults returned an unusable result"
       ]
     },
     {
-      "aniListId": 180136,
-      "title": "The Exiled Heavy Knight Knows How to Game the System",
+      "aniListId": 182205,
+      "title": "That Time I Got Reincarnated as a Slime Season 4",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/024",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 209983,
+      "title": "HELL MODE: The Hardcore Gamer Dominates in Another World with Garbage Balancing Season 2",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/008",
+      "sourceName": "Anikoto",
+      "errors": [
+        "media probe failed: host=cdn.kryntal.top empty media response"
+      ]
+    },
+    {
+      "aniListId": 209983,
+      "title": "HELL MODE: The Hardcore Gamer Dominates in Another World with Garbage Balancing Season 2",
+      "moduleId": "jWuL6",
+      "catalogPath": "Sources/English/023",
+      "sourceName": "Bingebox",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 209983,
+      "title": "HELL MODE: The Hardcore Gamer Dominates in Another World with Garbage Balancing Season 2",
       "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/024",
       "sourceName": "AnimeLand",
@@ -128,68 +156,6 @@
     {
       "aniListId": 196187,
       "title": "Smoking Behind the Supermarket with You",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/024",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 208044,
-      "title": "From Overshadowed to Overpowered: Second Reincarnation of a Talentless Sage",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/008",
-      "sourceName": "Anikoto",
-      "errors": [
-        "media probe failed: host=cdn.kryntal.top empty media response"
-      ]
-    },
-    {
-      "aniListId": 208044,
-      "title": "From Overshadowed to Overpowered: Second Reincarnation of a Talentless Sage",
-      "moduleId": "jWuL6",
-      "catalogPath": "Sources/English/023",
-      "sourceName": "Bingebox",
-      "errors": [
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 208044,
-      "title": "From Overshadowed to Overpowered: Second Reincarnation of a Talentless Sage",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/024",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 189046,
-      "title": "Re:ZERO -Starting Life in Another World- Season 4",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/008",
-      "sourceName": "Anikoto",
-      "errors": [
-        "media probe failed: host=cdn.kryntal.top empty media response"
-      ]
-    },
-    {
-      "aniListId": 189046,
-      "title": "Re:ZERO -Starting Life in Another World- Season 4",
-      "moduleId": "jWuL6",
-      "catalogPath": "Sources/English/023",
-      "sourceName": "Bingebox",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 189046,
-      "title": "Re:ZERO -Starting Life in Another World- Season 4",
       "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/024",
       "sourceName": "AnimeLand",
@@ -227,6 +193,38 @@
       "sourceName": "AnimeLand",
       "errors": [
         "implausible episode match: verified=1061 available=900 expected<=1175"
+      ]
+    },
+    {
+      "aniListId": 196218,
+      "title": "The Frontier Lord Begins with Zero Subjects",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/008",
+      "sourceName": "Anikoto",
+      "errors": [
+        "media probe failed: host=cdn.kryntal.top empty media response"
+      ]
+    },
+    {
+      "aniListId": 196218,
+      "title": "The Frontier Lord Begins with Zero Subjects",
+      "moduleId": "jWuL6",
+      "catalogPath": "Sources/English/023",
+      "sourceName": "Bingebox",
+      "errors": [
+        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 196218,
+      "title": "The Frontier Lord Begins with Zero Subjects",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/024",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
       ]
     },
     {
