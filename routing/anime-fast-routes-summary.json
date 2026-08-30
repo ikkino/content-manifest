@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-29T02:48:40.396Z",
+  "generatedAt": "2026-08-30T00:20:51.816Z",
   "mediaRequested": 5,
   "categories": {
     "trendingNow": {
@@ -28,17 +28,18 @@
   "rejectedAttempts": 42,
   "rejectedAttemptSummary": {
     "byReason": {
-      "media_probe_failed": 15,
+      "media_probe_failed": 14,
+      "other": 13,
       "search_no_usable_result": 12,
-      "other": 11,
-      "implausible_match": 4
+      "implausible_match": 3
     },
     "topModules": [
       {
         "sourceName": "Anikoto",
         "count": 14,
         "reasons": {
-          "media_probe_failed": 13,
+          "media_probe_failed": 12,
+          "other": 1,
           "implausible_match": 1
         }
       },
@@ -46,9 +47,9 @@
         "sourceName": "AnimeLand",
         "count": 14,
         "reasons": {
-          "search_no_usable_result": 8,
-          "implausible_match": 3,
+          "search_no_usable_result": 9,
           "media_probe_failed": 2,
+          "implausible_match": 2,
           "other": 1
         }
       },
@@ -56,22 +57,120 @@
         "sourceName": "Bingebox",
         "count": 14,
         "reasons": {
-          "search_no_usable_result": 4,
-          "other": 10
+          "other": 11,
+          "search_no_usable_result": 3
         }
       }
     ]
   },
   "mediaProbeBudget": 24,
-  "mediaProbesUsed": 15,
+  "mediaProbesUsed": 14,
   "hostHealth": {
     "successEvents": 0,
-    "failureEvents": 15,
+    "failureEvents": 14,
     "skippedByCooldown": 0,
     "coolingDownHosts": 2
   },
   "failures": [
     {
+      "aniListId": 185874,
+      "title": "BLEACH: Thousand-Year Blood War - The Calamity",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/008",
+      "sourceName": "Anikoto",
+      "errors": [
+        "media probe failed: host=cdn.kryntal.top empty media response"
+      ]
+    },
+    {
+      "aniListId": 185874,
+      "title": "BLEACH: Thousand-Year Blood War - The Calamity",
+      "moduleId": "jWuL6",
+      "catalogPath": "Sources/English/023",
+      "sourceName": "Bingebox",
+      "errors": [
+        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 185874,
+      "title": "BLEACH: Thousand-Year Blood War - The Calamity",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/024",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 195600,
+      "title": "Daemons of the Shadow Realm",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/008",
+      "sourceName": "Anikoto",
+      "errors": [
+        "media probe failed: host=cdn.kryntal.top empty media response"
+      ]
+    },
+    {
+      "aniListId": 195600,
+      "title": "Daemons of the Shadow Realm",
+      "moduleId": "jWuL6",
+      "catalogPath": "Sources/English/023",
+      "sourceName": "Bingebox",
+      "errors": [
+        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 195600,
+      "title": "Daemons of the Shadow Realm",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/024",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 201514,
+      "title": "Rich Girl Caretaker: I'm Secretly the Caregiver of the Most Popular Girl in This Rich Kid School",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/008",
+      "sourceName": "Anikoto",
+      "errors": [
+        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 201514,
+      "title": "Rich Girl Caretaker: I'm Secretly the Caregiver of the Most Popular Girl in This Rich Kid School",
+      "moduleId": "jWuL6",
+      "catalogPath": "Sources/English/023",
+      "sourceName": "Bingebox",
+      "errors": [
+        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 201514,
+      "title": "Rich Girl Caretaker: I'm Secretly the Caregiver of the Most Popular Girl in This Rich Kid School",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/024",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
       "aniListId": 182205,
       "title": "That Time I Got Reincarnated as a Slime Season 4",
       "moduleId": "jF12G",
@@ -102,8 +201,8 @@
       ]
     },
     {
-      "aniListId": 209983,
-      "title": "HELL MODE: The Hardcore Gamer Dominates in Another World with Garbage Balancing Season 2",
+      "aniListId": 187538,
+      "title": "BLACK TORCH",
       "moduleId": "jF12G",
       "catalogPath": "Sources/English/008",
       "sourceName": "Anikoto",
@@ -112,8 +211,40 @@
       ]
     },
     {
-      "aniListId": 209983,
-      "title": "HELL MODE: The Hardcore Gamer Dominates in Another World with Garbage Balancing Season 2",
+      "aniListId": 187538,
+      "title": "BLACK TORCH",
+      "moduleId": "jWuL6",
+      "catalogPath": "Sources/English/023",
+      "sourceName": "Bingebox",
+      "errors": [
+        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 187538,
+      "title": "BLACK TORCH",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/024",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 178789,
+      "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/008",
+      "sourceName": "Anikoto",
+      "errors": [
+        "media probe failed: host=cdn.kryntal.top empty media response"
+      ]
+    },
+    {
+      "aniListId": 178789,
+      "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
       "moduleId": "jWuL6",
       "catalogPath": "Sources/English/023",
       "sourceName": "Bingebox",
@@ -122,8 +253,8 @@
       ]
     },
     {
-      "aniListId": 209983,
-      "title": "HELL MODE: The Hardcore Gamer Dominates in Another World with Garbage Balancing Season 2",
+      "aniListId": 178789,
+      "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
       "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/024",
       "sourceName": "AnimeLand",
@@ -164,100 +295,6 @@
       ]
     },
     {
-      "aniListId": 21,
-      "title": "ONE PIECE",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/008",
-      "sourceName": "Anikoto",
-      "errors": [
-        "media probe failed: host=cdn.kryntal.top empty media response"
-      ]
-    },
-    {
-      "aniListId": 21,
-      "title": "ONE PIECE",
-      "moduleId": "jWuL6",
-      "catalogPath": "Sources/English/023",
-      "sourceName": "Bingebox",
-      "errors": [
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 21,
-      "title": "ONE PIECE",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/024",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "implausible episode match: verified=1061 available=900 expected<=1175"
-      ]
-    },
-    {
-      "aniListId": 196218,
-      "title": "The Frontier Lord Begins with Zero Subjects",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/008",
-      "sourceName": "Anikoto",
-      "errors": [
-        "media probe failed: host=cdn.kryntal.top empty media response"
-      ]
-    },
-    {
-      "aniListId": 196218,
-      "title": "The Frontier Lord Begins with Zero Subjects",
-      "moduleId": "jWuL6",
-      "catalogPath": "Sources/English/023",
-      "sourceName": "Bingebox",
-      "errors": [
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 196218,
-      "title": "The Frontier Lord Begins with Zero Subjects",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/024",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 178789,
-      "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/008",
-      "sourceName": "Anikoto",
-      "errors": [
-        "media probe failed: host=cdn.kryntal.top empty media response"
-      ]
-    },
-    {
-      "aniListId": 178789,
-      "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
-      "moduleId": "jWuL6",
-      "catalogPath": "Sources/English/023",
-      "sourceName": "Bingebox",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 178789,
-      "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/024",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
       "aniListId": 135865,
       "title": "Saga of Tanya the Evil Season 2",
       "moduleId": "jF12G",
@@ -280,38 +317,6 @@
     {
       "aniListId": 135865,
       "title": "Saga of Tanya the Evil Season 2",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/024",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 185874,
-      "title": "BLEACH: Thousand-Year Blood War - The Calamity",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/008",
-      "sourceName": "Anikoto",
-      "errors": [
-        "media probe failed: host=cdn.kryntal.top empty media response"
-      ]
-    },
-    {
-      "aniListId": 185874,
-      "title": "BLEACH: Thousand-Year Blood War - The Calamity",
-      "moduleId": "jWuL6",
-      "catalogPath": "Sources/English/023",
-      "sourceName": "Bingebox",
-      "errors": [
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 185874,
-      "title": "BLEACH: Thousand-Year Blood War - The Calamity",
       "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/024",
       "sourceName": "AnimeLand",
