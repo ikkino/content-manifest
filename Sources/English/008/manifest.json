@@ -1,21 +1,28 @@
 {
-  "sourceName": "Anikoto",
-  "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/anikoto/icon.png",
+  "sourceName": "Kisskh",
+  "iconUrl": "https://files.catbox.moe/wi6a1a.png",
   "author": {
-    "name": "ibro",
-    "icon": "https://git.luna-app.eu/ibro/services/raw/branch/main/profile.jpg",
-    "url": "https://github.com/xibrox"
+    "name": "50/50",
+    "icon": "https://files.catbox.moe/741wp7.png"
   },
-  "version": "1.0.18",
+  "version": "1.0.1",
   "language": "English",
+  "languageType": [
+    "Native"
+  ],
   "streamType": "HLS",
   "quality": "1080p",
-  "baseUrl": "https://anikototv.to/",
-  "searchBaseUrl": "https://anikototv.to/search?query=%s",
+  "baseUrl": "https://kisskh.do/",
+  "searchBaseUrl": "https://kisskh.do/",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/008/source.js",
-  "type": "anime",
-  "downloadSupport": true,
+  "type": "anime/movies/shows",
   "asyncJS": true,
   "softsub": true,
-  "id": "jF12G"
+  "downloadSupport": false,
+  "supportsSora": true,
+  "supportsLuna": true,
+  "supportsTsumi": true,
+  "supportsHiyoku": true,
+  "supportsEclipse": true,
+  "id": "mod_1459124869"
 }

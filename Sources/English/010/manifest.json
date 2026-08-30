@@ -1,28 +1,29 @@
 {
-  "sourceName": "AnimeSogo",
-  "iconUrl": "https://animesogo.to/favicon.ico",
+  "sourceName": "Airflix",
+  "iconUrl": "https://img.icons8.com/color/48/netflix.png",
   "author": {
-    "name": "Yuzono AnikotoTheme"
+    "name": "50/50",
+    "icon": "https://files.catbox.moe/741wp7.png"
   },
-  "version": "1.0.0",
+  "version": "1.0.1",
   "language": "English",
+  "languageType": [
+    "Subbed"
+  ],
   "streamType": "HLS",
   "quality": "1080p",
-  "baseUrl": "https://animesogo.to/",
-  "searchBaseUrl": "https://animesogo.to/",
+  "baseUrl": "https://streamdata.vaplayer.ru/",
+  "searchBaseUrl": "https://streamdata.vaplayer.ru/",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/010/source.js",
-  "type": "anime",
+  "type": "shows/movies/anime",
   "asyncJS": true,
   "softsub": true,
   "downloadSupport": false,
   "supportsSora": true,
   "supportsLuna": true,
-  "supportsMojuru": true,
-  "supportsDartotsu": true,
-  "supportsAnymex": true,
+  "jsonUrl": "https://modules.modulesbypaul.workers.dev/airflix/airflix.json",
   "supportsTsumi": true,
   "supportsHiyoku": true,
-  "supportsShirox": true,
   "supportsEclipse": true,
-  "id": "animesogo-local"
+  "id": "jg3nm"
 }
