@@ -1,32 +1,33 @@
 {
-  "sourceName": "Otaku-Streamers",
-  "iconUrl": "https://files.catbox.moe/alcwg2.png",
+  "sourceName": "AniDB",
+  "iconUrl": "https://anidb.app/images/fav-192.png",
   "author": {
-    "name": "50/50",
-    "icon": "https://files.catbox.moe/741wp7.png"
+    "name": "xdfkenny",
+    "icon": "https://yt3.googleusercontent.com/NHr6Y6qhYIUeoyIBdgeEYArXI1_ebVcLAuf562jPB6WSFTunOwPVuWC90eAG1zmeD6_Wy9_0mTs=s160-c-k-c0x00ffffff-no-rj",
+    "url": "https://github.com/xdfkenny"
   },
-  "version": "1.0.1",
+  "description": "Módulo de AniDB (anidb.app) — el mismo backend que usa ani-cli: búsqueda vía /browse, episodios del API público frontend y streams HLS multi-idioma (jpn/eng) desde los embeds JWPlayer (hls.anidb.app).",
+  "version": "1.0.0",
   "language": "English",
-  "languageType": [
-    "Subbed"
-  ],
   "streamType": "HLS",
   "quality": "1080p",
-  "baseUrl": "https://otaku-streamers.com/",
-  "searchBaseUrl": "https://otaku-streamers.com/",
+  "baseUrl": "https://anidb.app/",
+  "searchBaseUrl": "https://anidb.app/browse?q=%s",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/026/source.js",
   "type": "anime",
-  "asyncJS": true,
-  "softsub": true,
   "downloadSupport": true,
+  "combo": false,
+  "asyncJS": true,
+  "streamAsyncJS": false,
+  "softsub": false,
+  "supportsMojuru": false,
+  "supportsDartotsu": false,
   "supportsSora": true,
   "supportsLuna": true,
-  "supportsMojuru": true,
-  "supportsDartotsu": true,
-  "supportsAnymex": true,
-  "supportsTsumi": true,
-  "supportsHiyoku": true,
-  "supportsShirox": true,
+  "supportsAnymex": false,
+  "supportsTsumi": false,
+  "supportsHiyoku": false,
+  "supportsShirox": false,
   "supportsEclipse": true,
-  "id": "mod_1937090981"
+  "id": "jzBDQ"
 }

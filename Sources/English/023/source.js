@@ -1,233 +1,126 @@
 async function searchResults(keyword) {
+    const regex = /<a href="([^"]*)" class="mse">[\s\S]*?<img src="([^"]*)" class="media-object">[\s\S]*?<h2>([^<]*?)<\/h2>/g;
+    const results = [];
     try {
-        const url = `https://otakutsu.cc/api/feed/search?query=${encodeURIComponent(keyword)}`;
-        const headers = {
-            "Referer": "https://otakutsu.cc/browse",
-            "Accept": "application/json"
-        };
-        const response = await soraFetch(url, { headers });
-        if (!response) return JSON.stringify([]);
+        const response = await fetchv2("https://www.animegg.org/search/?q=" + encodeURIComponent(keyword));
+        const html = await response.text();
 
-        const text = typeof response.text === 'function' ? await response.text() : response;
-        const data = JSON.parse(text);
-        const results = [];
-        if (data && data.results) {
-            for (const item of data.results) {
-                if (item.id) {
-                    const title = (item.title && (item.title.english || item.title.romaji || item.title.native)) || "Unknown";
-                    const image = (item.cover_image && item.cover_image.large) || "";
-                    const href = `https://otakutsu.cc/anime/${item.id}`;
-                    results.push({ title, image, href });
-                }
-            }
+        let match;
+        while ((match = regex.exec(html)) !== null) {
+            results.push({
+                title: match[3].trim(),
+                image: match[2].trim(),
+                href: "https://www.animegg.org" + match[1].trim()
+            });
         }
+
         return JSON.stringify(results);
     } catch (err) {
-        console.log("Error in searchResults: " + err);
-        return JSON.stringify([]);
+        return JSON.stringify([{
+            title: "Error",
+            image: "Error",
+            href: "Error"
+        }]);
     }
 }
 
 async function extractDetails(url) {
     try {
-        const response = await soraFetch(url);
-        if (!response) return JSON.stringify([]);
+        const response = await fetchv2(url);
         const html = await response.text();
 
-        // Extract description
-        const descriptionRegex = /\\"className\\":\\"text-\[var\(--text-muted\)\\][^\\"]*\\",\\"style\\":\{[^}]+\},\\"children\\":\\"([^\\"]+)\\"/i;
-        const descMatch = html.match(descriptionRegex);
-        let description = descMatch ? descMatch[1] : '';
-        description = description.replace(/\\"/g, '"').replace(/\\\\/g, '\\');
-        
-        // Extract aliases
-        const aliasesRegex = /\\"className\\":\\"text-sm text-\[var\(--text-faint\)\\][^\\"]*\\",\\"children\\":\\"([^\\"]+)\\"/i;
-        const aliasesMatch = html.match(aliasesRegex);
-        let aliases = aliasesMatch ? aliasesMatch[1] : 'N/A';
-        aliases = aliases.replace(/\\"/g, '"').replace(/\\\\/g, '\\');
+        const descMatch = html.match(/<p class="ptext">(.*?)<\/p>/s);
+        const description = descMatch ? descMatch[1].trim() : "N/A";
 
-        let airdate = 'N/A';
-        const epStart = html.indexOf('\\"episodes\\":[');
-        if (epStart !== -1) {
-            let bracketCount = 1;
-            let i = epStart + '\\"episodes\\":['.length;
-            while (bracketCount > 0 && i < html.length) {
-                if (html[i] === '[') bracketCount++;
-                else if (html[i] === ']') bracketCount--;
-                i++;
-            }
-            const epsJsonRaw = html.substring(epStart + '\\"episodes\\":'.length, i);
-            const unescaped = epsJsonRaw.replace(/\\"/g, '"').replace(/\\\\/g, '\\');
-            try {
-                const eps = JSON.parse(unescaped);
-                if (eps && eps.length > 0 && eps[0].aired) {
-                    airdate = eps[0].aired.split('-')[0];
-                }
-            } catch (e) { }
-        }
-
-        const details = [{
-            description: description || 'No description available.',
-            aliases: aliases,
-            airdate: airdate
-        }];
-        return JSON.stringify(details);
+        return JSON.stringify([{
+            description: description,
+            aliases: "N/A",
+            airdate: "N/A"
+        }]);
     } catch (err) {
-        console.log("Error in extractDetails: " + err);
-        return JSON.stringify([]);
+        return JSON.stringify([{
+            description: "Error",
+            aliases: "Error",
+            airdate: "Error"
+        }]);
     }
 }
 
 async function extractEpisodes(url) {
+    const results = [];
     try {
-        const response = await soraFetch(url);
-        if (!response) return JSON.stringify([]);
+        const response = await fetchv2(url);
         const html = await response.text();
 
-        const idMatch = url.match(/\/anime\/([a-f0-9]{24})/);
-        const animeId = idMatch ? idMatch[1] : '';
-        if (!animeId) return JSON.stringify([]);
-
-        const episodes = [];
-        const epStart = html.indexOf('\\"episodes\\":[');
-        if (epStart !== -1) {
-            let bracketCount = 1;
-            let i = epStart + '\\"episodes\\":['.length;
-            while (bracketCount > 0 && i < html.length) {
-                if (html[i] === '[') bracketCount++;
-                else if (html[i] === ']') bracketCount--;
-                i++;
-            }
-            const epsJsonRaw = html.substring(epStart + '\\"episodes\\":'.length, i);
-            const unescaped = epsJsonRaw.replace(/\\"/g, '"').replace(/\\\\/g, '\\');
-            try {
-                const eps = JSON.parse(unescaped);
-                if (eps && Array.isArray(eps)) {
-                    for (const ep of eps) {
-                        if (ep.ep_num !== undefined) {
-                            episodes.push({
-                                href: `https://otakutsu.cc/watch/${animeId}?ep=${ep.ep_num}`,
-                                number: ep.ep_num
-                            });
-                        }
-                    }
-                }
-            } catch (e) {
-                console.log("Error parsing episodes: " + e);
+        const regex = /<a[^>]+href="([^"#]+)"[^>]*>\s*<strong>[^<]*?\s+(\d+)<\/strong>/gi;
+        let match;
+        const seen = new Set();
+        while ((match = regex.exec(html)) !== null) {
+            const href = match[1].startsWith('http') ? match[1].trim() : "https://www.animegg.org" + match[1].trim();
+            const epNum = parseInt(match[2], 10);
+            if (!seen.has(href)) {
+                seen.add(href);
+                results.push({ href: href, number: epNum });
             }
         }
-        return JSON.stringify(episodes);
+
+        if (results.length === 0) {
+            const fallbackRegex = /<a[^>]+href="([^"#]+-episode-(\d+))"/gi;
+            while ((match = fallbackRegex.exec(html)) !== null) {
+                const href = match[1].startsWith('http') ? match[1].trim() : "https://www.animegg.org" + match[1].trim();
+                const epNum = parseInt(match[2], 10);
+                if (!seen.has(href)) {
+                    seen.add(href);
+                    results.push({ href: href, number: epNum });
+                }
+            }
+        }
+
+        return JSON.stringify(results.reverse());
     } catch (err) {
-        console.log("Error in extractEpisodes: " + err);
-        return JSON.stringify([]);
+        return JSON.stringify([{
+            href: "Error",
+            number: "Error"
+        }]);
     }
 }
 
 async function extractStreamUrl(url) {
     try {
-        const epMatch = url.match(/ep=(\d+)/);
-        const epNum = epMatch ? parseInt(epMatch[1], 10) : 1;
-        const idMatch = url.match(/\/watch\/([a-f0-9]{24})/);
-        const animeId = idMatch ? idMatch[1] : '';
-        if (!animeId) return JSON.stringify({ streams: [], subtitles: "" });
-
-        const response = await soraFetch(url);
-        if (!response) return JSON.stringify({ streams: [], subtitles: "" });
+        const response = await fetchv2(url);
         const html = await response.text();
-
-        const tokenMatch = html.match(/streamToken[\\]*":[\\]*"(eyJ[a-zA-Z0-9_\-]+\.eyJ[a-zA-Z0-9_\-]+\.[a-zA-Z0-9_\-]+)[\\]*"/);
-        const token = tokenMatch ? tokenMatch[1] : '';
-        if (!token) return JSON.stringify({ streams: [], subtitles: "" });
-
-        const body = JSON.stringify([animeId, epNum, token, "$undefined"]);
-        const headers = {
-            "Content-Type": "text/plain;charset=UTF-8",
-            "Next-Action": "788a4052bfc475e3604643a8c4ab5dbe28b1cc7926",
-            "Referer": url,
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-        };
-
-        const postResponse = await soraFetch(`https://otakutsu.cc/watch/${animeId}?ep=${epNum}`, {
-            method: 'POST',
-            headers,
-            body
-        });
-        if (!postResponse) return JSON.stringify({ streams: [], subtitles: "" });
-
-        const text = typeof postResponse.text === 'function' ? await postResponse.text() : postResponse;
-        let data = null;
-        const lines = text.split('\n');
-        for (const line of lines) {
-            const match = line.match(/^\d+:(.*)/);
-            if (match) {
-                try {
-                    const obj = JSON.parse(match[1]);
-                    if (obj && (obj.sources || obj.streams)) {
-                        data = obj;
-                        break;
-                    }
-                } catch (e) { }
-            }
+        const ulMatch = html.match(/<ul id="videos"[^>]*>(.*?)<\/ul>/s);
+        if (!ulMatch) return JSON.stringify({streams: [], subtitle: "none"});
+        const ulHtml = ulMatch[1];
+        const liRegex = /<li><a[^>]*data-id='(\d+)'[^>]*data-version="(subbed|dubbed)"[^>]*>/g;
+        const versions = [];
+        let liMatch;
+        while ((liMatch = liRegex.exec(ulHtml)) !== null) {
+            versions.push({id: liMatch[1], type: liMatch[2]});
         }
-
-        const streamObjects = [];
-        let subtitleUrl = "";
-        if (data && data.sources) {
-            for (const source of data.sources) {
-                if (source.url) {
-                    const subTypeLabel = source.subType === 'sub' ? 'Sub' : 'Dub';
-                    const title = `${source.quality || 'auto'} • ${subTypeLabel} (${source.server || 'kiwi'})`;
-                    streamObjects.push({
-                        title: title,
-                        streamUrl: source.url,
-                        headers: {
-                            "Referer": "https://otakutsu.cc/",
-                            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
-                        }
-                    });
-                }
-                if (source.tracks && !subtitleUrl) {
-                    const engTrack = source.tracks.find(t => t.lang === 'en' || (t.label && t.label.toLowerCase() === 'english'));
-                    if (engTrack && engTrack.url) {
-                        subtitleUrl = engTrack.url;
-                    }
-                }
-            }
-        }
-
-        if (streamObjects.length === 0) {
-            streamObjects.push({
-                title: "Otakutsu Stream",
-                streamUrl: url,
-                headers: { "Referer": "https://otakutsu.cc/" }
+        const embedPromises = versions.map(async (ver) => {
+            const embedUrl = `https://www.animegg.org/embed/${ver.id}`;
+            const embedResponse = await fetchv2(embedUrl);
+            const embedHtml = await embedResponse.text();
+            const vsMatch = embedHtml.match(/(?:var|const|let) videoSources = (\[[\s\S]*?\]);/);
+            if (!vsMatch) return [];
+            const jsonString = vsMatch[1].replace(/([{,]\s*)([a-zA-Z_][a-zA-Z0-9_]*)\s*:/g, '$1"$2":');
+            const vsJson = JSON.parse(jsonString);
+            return vsJson.map(src => {
+                const quality = src.label;
+                const fileUrl = "https://www.animegg.org" + src.file;
+                const title = (ver.type === 'subbed' ? 'Sub' : 'Dub') + ' • ' + quality;
+                return {
+                    title: title,
+                    streamUrl: fileUrl,
+                    headers: { "Referer": "https://www.animegg.org/" }
+                };
             });
-        }
-
-        return JSON.stringify({
-            streams: streamObjects,
-            subtitles: subtitleUrl
         });
+        const streamArrays = await Promise.all(embedPromises);
+        const streams = streamArrays.flat();
+        return JSON.stringify({streams: streams, subtitle: "none"});
     } catch (err) {
-        console.log("Error in extractStreamUrl: " + err);
-        return JSON.stringify({
-            streams: [{ title: "Otakutsu Stream", streamUrl: url, headers: { Referer: "https://otakutsu.cc/" } }],
-            subtitles: ""
-        });
-    }
-}
-
-async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
-    const headers = options.headers || {};
-    if (!headers["User-Agent"]) {
-        headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
-    }
-    try {
-        return await fetchv2(url, headers, options.method || 'GET', options.body || null);
-    } catch (e) {
-        try {
-            return await fetch(url, options);
-        } catch (error) {
-            return null;
-        }
+        return JSON.stringify({streams: [], subtitle: "none"});
     }
 }
