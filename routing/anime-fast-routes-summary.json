@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-31T20:17:58.014Z",
+  "generatedAt": "2026-08-31T20:30:31.309Z",
   "mediaRequested": 60,
   "categories": {
     "trendingNow": {
@@ -15,22 +15,22 @@
     "popularAllTime": {
       "requested": 60,
       "mediaChecked": 50,
-      "animeWithRoutes": 46
+      "animeWithRoutes": 50
     }
   },
   "mediaChecked": 112,
   "modulesChecked": 18,
-  "animeWithRoutes": 107,
-  "routeCount": 250,
+  "animeWithRoutes": 111,
+  "routeCount": 280,
   "failures": [
     {
       "aniListId": 21,
       "title": "ONE PIECE",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/025",
-      "sourceName": "AnimeLand",
+      "moduleId": "jF12G",
+      "catalogPath": "Sources/English/006",
+      "sourceName": "Anikoto",
       "errors": [
-        "implausible episode match: verified=1061 available=900 expected<=1176"
+        "stored route too slow: 2287ms > 2200ms"
       ]
     },
     {
@@ -46,11 +46,11 @@
     {
       "aniListId": 185542,
       "title": "Skeleton Knight in Another World Season 2",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/003",
-      "sourceName": "OneTouch TV",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/025",
+      "sourceName": "AnimeLand",
       "errors": [
-        "stream: extractStreamUrl returned an unusable result"
+        "search: searchResults returned an unusable result"
       ]
     },
     {
@@ -64,6 +64,18 @@
       ]
     },
     {
+      "aniListId": 21,
+      "title": "ONE PIECE",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/025",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "episode inventory mismatch: available=900 expected=1176",
+        "episode inventory mismatch: available=1 expected=1176",
+        "episode inventory mismatch: available=1 expected=1176"
+      ]
+    },
+    {
       "aniListId": 185874,
       "title": "BLEACH: Thousand-Year Blood War - The Calamity",
       "moduleId": "mod_942337115",
@@ -71,16 +83,6 @@
       "sourceName": "AnimeLand",
       "errors": [
         "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 269,
-      "title": "Bleach",
-      "moduleId": "zc8g",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Aniwave",
-      "errors": [
-        "stream: extractStreamUrl timed out"
       ]
     },
     {
@@ -106,43 +108,21 @@
     {
       "aniListId": 103303,
       "title": "Sparks of Tomorrow",
-      "moduleId": "zc8g",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Aniwave",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/025",
+      "sourceName": "AnimeLand",
       "errors": [
-        "stored route too slow: 2609ms > 2200ms"
+        "search: searchResults returned an unusable result"
       ]
     },
     {
       "aniListId": 177637,
       "title": "Goodbye, Lara",
-      "moduleId": "zc8g",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Aniwave",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/025",
+      "sourceName": "AnimeLand",
       "errors": [
-        "stored route too slow: 2611ms > 2200ms"
-      ]
-    },
-    {
-      "aniListId": 201514,
-      "title": "Rich Girl Caretaker: I'm Secretly the Caregiver of the Most Popular Girl in This Rich Kid School",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/006",
-      "sourceName": "Anikoto",
-      "errors": [
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 97940,
-      "title": "Black Clover",
-      "moduleId": "zc8g",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Aniwave",
-      "errors": [
-        "stream: extractStreamUrl timed out"
+        "search: searchResults returned an unusable result"
       ]
     },
     {
@@ -153,16 +133,6 @@
       "sourceName": "AnimeLand",
       "errors": [
         "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 1735,
-      "title": "Naruto: Shippuden",
-      "moduleId": "zc8g",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Aniwave",
-      "errors": [
-        "stream: extractStreamUrl timed out"
       ]
     },
     {
@@ -182,7 +152,9 @@
       "catalogPath": "Sources/English/001",
       "sourceName": "JustAnime",
       "errors": [
-        "implausible episode match: verified=25 available=25 expected<=148"
+        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl returned an unusable result",
+        "episode inventory mismatch: available=62 expected=148"
       ]
     },
     {
@@ -208,21 +180,21 @@
     {
       "aniListId": 184492,
       "title": "Welcome to Demon School! Iruma-kun Season 4",
-      "moduleId": "zc8g",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Aniwave",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/025",
+      "sourceName": "AnimeLand",
       "errors": [
-        "stored route too slow: 2538ms > 2200ms"
+        "search: searchResults returned an unusable result"
       ]
     },
     {
       "aniListId": 147105,
       "title": "Witch Hat Atelier",
-      "moduleId": "zc8g",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Aniwave",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/025",
+      "sourceName": "AnimeLand",
       "errors": [
-        "stream: extractStreamUrl timed out"
+        "search: searchResults returned an unusable result"
       ]
     },
     {
@@ -236,98 +208,8 @@
       ]
     },
     {
-      "aniListId": 918,
-      "title": "Gintama",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
       "aniListId": 5114,
       "title": "Fullmetal Alchemist: Brotherhood",
-      "moduleId": "zc8g",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Aniwave",
-      "errors": [
-        "stream: extractStreamUrl timed out"
-      ]
-    },
-    {
-      "aniListId": 918,
-      "title": "Gintama",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/025",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "implausible episode match: verified=1 available=1 expected<=201"
-      ]
-    },
-    {
-      "aniListId": 918,
-      "title": "Gintama",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/003",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "implausible episode match: verified=1 available=1 expected<=201"
-      ]
-    },
-    {
-      "aniListId": 196974,
-      "title": "The Classroom of the Black Cat and a Witch",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 184356,
-      "title": "Tomb Raider King",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 184356,
-      "title": "Tomb Raider King",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/003",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 196974,
-      "title": "The Classroom of the Black Cat and a Witch",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/025",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 196974,
-      "title": "The Classroom of the Black Cat and a Witch",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/003",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 184356,
-      "title": "Tomb Raider King",
       "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/025",
       "sourceName": "AnimeLand",
@@ -338,51 +220,22 @@
     {
       "aniListId": 154587,
       "title": "Frieren: Beyond Journey’s End",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/006",
-      "sourceName": "Anikoto",
+      "moduleId": "zc8g",
+      "catalogPath": "Sources/English/004",
+      "sourceName": "Aniwave",
       "errors": [
-        "implausible episode match: verified=23 available=23 expected<=28"
+        "stream: extractStreamUrl timed out",
+        "stream: extractStreamUrl timed out"
       ]
     },
     {
       "aniListId": 161645,
       "title": "The Apothecary Diaries",
-      "moduleId": "zc8g",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Aniwave",
-      "errors": [
-        "stream: extractStreamUrl timed out"
-      ]
-    },
-    {
-      "aniListId": 187260,
-      "title": "I Want to Love You Till Your Dying Day",
       "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/025",
       "sourceName": "AnimeLand",
       "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 154587,
-      "title": "Frieren: Beyond Journey’s End",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 133007,
-      "title": "Puella Magi Madoka Magica the Movie -Walpurgisnacht: Rising-",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/025",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
+        "episodes: extractEpisodes returned an unusable result"
       ]
     },
     {
@@ -420,6 +273,16 @@
       ]
     },
     {
+      "aniListId": 187260,
+      "title": "I Want to Love You Till Your Dying Day",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/025",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
       "aniListId": 133007,
       "title": "Puella Magi Madoka Magica the Movie -Walpurgisnacht: Rising-",
       "moduleId": "BmnXo",
@@ -430,13 +293,15 @@
       ]
     },
     {
-      "aniListId": 154587,
-      "title": "Frieren: Beyond Journey’s End",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/003",
-      "sourceName": "OneTouch TV",
+      "aniListId": 198946,
+      "title": "Clevatess Season 2",
+      "moduleId": "mangayomi_892345671",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "JustAnime",
       "errors": [
-        "search: searchResults returned an unusable result"
+        "episode inventory mismatch: available=13 expected=8",
+        "episode inventory mismatch: available=13 expected=8",
+        "episode inventory mismatch: available=13 expected=8"
       ]
     },
     {
@@ -445,6 +310,16 @@
       "moduleId": "zc8g",
       "catalogPath": "Sources/English/004",
       "sourceName": "Aniwave",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 133007,
+      "title": "Puella Magi Madoka Magica the Movie -Walpurgisnacht: Rising-",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/025",
+      "sourceName": "AnimeLand",
       "errors": [
         "search: searchResults returned an unusable result"
       ]
@@ -462,36 +337,6 @@
     {
       "aniListId": 194829,
       "title": "From Old Country Bumpkin to Master Swordsman II",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/025",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 194829,
-      "title": "From Old Country Bumpkin to Master Swordsman II",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/006",
-      "sourceName": "Anikoto",
-      "errors": [
-        "implausible episode match: verified=2 available=2 expected<=8"
-      ]
-    },
-    {
-      "aniListId": 198946,
-      "title": "Clevatess Season 2",
-      "moduleId": "zc8g",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Aniwave",
-      "errors": [
-        "stored route too slow: 2618ms > 2200ms"
-      ]
-    },
-    {
-      "aniListId": 192800,
-      "title": "Heroine? Saint? No, I’m an All-Works Maid (And Proud of It)!",
       "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/025",
       "sourceName": "AnimeLand",
@@ -502,11 +347,21 @@
     {
       "aniListId": 199066,
       "title": "Hanaori-san Still Wants to Fight in the Next Life",
-      "moduleId": "zc8g",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Aniwave",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/025",
+      "sourceName": "AnimeLand",
       "errors": [
-        "stored route too slow: 2722ms > 2200ms"
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 192800,
+      "title": "Heroine? Saint? No, I’m an All-Works Maid (And Proud of It)!",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/025",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
       ]
     },
     {
@@ -522,36 +377,6 @@
     {
       "aniListId": 211711,
       "title": "My Hero Academia: I am a hero too",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/003",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "episodes: extractEpisodes returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 211711,
-      "title": "My Hero Academia: I am a hero too",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/006",
-      "sourceName": "Anikoto",
-      "errors": [
-        "implausible episode match: verified=1 available=13 expected<=1"
-      ]
-    },
-    {
-      "aniListId": 211308,
-      "title": "THE RIBBON HERO",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/025",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 203880,
-      "title": "Dara-san of the Reiwa Era",
       "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/025",
       "sourceName": "AnimeLand",
@@ -570,6 +395,26 @@
       ]
     },
     {
+      "aniListId": 203880,
+      "title": "Dara-san of the Reiwa Era",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/025",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 211308,
+      "title": "THE RIBBON HERO",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/025",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
       "aniListId": 196356,
       "title": "My Stepmother and Stepsisters Aren’t Wicked",
       "moduleId": "mod_942337115",
@@ -582,11 +427,21 @@
     {
       "aniListId": 16498,
       "title": "Attack on Titan",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/006",
-      "sourceName": "Anikoto",
+      "moduleId": "mangayomi_671614911",
+      "catalogPath": "Sources/English/007",
+      "sourceName": "AniLight",
       "errors": [
-        "implausible episode match: verified=12 available=12 expected<=25"
+        "stored route too slow: 2510ms > 2200ms"
+      ]
+    },
+    {
+      "aniListId": 20958,
+      "title": "Attack on Titan Season 2",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/025",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
       ]
     },
     {
@@ -596,87 +451,19 @@
       "catalogPath": "Sources/English/025",
       "sourceName": "AnimeLand",
       "errors": [
-        "implausible episode match: verified=11 available=11 expected<=26"
-      ]
-    },
-    {
-      "aniListId": 101922,
-      "title": "Demon Slayer: Kimetsu no Yaiba",
-      "moduleId": "zc8g",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Aniwave",
-      "errors": [
-        "stream: extractStreamUrl timed out"
-      ]
-    },
-    {
-      "aniListId": 113415,
-      "title": "JUJUTSU KAISEN",
-      "moduleId": "zc8g",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Aniwave",
-      "errors": [
-        "stream: extractStreamUrl timed out"
-      ]
-    },
-    {
-      "aniListId": 1535,
-      "title": "Death Note",
-      "moduleId": "zc8g",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Aniwave",
-      "errors": [
-        "stream: extractStreamUrl timed out"
-      ]
-    },
-    {
-      "aniListId": 21087,
-      "title": "One-Punch Man",
-      "moduleId": "zc8g",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Aniwave",
-      "errors": [
-        "stream: extractStreamUrl timed out"
-      ]
-    },
-    {
-      "aniListId": 20958,
-      "title": "Attack on Titan Season 2",
-      "moduleId": "zc8g",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Aniwave",
-      "errors": [
-        "stream: extractStreamUrl timed out"
+        "probe process hard timeout after 16000ms"
       ]
     },
     {
       "aniListId": 11757,
       "title": "Sword Art Online",
-      "moduleId": "zc8g",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Aniwave",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/025",
+      "sourceName": "AnimeLand",
       "errors": [
-        "stream: extractStreamUrl timed out"
-      ]
-    },
-    {
-      "aniListId": 20954,
-      "title": "A Silent Voice",
-      "moduleId": "zc8g",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Aniwave",
-      "errors": [
-        "stream: extractStreamUrl timed out"
-      ]
-    },
-    {
-      "aniListId": 99147,
-      "title": "Attack on Titan Season 3",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/006",
-      "sourceName": "Anikoto",
-      "errors": [
-        "implausible episode match: verified=12 available=22 expected<=12"
+        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl returned an unusable result",
+        "episode inventory mismatch: available=1 expected=25"
       ]
     },
     {
@@ -692,11 +479,33 @@
     {
       "aniListId": 21519,
       "title": "Your Name.",
-      "moduleId": "zc8g",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Aniwave",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/025",
+      "sourceName": "AnimeLand",
       "errors": [
-        "stored route too slow: 2702ms > 2200ms"
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 99147,
+      "title": "Attack on Titan Season 3",
+      "moduleId": "mangayomi_892345671",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "JustAnime",
+      "errors": [
+        "episode inventory mismatch: available=10 expected=12",
+        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 99147,
+      "title": "Attack on Titan Season 3",
+      "moduleId": "BiECa",
+      "catalogPath": "Sources/English/002",
+      "sourceName": "IPTV-org",
+      "errors": [
+        "search: searchResults returned an unusable result"
       ]
     },
     {
@@ -706,7 +515,31 @@
       "catalogPath": "Sources/English/006",
       "sourceName": "Anikoto",
       "errors": [
-        "implausible episode match: verified=1 available=1 expected<=25"
+        "episode inventory mismatch: available=8 expected=25",
+        "episodes: extractEpisodes returned an unusable result",
+        "episode inventory mismatch: available=39 expected=25"
+      ]
+    },
+    {
+      "aniListId": 21856,
+      "title": "My Hero Academia Season 2",
+      "moduleId": "mangayomi_892345671",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "JustAnime",
+      "errors": [
+        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 21856,
+      "title": "My Hero Academia Season 2",
+      "moduleId": "BiECa",
+      "catalogPath": "Sources/English/002",
+      "sourceName": "IPTV-org",
+      "errors": [
+        "search: searchResults returned an unusable result"
       ]
     },
     {
@@ -716,77 +549,17 @@
       "catalogPath": "Sources/English/025",
       "sourceName": "AnimeLand",
       "errors": [
-        "implausible episode match: verified=1 available=1 expected<=25"
-      ]
-    },
-    {
-      "aniListId": 99147,
-      "title": "Attack on Titan Season 3",
-      "moduleId": "zc8g",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Aniwave",
-      "errors": [
-        "stream: extractStreamUrl timed out"
+        "episode inventory mismatch: available=1 expected=25"
       ]
     },
     {
       "aniListId": 110277,
       "title": "Attack on Titan Final Season",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/006",
-      "sourceName": "Anikoto",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/025",
+      "sourceName": "AnimeLand",
       "errors": [
-        "implausible episode match: verified=12 available=12 expected<=16"
-      ]
-    },
-    {
-      "aniListId": 21856,
-      "title": "My Hero Academia Season 2",
-      "moduleId": "zc8g",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Aniwave",
-      "errors": [
-        "stream: extractStreamUrl timed out"
-      ]
-    },
-    {
-      "aniListId": 110277,
-      "title": "Attack on Titan Final Season",
-      "moduleId": "zc8g",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Aniwave",
-      "errors": [
-        "stored route too slow: 2879ms > 2200ms"
-      ]
-    },
-    {
-      "aniListId": 101759,
-      "title": "The Promised Neverland",
-      "moduleId": "zc8g",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Aniwave",
-      "errors": [
-        "stream: extractStreamUrl timed out"
-      ]
-    },
-    {
-      "aniListId": 20755,
-      "title": "Assassination Classroom",
-      "moduleId": "zc8g",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Aniwave",
-      "errors": [
-        "stream: extractStreamUrl timed out"
-      ]
-    },
-    {
-      "aniListId": 104578,
-      "title": "Attack on Titan Season 3 Part 2",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/006",
-      "sourceName": "Anikoto",
-      "errors": [
-        "implausible episode match: verified=2 available=2 expected<=10"
+        "episode inventory mismatch: available=2 expected=16"
       ]
     },
     {
@@ -802,61 +575,54 @@
     {
       "aniListId": 104578,
       "title": "Attack on Titan Season 3 Part 2",
+      "moduleId": "BiECa",
+      "catalogPath": "Sources/English/002",
+      "sourceName": "IPTV-org",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 104578,
+      "title": "Attack on Titan Season 3 Part 2",
+      "moduleId": "mangayomi_892345671",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "JustAnime",
+      "errors": [
+        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 21355,
+      "title": "Re:ZERO -Starting Life in Another World-",
       "moduleId": "zc8g",
       "catalogPath": "Sources/English/004",
       "sourceName": "Aniwave",
       "errors": [
+        "stream: extractStreamUrl timed out",
         "stream: extractStreamUrl timed out"
-      ]
-    },
-    {
-      "aniListId": 100166,
-      "title": "My Hero Academia Season 3",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/025",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "implausible episode match: verified=1 available=1 expected<=25"
-      ]
-    },
-    {
-      "aniListId": 100166,
-      "title": "My Hero Academia Season 3",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/006",
-      "sourceName": "Anikoto",
-      "errors": [
-        "implausible episode match: verified=12 available=12 expected<=25"
       ]
     },
     {
       "aniListId": 21234,
       "title": "ERASED",
-      "moduleId": "zc8g",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Aniwave",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "OneTouch TV",
       "errors": [
-        "stream: extractStreamUrl timed out"
-      ]
-    },
-    {
-      "aniListId": 100166,
-      "title": "My Hero Academia Season 3",
-      "moduleId": "zc8g",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Aniwave",
-      "errors": [
-        "stream: extractStreamUrl timed out"
+        "stored route too slow: 2658ms > 2200ms"
       ]
     },
     {
       "aniListId": 9253,
       "title": "Steins;Gate",
-      "moduleId": "zc8g",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Aniwave",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/025",
+      "sourceName": "AnimeLand",
       "errors": [
-        "stream: extractStreamUrl timed out"
+        "search: searchResults returned an unusable result"
       ]
     },
     {
@@ -870,6 +636,16 @@
       ]
     },
     {
+      "aniListId": 100166,
+      "title": "My Hero Academia Season 3",
+      "moduleId": "BiECa",
+      "catalogPath": "Sources/English/002",
+      "sourceName": "IPTV-org",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
       "aniListId": 101921,
       "title": "Kaguya-sama: Love is War",
       "moduleId": "mod_942337115",
@@ -880,13 +656,15 @@
       ]
     },
     {
-      "aniListId": 140960,
-      "title": "SPY x FAMILY",
-      "moduleId": "zc8g",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Aniwave",
+      "aniListId": 100166,
+      "title": "My Hero Academia Season 3",
+      "moduleId": "mangayomi_892345671",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "JustAnime",
       "errors": [
-        "stream: extractStreamUrl timed out"
+        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl returned an unusable result"
       ]
     },
     {
@@ -900,143 +678,89 @@
       ]
     },
     {
-      "aniListId": 101921,
-      "title": "Kaguya-sama: Love is War",
-      "moduleId": "zc8g",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Aniwave",
+      "aniListId": 100166,
+      "title": "My Hero Academia Season 3",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "OneTouch TV",
       "errors": [
-        "stream: extractStreamUrl timed out"
+        "episode inventory mismatch: available=24 expected=25",
+        "episode inventory mismatch: available=8 expected=25",
+        "episode inventory mismatch: available=8 expected=25"
       ]
     },
     {
-      "aniListId": 105333,
-      "title": "Dr. STONE",
-      "moduleId": "zc8g",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Aniwave",
+      "aniListId": 100166,
+      "title": "My Hero Academia Season 3",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/025",
+      "sourceName": "AnimeLand",
       "errors": [
-        "stream: extractStreamUrl timed out"
-      ]
-    },
-    {
-      "aniListId": 21827,
-      "title": "Violet Evergarden",
-      "moduleId": "zc8g",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Aniwave",
-      "errors": [
-        "stream: extractStreamUrl timed out"
-      ]
-    },
-    {
-      "aniListId": 101348,
-      "title": "Vinland Saga",
-      "moduleId": "zc8g",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Aniwave",
-      "errors": [
-        "stream: extractStreamUrl timed out"
-      ]
-    },
-    {
-      "aniListId": 4224,
-      "title": "Toradora!",
-      "moduleId": "zc8g",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Aniwave",
-      "errors": [
-        "stream: extractStreamUrl timed out"
-      ]
-    },
-    {
-      "aniListId": 19815,
-      "title": "No Game, No Life",
-      "moduleId": "zc8g",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Aniwave",
-      "errors": [
-        "stream: extractStreamUrl timed out"
-      ]
-    },
-    {
-      "aniListId": 104276,
-      "title": "My Hero Academia Season 4",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/006",
-      "sourceName": "Anikoto",
-      "errors": [
-        "implausible episode match: verified=12 available=12 expected<=25"
+        "episode inventory mismatch: available=1 expected=25"
       ]
     },
     {
       "aniListId": 20613,
       "title": "Akame ga Kill!",
-      "moduleId": "zc8g",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Aniwave",
+      "moduleId": "mangayomi_892345671",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "JustAnime",
       "errors": [
-        "stream: extractStreamUrl timed out"
-      ]
-    },
-    {
-      "aniListId": 112151,
-      "title": "Demon Slayer -Kimetsu no Yaiba- The Movie: Mugen Train",
-      "moduleId": "jF12G",
-      "catalogPath": "Sources/English/006",
-      "sourceName": "Anikoto",
-      "errors": [
-        "implausible episode match: verified=1 available=7 expected<=1"
+        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl returned an unusable result"
       ]
     },
     {
       "aniListId": 104276,
       "title": "My Hero Academia Season 4",
-      "moduleId": "zc8g",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Aniwave",
+      "moduleId": "mangayomi_892345671",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "JustAnime",
       "errors": [
-        "stream: extractStreamUrl timed out"
-      ]
-    },
-    {
-      "aniListId": 112151,
-      "title": "Demon Slayer -Kimetsu no Yaiba- The Movie: Mugen Train",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/003",
-      "sourceName": "OneTouch TV",
-      "errors": [
+        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl returned an unusable result",
         "stream: extractStreamUrl returned an unusable result"
       ]
     },
     {
       "aniListId": 20623,
       "title": "Parasyte -the maxim-",
-      "moduleId": "zc8g",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Aniwave",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/025",
+      "sourceName": "AnimeLand",
       "errors": [
-        "stream: extractStreamUrl timed out"
+        "search: searchResults returned an unusable result"
       ]
     },
     {
-      "aniListId": 99423,
-      "title": "DARLING in the FRANXX",
-      "moduleId": "zc8g",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Aniwave",
+      "aniListId": 112151,
+      "title": "Demon Slayer -Kimetsu no Yaiba- The Movie: Mugen Train",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/025",
+      "sourceName": "AnimeLand",
       "errors": [
-        "stream: extractStreamUrl timed out"
+        "search: searchResults returned an unusable result"
       ]
     },
     {
       "aniListId": 1575,
       "title": "Code Geass: Lelouch of the Rebellion",
-      "moduleId": "zc8g",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "Aniwave",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/025",
+      "sourceName": "AnimeLand",
       "errors": [
-        "stream: extractStreamUrl timed out"
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 99423,
+      "title": "DARLING in the FRANXX",
+      "moduleId": "mangayomi_892345671",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "JustAnime",
+      "errors": [
+        "search: searchResults returned an unusable result"
       ]
     }
   ]
