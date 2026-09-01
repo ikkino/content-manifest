@@ -1,21 +1,28 @@
 {
-  "sourceName": "Anikoto",
-  "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/anikoto/icon.png",
+  "sourceName": "VidFast",
+  "iconUrl": "https://files.catbox.moe/i6r78t.png",
   "author": {
-    "name": "ibro",
-    "icon": "https://git.luna-app.eu/ibro/services/raw/branch/main/profile.jpg",
-    "url": "https://github.com/xibrox"
+    "name": "50/50",
+    "icon": "https://files.catbox.moe/741wp7.png"
   },
-  "version": "1.0.18",
+  "version": "1.2.4",
   "language": "English",
+  "languageType": [
+    "Native"
+  ],
   "streamType": "HLS",
   "quality": "1080p",
-  "baseUrl": "https://anikototv.to/",
-  "searchBaseUrl": "https://anikototv.to/search?query=%s",
+  "baseUrl": "https://vidfast.pro/",
+  "searchBaseUrl": "https://vidfast.pro/",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/006/source.js",
-  "type": "anime",
-  "downloadSupport": true,
+  "type": "shows/movies/anime",
   "asyncJS": true,
   "softsub": true,
-  "id": "jF12G"
+  "downloadSupport": false,
+  "supportsSora": true,
+  "supportsLuna": true,
+  "supportsTsumi": true,
+  "supportsHiyoku": true,
+  "supportsEclipse": true,
+  "id": "B0b0R"
 }

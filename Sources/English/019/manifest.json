@@ -1,31 +1,22 @@
 {
-  "sourceName": "AnimeNoSub",
-  "iconUrl": "https://i3.wp.com/animenosub.to/wp-content/uploads/2024/04/cropped-favicon-192x192.png",
+  "sourceName": "VidLink",
+  "iconUrl": "https://vidlink.pro/favicon.ico",
   "author": {
-    "name": "50/50",
-    "icon": "https://files.catbox.moe/741wp7.png"
+    "name": "Local Repair"
   },
-  "version": "1.0.5",
+  "version": "1.0.1",
   "language": "English",
-  "languageType": [
-    "Dubbed",
-    "Subbed"
-  ],
-  "streamType": "HLS",
+  "streamType": "MP4",
   "quality": "1080p",
-  "baseUrl": "https://vidmoly.to/",
-  "searchBaseUrl": "https://animenosub.to/?s=%s",
+  "baseUrl": "https://vidlink.pro/",
+  "searchBaseUrl": "https://vidlink.pro/",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/019/source.js",
-  "asyncJS": true,
   "type": "anime",
-  "supportsMojuru": true,
-  "supportsDartotsu": true,
+  "asyncJS": true,
+  "softsub": true,
+  "downloadSupport": false,
   "supportsSora": true,
   "supportsLuna": true,
-  "supportsAnymex": true,
-  "supportsTsumi": true,
-  "supportsHiyoku": true,
   "supportsShirox": true,
-  "supportsEclipse": true,
-  "id": "wM61"
+  "id": "vidlink-local"
 }

@@ -1,33 +1,21 @@
 {
-  "sourceName": "AniDB",
-  "iconUrl": "https://anidb.app/images/fav-192.png",
+  "sourceName": "Animepahe (SUB)",
+  "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/animepahe/icon.png",
   "author": {
-    "name": "xdfkenny",
-    "icon": "https://yt3.googleusercontent.com/NHr6Y6qhYIUeoyIBdgeEYArXI1_ebVcLAuf562jPB6WSFTunOwPVuWC90eAG1zmeD6_Wy9_0mTs=s160-c-k-c0x00ffffff-no-rj",
-    "url": "https://github.com/xdfkenny"
+    "name": "ibro",
+    "icon": "https://git.luna-app.eu/ibro/services/raw/branch/main/profile.jpg",
+    "url": "https://github.com/xibrox"
   },
-  "description": "Módulo de AniDB (anidb.app) — el mismo backend que usa ani-cli: búsqueda vía /browse, episodios del API público frontend y streams HLS multi-idioma (jpn/eng) desde los embeds JWPlayer (hls.anidb.app).",
-  "version": "1.0.0",
+  "version": "1.2.7",
   "language": "English",
   "streamType": "HLS",
   "quality": "1080p",
-  "baseUrl": "https://anidb.app/",
-  "searchBaseUrl": "https://anidb.app/browse?q=%s",
+  "baseUrl": "https://animepahetv.to/",
+  "searchBaseUrl": "https://animepahetv.to/search?q=%s",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/026/source.js",
   "type": "anime",
   "downloadSupport": true,
-  "combo": false,
   "asyncJS": true,
-  "streamAsyncJS": false,
-  "softsub": false,
-  "supportsMojuru": false,
-  "supportsDartotsu": false,
-  "supportsSora": true,
-  "supportsLuna": true,
-  "supportsAnymex": false,
-  "supportsTsumi": false,
-  "supportsHiyoku": false,
-  "supportsShirox": false,
-  "supportsEclipse": true,
-  "id": "jzBDQ"
+  "softsub": true,
+  "id": "mod_640849195"
 }

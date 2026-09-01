@@ -1,23 +1,23 @@
 {
-  "sourceName": "Otakutsu",
-  "iconUrl": "https://otakutsu.cc/favicon.ico",
+  "sourceName": "VidCore",
+  "iconUrl": "https://vidcore.net/favicon.ico",
   "author": {
     "name": "50/50",
     "icon": "https://files.catbox.moe/741wp7.png"
   },
-  "version": "1.0.1",
+  "version": "1.0.3",
   "language": "English",
   "languageType": [
-    "Dubbed",
-    "Subbed"
+    "Native"
   ],
-  "baseUrl": "https://otakutsu.cc/",
-  "searchBaseUrl": "https://otakutsu.cc/browse?query=%s",
-  "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/021/source.js",
-  "type": "anime",
-  "quality": "1080p",
   "streamType": "HLS",
+  "quality": "1080p",
+  "baseUrl": "https://vidcore.net/",
+  "searchBaseUrl": "https://vidcore.net/",
+  "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/021/source.js",
+  "type": "shows/movies/anime",
   "asyncJS": true,
+  "softsub": true,
   "downloadSupport": true,
   "supportsSora": true,
   "supportsLuna": true,
@@ -28,5 +28,5 @@
   "supportsShirox": true,
   "supportsMojuru": true,
   "supportsEclipse": true,
-  "id": "jAIou"
+  "id": "mod_697391865"
 }
