@@ -1,21 +1,32 @@
 {
-  "sourceName": "Aniwave",
-  "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/aniwave/icon.png",
+  "sourceName": "AnimeGG",
+  "iconUrl": "https://files.catbox.moe/caq4am.png",
   "author": {
-    "name": "ibro",
-    "icon": "https://git.luna-app.eu/ibro/services/raw/branch/main/profile.jpg",
-    "url": "https://github.com/xibrox"
+    "name": "50/50",
+    "icon": "https://files.catbox.moe/741wp7.png"
   },
-  "version": "2.0.27",
+  "version": "1.0.1",
   "language": "English",
-  "streamType": "HLS",
+  "languageType": [
+    "Subbed"
+  ],
+  "streamType": "mp4",
   "quality": "1080p",
-  "baseUrl": "https://aniwaves.ru/",
-  "searchBaseUrl": "https://aniwaves.ru/filter?keyword=%s",
+  "baseUrl": "https://www.animegg.org/",
+  "searchBaseUrl": "https://www.animegg.org/",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/022/source.js",
   "type": "anime",
-  "downloadSupport": true,
   "asyncJS": true,
   "softsub": true,
-  "id": "zc8g"
+  "downloadSupport": true,
+  "supportsSora": true,
+  "supportsLuna": true,
+  "supportsMojuru": true,
+  "supportsDartotsu": true,
+  "supportsAnymex": true,
+  "supportsTsumi": true,
+  "supportsHiyoku": true,
+  "supportsShirox": true,
+  "supportsEclipse": true,
+  "id": "mod_932185679"
 }
