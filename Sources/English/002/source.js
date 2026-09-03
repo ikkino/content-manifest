@@ -1,307 +1,423 @@
-async function searchResults(keyword) {
-    try {
-        let transformedResults = [];
 
-        const keywordGroups = {
-            trending: ["!trending", "!hot", "!tr", "!!"],
-            topRatedMovie: ["!top-rated-movie", "!topmovie", "!tm", "??"],
-            topRatedTV: ["!top-rated-tv", "!toptv", "!tt", "::"],
-            popularMovie: ["!popular-movie", "!popmovie", "!pm", ";;"],
-            popularTV: ["!popular-tv", "!poptv", "!pt", "++"],
-        };
-
-        const skipTitleFilter = Object.values(keywordGroups).flat();
-        const shouldFilter = !matchesKeyword(keyword, skipTitleFilter);
-
-        // --- TMDB Section ---
-        const encodedKeyword = encodeURIComponent(keyword);
-        let baseUrlTemplate = null;
-
-        if (matchesKeyword(keyword, keywordGroups.trending)) {
-            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/trending/all/week?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
-        } else if (matchesKeyword(keyword, keywordGroups.topRatedMovie)) {
-            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/top_rated?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
-        } else if (matchesKeyword(keyword, keywordGroups.topRatedTV)) {
-            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/top_rated?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
-        } else if (matchesKeyword(keyword, keywordGroups.popularMovie)) {
-            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/popular?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
-        } else if (matchesKeyword(keyword, keywordGroups.popularTV)) {
-            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/popular?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
-        } else {
-            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/search/multi?api_key=9801b6b0548ad57581d111ea690c85c8&query=${encodedKeyword}&include_adult=false&page=${page}`)}&simple=true`;
-        }
-
-        let dataResults = [];
-
-        if (baseUrlTemplate) {
-            const pagePromises = Array.from({ length: 5 }, (_, i) =>
-                soraFetch(baseUrlTemplate(i + 1)).then(r => r ? r.json() : { results: [] }).catch(() => ({ results: [] }))
-            );
-            const pages = await Promise.all(pagePromises);
-            dataResults = pages.flatMap(p => p.results || []);
-        }
-
-        if (dataResults.length > 0) {
-            transformedResults = transformedResults.concat(
-                dataResults
-                    .map(result => {
-                        if (result.media_type === "movie" || result.title) {
-                            return {
-                                title: result.title || result.name || result.original_title || result.original_name || "Untitled",
-                                image: result.poster_path ? `https://image.tmdb.org/t/p/w500${result.poster_path}` : "",
-                                href: `movie/${result.id}`,
-                            };
-                        } else if (result.media_type === "tv" || result.name) {
-                            return {
-                                title: result.name || result.title || result.original_name || result.original_title || "Untitled",
-                                image: result.poster_path ? `https://image.tmdb.org/t/p/w500${result.poster_path}` : "",
-                                href: `tv/${result.id}/1/1`,
-                            };
-                        }
-                    })
-                    .filter(Boolean)
-                    .filter(r => !shouldFilter || r.title.toLowerCase().includes(keyword.toLowerCase()))
-            );
-        }
-
-        console.log("Transformed Results: " + JSON.stringify(transformedResults));
-        return JSON.stringify(transformedResults);
-    } catch (error) {
-        console.log("Fetch error in searchResults: " + error);
-        return JSON.stringify([{ title: "Error", image: "", href: "" }]);
-    }
+class MProvider {
+  constructor() {
+    this.source = typeof mangayomiSources !== "undefined" && Array.isArray(mangayomiSources) ? mangayomiSources[0] : {};
+    globalThis.__mangayomiBaseUrl = this.source.baseUrl || this.source.apiUrl || "";
+  }
 }
 
-function matchesKeyword(keyword, commands) {
-    const lower = keyword.toLowerCase();
-    return commands.some(cmd => lower.startsWith(cmd.toLowerCase()));
+class SharedPreferences {
+  get(key) {
+    const defaults = {
+      pref_content_priority: "series",
+      pref_latest_time_window: "day",
+      pref_video_resolution: "1080",
+      autoembed_stream_source_4: "4",
+      autoembed_pref_navtive_subtitle: false,
+      autoembed_split_stream_quality: false,
+      autoembed_pref_subtitle_source_2: "1"
+    };
+    return defaults[key] ?? "";
+  }
+
+  getString(key) {
+    return String(this.get(key) ?? "");
+  }
+
+  getInt(key) {
+    return Number.parseInt(this.get(key), 10) || 0;
+  }
+
+  getBool(key) {
+    return Boolean(this.get(key));
+  }
+}
+
+class Client {
+  async get(url, headers = {}) {
+    const response = await fetchv2(this.normalizeUrl(url), { headers });
+    return {
+      body: await response.text(),
+      statusCode: response.status,
+      headers: Object.fromEntries(response.headers?.entries?.() ?? [])
+    };
+  }
+
+  async post(url, headers = {}, body = null) {
+    const response = await fetchv2(this.normalizeUrl(url), {
+      method: "POST",
+      headers,
+      body
+    });
+    return {
+      body: await response.text(),
+      statusCode: response.status,
+      headers: Object.fromEntries(response.headers?.entries?.() ?? [])
+    };
+  }
+
+  normalizeUrl(url) {
+    const value = String(url ?? "");
+    if (/^https?:\/\//i.test(value)) return value;
+    const base = globalThis.__mangayomiBaseUrl || "";
+    if (!base) return value;
+    return new URL(value, base.endsWith("/") ? base : base + "/").toString();
+  }
+}
+
+
+const mangayomiSources = [
+  {
+    "name": "AnimeHeaven",
+    "id": -1744325818,
+    "lang": "en",
+    "baseUrl": "https://animeheaven.me",
+    "iconUrl": "https://www.google.com/s2/favicons?sz=256&domain=https://animeheaven.me",
+    "typeSource": "single",
+    "itemType": 1,
+    "version": "0.0.7",
+    "pkgPath": "anime/src/en/animeheaven.js",
+    "isManga": false,
+    "isNsfw": false,
+    "hasCloudflare": false,
+    "isFullData": false,
+    "appMinVerReq": "0.5.0",
+    "sourceCodeUrl": "https://raw.githubusercontent.com/Mallyd11/mangayomi-anime-extensions/refs/heads/main/javascript/anime/src/en/animeheaven.js",
+    "dateFormat": "",
+    "dateFormatLocale": "",
+    "additionalParams": "",
+    "sourceCodeLanguage": 1,
+    "notes": "",
+  },
+];
+
+class DefaultExtension extends MProvider {
+  constructor() {
+    super();
+    this.client = new Client();
+  }
+
+  get ua() {
+    return "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36";
+  }
+
+  get headers() {
+    return {
+      "User-Agent": this.ua,
+      "Referer": this.source.baseUrl + "/",
+    };
+  }
+
+  async fetchHtml(path) {
+    var url = path.startsWith("http") ? path : this.source.baseUrl + "/" + path.replace(/^\/+/, "");
+    var res = await this.client.get(url, this.headers);
+    return res.body || "";
+  }
+
+  // Parse a list page (popular.php / new.php / search.php).
+  // Site structure per item:
+  //   <a href="anime.php?CODE"><img src="image.php?CODE"></a>
+  //   <a href="anime.php?CODE">Title Text</a>
+  // Attributes use double quotes; no class on img tags.
+  parseList(html) {
+    var list = [];
+    var seen = {};
+
+    // First pass: build href → imgSrc map from image-anchor elements.
+    var imgMap = {};
+    var imgRx = /<a[^>]+href=["'](anime\.php\?[\w]+)["'][^>]*>\s*<img[^>]+src=["']([^"']+)["']/g;
+    var im;
+    while ((im = imgRx.exec(html)) !== null) {
+      if (!imgMap[im[1]]) imgMap[im[1]] = im[2];
+    }
+
+    // Second pass: find plain-text title anchors and assemble list items.
+    var titleRx = /<a[^>]+href=["'](anime\.php\?[\w]+)["'][^>]*>([^<]{2,120})<\/a>/g;
+    var tm;
+    while ((tm = titleRx.exec(html)) !== null) {
+      var href = tm[1];
+      var name = tm[2].trim();
+      if (!name || seen[href]) continue;
+      seen[href] = true;
+      var imgSrc = imgMap[href] || "";
+      var imageUrl = imgSrc ? (imgSrc.indexOf("http") === 0 ? imgSrc : this.source.baseUrl + "/" + imgSrc) : "";
+      list.push({
+        name: this._decodeHtml(name),
+        link: this.source.baseUrl + "/" + href,
+        imageUrl: imageUrl,
+      });
+    }
+    return list;
+  }
+
+  _decodeHtml(s) {
+    return (s || "")
+      .replace(/&#0*39;|&apos;/g, "'")
+      .replace(/&#0*34;|&quot;/g, '"')
+      .replace(/&#0*38;|&amp;/g, "&")
+      .replace(/&#0*60;|&lt;/g, "<")
+      .replace(/&#0*62;|&gt;/g, ">")
+      .replace(/&nbsp;/g, " ")
+      .replace(/&#(\d+);/g, function(_m, n) { return String.fromCharCode(parseInt(n, 10)); })
+      .replace(/&#x([0-9a-fA-F]+);/g, function(_m, n) { return String.fromCharCode(parseInt(n, 16)); });
+  }
+
+  get supportsLatest() {
+    return true;
+  }
+
+  async getPopular(page) {
+    // The site returns all items on one HTML page. We slice client-side so
+    // Mangayomi only receives 30 items at a time and can load more on scroll.
+    var html = await this.fetchHtml("popular.php");
+    var all = this.parseList(html);
+    var pageSize = 30;
+    var start = (page - 1) * pageSize;
+    var slice = all.slice(start, start + pageSize);
+    return { list: slice, hasNextPage: (start + pageSize) < all.length };
+  }
+
+  async getLatestUpdates(page) {
+    var html = await this.fetchHtml("new.php");
+    var all = this.parseList(html);
+    var pageSize = 30;
+    var start = (page - 1) * pageSize;
+    var slice = all.slice(start, start + pageSize);
+    return { list: slice, hasNextPage: (start + pageSize) < all.length };
+  }
+
+  async search(query, page, filters) {
+    if (page > 1) return { list: [], hasNextPage: false };
+    try {
+      var html = await this.fetchHtml("search.php?s=" + encodeURIComponent(query));
+      return { list: this.parseList(html), hasNextPage: false };
+    } catch (e) {
+      return { list: [], hasNextPage: false };
+    }
+  }
+
+  // Status mapping. AnimeHeaven uses "Currently Airing" / "Finished Airing".
+  statusCode(status) {
+    var s = (status || "").toLowerCase();
+    if (s.includes("finished") || s.includes("completed")) return 1;
+    if (s.includes("not yet") || s.includes("upcoming")) return 4;
+    if (s.includes("airing") || s.includes("ongoing") || s.includes("releasing")) return 0;
+    return 5;
+  }
+
+  async getDetail(url) {
+    var html = await this.fetchHtml(url);
+
+    // Title
+    var name = "";
+    var nameMatch = html.match(/<div class='infotitle c'>([^<]+)<\/div>/);
+    if (nameMatch) name = this._decodeHtml(nameMatch[1].trim());
+
+    // Cover image — detail page uses class='posterimg' for the main poster.
+    // Do NOT match 'coverimg'; those are related-anime thumbnails lower on the page.
+    // Fall back to og:image which always points to the correct art.
+    var imageUrl = "";
+    var posterMatch = html.match(/<img[^>]+class='[^']*posterimg[^']*'[^>]+src='([^']+)'/);
+    if (posterMatch) {
+      var rel = posterMatch[1];
+      imageUrl = rel.indexOf("http") === 0 ? rel : this.source.baseUrl + "/" + rel.replace(/^\/+/, "");
+    }
+    if (!imageUrl) {
+      var og = html.match(/<meta property='og:image' content='([^']+)'/);
+      if (og) imageUrl = og[1];
+    }
+
+    // Description
+    var description = "";
+    var descMatch = html.match(/<div class='infodes c'>([\s\S]*?)<\/div>/);
+    if (descMatch) {
+      description = this._decodeHtml(descMatch[1].replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim());
+    }
+
+    // Genres — every <a class='boxitem ...'> in the tags section is a genre tag.
+    var genre = [];
+    var genreSection = html.match(/<div class='infotags[^']*'[^>]*>([\s\S]*?)<\/div>\s*<div class='infoyear/);
+    if (genreSection) {
+      var gRx = /<a[^>]+href='tags\.php\?[^']+'[^>]*>([^<]+)<\/a>/g;
+      var gm;
+      while ((gm = gRx.exec(genreSection[1])) !== null) {
+        genre.push(this._decodeHtml(gm[1].trim()));
+      }
+    }
+    // Fallback: just look for any tags.php links
+    if (genre.length === 0) {
+      var gRx2 = /<a[^>]+href='tags\.php\?tag=([^']+)'/g;
+      var seen = {};
+      var gm2;
+      while ((gm2 = gRx2.exec(html)) !== null) {
+        var t = decodeURIComponent(gm2[1]);
+        if (!seen[t]) { seen[t] = true; genre.push(t); }
+      }
+    }
+
+    // Status — site shows "Status:" inline followed by an inline div.
+    // "Episodes:" 11 etc. are in inline divs after labels. Use "Status" label if present.
+    var status = 5;
+    var statusBlock = html.match(/Status[\s\S]{0,40}?<div[^>]+class='inline c2'>([^<]+)</);
+    if (statusBlock) status = this.statusCode(statusBlock[1]);
+    else {
+      // If no status label, infer: if "Episodes" count appears followed by total, treat as completed; else default unknown
+      // Site mostly shows finished anime; default to 5 (UNKNOWN) when not stated.
+    }
+
+    // Episodes — every anchor with onclick="gatea(...)" is an episode.
+    var chapters = [];
+    var epRx = /<a[^>]*onclick='gatea\(\\?["']([a-f0-9]+)\\?["']\)'[^>]*>([\s\S]*?)<\/a>/g;
+    var em;
+    while ((em = epRx.exec(html)) !== null) {
+      var hash = em[1];
+      var body = em[2];
+      var numMatch = body.match(/watch2[^>]*>(\d+(?:\.\d+)?)/);
+      var epNum = numMatch ? numMatch[1] : String(chapters.length + 1);
+      chapters.push({
+        name: "Episode " + epNum,
+        url: hash, // chapter URL is just the gate cookie key
+      });
+    }
+    // Latest episode is usually first in the source; reverse so episode 1 is at the
+    // bottom (Mangayomi convention: most recent at top).
+    // The site already lists newest first, so no reverse needed.
+
+    return {
+      name: name,
+      imageUrl: imageUrl,
+      description: description,
+      genre: genre,
+      status: status,
+      link: url,
+      chapters: chapters,
+    };
+  }
+
+  // Fetch the gate.php page for an episode and pull every video URL out of it.
+  async getVideoList(url) {
+    var hash = url; // we stored just the hash as the chapter URL
+    var streams = [];
+
+    var refer = this.source.baseUrl + "/anime.php";
+    var headers = {
+      "User-Agent": this.ua,
+      "Referer": refer,
+      "Cookie": "key=" + hash,
+    };
+    var res;
+    try {
+      res = await this.client.get(this.source.baseUrl + "/gate.php", headers);
+    } catch (e) {
+      return streams;
+    }
+    var html = res.body || "";
+
+    // Pull every distinct mp4 URL. Different subdomains rotate per refresh, but
+    // each page lists ax/ct/ck etc. as fallbacks. We surface them as quality options.
+    var seen = {};
+    var rx = /['"](https?:\/\/[\w\-]+\.animeheaven\.me\/video\.mp4\?[^'"\s]+)['"]/g;
+    var m;
+    // The video CDN validates access via the token embedded in the URL query
+    // string, not via cookies. Sending only UA + Referer keeps the request
+    // clean and avoids any cookie-related rejection by the CDN or downloader.
+    var streamHeaders = {
+      "User-Agent": this.ua,
+      "Referer": this.source.baseUrl + "/",
+    };
+    while ((m = rx.exec(html)) !== null) {
+      var u = m[1];
+      // The player embeds three kinds of URL suffix:
+      //   &error  → Server 2 fallback
+      //   &error2 → Server 3 fallback
+      //   &d      → "download alias" — INTENTIONALLY omits the access token,
+      //             making it a different (broken) URL that returns HTTP 404.
+      //             Skip it; the full-token Server 1–3 URLs are downloadable.
+      if (/&d(\b|$)/.test(u)) continue;
+
+      // Strip &error / &error2 to get the clean URL with the access token.
+      var clean = u.replace(/&error2?$/, "");
+      if (seen[clean]) continue;
+      seen[clean] = true;
+
+      // Label by suffix so users can pick a fallback if the primary fails.
+      var label;
+      if (/&error2(\b|$)/.test(u)) label = "Server 3";
+      else if (/&error(\b|$)/.test(u)) label = "Server 2";
+      else label = "Server 1";
+
+      streams.push({
+        url: clean,
+        originalUrl: clean,
+        quality: label,
+        headers: streamHeaders,
+        subtitles: [],
+      });
+    }
+    return streams;
+  }
+
+  getFilterList() {
+    return [];
+  }
+
+  getSourcePreferences() {
+    return [];
+  }
+}
+
+
+const __mangayomiExtension = new DefaultExtension();
+
+function __list(value) {
+  if (!value) return [];
+  if (Array.isArray(value)) return value;
+  if (Array.isArray(value.list)) return value.list;
+  return [];
+}
+
+function __text(value) {
+  return String(value ?? "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+}
+
+async function searchResults(keyword) {
+  const result = await __mangayomiExtension.search(keyword, 1, []);
+  return JSON.stringify(__list(result).map((item) => ({
+    title: __text(item.name || item.title),
+    image: item.imageUrl || item.image || "",
+    href: item.link || item.url || ""
+  })).filter((item) => item.title && item.href));
 }
 
 async function extractDetails(url) {
-    try {
-        if (url.includes('movie')) {
-            const match = url.match(/movie\/([^\/]+)/);
-            if (!match) throw new Error("Invalid URL format");
-
-            const movieId = match[1];
-            const responseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/${movieId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
-            const data = await responseText.json();
-
-            const transformedResults = [{
-                description: data.overview || 'No description available',
-                aliases: `Duration: ${data.runtime ? data.runtime + " minutes" : 'Unknown'}`,
-                airdate: `Released: ${data.release_date ? data.release_date : 'Unknown'}`
-            }];
-
-            return JSON.stringify(transformedResults);
-        } else if (url.includes('tv')) {
-            const match = url.match(/tv\/([^\/]+)/);
-            if (!match) throw new Error("Invalid URL format");
-
-            const showId = match[1];
-            const responseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
-            const data = await responseText.json();
-
-            const transformedResults = [{
-                description: data.overview || 'No description available',
-                aliases: `Duration: ${data.episode_run_time && data.episode_run_time.length ? data.episode_run_time.join(', ') + " minutes" : 'Unknown'}`,
-                airdate: `Aired: ${data.first_air_date ? data.first_air_date : 'Unknown'}`
-            }];
-
-            console.log(JSON.stringify(transformedResults));
-            return JSON.stringify(transformedResults);
-        } else {
-            throw new Error("Invalid URL format");
-        }
-    } catch (error) {
-        console.log('Details error: ' + error);
-        return JSON.stringify([{
-            description: 'Error loading description',
-            aliases: 'Duration: Unknown',
-            airdate: 'Aired/Released: Unknown'
-        }]);
-    }
+  const detail = await __mangayomiExtension.getDetail(url);
+  return JSON.stringify([{
+    description: __text(detail.description || "Not available"),
+    aliases: Array.isArray(detail.genre) ? detail.genre.join(", ") : __text(detail.genre || detail.name || "Not available"),
+    airdate: detail.status != null ? "Status: " + detail.status : "Not available"
+  }]);
 }
 
 async function extractEpisodes(url) {
-    try {
-        if (url.includes('movie')) {
-            const match = url.match(/movie\/([^\/]+)/);
-            if (!match) throw new Error("Invalid URL format");
-
-            const movieId = match[1];
-            const movie = [
-                { href: `/movie/${movieId}`, number: 1, title: "Full Movie" }
-            ];
-
-            console.log(movie);
-            return JSON.stringify(movie);
-        } else if (url.includes('tv')) {
-            const match = url.match(/tv\/([^\/]+)/);
-            if (!match) throw new Error("Invalid URL format");
-
-            const showId = match[1];
-            const showResponseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
-            const showData = await showResponseText.json();
-
-            const seasonPromises = (showData.seasons || []).map(async (season) => {
-                const seasonNumber = season.season_number;
-                if (seasonNumber === 0) return [];
-
-                try {
-                    const seasonResponseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}/season/${seasonNumber}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
-                    if (!seasonResponseText) return [];
-                    const seasonData = await seasonResponseText.json();
-
-                    if (seasonData.episodes && seasonData.episodes.length) {
-                        return seasonData.episodes.map(episode => ({
-                            href: `/tv/${showId}/${seasonNumber}/${episode.episode_number}`,
-                            number: episode.episode_number,
-                            title: episode.name || ""
-                        }));
-                    }
-                } catch (e) {
-                    console.log(`Failed to fetch season ${seasonNumber}: ${e.message}`);
-                }
-                return [];
-            });
-
-            const results = await Promise.all(seasonPromises);
-            const allEpisodes = results.flat();
-            console.log(allEpisodes);
-            return JSON.stringify(allEpisodes);
-        } else {
-            throw new Error("Invalid URL format");
-        }
-    } catch (error) {
-        console.log('Fetch error in extractEpisodes: ' + error);
-        return JSON.stringify([]);
-    }
+  const detail = await __mangayomiExtension.getDetail(url);
+  const chapters = Array.isArray(detail.chapters) ? detail.chapters : [];
+  return JSON.stringify(chapters.map((chapter, index) => {
+    const label = String(chapter.name || chapter.title || "");
+    const parsed = label.match(/(?:episode|ep|capitulo|chapter)\s*([\d.]+)/i)?.[1] || label.match(/\b([\d.]+)\b/)?.[1];
+    return {
+      href: chapter.url || chapter.link || "",
+      number: Number.parseFloat(parsed) || index + 1
+    };
+  }).filter((item) => item.href));
 }
 
-async function extractStreamUrl(ID) {
-    try {
-        let isMovie = ID.includes('movie');
-        let tmdbID = "";
-        let seasonNumber = "1";
-        let episodeNumber = "1";
-        let mediaType = "";
-        let reqUrl = "";
-        let referer = "";
-
-        if (isMovie) {
-            tmdbID = ID.replace('/movie/', '').replace('movie/', '');
-            mediaType = "movie";
-            reqUrl = `https://play.xpass.top/data/movie/${tmdbID}?autostart=false`;
-            referer = `https://play.xpass.top/e/movie/${tmdbID}`;
-        } else if (ID.includes('tv')) {
-            const parts = ID.split('/');
-            const cleanParts = parts.filter(p => p !== "");
-            tmdbID = cleanParts[1];
-            seasonNumber = cleanParts[2];
-            episodeNumber = cleanParts[3];
-            mediaType = "tv";
-            reqUrl = `https://play.xpass.top/data/tv/${tmdbID}/${seasonNumber}/${episodeNumber}?autostart=false`;
-            referer = `https://play.xpass.top/e/tv/${tmdbID}/${seasonNumber}/${episodeNumber}`;
-        } else {
-            return JSON.stringify({ streams: [] });
-        }
-
-        const headers = {
-            "Cookie": "auth_token=c2685c63f0016d6ab3a3548eeb1e111551acfc1bbd65fc2b1e2b043af659b39a",
-            "Referer": referer,
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:152.0) Gecko/20100101 Firefox/152.0",
-            "Accept": "*/*"
-        };
-
-        const response = await soraFetch(reqUrl, { headers });
-        if (!response) throw new Error("Failed to fetch server list from XPass");
-
-        const serverList = await response.json();
-        if (!Array.isArray(serverList)) throw new Error("Invalid server list response");
-
-        const serverPromises = serverList.map(async (server) => {
-            try {
-                if (!server.url) return [];
-                const playlistUrl = `https://play.xpass.top${server.url}`;
-                const playlistResponse = await soraFetch(playlistUrl, { headers });
-                if (!playlistResponse) return [];
-                const playlistData = await playlistResponse.json();
-
-                let results = [];
-                if (playlistData && playlistData.playlist && playlistData.playlist.length > 0) {
-                    playlistData.playlist.forEach(item => {
-                        if (item.sources && Array.isArray(item.sources)) {
-                            item.sources.forEach(src => {
-                                if (src.file) {
-                                    const isTik = src.file.includes("tik.1x2.space") ||
-                                                  (src.label && src.label.toUpperCase().includes("TIK")) ||
-                                                  (server.name && server.name.toUpperCase().includes("TIK"));
-                                    if (!isTik) {
-                                        results.push({
-                                            title: `[XPass] ${server.name || 'Server'} - ${src.label || 'HLS'}`,
-                                            streamUrl: src.file,
-                                            headers: {
-                                                "Origin": "https://play.xpass.top",
-                                                "Connection": "keep-alive",
-                                                "Referer": "https://play.xpass.top/"
-                                            }
-                                        });
-                                    }
-                                }
-                            });
-                        }
-                    });
-                }
-                return results;
-            } catch (err) {
-                console.log(`Error fetching playlist for server ${server.name}: ` + err);
-                return [];
-            }
-        });
-
-        const resolvedStreams = await Promise.all(serverPromises);
-        if (streamObjects.length === 0) {
-            const fallbackUrl = mediaType === "movie"
-                ? `https://vidlink.pro/movie/${tmdbID}`
-                : `https://vidlink.pro/tv/${tmdbID}/${seasonNumber}/${episodeNumber}`;
-            streamObjects.push({
-                title: "XPass Backup",
-                streamUrl: fallbackUrl,
-                headers: { "Referer": "https://vidlink.pro/" }
-            });
-        }
-
-        return JSON.stringify({
-            streams: streamObjects,
-            subtitles: ""
-        });
-    } catch (error) {
-        console.log('Fetch error in extractStreamUrl: ' + error);
-        let fallbackUrl = "https://vidlink.pro/";
-        if (ID.includes('movie')) {
-            const mId = ID.replace('/movie/', '').replace('/', '');
-            fallbackUrl = `https://vidlink.pro/movie/${mId}`;
-        } else if (ID.includes('tv')) {
-            const parts = ID.split('/');
-            fallbackUrl = `https://vidlink.pro/tv/${parts[2]}/${parts[3]}/${parts[4]}`;
-        }
-        return JSON.stringify({ streams: [{ title: "XPass Backup", streamUrl: fallbackUrl, headers: { Referer: "https://vidlink.pro/" } }], subtitles: "" });
-    }
-}
-
-async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
-    const headers = options.headers || {};
-    if (!headers["User-Agent"]) {
-        headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
-    }
-    try {
-        return await fetchv2(url, headers, options.method || 'GET', options.body || null);
-    } catch (e) {
-        try {
-            return await fetch(url, options);
-        } catch (error) {
-            return null;
-        }
-    }
+async function extractStreamUrl(url) {
+  const videos = await __mangayomiExtension.getVideoList(url);
+  const streams = __list(videos).map((video) => ({
+    title: video.quality || video.name || video.label || "Stream",
+    streamUrl: video.url || video.originalUrl || video.file || "",
+    url: video.url || video.originalUrl || video.file || "",
+    headers: video.headers || {}
+  })).filter((item) => /^https?:\/\//i.test(item.streamUrl));
+  return JSON.stringify({ streams, subtitles: "" });
 }

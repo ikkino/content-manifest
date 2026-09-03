@@ -1,1247 +1,795 @@
-const BASE_URL = 'https://allmanga.to';
-const API_URLS = [
-    'https://api.mkissa.net/api',
-    'https://api.allanime.day/api'
-];
-const API_URL = API_URLS[0];
-const CLOCK_BASE = 'https://allanime.day';
+class Anikoto {
+    static get searchPageLimit() { return 2; }
+    static get searchResultTarget() { return 12; }
 
-const KEYGEN_URLS = [
-    'https://raw.githubusercontent.com/sdaqo/anipy-cli/refs/heads/key-gen/scripts/keygen/keygen.json',
-    'https://raw.githubusercontent.com/sdaqo/anipy-cli/key-gen/scripts/keygen/keygen.json'
-];
+    // ---------- Search ----------
+    static async search(keyword) {
+        const base = "https://animepahetv.to/search?q=" + encodeURIComponent(keyword).replace(/%20/g, "+");
+        const headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
+            "Referer": "https://animepahetv.to/"
+        };
 
-const EPISODE_QUERY = 'query(\n$showId: String!\n$translationType: VaildTranslationTypeEnumType!\n$episodeString: String!\n) {\nepisode(\nshowId: $showId\ntranslationType: $translationType\nepisodeString: $episodeString\n) {\nepisodeString\nuploadDate\nsourceUrls\nthumbnail\nnotes\nshow{\n\n\n_id\nname\nenglishName\nnativeName\nslugTime\n\nthumbnail\n\ntbObj {\n  u\n  sm\n  md\n  ts\n}\n\nlastEpisodeInfo\nlastEpisodeDate\ntype\nseason\nscore\nairedStart\navailableEpisodes\nepisodeDuration\nepisodeCount\n# lastUpdateStart\nlastUpdateEnd\ncharacterCount\n\ndescription\nbroadcastInterval\nbanner\ncharacters\navailableEpisodesDetail\nnameOnlyString\ncharacters\nisAdult\nrelatedShows\nrelatedMangas\naltNames\ndisqusIds\n}\npageStatus{\n_id\nnotes\npageId\nshowId\n\n# ranks:[Object]\nviews\nlikesCount\ncommentCount\ndislikesCount\nboostsCount\nreviewCount\nuserScoreCount\nuserScoreTotalValue\nuserScoreAverValue\nviewers{\nfirstViewers{\nviewCount\nlastWatchedDate\nuser{\n\n  \n  \n  _id\n  username\n  displayName\n  createdAt\n  picture\n  reputation\n  roleLevel\n\n  \n  followerCount\n  followingCount\n\n  hideMe\n  brief\n\n}\n}\nrecViewers{\nviewCount\nlastWatchedDate\nuser{\n\n  \n  \n  _id\n  username\n  displayName\n  createdAt\n  picture\n  reputation\n  roleLevel\n\n  \n  followerCount\n  followingCount\n\n  hideMe\n  brief\n\n}\n}\n}\n\n}\nepisodeInfo{\nnotes\nthumbnails\n\ntbObj {\n  u\n  sm\n  md\n  ts\n}\n\nvidInforssub\nuploadDates\nvidInforsdub\nvidInforsraw\ndescription\n}\nversionFix\n}\n}\n';
+        console.log("[Anikoto] Searching HTML pages, page 1: " + base);
 
-const SOURCE_PRIORITY = ['Default', 'Yt-mp4', 'S-Mp4', 'Ak', 'Uv-mp4', 'Luf-Mp4', 'Mp4'];
+        const resp1 = await soraFetch(base, { headers });
+        if (!resp1 || resp1.status !== 200) {
+            console.error("[Anikoto] Failed to fetch page 1");
+            return [];
+        }
+        const html1 = await resp1.text();
 
-// Known-good keygen snapshot (build 136, epoch 2955) — captured live on
-// 2026-08-22 (see documentation/keygen-live-capture-prompt.md). The module can
-// also self-bootstrap fresh keys when the API reports AA_CRYPTO_STALE (see
-// aaLiveKeys below), so this snapshot only seeds the first request.
-const FALLBACK_KEYGEN = {
-    build_id: '136',
-    epoch: 2955,
-    lane: 'k7',
-    key: 'deeb2732190ceee0d84c7668d79b64ddcd5f27b9f858f2327fe29a7841b7b5da',
-    static_key: 'Xot36i3lK3:v1'
-};
+        let totalPages = 1;
+        const lastLinkMatch = html1.match(/<a\s+title="Last"\s+class="page-link"\s+href="[^"]*&?page=(\d+)"/i);
+        if (lastLinkMatch) {
+            totalPages = parseInt(lastLinkMatch[1], 10);
+            console.log("[Anikoto] Total pages: " + totalPages);
+        } else {
+            const pageMatches = [...html1.matchAll(/<a[^>]*href="[^"]*&?page=(\d+)"[^>]*>/ig)];
+            if (pageMatches.length > 0) {
+                const nums = pageMatches.map(m => parseInt(m[1], 10)).filter(n => !isNaN(n));
+                if (nums.length > 0) totalPages = Math.max(...nums);
+                console.log("[Anikoto] Detected total pages: " + totalPages);
+            }
+        }
 
-/* Self-bootstrap inputs (extracted from the mkissa.to crypto chunk, build 136).
-   The client derives its own AES key without any secret server round-trip:
-     embed[i]   = concat(base64decode(mask blocks))          [32 bytes]
-     salt[i]    = (buildId.charCodeAt(i % len) || 0)
-                  ^ ((i * AA_SALT_MUL + AA_SALT_ADD) & 255)
-     linear[i]  = ((i >> 3) * AA_FRAG_MUL + (i % 8) * AA_FRAG_ADD) & 255
-     mask[i]    = embed[i] ^ salt[i] ^ linear[i]
-     hmacKey    = HMAC-SHA256(mask, AA_BOOT_PREFIX + buildId)
-     bootTok    = hex(HMAC-SHA256(hmacKey, `${epoch}~${host}~${lane}~${group}~${buildId}`))
-     GET {AA_BOOTSTRAP_URL}?buildId=<id>&k=<lane>  (x-build-id / x-aa-boot headers)
-     key        = first32(base64decode(partB)) XOR mask
-   Epochs are 7-day (floor(now/604800000)); during the first day of an epoch the
-   previous one is still accepted. group is "mkissa" for the public hosts. */
-const AA_MASK_BLOCKS = ['zZ9iqAzia78=', '0GqOekVONY4=', 'uyiEMZfgVqA=', 'HBpHBAntve4='];
-const AA_SALT_MUL = 78;
-const AA_SALT_ADD = 200;
-const AA_FRAG_MUL = 234;
-const AA_FRAG_ADD = 70;
-const AA_BOOT_PREFIX = 'qrSOLsg:';
-const AA_WEEK_MS = 604800000;
-const AA_DAY_MS = 86400000;
-const AA_BOOTSTRAP_URL = 'https://api.mkissa.net/client-crypto/v1/bootstrap';
-const AA_BOOT_HOST = 'mkissa.to';
-const AA_BOOT_GROUP = 'mkissa';
+        const parsePage = (html) => {
+            const items = [];
+            const blocks = html.split('<div class="anime-item">');
+            for (let i = 1; i < blocks.length; i++) {
+                const block = blocks[i];
+                const posterLinkMatch = block.match(/<a\s+[^>]*href="https:\/\/animepahetv\.to\/anime\/([^"]+)"[^>]*class="anime-poster"/);
+                if (!posterLinkMatch) continue;
+                const session = posterLinkMatch[1];
+                const titleMatch = block.match(/<div\s+class="anime-name">\s*<a[^>]*>([^<]+)<\/a>/);
+                const title = titleMatch ? titleMatch[1].trim() : "Untitled";
+                const imgMatch = block.match(/<img\s+[^>]*src="([^"]+)"[^>]*class="lazyload"/);
+                const poster = imgMatch ? imgMatch[1] : "";
+                items.push({ title, poster, session });
+            }
+            return items;
+        };
 
-const CDN_BASES = [
-    'https://allmanga.to',
-    'https://mkissa.to'
-];
+        let allItems = parsePage(html1);
 
-let aaKeyCache = { keys: null, ts: 0 };
+        if (totalPages > 1 && allItems.length < Anikoto.searchResultTarget) {
+            const pagePromises = [];
+            const maxPage = Math.min(totalPages, Anikoto.searchPageLimit);
+            for (let p = 2; p <= maxPage; p++) {
+                const url = base + "&page=" + p;
+                console.log("[Anikoto] Fetching page " + p + ": " + url);
+                pagePromises.push(soraFetch(url, { headers }).then(resp => {
+                    if (!resp || resp.status !== 200) return "";
+                    return resp.text();
+                }));
+            }
+            const pageHTMLs = await Promise.allSettled(pagePromises);
+            for (const result of pageHTMLs) {
+                if (result.status === "fulfilled" && result.value) {
+                    const items = parsePage(result.value);
+                    allItems = allItems.concat(items);
+                }
+                if (allItems.length >= Anikoto.searchResultTarget) break;
+            }
+        }
 
-if (typeof console !== 'undefined') console.log('allmanga module v1.9.0');
+        console.log("[Anikoto] Search returned " + allItems.length + " items total");
+        return allItems;
+    }
 
-const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
+    // ---------- Get episode list ----------
+    static async getEpisodes(session) {
+        const baseUrl = "https://animepahetv.to/viewApi?m=release&id=" + session + "&sort=episode_desc";
+        const headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36",
+            "Accept": "application/json, text/javascript, */*; q=0.01"
+        };
 
-const API_HEADERS = {
-    'Origin': BASE_URL,
-    'Referer': BASE_URL + '/',
-    'Content-Type': 'application/json',
-    'Accept': 'application/json, text/plain, */*',
-    'User-Agent': UA
-};
+        // Helper: fetch a page and return parsed JSON object
+        const fetchPage = async (url) => {
+            const resp = await soraFetch(url, { headers });
+            if (!resp || resp.status !== 200) {
+                console.error("[Anikoto] Page fetch failed, status: " + (resp ? resp.status : "null"));
+                return null;
+            }
+            // Try standard .json() first, then fallback to text + JSON.parse
+            if (typeof resp.json === "function") {
+                try {
+                    return await resp.json();
+                } catch (e) {
+                    console.error("[Anikoto] .json() failed:", e);
+                }
+            }
+            // Fallback: parse JSON from text
+            try {
+                const text = await resp.text();
+                return JSON.parse(text);
+            } catch (e) {
+                console.error("[Anikoto] JSON parse from text failed:", e);
+                return null;
+            }
+        };
 
-const STREAM_HEADERS = {
-    'Referer': 'https://allanimenews.com/',
-    'Origin': 'https://allanimenews.com',
-    'User-Agent': UA
-};
+        // Fetch page 1
+        const url1 = baseUrl + "&page=1";
+        console.log("[Anikoto] Fetching episodes page 1: " + url1);
+        const json1 = await fetchPage(url1);
+        if (!json1 || !json1.data) {
+            console.error("[Anikoto] Failed to get page 1 data");
+            return [];
+        }
 
-/* MAIN FUNCTIONS */
+        const allEpisodes = json1.data || [];
+        const totalPages = json1.last_page || 1;
+        console.log("[Anikoto] Episodes total pages: " + totalPages + " | first batch: " + allEpisodes.length);
 
-async function searchResults(keyword) {
-    try {
-        const query = String(keyword || '').trim();
-        if (!query) return JSON.stringify([]);
+        // Fetch remaining pages in parallel
+        if (totalPages > 1) {
+            const pagePromises = [];
+            for (let p = 2; p <= totalPages; p++) {
+                const url = baseUrl + "&page=" + p;
+                console.log("[Anikoto] Scheduling fetch for page " + p + ": " + url);
+                pagePromises.push(
+                    fetchPage(url).then(json => {
+                        if (json && json.data) {
+                            console.log("[Anikoto] Page " + p + " data count: " + json.data.length);
+                            allEpisodes.push(...json.data);
+                        } else {
+                            console.warn("[Anikoto] Page " + p + " returned no data");
+                        }
+                    }).catch(e => {
+                        console.error("[Anikoto] Error fetching page " + p + ":", e);
+                    })
+                );
+            }
+            // Wait for all secondary pages to finish
+            await Promise.allSettled(pagePromises);
+        }
 
-        const data = await gql(`{shows(search:{sortBy:Trending,query:${JSON.stringify(query)}},limit:26,page:1){edges{_id name englishName nativeName thumbnail}}}`);
-        const shows = (((data || {}).shows || {}).edges) || [];
+        // Sort ascending by episode number
+        allEpisodes.sort((a, b) => a.episode - b.episode);
+        console.log("[Anikoto] Total episodes fetched: " + allEpisodes.length);
+        return allEpisodes;
+    }
 
-        const results = [];
-        const seen = new Set();
-        shows.forEach(show => {
-            const href = `${BASE_URL}/bangumi/${show._id}`;
-            const title = cleanText(show.englishName || show.name || '');
-            if (!title || !show._id || seen.has(href)) return;
-            seen.add(href);
-            results.push({ title, image: show.thumbnail || '', href });
+    // ---------- Get anime details (scrape HTML) ----------
+    static async getDetails(session) {
+        const url = "https://animepahetv.to/anime/" + session;
+        console.log("[Anikoto] Fetching details: " + url);
+
+        const resp = await soraFetch(url, {
+            headers: {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+            }
         });
+        if (!resp || resp.status !== 200) return null;
+        const html = await resp.text();
 
-        return JSON.stringify(results);
-    } catch (error) {
-        console.log('Search error: ' + error);
-        return JSON.stringify([]);
+        const between = (str, a, b) => {
+            const p = str.indexOf(a);
+            if (p === -1) return "";
+            const start = p + a.length;
+            const end = str.indexOf(b, start);
+            return end === -1 ? str.slice(start) : str.slice(start, end);
+        };
+
+        const title = between(html, '<h1 class="user-select-none"><span style="user-select:text">', '</span>').trim();
+        const japanese = between(html, '<h2 class="japanese" style="font-weight:600">', '</h2>').trim();
+        const synopsis = between(html, '<div class="anime-synopsis">', '</div>')
+            .replace(/<br\s*\/?>/g, '\n')
+            .replace(/<\/?[^>]+(>|$)/g, '')
+            .trim();
+
+        const infoBlock = between(html, '<div class="col-sm-4 anime-info">', '</div>');
+        const getInfo = (label) => {
+            const regex = new RegExp("<strong>" + label + "[\\s\\S]*?<\\/p>", "i");
+            const match = infoBlock.match(regex);
+            if (!match) return "";
+            return match[0].replace(/<[^>]+>/g, "").replace(label, "").trim();
+        };
+
+        const type = getInfo("Type:");
+        const episodes = getInfo("Episode:");
+        const status = getInfo("Status:");
+        const duration = getInfo("Duration:");
+        const aired = getInfo("Aired:");
+        const season = getInfo("Season:");
+        const studio = getInfo("Studio:");
+        const genres = [...infoBlock.matchAll(/<a\s+href="[^"]*\/genre\/[^"]*"[^>]*>([^<]+)<\/a>/g)]
+            .map(m => m[1].trim());
+
+        const posterMatch = html.match(/<img\s+[^>]*data-src="([^"]+)"[^>]*class="lazyload"/);
+        const poster = posterMatch ? posterMatch[1] : "";
+
+        // Capture MAL ID for Kwik streaming
+        const malMatch = html.match(/\/\/myanimelist\.net\/anime\/(\d+)/);
+        const malId = malMatch ? parseInt(malMatch[1], 10) : null;
+
+        return { title, japanese, synopsis, type, episodes, status, duration, aired, season, studio, genres, poster, malId };
     }
-}
 
-async function extractDetails(url) {
-    try {
-        const showId = extractShowId(url);
-        if (!showId) return JSON.stringify([]);
+    // ---------- Get stream servers for an episode ----------
+    static async getServers(episodeSession) {
+        const url = "https://animepahetv.to/anime/get-servers/" + episodeSession;
+        console.log("[Anikoto] Fetching servers: " + url);
 
-        const data = await gql(`{show(_id:${JSON.stringify(showId)}){description englishName name altNames season airedStart}}`);
-        const show = (data || {}).show;
-        if (!show) return JSON.stringify([]);
-
-        const aliases = (show.altNames || [])
-            .filter(name => name && cleanText(name))
-            .map(name => cleanText(name))
-            .join(' | ') || cleanText(show.englishName || show.name || 'Unknown');
-        const airdate = (show.season && show.season.year) ? String(show.season.year) : cleanText(show.airedStart || 'Unknown');
-
-        return JSON.stringify([{
-            description: cleanText(show.description || 'No description available'),
-            aliases,
-            airdate
-        }]);
-    } catch (error) {
-        console.log('Details error: ' + error);
-        return JSON.stringify([{
-            description: 'Error loading description',
-            aliases: 'Unknown',
-            airdate: 'Unknown'
-        }]);
+        const resp = await soraFetch(url, {
+            headers: {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+            }
+        });
+        if (!resp || resp.status !== 200 || typeof resp.json !== "function") return null;
+        let json;
+        try { json = await resp.json(); } catch (e) { return null; }
+        return json?.servers || [];
     }
-}
 
-async function extractEpisodes(url) {
-    try {
-        const showId = extractShowId(url);
-        if (!showId) return JSON.stringify([]);
+    // ---------- Extract Megaplay stream from server URL ----------
+    static async extractMegaplayStream(serverUrl) {
+        console.log("[Anikoto] Fetching Megaplay embed: " + serverUrl);
+        const resp = await soraFetch(serverUrl, {
+            headers: {
+                "Referer": "https://megaplay.buzz/",
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+            }
+        });
+        if (!resp || resp.status !== 200) return null;
+        const html = await resp.text();
 
-        const data = await gql(`{episodeInfos(showId:${JSON.stringify(showId)},episodeNumStart:0,episodeNumEnd:999999){episodeIdNum}}`);
-        const eps = (((data || {}).episodeInfos) || []);
+        const dataIdMatch = html.match(/data-id="(\d+)"/);
+        if (!dataIdMatch) return null;
+        const dataId = dataIdMatch[1];
 
-        const episodes = eps
-            .filter(ep => ep.episodeIdNum !== undefined && ep.episodeIdNum !== null)
-            .map(ep => ({
-                href: `${BASE_URL}/bangumi/${showId}/p-${ep.episodeIdNum}`,
-                number: ep.episodeIdNum
-            }))
-            .sort((a, b) => a.number - b.number);
+        const sourcesUrl = "https://megaplay.buzz/stream/getSources?id=" + dataId + "&id=" + dataId;
+        console.log("[Anikoto] Fetching sources: " + sourcesUrl);
+        const srcResp = await soraFetch(sourcesUrl, {
+            headers: {
+                "Referer": "https://megaplay.buzz/",
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+            }
+        });
+        if (!srcResp || srcResp.status !== 200 || typeof srcResp.json !== "function") return null;
+        let data;
+        try { data = await srcResp.json(); } catch (e) { return null; }
+        if (!data?.sources?.file) return null;
 
-        return JSON.stringify(episodes);
-    } catch (error) {
-        console.log('Episodes error: ' + error);
-        return JSON.stringify([]);
+        // Subtitle extraction
+        const tracks = data.tracks || [];
+        console.log("[Anikoto] Source tracks: " + JSON.stringify(tracks));
+
+        let englishSub = "";
+        const engTrack = tracks.find(t =>
+            t.kind === "captions" &&
+            t.label &&
+            t.label.toLowerCase().includes("english")
+        );
+        if (engTrack && engTrack.file) englishSub = engTrack.file;
+        else {
+            const firstCaption = tracks.find(t => t.kind === "captions" && t.file);
+            if (firstCaption) englishSub = firstCaption.file;
+        }
+
+        // All subtitle tracks with required headers
+        const allSubtitles = tracks
+            .filter(t => t.file)
+            .map(t => ({
+                url: t.file,
+                label: t.label || t.kind,
+                kind: t.kind,
+                headers: { Referer: "https://megaplay.buzz/" }
+            }));
+
+        return {
+            streamUrl: data.sources.file,
+            subtitles: englishSub,
+            subtitlesHeaders: { Referer: "https://megaplay.buzz/" },
+            allSubtitles: allSubtitles,
+            headers: { Referer: "https://megaplay.buzz/" }
+        };
+    }
+
+    static async extractVidplayStream(serverUrl) {
+        console.log("[Anikoto] Fetching Vidplay embed: " + serverUrl);
+        const resp = await soraFetch(serverUrl, {
+            headers: {
+                "Referer": "https://vidwish.live/",
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+            }
+        });
+        if (!resp || resp.status !== 200) return null;
+        const html = await resp.text();
+
+        const dataIdMatch = html.match(/data-id="(\d+)"/);
+        if (!dataIdMatch) return null;
+        const dataId = dataIdMatch[1];
+
+        const sourcesUrl = "https://vidwish.live/stream/getSources?id=" + dataId + "&id=" + dataId;
+        console.log("[Anikoto] Fetching Vidplay sources: " + sourcesUrl);
+        const srcResp = await soraFetch(sourcesUrl, {
+            headers: {
+                "Referer": "https://vidwish.live/",
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+            }
+        });
+        if (!srcResp || srcResp.status !== 200 || typeof srcResp.json !== "function") return null;
+        let data;
+        try { data = await srcResp.json(); } catch (e) { return null; }
+        if (!data?.sources?.file) return null;
+
+        const tracks = data.tracks || [];
+        console.log("[Anikoto] Vidplay tracks: " + JSON.stringify(tracks));
+
+        let englishSub = "";
+        const engTrack = tracks.find(t =>
+            t.kind === "captions" &&
+            t.label &&
+            t.label.toLowerCase().includes("english")
+        );
+        if (engTrack && engTrack.file) englishSub = engTrack.file;
+        else {
+            const firstCaption = tracks.find(t => t.kind === "captions" && t.file);
+            if (firstCaption) englishSub = firstCaption.file;
+        }
+
+        const allSubtitles = tracks
+            .filter(t => t.file)
+            .map(t => ({
+                url: t.file,
+                label: t.label || t.kind,
+                kind: t.kind,
+                headers: { Referer: "https://vidwish.live/" }
+            }));
+
+        return {
+            streamUrl: data.sources.file,
+            subtitles: englishSub,
+            subtitlesHeaders: { Referer: "https://vidwish.live/" },
+            allSubtitles: allSubtitles,
+            headers: { Referer: "https://vidwish.live/" }
+        };
+    }
+
+    // ─── NEW: Kwik‑based Hardsub streaming ───
+    static async extractKwikStream(url) {
+        try {
+            const match = url.match(/anime\/([^\/]+)\/([^?]+)\?num=(\d+)/);
+            if (!match) return null;
+            const [, animeSession, episodeSession, epNum] = match;
+
+            console.log("[extractStreamUrl-Kwik] Anime: " + animeSession + ", Episode: " + epNum);
+
+            // 1. Fetch play page for malId & chapterUpdatedAt
+            const playUrl = "https://animepahetv.to/play/" + animeSession + "/" + episodeSession;
+            const playResp = await soraFetch(playUrl, {
+                headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" }
+            });
+            if (!playResp || playResp.status !== 200) return null;
+            const playHtml = await playResp.text();
+            const malMatch = playHtml.match(/malId":"(\d+)"/);
+            const tsMatch = playHtml.match(/chapterUpdatedAt":(\d+)/);
+            if (!malMatch || !tsMatch) return null;
+            const malId = malMatch[1];
+            const chapterUpdatedAt = tsMatch[1];
+
+            // 2. Mapper
+            const mapperUrl = `https://mapper.mewcdn.online/api/mal/${malId}/${epNum}/${chapterUpdatedAt}`;
+            console.log("[extractStreamUrl-Kwik] Mapper: " + mapperUrl);
+            const mapperResp = await soraFetch(mapperUrl, {
+                headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36" }
+            });
+            if (!mapperResp || mapperResp.status !== 200) return null;
+            let mapperJson;
+            if (typeof mapperResp.json === "function") {
+                try { mapperJson = await mapperResp.json(); } catch (e) {}
+            } else {
+                try { mapperJson = JSON.parse(await mapperResp.text()); } catch (e) {}
+            }
+            if (!mapperJson) return null;
+
+            // 3. Collect ALL qualities that have a sub URL
+            const qualityOrder = ["Kiwi-Stream-360p", "Kiwi-Stream-720p", "Kiwi-Stream-800p", "Kiwi-Stream-1080p"];
+            const streams = [];
+
+            for (const quality of qualityOrder) {
+                if (mapperJson[quality]?.sub?.url) {
+                    const encoded = mapperJson[quality].sub.url;
+
+                    // 4. Decode – AJAX header required
+                    const ajaxUrl = "https://anikototv.to/ajax/server?get=" + encoded;
+                    console.log("[extractStreamUrl-Kwik] Decoding " + quality + ": " + ajaxUrl);
+                    const ajaxResp = await soraFetch(ajaxUrl, {
+                        headers: {
+                            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+                            "X-Requested-With": "XMLHttpRequest"
+                        }
+                    });
+                    if (!ajaxResp || ajaxResp.status !== 200) continue;
+                    let ajaxJson;
+                    if (typeof ajaxResp.json === "function") {
+                        try { ajaxJson = await ajaxResp.json(); } catch (e) {}
+                    } else {
+                        try { ajaxJson = JSON.parse(await ajaxResp.text()); } catch (e) {}
+                    }
+                    if (!ajaxJson?.result?.url) continue;
+                    const kwikUrl = ajaxJson.result.url;
+                    console.log("[extractStreamUrl-Kwik] Kwik URL: " + kwikUrl);
+
+                    // 5. Fetch Kwik page (bypass DDoS‑Guard)
+                    const interceptor = new DdosGuardInterceptor();
+                    const kwikResp = await interceptor.fetchWithBypass(kwikUrl);
+                    if (!kwikResp || typeof kwikResp.text !== "function") {
+                        console.error("[extractStreamUrl-Kwik] Kwik page fetch failed for " + quality);
+                        continue;
+                    }
+                    const html = await kwikResp.text();
+
+                    // 6. Extract packed script
+                    let scriptContent = null;
+                    const scriptMatch = html.match(/<script>(.*?)<\/script>/s);
+                    if (scriptMatch) scriptContent = scriptMatch[1];
+                    else {
+                        const evalMatch = html.match(/eval\s*\(function\(p,a,c,k,e,d\)[\s\S]*?\)\)/);
+                        if (evalMatch) scriptContent = evalMatch[0];
+                    }
+                    if (!scriptContent) {
+                        console.error("[extractStreamUrl-Kwik] No script found for " + quality);
+                        continue;
+                    }
+
+                    // 7. Unpack and extract HLS
+                    let unpacked = scriptContent;
+                    try { unpacked = unpack(scriptContent); } catch (e) {}
+                    const hlsMatch = unpacked.match(/(?:const\s+source\s*=\s*['"]([^'"]+)['"])|(https?:\/\/[^\s'"<>]+\.m3u8[^\s'"<>]*)/i);
+                    if (!hlsMatch) {
+                        console.error("[extractStreamUrl-Kwik] HLS URL not found for " + quality);
+                        continue;
+                    }
+                    let hlsUrl = hlsMatch[1] || hlsMatch[0];
+                    hlsUrl = hlsUrl.replace("/stream/", "/hls/").replace("uwu.m3u8", "owo.m3u8").replace(/\\+$/, '');
+
+                    const resolution = quality.replace("Kiwi-Stream-", "").replace("p", "p");
+                    streams.push({
+                        title: "Kiwi Hardsub (" + resolution + ")",
+                        streamUrl: hlsUrl,
+                        headers: { Referer: "https://kwik.cx/", Origin: "https://kwik.cx" }
+                    });
+                }
+            }
+
+            if (streams.length === 0) {
+                console.error("[extractStreamUrl-Kwik] No valid qualities found");
+                return null;
+            }
+
+            return streams;
+        } catch (e) {
+            console.error("[extractStreamUrl-Kwik] Error: " + e);
+            return null;
+        }
     }
 }
 
 async function extractStreamUrl(url) {
     try {
-        const parsed = parseEpisodeUrl(url);
-        if (!parsed) return JSON.stringify({ streams: [], subtitle: '' });
+        const match = url.match(/anime\/([^\/]+)\/([^?]+)\?num=(\d+)/);
+        if (!match) throw new Error("Invalid URL format");
+        const [, animeSession, episodeSession, epNum] = match;
 
-        const cacheKey = String(url);
-        const cached = aaStreamCacheGet(cacheKey);
-        if (cached) return cached;
+        console.log("[extractStreamUrl] Anime: " + animeSession + ", Episode: " + epNum + ", Session: " + episodeSession);
 
-        const { showId, episode } = parsed;
-        // The API's episodeString is 1-based; episodeIdNum in the URL is
-        // 0-based, and episode "0" has no sources. Clamp to >= 1.
-        const apiEpisode = String(Math.max(1, Number(episode)));
-        const keys = aaGetKeys();
-
-        // Query sub first, then dub sequentially to avoid parallel
-        // requests hitting the API rate limiter simultaneously.
-        const subResult = await aaResolveTranslation(keys, showId, apiEpisode, 'sub');
-        const dubResult = await aaResolveTranslation(keys, showId, apiEpisode, 'dub');
-        const jobs = [subResult, dubResult];
-
-        const streams = [];
-        let subtitle = '';
-        jobs.forEach(result => {
-            if (!result || !result.streams || !result.streams.length) return;
-            streams.push(...result.streams);
-            if (!subtitle && result.subtitle) subtitle = result.subtitle;
-        });
-
-        let out;
-        if (streams.length === 0) {
-            out = await aaLegacyStreams(showId, apiEpisode);
-        } else {
-            out = JSON.stringify({ streams, subtitle });
-        }
-        aaStreamCacheSet(cacheKey, out);
-        return out;
-    } catch (error) {
-        console.log('Stream error: ' + error);
-        return JSON.stringify({ streams: [], subtitle: '' });
-    }
-}
-
-/* ALLANIME STREAM FLOW */
-
-let aaStreamCache = {};
-
-function aaStreamCacheGet(key) {
-    const hit = aaStreamCache[key];
-    if (hit && Date.now() - hit.ts < 300000) return hit.value;
-    return null;
-}
-
-function aaStreamCacheSet(key, value) {
-    const keys = Object.keys(aaStreamCache);
-    if (keys.length > 50) aaStreamCache = {};
-    aaStreamCache[key] = { value, ts: Date.now() };
-}
-
-// Fast path: return cached keys or the bundled fallback without any network
-// request. aaLiveKeys() replaces them when the API says the token is stale.
-function aaGetKeys() {
-    const now = Date.now();
-    if (aaKeyCache.keys && now - aaKeyCache.ts < 90000) return aaKeyCache.keys;
-    return {
-        build_id: FALLBACK_KEYGEN.build_id,
-        epoch: String(FALLBACK_KEYGEN.epoch),
-        lane: FALLBACK_KEYGEN.lane,
-        key: FALLBACK_KEYGEN.key,
-        static_key: FALLBACK_KEYGEN.static_key
-    };
-}
-
-/* ---- live self-bootstrap (build 136 scheme) ------------------------------ */
-
-// Pure-JS HMAC-SHA256 over the module's existing aaSha256 (RFC 2104).
-function aaHmacSha256(key, msg) {
-    let k = key;
-    if (k.length > 64) k = aaSha256(k);
-    const ipad = new Uint8Array(64);
-    const opad = new Uint8Array(64);
-    for (let i = 0; i < 64; i++) {
-        const kb = i < k.length ? k[i] : 0;
-        ipad[i] = kb ^ 0x36;
-        opad[i] = kb ^ 0x5c;
-    }
-    const inner = aaSha256(aaConcat(ipad, msg));
-    return aaSha256(aaConcat(opad, inner));
-}
-
-function aaConcat(a, b) {
-    const out = new Uint8Array(a.length + b.length);
-    out.set(a, 0);
-    out.set(b, a.length);
-    return out;
-}
-
-// Deterministic client mask for a given build id (see block comment above).
-function aaBuildMask(buildId) {
-    const embed = new Uint8Array(32);
-    let off = 0;
-    for (let b = 0; b < AA_MASK_BLOCKS.length; b++) {
-        const blk = aaUnb64(AA_MASK_BLOCKS[b]);
-        for (let i = 0; i < blk.length && off + i < 32; i++) embed[off + i] = blk[i];
-        off += blk.length;
-    }
-    const mask = new Uint8Array(32);
-    for (let i = 0; i < 32; i++) {
-        const cc = buildId.charCodeAt(i % buildId.length) || 0;
-        const salt = cc ^ ((i * AA_SALT_MUL + AA_SALT_ADD) & 255);
-        const linear = (((i >> 3) * AA_FRAG_MUL) + ((i % 8) * AA_FRAG_ADD)) & 255;
-        mask[i] = embed[i] ^ salt ^ linear;
-    }
-    return mask;
-}
-
-async function aaBootstrapFor(lane, epoch) {
-    try {
-        const mask = aaBuildMask(String(FALLBACK_KEYGEN.build_id));
-        const hmacKey = aaHmacSha256(mask, aaAscii(AA_BOOT_PREFIX + FALLBACK_KEYGEN.build_id));
-        // message parts (site order): epoch ~ host ~ lane ~ group ~ buildId
-        const msg = epoch + '~' + AA_BOOT_HOST + '~' + lane + '~' + AA_BOOT_GROUP + '~' + FALLBACK_KEYGEN.build_id;
-        const bootTok = aaHex(aaHmacSha256(hmacKey, aaAscii(msg)));
-        const url = AA_BOOTSTRAP_URL + '?buildId=' + encodeURIComponent(FALLBACK_KEYGEN.build_id) +
-            '&k=' + encodeURIComponent(lane);
-        const resp = await soraFetch(url, {
-            headers: {
-                'x-build-id': String(FALLBACK_KEYGEN.build_id),
-                'x-aa-boot': bootTok,
-                'Referer': 'https://' + AA_BOOT_HOST + '/',
-                'Origin': 'https://' + AA_BOOT_HOST,
-                'Accept': 'application/json, text/plain, */*',
-                'User-Agent': UA
-            }
-        });
-        if (!resp || !resp.ok) {
-            console.log('bootstrap http ' + (resp ? resp.status : 'no-response') + ' for lane ' + lane);
-            return null;
-        }
-        const j = await resp.json();
-        if (!j || !j.partB) { console.log('bootstrap empty partB'); return null; }
-        const raw = aaUnb64(j.partB);
-        if (!raw || raw.length < 32) { console.log('bootstrap short partB'); return null; }
-        const key = new Uint8Array(32);
-        for (let i = 0; i < 32; i++) key[i] = raw[i] ^ mask[i % mask.length];
-        return {
-            build_id: String(FALLBACK_KEYGEN.build_id),
-            epoch: String(j.epoch !== undefined ? j.epoch : epoch),
-            lane: (j.k && String(j.k)) || lane,
-            key: aaHex(key),
-            static_key: FALLBACK_KEYGEN.static_key
-        };
-    } catch (error) {
-        console.log('bootstrap error: ' + error);
-        return null;
-    }
-}
-
-// Refresh keys when the API rejects our aaReq token: self-bootstrap first
-// (current epoch, then previous), remote keygen repo as last resort.
-async function aaFetchRemoteKeys(lane) {
-    const now = Date.now();
-    if (aaKeyCache.keys && now - aaKeyCache.ts < 90000) return aaKeyCache.keys;
-
-    const curEpoch = Math.floor(now / AA_WEEK_MS);
-    const prevEpoch = (now - curEpoch * AA_WEEK_MS < AA_DAY_MS && curEpoch > 0) ? curEpoch - 1 : curEpoch;
-    const useLane = lane || FALLBACK_KEYGEN.lane;
-    for (const ep of [curEpoch, prevEpoch]) {
-        const keys = await aaBootstrapFor(useLane, ep);
-        if (keys) {
-            console.log('self-bootstrap ok: epoch ' + keys.epoch + ', lane ' + keys.lane);
-            aaKeyCache.keys = keys;
-            aaKeyCache.ts = Date.now();
-            return keys;
-        }
-    }
-    console.log('self-bootstrap failed; trying remote keygen repo');
-    for (let i = 0; i < KEYGEN_URLS.length; i++) {
-        try {
-            const resp = await soraFetch(KEYGEN_URLS[i], {
-                headers: { 'User-Agent': UA, 'Accept': 'application/json' }
-            });
-            if (resp) {
-                const json = await resp.json();
-                // Guard: the third-party keygen repo lags behind the live site.
-                const remoteBuild = Number(json && json.build_id);
-                const fallbackBuild = Number(FALLBACK_KEYGEN.build_id);
-                if (json && json.build_id && json.key && json.epoch !== undefined && json.lane && remoteBuild >= fallbackBuild) {
-                    const keys = {
-                        build_id: String(json.build_id),
-                        epoch: String(json.epoch),
-                        lane: String(json.lane),
-                        key: String(json.key),
-                        static_key: String(json.static_key || FALLBACK_KEYGEN.static_key)
-                    };
-                    aaKeyCache.keys = keys;
-                    aaKeyCache.ts = Date.now();
-                    return keys;
-                }
-                console.log('Remote keygen stale (build ' + (json && json.build_id) + ' < ' + fallbackBuild + '); keeping fallback');
-            }
-        } catch (error) {
-            console.log('Keygen fetch error: ' + error);
-        }
-    }
-    return null;
-}
-
-function aaBuildToken(keys, qh, ts) {
-    const payload = '{"v":1,"ts":' + ts + ',"epoch":' + keys.epoch + ',"buildId":"' + keys.build_id + '","qh":"' + qh + '","k":"' + keys.lane + '"}';
-    // build 114 IV derivation (site zI()): sha256(epoch:buildId:qh:ts:lane)[0:12]
-    const iv = aaSha256(aaAscii(keys.epoch + ':' + keys.build_id + ':' + qh + ':' + ts + ':' + keys.lane)).slice(0, 12);
-    const sealed = aaGcmSeal(aaHexToBytes(keys.key), iv, aaAscii(payload));
-    const blob = new Uint8Array(1 + 12 + sealed.out.length + 16);
-    blob[0] = 1;
-    blob.set(iv, 1);
-    blob.set(sealed.out, 13);
-    blob.set(sealed.tag, 13 + sealed.out.length);
-    return aaB64(blob);
-}
-
-async function aaEpisodeQuery(keys, showId, tt, episode) {
-    const ts = Math.floor(Date.now() / 300000) * 300000;
-    const qh = aaHex(aaSha256(aaAscii(EPISODE_QUERY)));
-    const variables = { showId, translationType: tt, episodeString: String(episode) };
-    const extensions = {
-        persistedQuery: { version: 1, sha256Hash: qh },
-        aaReq: aaBuildToken(keys, qh, ts),
-        k: keys.lane
-    };
-    console.log('Episode query -> ' + API_URLS.length + ' host(s), episode ' + episode + ', type ' + tt + ', qh ' + qh.slice(0, 8));
-    let rateLimited = false;
-    for (let i = 0; i < API_URLS.length; i++) {
-        const host = API_URLS[i];
-        let json = await aaSendEpisodeRequest(host, 'GET', null, variables, extensions, keys);
-        let errMsg = (json && json.errors && json.errors[0] && json.errors[0].message) || '';
-        if (json && !json.data && errMsg.indexOf('PersistedQueryNotFound') === 0) {
-            console.log('PersistedQueryNotFound on ' + host + '; registering via POST');
-            json = await aaSendEpisodeRequest(host, 'POST', EPISODE_QUERY, variables, extensions, keys);
-            errMsg = (json && json.errors && json.errors[0] && json.errors[0].message) || '';
-        }
-        if (!json || typeof json !== 'object') continue;
-        const hasTbp = !!(json.data && json.data.tobeparsed);
-        const dataKeys = (json.data && typeof json.data === 'object') ? Object.keys(json.data).join(',') : 'none';
-        console.log('Episode response from ' + host + ': tbp=' + hasTbp + ' err=' + (errMsg || '-').slice(0, 80) + ' data=' + dataKeys);
-        if (errMsg.indexOf('Too many requests') === 0) {
-            rateLimited = true;
-            console.log('Episode rate limited on ' + host + '; trying other hosts');
-            continue;
-        }
-        return json;
-    }
-    if (rateLimited) {
-        console.log('All episode hosts rate limited');
-    }
-    return null;
-}
-
-async function aaSendEpisodeRequest(host, method, query, variables, extensions, keys) {
-    const headers = aaEpisodeHeaders(keys);
-    const url = host + '?variables=' + encodeURIComponent(JSON.stringify(variables)) + '&extensions=' + encodeURIComponent(JSON.stringify(extensions));
-    let resp = null;
-    try {
-        if (method === 'POST') {
-            resp = await soraFetch(url, {
-                method: 'POST',
-                headers: headers,
-                body: JSON.stringify({ query: query, variables: variables, extensions: extensions })
-            });
-        } else {
-            resp = await soraFetch(url, {
-                method: 'GET',
-                headers: headers
-            });
-        }
-    } catch (err) {
-        console.log('Episode ' + method + ' to ' + host + ' threw: ' + err);
-        return null;
-    }
-    if (!resp) {
-        console.log('Episode ' + method + ' to ' + host + ' failed: no response');
-        return null;
-    }
-    try {
-        const text = await resp.text();
-        if (typeof text === 'string' && text.length && text[0] !== '{') {
-            console.log('Episode ' + method + ' to ' + host + ' raw: ' + String(text).slice(0, 90));
-        }
-        return JSON.parse(text);
-    } catch (errText) {
-        console.log('Episode ' + method + ' to ' + host + ' parse error: ' + errText);
-        return null;
-    }
-}
-
-function aaEpisodeHeaders(keys) {
-    return {
-        'Content-Type': 'application/json',
-        'Referer': 'https://mkissa.to',
-        'Origin': 'https://mkissa.to',
-        'x-build-id': keys.build_id,
-        'Accept': 'application/json, text/plain, */*',
-        'User-Agent': UA
-    };
-}
-
-async function aaResolveTranslation(keys, showId, episode, tt) {
-    let json = await aaEpisodeQuery(keys, showId, tt, episode);
-    if (aaIsCryptoStale(json)) {
-        const fresh = await aaFetchRemoteKeys(keys.lane);
-        if (fresh) {
-            console.log('aaReq stale for ' + tt + '; refreshed keygen, retrying');
-            keys = fresh;
-            json = await aaEpisodeQuery(keys, showId, tt, episode);
-        }
-    }
-    let parsed = aaParseEpisodeResponse(json, keys);
-    if (!parsed && json && json.data && json.data.tobeparsed) {
-        // Response present but decryption failed — the epoch probably rotated
-        // mid-session. Re-bootstrap and retry once (mirrors the site's rk()).
-        console.log('tobeparsed decrypt failed for ' + tt + '; re-bootstrapping');
-        const fresh = await aaFetchRemoteKeys(keys.lane);
-        if (fresh) {
-            keys = fresh;
-            json = await aaEpisodeQuery(keys, showId, tt, episode);
-            parsed = aaParseEpisodeResponse(json, keys);
-        }
-    }
-    if (!parsed) {
-        console.log('No sources for ' + tt + ' (encrypted episode query failed)');
-        return { streams: [], subtitle: '' };
-    }
-    console.log('Decrypted sources for ' + tt);
-    return aaResolveSources(parsed, tt);
-}
-
-function aaIsCryptoStale(json) {
-    const msg = (json && json.errors && json.errors[0] && json.errors[0].message) || '';
-    return msg.indexOf('AA_CRYPTO_STALE') === 0 || msg.indexOf('AA_CRYPTO_MISSING') === 0 || msg.indexOf('AA_CRYPTO_EXPIRED') === 0;
-}
-
-function aaParseEpisodeResponse(json, keys) {
-    if (!json || !json.data || !json.data.tobeparsed) return null;
-    const msg = (json.errors && json.errors[0] && json.errors[0].message) || '';
-    if (msg) console.log('Episode query warning: ' + msg.slice(0, 80));
-    return aaDecrypt(keys, json.data.tobeparsed);
-}
-
-function aaDecrypt(keys, tobeparsed) {
-    const raw = aaUnb64(tobeparsed);
-    if (!raw || raw.length < 30) return null;
-    const iv = raw.slice(1, 13);
-    const ct = raw.slice(13, raw.length - 16);
-    const tag = raw.slice(raw.length - 16);
-    const attempts = [aaHexToBytes(keys.key), aaAscii(keys.static_key)];
-    for (let i = 0; i < attempts.length; i++) {
-        const plain = aaGcmOpen(attempts[i], iv, ct, tag);
-        if (plain) {
-            try {
-                return JSON.parse(aaUtf8ToStr(plain));
-            } catch (error) {
-                return null;
-            }
-        }
-    }
-    return null;
-}
-
-async function aaResolveSources(parsed, tt) {
-    const sources = (parsed.episode && parsed.episode.sourceUrls) || [];
-    const cdn = [];
-    const iframes = [];
-    sources.forEach(s => {
-        if (!s || !s.sourceName || typeof s.sourceUrl !== 'string') return;
-        if (s.sourceUrl.indexOf('--') === 0) {
-            cdn.push(s);
-        } else if (/^https?:\/\//i.test(s.sourceUrl)) {
-            iframes.push(s);
-        }
-    });
-
-    const orderedCdn = aaOrderByPreference(cdn, SOURCE_PRIORITY);
-    const orderedIframes = aaOrderByPreference(iframes, ['Mp4', 'Ok', 'S-Mp4', 'Luf-Mp4', 'Uv-mp4', 'Default', 'Ak', 'Yt-mp4']).slice(0, 4);
-
-    // Dead clock endpoints can hang ~30s, so race everything: first source
-    // (clock or iframe) to produce a playable link wins.
-    const clockTask = aaRaceSuccess(orderedCdn.map(src => aaFetchClockSource(src, tt)));
-    const iframeTask = aaRaceSuccess(orderedIframes.map(src =>
-        resolveIframeSource(src.sourceUrl, src.sourceName, tt)
-            .then(r => ({
-                streams: (r && r.streamUrl) ? [r] : [],
-                subtitle: (r && r.subtitle) || ''
-            }))
-            .catch(error => {
-                console.log('Iframe source ' + (src.sourceName || '?') + ' error: ' + error);
-                return { streams: [], subtitle: '' };
-            })
-    ));
-
-    return aaRaceSuccess([clockTask, iframeTask]);
-}
-
-function aaOrderByPreference(items, priority) {
-    const ordered = [];
-    priority.forEach(name => {
-        items.filter(s => s.sourceName === name).forEach(h => ordered.push(h));
-    });
-    items.forEach(s => {
-        if (priority.indexOf(s.sourceName) < 0) ordered.push(s);
-    });
-    return ordered;
-}
-
-// Resolves with the first task result that contains streams; resolves with an
-// empty result once every task settled without streams.
-function aaRaceSuccess(tasks) {
-    return new Promise(resolve => {
-        if (!tasks.length) {
-            resolve({ streams: [], subtitle: '' });
-            return;
-        }
-        let pending = tasks.length;
-        let done = false;
-        tasks.forEach(p => {
-            Promise.resolve(p).then(r => {
-                if (done) return;
-                if (r && r.streams && r.streams.length) {
-                    done = true;
-                    resolve(r);
-                } else if (--pending === 0) {
-                    done = true;
-                    resolve({ streams: [], subtitle: '' });
-                }
-            }).catch(() => {
-                if (done) return;
-                if (--pending === 0) {
-                    done = true;
-                    resolve({ streams: [], subtitle: '' });
-                }
-            });
-        });
-    });
-}
-
-async function aaFetchClockSource(src, tt) {
-    const out = { streams: [], subtitle: '' };
-    try {
-        const clockUrl = CLOCK_BASE + aaXor56(src.sourceUrl.slice(2)).replace('clock', 'clock.json');
-        const resp = await soraFetch(clockUrl, {
-            headers: { 'Referer': CLOCK_BASE + '/', 'User-Agent': UA }
-        });
-        if (!resp) {
-            console.log('Clock source ' + (src.sourceName || '?') + ': no response');
-            return out;
-        }
-        const json = await resp.json();
-        const links = (json && json.links) || [];
-        if (!links.length) {
-            console.log('Clock source ' + (src.sourceName || '?') + ': no links');
-            return out;
+        const servers = await Anikoto.getServers(episodeSession);
+        if (!servers || servers.length === 0) {
+            console.warn("[extractStreamUrl] No servers found");
+            return JSON.stringify({ streams: [], subtitles: "", subtitlesHeaders: {}, allSubtitles: [] });
         }
 
-        links.forEach(l => {
-            if (!l || !l.link) return;
-            const res = l.resolution || (l.hls ? 'HLS' : 'MP4');
-            out.streams.push({
-                title: tt.toUpperCase() + ' ' + (src.sourceName || 'Source') + (res ? ' ' + res : ''),
-                streamUrl: l.link,
-                headers: {
-                    'Referer': (l.headers && l.headers.Referer) || CLOCK_BASE + '/',
-                    'User-Agent': UA
-                }
-            });
-            if (!out.subtitle && l.subtitles && l.subtitles[0] && l.subtitles[0].src) {
-                out.subtitle = l.subtitles[0].src;
-            }
-        });
-    } catch (error) {
-        console.log('Clock source ' + (src.sourceName || '?') + ' error: ' + error);
-    }
-    return out;
-}
+        // Separate servers by type
+        const megaSub = servers.find(s => s.name === "Sub-Megaplay");
+        const megaDub = servers.find(s => s.name === "Dub-Megaplay");
+        const vidplaySub = servers.find(s => s.name.includes("Vidplay") && s.name.includes("Sub"));
+        const vidplayDub = servers.find(s => s.name.includes("Vidplay") && s.name.includes("Dub"));
 
-async function resolveIframeSource(embedUrl, sourceName, tt) {
-    const direct = extractDirectMediaUrl(embedUrl);
-    if (direct) {
-        return {
-            title: tt.toUpperCase() + ' ' + (sourceName || 'Source'),
-            streamUrl: direct,
-            headers: { 'Referer': embedUrl, 'User-Agent': UA }
-        };
-    }
-
-    if (/mp4upload\.com/i.test(embedUrl)) {
-        return await resolveMp4Upload(embedUrl, sourceName, tt);
-    }
-
-    if (/ok\.ru\/videoembed\//i.test(embedUrl)) {
-        return await resolveOkRu(embedUrl, sourceName, tt);
-    }
-
-    return await resolveGenericIframe(embedUrl, sourceName, tt);
-}
-
-async function resolveOkRu(embedUrl, sourceName, tt) {
-    const resp = await soraFetch(embedUrl, {
-        headers: { 'Referer': 'https://allmanga.to/', 'User-Agent': UA }
-    });
-    if (!resp) return null;
-    const html = await resp.text();
-    const optsMatch = html.match(/data-options="([\s\S]*?)"/);
-    if (!optsMatch) return null;
-    let opts = null;
-    try {
-        opts = JSON.parse(optsMatch[1].replace(/&quot;/g, '"'));
-    } catch (e) {
-        return null;
-    }
-    const flashvars = opts && opts.flashvars;
-    if (!flashvars || !flashvars.metadata) return null;
-    let meta = null;
-    try {
-        meta = JSON.parse(flashvars.metadata);
-    } catch (e) {
-        return null;
-    }
-    const movie = meta && meta.movie;
-    if (!movie) return null;
-    let url = movie.ondemandHls || '';
-    if (!url && movie.videos && movie.videos.length && movie.videos[0].url) {
-        url = movie.videos[0].url;
-    }
-    if (!url || !/^https?:\/\//i.test(url)) return null;
-    return {
-        title: tt.toUpperCase() + ' ' + (sourceName || 'Ok'),
-        streamUrl: url,
-        headers: { 'Referer': embedUrl, 'User-Agent': UA }
-    };
-}
-
-async function resolveMp4Upload(embedUrl, sourceName, tt) {
-    const resp = await soraFetch(embedUrl, {
-        headers: { 'Referer': 'https://allmanga.to/', 'User-Agent': UA }
-    });
-    if (!resp) return null;
-    const html = await resp.text();
-    let m = html.match(/src\s*:\s*["'](https?:\/\/[^"']+\.mp4[^"']*)["']/i)
-        || html.match(/["']?file["']?\s*[:=]\s*["'](https?:\/\/[^"']+\.mp4[^"']*)["']/i)
-        || html.match(/(https?:\/\/[^\s"'<>]+\.mp4[^\s"'<>]*)/i);
-    if (!m) return null;
-    return {
-        title: tt.toUpperCase() + ' ' + (sourceName || 'Mp4Upload'),
-        streamUrl: m[1],
-        headers: { 'Referer': embedUrl, 'Origin': 'https://www.mp4upload.com', 'User-Agent': UA }
-    };
-}
-
-async function resolveGenericIframe(embedUrl, sourceName, tt) {
-    const resp = await soraFetch(embedUrl, {
-        headers: { 'Referer': 'https://allmanga.to/', 'User-Agent': UA }
-    });
-    if (!resp) return null;
-    const html = await resp.text();
-
-    let m = html.match(/["']?file["']?\s*[:=]\s*["'](https?:\/\/[^"']+\.(?:m3u8|mp4)[^"']*)["']/i)
-        || html.match(/sources\s*:\s*\[\s*\{[^}]*file\s*:\s*["'](https?:\/\/[^"']+\.(?:m3u8|mp4)[^"']*)["']/i)
-        || html.match(/(https?:\/\/[^\s"'<>]+\.(?:m3u8|mp4)[^\s"'<>]*)/i);
-
-    if (!m) {
-        const packed = html.match(/<script[^>]*>\s*(eval\(function\(p,a,c,k,e,d[\s\S]*?)<\/script>/i);
-        if (packed) {
-            try {
-                const unpacked = unpack(packed[1]);
-                m = unpacked.match(/["']?file["']?\s*[:=]\s*["'](https?:\/\/[^"']+\.(?:m3u8|mp4)[^"']*)["']/i)
-                    || unpacked.match(/(https?:\/\/[^\s"'<>]+\.(?:m3u8|mp4)[^\s"'<>]*)/i);
-            } catch (e) {
-                // ignore unpack errors
-            }
-        }
-    }
-
-    if (!m) return null;
-    const mediaUrl = m[1];
-    if (!isValidMediaUrl(mediaUrl)) return null;
-    return {
-        title: tt.toUpperCase() + ' ' + (sourceName || 'Source'),
-        streamUrl: mediaUrl,
-        headers: { 'Referer': embedUrl, 'User-Agent': UA }
-    };
-}
-
-function isValidMediaUrl(url) {
-    if (!url || typeof url !== 'string') return false;
-    if (!/^https?:\/\//i.test(url)) return false;
-    if (/[\s"'<>]/.test(url)) return false;
-    if (/&quot;|&amp;lt;|%22/i.test(url)) return false;
-    return /\.(m3u8|mp4)(\?|#|$)/i.test(url);
-}
-
-function extractDirectMediaUrl(url) {
-    if (/\.(?:m3u8|mp4)(?:[?#][^\s"'<>]*)?$/i.test(url)) return url;
-    return '';
-}
-
-async function aaLegacyStreams(showId, episode) {
-    try {
-        const data = await gql(`{episodeInfos(showId:${JSON.stringify(showId)},episodeNumStart:${episode},episodeNumEnd:${episode}){episodeIdNum vidInforssub vidInforsdub vidInforsraw}}`);
-        const eps = (((data || {}).episodeInfos) || []);
-        const ep = eps.find(e => String(e.episodeIdNum) === String(episode)) || eps[0];
-        if (!ep) return JSON.stringify({ streams: [], subtitle: '' });
-
-        const streams = [];
-        [['sub', ep.vidInforssub], ['dub', ep.vidInforsdub], ['raw', ep.vidInforsraw]].forEach(function (pair) {
-            var label = pair[0];
-            var info = pair[1];
-            if (!info || !info.vidPath) return;
-            var path = String(info.vidPath).trim();
-            if (/^https?:\/\//i.test(path)) {
-                streams.push({
-                    title: label.toUpperCase() + ' ' + (info.vidResolution ? info.vidResolution + 'p' : 'auto'),
-                    streamUrl: path,
-                    headers: STREAM_HEADERS
-                });
-            } else {
-                CDN_BASES.forEach(function (base) {
-                    streams.push({
-                        title: label.toUpperCase() + ' ' + (info.vidResolution ? info.vidResolution + 'p' : 'auto'),
-                        streamUrl: base + '/' + path.replace(/^\/+/, ''),
-                        headers: {
-                            'Referer': base + '/',
-                            'Origin': base,
-                            'User-Agent': UA
-                        }
-                    });
-                });
-            }
-        });
-
-        return JSON.stringify({ streams, subtitle: '' });
-    } catch (error) {
-        console.log('Legacy stream error: ' + error);
-        return JSON.stringify({ streams: [], subtitle: '' });
-    }
-}
-
-/* PURE-JS CRYPTO (SHA-256 + AES-256-GCM) FOR SORA'S JAVASCRIPCORE SANDBOX */
-
-const aaSbox = [
-0x63,0x7c,0x77,0x7b,0xf2,0x6b,0x6f,0xc5,0x30,0x01,0x67,0x2b,0xfe,0xd7,0xab,0x76,
-0xca,0x82,0xc9,0x7d,0xfa,0x59,0x47,0xf0,0xad,0xd4,0xa2,0xaf,0x9c,0xa4,0x72,0xc0,
-0xb7,0xfd,0x93,0x26,0x36,0x3f,0xf7,0xcc,0x34,0xa5,0xe5,0xf1,0x71,0xd8,0x31,0x15,
-0x04,0xc7,0x23,0xc3,0x18,0x96,0x05,0x9a,0x07,0x12,0x80,0xe2,0xeb,0x27,0xb2,0x75,
-0x09,0x83,0x2c,0x1a,0x1b,0x6e,0x5a,0xa0,0x52,0x3b,0xd6,0xb3,0x29,0xe3,0x2f,0x84,
-0x53,0xd1,0x00,0xed,0x20,0xfc,0xb1,0x5b,0x6a,0xcb,0xbe,0x39,0x4a,0x4c,0x58,0xcf,
-0xd0,0xef,0xaa,0xfb,0x43,0x4d,0x33,0x85,0x45,0xf9,0x02,0x7f,0x50,0x3c,0x9f,0xa8,
-0x51,0xa3,0x40,0x8f,0x92,0x9d,0x38,0xf5,0xbc,0xb6,0xda,0x21,0x10,0xff,0xf3,0xd2,
-0xcd,0x0c,0x13,0xec,0x5f,0x97,0x44,0x17,0xc4,0xa7,0x7e,0x3d,0x64,0x5d,0x19,0x73,
-0x60,0x81,0x4f,0xdc,0x22,0x2a,0x90,0x88,0x46,0xee,0xb8,0x14,0xde,0x5e,0x0b,0xdb,
-0xe0,0x32,0x3a,0x0a,0x49,0x06,0x24,0x5c,0xc2,0xd3,0xac,0x62,0x91,0x95,0xe4,0x79,
-0xe7,0xc8,0x37,0x6d,0x8d,0xd5,0x4e,0xa9,0x6c,0x56,0xf4,0xea,0x65,0x7a,0xae,0x08,
-0xba,0x78,0x25,0x2e,0x1c,0xa6,0xb4,0xc6,0xe8,0xdd,0x74,0x1f,0x4b,0xbd,0x8b,0x8a,
-0x70,0x3e,0xb5,0x66,0x48,0x03,0xf6,0x0e,0x61,0x35,0x57,0xb9,0x86,0xc1,0x1d,0x9e,
-0xe1,0xf8,0x98,0x11,0x69,0xd9,0x8e,0x94,0x9b,0x1e,0x87,0xe9,0xce,0x55,0x28,0xdf,
-0x8c,0xa1,0x89,0x0d,0xbf,0xe6,0x42,0x68,0x41,0x99,0x2d,0x0f,0xb0,0x54,0xbb,0x16
-];
-
-const aaRcon = [0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36];
-
-function aaKeyExpansion(key) {
-    const Nk = key.length / 4;
-    const Nr = Nk + 6;
-    const w = new Uint32Array(4 * (Nr + 1));
-    for (let i = 0; i < Nk; i++) {
-        w[i] = (key[4 * i] << 24) | (key[4 * i + 1] << 16) | (key[4 * i + 2] << 8) | key[4 * i + 3];
-    }
-    for (let i = Nk; i < 4 * (Nr + 1); i++) {
-        let temp = w[i - 1];
-        if (i % Nk === 0) {
-            temp = ((temp << 8) | (temp >>> 24)) >>> 0;
-            const b0 = (temp >>> 24) & 0xff, b1 = (temp >>> 16) & 0xff, b2 = (temp >>> 8) & 0xff, b3 = temp & 0xff;
-            temp = ((aaSbox[b0] << 24) | (aaSbox[b1] << 16) | (aaSbox[b2] << 8) | aaSbox[b3]) ^ (aaRcon[(i / Nk) - 1] << 24);
-        } else if (Nk > 6 && i % Nk === 4) {
-            const b0 = (temp >>> 24) & 0xff, b1 = (temp >>> 16) & 0xff, b2 = (temp >>> 8) & 0xff, b3 = temp & 0xff;
-            temp = (aaSbox[b0] << 24) | (aaSbox[b1] << 16) | (aaSbox[b2] << 8) | aaSbox[b3];
-        }
-        w[i] = (w[i - Nk] ^ temp) >>> 0;
-    }
-    const rk = new Uint8Array(4 * (Nr + 1) * 4);
-    for (let i = 0; i < w.length; i++) {
-        rk[4 * i] = (w[i] >>> 24) & 0xff;
-        rk[4 * i + 1] = (w[i] >>> 16) & 0xff;
-        rk[4 * i + 2] = (w[i] >>> 8) & 0xff;
-        rk[4 * i + 3] = w[i] & 0xff;
-    }
-    return rk;
-}
-
-function aaEncryptBlock(key, block) {
-    const Nr = key.length / 16 - 1;
-    const s = block.slice();
-    for (let i = 0; i < 16; i++) s[i] ^= key[i];
-    for (let round = 1; round < Nr; round++) {
-        for (let i = 0; i < 16; i++) s[i] = aaSbox[s[i]];
-        const t = s.slice();
-        s[0] = t[0]; s[4] = t[4]; s[8] = t[8]; s[12] = t[12];
-        s[1] = t[5]; s[5] = t[9]; s[9] = t[13]; s[13] = t[1];
-        s[2] = t[10]; s[6] = t[14]; s[10] = t[2]; s[14] = t[6];
-        s[3] = t[15]; s[7] = t[3]; s[11] = t[7]; s[15] = t[11];
-        aaMixColumns(s);
-        for (let i = 0; i < 16; i++) s[i] ^= key[round * 16 + i];
-    }
-    for (let i = 0; i < 16; i++) s[i] = aaSbox[s[i]];
-    const t = s.slice();
-    s[0] = t[0]; s[4] = t[4]; s[8] = t[8]; s[12] = t[12];
-    s[1] = t[5]; s[5] = t[9]; s[9] = t[13]; s[13] = t[1];
-    s[2] = t[10]; s[6] = t[14]; s[10] = t[2]; s[14] = t[6];
-    s[3] = t[15]; s[7] = t[3]; s[11] = t[7]; s[15] = t[11];
-    for (let i = 0; i < 16; i++) s[i] ^= key[Nr * 16 + i];
-    return s;
-}
-
-function aaGmul(a, b) {
-    let p = 0;
-    for (let i = 0; i < 8; i++) {
-        if (b & 1) p ^= a;
-        const hi = a & 0x80;
-        a = (a << 1) & 0xff;
-        if (hi) a ^= 0x1b;
-        b >>= 1;
-    }
-    return p;
-}
-
-function aaMixColumns(s) {
-    for (let c = 0; c < 4; c++) {
-        const i = c * 4;
-        const a0 = s[i], a1 = s[i + 1], a2 = s[i + 2], a3 = s[i + 3];
-        s[i] = aaGmul(a0, 2) ^ aaGmul(a1, 3) ^ a2 ^ a3;
-        s[i + 1] = a0 ^ aaGmul(a1, 2) ^ aaGmul(a2, 3) ^ a3;
-        s[i + 2] = a0 ^ a1 ^ aaGmul(a2, 2) ^ aaGmul(a3, 3);
-        s[i + 3] = aaGmul(a0, 3) ^ a1 ^ a2 ^ aaGmul(a3, 2);
-    }
-}
-
-function aaGfMul128(x, y) {
-    const z = new Uint8Array(16);
-    const v = y.slice();
-    const R = [0xe1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    for (let i = 0; i < 128; i++) {
-        if (x[i >> 3] & (0x80 >> (i & 7))) {
-            for (let j = 0; j < 16; j++) z[j] ^= v[j];
-        }
-        const lsb = v[15] & 1;
-        for (let j = 15; j > 0; j--) v[j] = ((v[j] >>> 1) | ((v[j - 1] & 1) << 7)) & 0xff;
-        v[0] = (v[0] >>> 1);
-        if (lsb) for (let j = 0; j < 16; j++) v[j] ^= R[j];
-    }
-    for (let j = 0; j < 16; j++) x[j] = z[j];
-}
-
-function aaGhash(H, data) {
-    const y = new Uint8Array(16);
-    for (let i = 0; i < data.length; i += 16) {
-        for (let j = 0; j < 16; j++) y[j] ^= (i + j < data.length) ? data[i + j] : 0;
-        aaGfMul128(y, H);
-    }
-    return y;
-}
-
-function aaInc32(block) {
-    let t = (block[15] + 1) & 0xff;
-    block[15] = t;
-    if (t === 0) {
-        t = (block[14] + 1) & 0xff; block[14] = t;
-        if (t === 0) {
-            t = (block[13] + 1) & 0xff; block[13] = t;
-            if (t === 0) { block[12] = (block[12] + 1) & 0xff; }
-        }
-    }
-    return block;
-}
-
-function aaGcmSeal(key, iv, plaintext) {
-    const rk = aaKeyExpansion(key);
-    const H = aaEncryptBlock(rk, new Uint8Array(16));
-    const J0 = new Uint8Array(16);
-    J0.set(iv.slice(0, 12));
-    J0[15] = 1;
-    const counter = J0.slice();
-    aaInc32(counter);
-    const out = new Uint8Array(plaintext.length);
-    for (let i = 0; i < plaintext.length; i += 16) {
-        const ks = aaEncryptBlock(rk, counter);
-        aaInc32(counter);
-        for (let j = 0; j < 16 && i + j < plaintext.length; j++) out[i + j] = plaintext[i + j] ^ ks[j];
-    }
-    const padded = Math.ceil(out.length / 16) * 16;
-    const full = new Uint8Array(padded + 16);
-    full.set(out);
-    const dv = new DataView(full.buffer);
-    dv.setUint32(full.length - 4, out.length * 8, false);
-    const S = aaGhash(H, full);
-    const EKJ0 = aaEncryptBlock(rk, J0);
-    const tag = new Uint8Array(16);
-    for (let i = 0; i < 16; i++) tag[i] = S[i] ^ EKJ0[i];
-    return { out, tag };
-}
-
-function aaGcmOpen(key, iv, ciphertext, tag) {
-    const rk = aaKeyExpansion(key);
-    const H = aaEncryptBlock(rk, new Uint8Array(16));
-    const J0 = new Uint8Array(16);
-    J0.set(iv.slice(0, 12));
-    J0[15] = 1;
-    const counter = J0.slice();
-    aaInc32(counter);
-    const out = new Uint8Array(ciphertext.length);
-    for (let i = 0; i < ciphertext.length; i += 16) {
-        const ks = aaEncryptBlock(rk, counter);
-        aaInc32(counter);
-        for (let j = 0; j < 16 && i + j < ciphertext.length; j++) out[i + j] = ciphertext[i + j] ^ ks[j];
-    }
-    const padded = Math.ceil(ciphertext.length / 16) * 16;
-    const full = new Uint8Array(padded + 16);
-    full.set(ciphertext);
-    const dv = new DataView(full.buffer);
-    dv.setUint32(full.length - 4, ciphertext.length * 8, false);
-    const S = aaGhash(H, full);
-    const EKJ0 = aaEncryptBlock(rk, J0);
-    for (let i = 0; i < 16; i++) {
-        if ((S[i] ^ EKJ0[i]) !== tag[i]) return null;
-    }
-    return out;
-}
-
-const aaK256 = [
-0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,
-0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,
-0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,
-0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,
-0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,
-0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,
-0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,
-0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2
-];
-
-function aaRotr(x, n) { return (x >>> n) | (x << (32 - n)); }
-
-function aaSha256(bytes) {
-    const H0 = [0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19];
-    const l = bytes.length;
-    const m = new Uint8Array((((l + 8) >> 6) + 1) << 6);
-    m.set(bytes);
-    m[l] = 0x80;
-    const dv = new DataView(m.buffer);
-    dv.setUint32(m.length - 8, 0, false);
-    dv.setUint32(m.length - 4, l * 8, false);
-    const w = new Int32Array(64);
-    const H = H0.slice();
-    for (let i = 0; i < m.length; i += 64) {
-        for (let t = 0; t < 16; t++) w[t] = dv.getInt32(i + t * 4, false);
-        for (let t = 16; t < 64; t++) {
-            const s0 = aaRotr(w[t - 15], 7) ^ aaRotr(w[t - 15], 18) ^ (w[t - 15] >>> 3);
-            const s1 = aaRotr(w[t - 2], 17) ^ aaRotr(w[t - 2], 19) ^ (w[t - 2] >>> 10);
-            w[t] = (w[t - 16] + s0 + w[t - 7] + s1) | 0;
-        }
-        let a = H[0], b = H[1], c = H[2], d = H[3], e = H[4], f = H[5], g = H[6], h = H[7];
-        for (let t = 0; t < 64; t++) {
-            const S1 = aaRotr(e, 6) ^ aaRotr(e, 11) ^ aaRotr(e, 25);
-            const ch = (e & f) ^ (~e & g);
-            const t1 = (h + S1 + ch + aaK256[t] + w[t]) | 0;
-            const S0 = aaRotr(a, 2) ^ aaRotr(a, 13) ^ aaRotr(a, 22);
-            const maj = (a & b) ^ (a & c) ^ (b & c);
-            const t2 = (S0 + maj) | 0;
-            h = g; g = f; f = e; e = (d + t1) | 0; d = c; c = b; b = a; a = (t1 + t2) | 0;
-        }
-        H[0] = (H[0] + a) | 0; H[1] = (H[1] + b) | 0; H[2] = (H[2] + c) | 0; H[3] = (H[3] + d) | 0;
-        H[4] = (H[4] + e) | 0; H[5] = (H[5] + f) | 0; H[6] = (H[6] + g) | 0; H[7] = (H[7] + h) | 0;
-    }
-    const out = new Uint8Array(32);
-    for (let i = 0; i < 8; i++) {
-        out[i * 4] = (H[i] >>> 24) & 0xff;
-        out[i * 4 + 1] = (H[i] >>> 16) & 0xff;
-        out[i * 4 + 2] = (H[i] >>> 8) & 0xff;
-        out[i * 4 + 3] = H[i] & 0xff;
-    }
-    return out;
-}
-
-/* BYTE / STRING HELPERS */
-
-function aaAscii(str) {
-    const s = String(str);
-    const out = new Uint8Array(s.length);
-    for (let i = 0; i < s.length; i++) out[i] = s.charCodeAt(i) & 0xff;
-    return out;
-}
-
-const AA_B64_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
-
-function aaB64(bytes) {
-    // Pure-JS base64: Sora's btoa() UTF-8-mangles bytes >= 0x80, corrupting tokens.
-    let out = '';
-    for (let i = 0; i < bytes.length; i += 3) {
-        const b0 = bytes[i];
-        const b1 = (i + 1 < bytes.length) ? bytes[i + 1] : 0;
-        const b2 = (i + 2 < bytes.length) ? bytes[i + 2] : 0;
-        out += AA_B64_CHARS[b0 >> 2];
-        out += AA_B64_CHARS[((b0 & 3) << 4) | (b1 >> 4)];
-        out += (i + 1 < bytes.length) ? AA_B64_CHARS[((b1 & 15) << 2) | (b2 >> 6)] : '=';
-        out += (i + 2 < bytes.length) ? AA_B64_CHARS[b2 & 63] : '=';
-    }
-    return out;
-}
-
-function aaUnb64(str) {
-    // Pure-JS base64 decode: avoids atob() binary-string issues in JavaScriptCore.
-    const s = String(str).replace(/=+$/, '');
-    const out = [];
-    let buf = 0, bits = 0;
-    for (let i = 0; i < s.length; i++) {
-        const v = AA_B64_CHARS.indexOf(s[i]);
-        if (v < 0) continue;
-        buf = (buf << 6) | v;
-        bits += 6;
-        if (bits >= 8) {
-            bits -= 8;
-            out.push((buf >>> bits) & 0xff);
-            buf = buf & ((1 << bits) - 1);
-        }
-    }
-    return new Uint8Array(out);
-}
-
-function aaHexToBytes(hex) {
-    const h = String(hex || '');
-    const out = new Uint8Array(Math.floor(h.length / 2));
-    for (let i = 0; i < out.length; i++) out[i] = parseInt(h.substr(i * 2, 2), 16);
-    return out;
-}
-
-function aaHex(bytes) {
-    let out = '';
-    for (let i = 0; i < bytes.length; i++) out += ('0' + bytes[i].toString(16)).slice(-2);
-    return out;
-}
-
-function aaUtf8ToStr(bytes) {
-    let out = '';
-    for (let i = 0; i < bytes.length; i++) {
-        const b = bytes[i];
-        if (b < 0x80) {
-            out += String.fromCharCode(b);
-        } else if ((b & 0xe0) === 0xc0 && i + 1 < bytes.length) {
-            out += String.fromCharCode(((b & 0x1f) << 6) | (bytes[i + 1] & 0x3f));
-            i += 1;
-        } else if ((b & 0xf0) === 0xe0 && i + 2 < bytes.length) {
-            out += String.fromCharCode(((b & 0x0f) << 12) | ((bytes[i + 1] & 0x3f) << 6) | (bytes[i + 2] & 0x3f));
-            i += 2;
-        } else if ((b & 0xf8) === 0xf0 && i + 3 < bytes.length) {
-            const cp = ((b & 0x07) << 18) | ((bytes[i + 1] & 0x3f) << 12) | ((bytes[i + 2] & 0x3f) << 6) | (bytes[i + 3] & 0x3f);
-            if (cp > 0xffff) {
-                const v = cp - 0x10000;
-                out += String.fromCharCode(0xd800 + (v >> 10), 0xdc00 + (v & 0x3ff));
-            } else {
-                out += String.fromCharCode(cp);
-            }
-            i += 3;
-        }
-    }
-    return out;
-}
-
-function aaXor56(hex) {
-    const s = String(hex || '');
-    let out = '';
-    for (let i = 0; i + 1 < s.length; i += 2) {
-        out += String.fromCharCode(parseInt(s.substr(i, 2), 16) ^ 56);
-    }
-    return out;
-}
-
-/* HELPERS */
-
-async function gql(query) {
-    for (let i = 0; i < API_URLS.length; i++) {
-        const response = await soraFetch(API_URLS[i], {
-            method: 'POST',
-            headers: API_HEADERS,
-            body: JSON.stringify({ query })
-        });
-        if (!response) continue;
-        try {
-            const json = await response.json();
-            if (json && json.data) return json.data;
-        } catch (error) {
-            continue;
-        }
-    }
-    return null;
-}
-
-async function soraFetch(url, options) {
-    const opts = options || {};
-    const method = opts.method || 'GET';
-    const headers = opts.headers || {};
-    const body = typeof opts.body === 'undefined' ? null : opts.body;
-
-    try {
-        return await fetchv2(url, headers, method, body);
-    } catch (e) {
-        try {
-            const text = await fetch(url, {
-                method: method,
-                headers: headers,
-                body: body
-            });
+        // Helper functions (return allSubtitles too)
+        async function fetchMegaplayStream(server) {
+            if (!server) return null;
+            const streamData = await Anikoto.extractMegaplayStream(server.url);
+            if (!streamData) return null;
             return {
-                text: async () => text,
-                json: async () => JSON.parse(text)
+                title: server.name.replace("Sub-Megaplay", "Megaplay SUB")
+                           .replace("Dub-Megaplay", "Megaplay DUB"),
+                streamUrl: streamData.streamUrl,
+                headers: streamData.headers,
+                subtitles: streamData.subtitles,
+                subtitlesHeaders: streamData.subtitlesHeaders,
+                allSubtitles: streamData.allSubtitles
             };
-        } catch (error) {
-            console.log('soraFetch error: ' + error);
+        }
+
+        async function fetchVidplayStream(server) {
+            if (!server) return null;
+            const streamData = await Anikoto.extractVidplayStream(server.url);
+            if (!streamData) return null;
+            return {
+                title: server.name.replace("Sub-Vidplay", "Vidplay SUB")
+                           .replace("Dub-Vidplay", "Vidplay DUB"),
+                streamUrl: streamData.streamUrl,
+                headers: streamData.headers,
+                subtitles: streamData.subtitles,
+                subtitlesHeaders: streamData.subtitlesHeaders,
+                allSubtitles: streamData.allSubtitles
+            };
+        }
+
+        const streams = [];
+        let subtitles = "";
+        let subtitlesHeaders = {};
+        let allSubtitles = [];
+
+        const addStream = (s) => {
+            if (!s) return false;
+            if (Array.isArray(s)) {
+                const valid = s.filter(item => item && item.streamUrl);
+                if (!valid.length) return false;
+                streams.push(...valid);
+                return true;
+            }
+            if (!s.streamUrl) return false;
+            streams.push({ title: s.title, streamUrl: s.streamUrl, headers: s.headers });
+            if (!subtitles && s.subtitles) {
+                subtitles = s.subtitles;
+                subtitlesHeaders = s.subtitlesHeaders;
+            }
+            if (s.allSubtitles?.length) {
+                allSubtitles.push(...s.allSubtitles);
+            }
+            return true;
+        };
+
+        const withShortTimeout = async (promise, label, timeoutMs = 3500) => {
+            let timeoutId;
+            try {
+                return await Promise.race([
+                    promise,
+                    new Promise(resolve => {
+                        timeoutId = setTimeout(() => {
+                            console.warn("[extractStreamUrl] " + label + " timed out");
+                            resolve(null);
+                        }, timeoutMs);
+                    })
+                ]);
+            } catch (e) {
+                console.warn("[extractStreamUrl] " + label + " failed: " + e);
+                return null;
+            } finally {
+                if (timeoutId) clearTimeout(timeoutId);
+            }
+        };
+
+        const primaryTasks = [
+            ["Megaplay SUB", fetchMegaplayStream(megaSub)],
+            ["Vidplay SUB", fetchVidplayStream(vidplaySub)],
+            ["Megaplay DUB", fetchMegaplayStream(megaDub)],
+            ["Vidplay DUB", fetchVidplayStream(vidplayDub)]
+        ];
+
+        for (const [label, task] of primaryTasks) {
+            const stream = await withShortTimeout(task, label);
+            if (addStream(stream)) {
+                const result = JSON.stringify({ streams, subtitles, subtitlesHeaders, allSubtitles });
+                console.log("[extractStreamUrl] Fast result from " + label + ": " + result.substring(0, 300));
+                return result;
+            }
+        }
+
+        const kiwiStreams = await withShortTimeout(Anikoto.extractKwikStream(url), "Kiwi", 4500);
+        if (addStream(kiwiStreams)) {
+            console.log("[extractStreamUrl] Added " + streams.length + " Kiwi Hardsub streams");
+        }
+
+        const result = JSON.stringify({ streams, subtitles, subtitlesHeaders, allSubtitles });
+        console.log("[extractStreamUrl] Result: " + result.substring(0, 300));
+        return result;
+
+    } catch (error) {
+        console.log("[extractStreamUrl] Fetch error: " + error);
+        return JSON.stringify({ streams: [], subtitles: "", subtitlesHeaders: {}, allSubtitles: [] });
+    }
+}
+
+// ─── Search Results (unchanged) ───
+async function searchResults(keyword) {
+    try {
+        console.log("[searchResults] Keyword: " + keyword);
+        const items = await Anikoto.search(keyword);
+        if (!items) return JSON.stringify([{ title: "Error", image: "", href: "" }]);
+
+        const normalizeTitle = (value) => String(value || "")
+            .toLowerCase()
+            .replace(/&amp;/g, "&")
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/\((tv|ona|ova)\)/g, " ")
+            .replace(/[^a-z0-9]+/g, " ")
+            .replace(/\b(the|a|an)\b/g, " ")
+            .replace(/\s+/g, " ")
+            .trim();
+        const queryTitle = normalizeTitle(keyword);
+        const specialPattern = /\b(movie|film|special|recap|episode of|ova|ona|sp|fan letter|log:|the movie)\b/i;
+        const seriesPattern = /\((tv)\)|\bseason\b/i;
+
+        const transformed = items.map(item => ({
+            title: item.title || "Untitled",
+            image: item.poster || "",
+            href: "anime/" + item.session
+        })).sort((a, b) => {
+            const aTitle = normalizeTitle(a.title);
+            const bTitle = normalizeTitle(b.title);
+            const aExact = aTitle === queryTitle || aTitle === `${queryTitle} tv`;
+            const bExact = bTitle === queryTitle || bTitle === `${queryTitle} tv`;
+            if (aExact !== bExact) return aExact ? -1 : 1;
+            const aSeries = seriesPattern.test(a.title);
+            const bSeries = seriesPattern.test(b.title);
+            if (aSeries !== bSeries) return aSeries ? -1 : 1;
+            const aSpecial = specialPattern.test(a.title);
+            const bSpecial = specialPattern.test(b.title);
+            if (aSpecial !== bSpecial) return aSpecial ? 1 : -1;
+            return 0;
+        });
+
+        console.log("Transformed Results: " + JSON.stringify(transformed));
+        return JSON.stringify(transformed);
+    } catch (error) {
+        console.log("[searchResults] Fetch error: " + error);
+        return JSON.stringify([{ title: "Error", image: "", href: "" }]);
+    }
+}
+
+// ─── Extract Details (unchanged) ───
+async function extractDetails(url) {
+    try {
+        const match = url.match(/anime\/([^\/]+)/);
+        if (!match) throw new Error("Invalid URL format");
+        const session = match[1];
+        const details = await Anikoto.getDetails(session);
+        if (!details) throw new Error("Could not fetch details");
+
+        const transformed = [{
+            description: details.synopsis || "No description available",
+            aliases: "Duration: " + (details.duration || "Unknown"),
+            airdate: "Aired: " + (details.aired || "Unknown")
+        }];
+
+        console.log(JSON.stringify(transformed));
+        return JSON.stringify(transformed);
+    } catch (error) {
+        console.log("Details error: " + error);
+        return JSON.stringify([{
+            description: "Error loading description",
+            aliases: "Duration: Unknown",
+            airdate: "Aired/Released: Unknown"
+        }]);
+    }
+}
+
+// ─── Extract Episodes (unchanged) ───
+async function extractEpisodes(url) {
+    try {
+        const match = url.match(/anime\/([^\/]+)/);
+        if (!match) throw new Error("Invalid URL format");
+        const session = match[1];
+        const episodesData = await Anikoto.getEpisodes(session);
+        if (!episodesData) return JSON.stringify([]);
+
+        const sorted = episodesData.sort((a, b) => a.episode - b.episode);
+        const episodesArray = sorted.map(ep => ({
+            href: "anime/" + session + "/" + ep.session + "?num=" + ep.episode,
+            number: ep.episode,
+            title: ep.title || "Episode " + ep.episode
+        }));
+
+        console.log(episodesArray);
+        return JSON.stringify(episodesArray);
+    } catch (error) {
+        console.log("Fetch error in extractEpisodes: " + error);
+        return JSON.stringify([]);
+    }
+}
+
+// ─── DdosGuardInterceptor (bypass DDoS protection) ───
+class DdosGuardInterceptor {
+    constructor() {
+        this.errorCodes = [403];
+        this.serverCheck = ["ddos-guard"];
+        this.cookieStore = {};
+    }
+
+    async fetchWithBypass(url, options = {}) {
+        let response = await this.fetchWithCookies(url, options);
+        if (this.errorCodes.includes(response.status)) {
+            const newCookie = await this.getNewCookie(url);
+            if (newCookie || this.cookieStore["__ddg2_"]) {
+                return this.fetchWithCookies(url, options);
+            }
+            return response;
+        }
+
+        let responseText;
+        try { responseText = await response.text(); } catch (e) { return response; }
+
+        const isBlocked = responseText.includes('ddos-guard/js-challenge') ||
+                         responseText.includes('DDoS-Guard') ||
+                         responseText.includes('data-ddg-origin');
+        if (!isBlocked) {
+            response.text = async () => responseText;
+            return response;
+        }
+
+        if (this.cookieStore["__ddg2_"]) {
+            return this.fetchWithCookies(url, options);
+        }
+
+        const newCookie = await this.getNewCookie(url);
+        if (!newCookie) {
+            response.text = async () => responseText;
+            return response;
+        }
+        return this.fetchWithCookies(url, options);
+    }
+
+    async fetchWithCookies(url, options) {
+        const cookieHeader = this.getCookieHeader();
+        const headers = options.headers || {};
+        if (cookieHeader) headers.Cookie = cookieHeader;
+        const response = await soraFetch(url, { headers });
+        try {
+            const setCookie = response.headers ? (response.headers["Set-Cookie"] || response.headers["set-cookie"]) : null;
+            if (setCookie) this.storeCookies(setCookie);
+        } catch (e) {}
+        return response;
+    }
+
+    storeCookies(setCookieString) {
+        const cookies = Array.isArray(setCookieString) ? setCookieString : [setCookieString];
+        cookies.forEach(cookieHeader => {
+            const parts = cookieHeader.split(";");
+            if (parts.length > 0) {
+                const [key, value] = parts[0].split("=");
+                if (key) this.cookieStore[key.trim()] = value?.trim() || "";
+            }
+        });
+    }
+
+    getCookieHeader() {
+        return Object.entries(this.cookieStore).map(([k, v]) => `${k}=${v}`).join("; ");
+    }
+
+    async getNewCookie(targetUrl) {
+        try {
+            const wellKnownResponse = await soraFetch("https://check.ddos-guard.net/check.js");
+            const wellKnownText = await wellKnownResponse.text();
+            const paths = wellKnownText.match(/['"](\/\.well-known\/ddos-guard\/[^'"]+)['"]/g);
+            if (!paths || paths.length === 0) return null;
+            const localPath = paths[0].replace(/['"]/g, '');
+            const match = targetUrl.match(/^(https?:\/\/[^\/]+)/);
+            if (!match) return null;
+            const baseUrl = match[1];
+            const localUrl = baseUrl + localPath;
+
+            await soraFetch(localUrl, { headers: { 'Referer': targetUrl } });
+            const checkPaths = wellKnownText.match(/['"]https:\/\/check\.ddos-guard\.net\/[^'"]+['"]/g);
+            if (checkPaths && checkPaths.length > 0) {
+                const checkUrl = checkPaths[0].replace(/['"]/g, '');
+                await soraFetch(checkUrl, { headers: { 'Referer': targetUrl } });
+            }
+            return this.cookieStore["__ddg2_"] || null;
+        } catch (e) {
             return null;
         }
     }
 }
 
-/* P.A.C.K.E.R. UNPACKER (needed for some iframe embed pages) */
-class Unbaser {
-    constructor(base) {
-        this.ALPHABET = {
-            62: "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
-            95: "' !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~'",
-        };
-        this.dictionary = {};
-        this.base = base;
-        if (36 < base && base < 62) {
-            this.ALPHABET[base] = this.ALPHABET[base] || this.ALPHABET[62].substr(0, base);
-        }
-        if (2 <= base && base <= 36) {
-            this.unbase = (value) => parseInt(value, base);
-        } else {
-            try {
-                [...this.ALPHABET[base]].forEach((cipher, index) => {
-                    this.dictionary[cipher] = index;
-                });
-            } catch (er) {
-                throw Error("Unsupported base encoding.");
-            }
-            this.unbase = this._dictunbaser;
-        }
-    }
-    _dictunbaser(value) {
-        let ret = 0;
-        [...value].reverse().forEach((cipher, index) => {
-            ret = ret + ((Math.pow(this.base, index)) * this.dictionary[cipher]);
-        });
-        return ret;
-    }
-}
-
+// ─── Packer unpacker ───
 function unpack(source) {
-    let { payload, symtab, radix, count } = _filterargs(source);
-    if (count != symtab.length) {
-        throw Error("Malformed p.a.c.k.e.r. symtab.");
-    }
-    let unbase;
-    try {
-        unbase = new Unbaser(radix);
-    } catch (e) {
-        throw Error("Unknown p.a.c.k.e.r. encoding.");
-    }
-    function lookup(match) {
-        const word = match;
-        let word2;
-        if (radix == 1) {
-            word2 = symtab[parseInt(word)];
-        } else {
-            word2 = symtab[unbase.unbase(word)];
-        }
-        return word2 || word;
-    }
-    source = payload.replace(/\b\w+\b/g, lookup);
-    return _replacestrings(source);
     function _filterargs(source) {
         const juicers = [
             /}\('(.*)', *(\d+|\[\]), *(\d+), *'(.*)'\.split\('\|'\), *(\d+), *(.*)\)\)/,
@@ -1250,54 +798,61 @@ function unpack(source) {
         for (const juicer of juicers) {
             const args = juicer.exec(source);
             if (args) {
-                try {
-                    return {
-                        payload: args[1],
-                        symtab: args[4].split("|"),
-                        radix: parseInt(args[2]),
-                        count: parseInt(args[3]),
-                    };
-                } catch (ValueError) {
-                    throw Error("Corrupted p.a.c.k.e.r. data.");
-                }
+                return {
+                    payload: args[1],
+                    symtab: args[4].split("|"),
+                    radix: parseInt(args[2]),
+                    count: parseInt(args[3])
+                };
             }
         }
-        throw Error("Could not make sense of p.a.c.k.e.r data (unexpected code structure)");
+        throw Error("Could not make sense of p.a.c.k.e.r data");
     }
-    function _replacestrings(source) {
-        return source;
+
+    let { payload, symtab, radix, count } = _filterargs(source);
+    if (count != symtab.length) throw Error("Malformed symtab.");
+
+    let unbase;
+    const ALPHABET = {
+        62: "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
+        95: "' !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~'",
+    };
+    if (radix <= 36) unbase = (value) => parseInt(value, radix);
+    else {
+        const dict = {};
+        [...ALPHABET[radix] || ALPHABET[62]].forEach((c, i) => { dict[c] = i; });
+        unbase = (value) => {
+            let ret = 0;
+            [...value].reverse().forEach((c, i) => { ret += Math.pow(radix, i) * dict[c]; });
+            return ret;
+        };
     }
+
+    function lookup(word) {
+        if (radix == 1) return symtab[parseInt(word)];
+        return symtab[unbase(word)] || word;
+    }
+
+    source = payload.replace(/\b\w+\b/g, lookup);
+    return source;
 }
 
-function extractShowId(url) {
-    const match = String(url || '').match(/\/bangumi\/([^\/?#]+)/);
-    return match ? match[1] : '';
-}
-
-function parseEpisodeUrl(url) {
-    const match = String(url || '').match(/\/bangumi\/([^\/?#]+)\/p-([^\/?#]+)/);
-    return match ? { showId: match[1], episode: match[2] } : null;
-}
-
-function cdnUrl(path) {
-    if (!path) return '';
-    var p = String(path).trim();
-    if (/^https?:\/\//i.test(p)) return p;
-    return CDN_BASES[0] + '/' + p.replace(/^\/+/, '');
-}
-
-function cleanText(text) {
-    return String(text || '')
-        .replace(/<br\s*\/?>/gi, '\n')
-        .replace(/<\/?[^>]+(>|$)/g, '')
-        .replace(/&amp;/g, '&')
-        .replace(/&#0?39;/g, "'")
-        .replace(/&quot;/g, '"')
-        .replace(/&lt;/g, '<')
-        .replace(/&gt;/g, '>')
-        .replace(/&nbsp;/g, ' ')
-        .replace(/[ \t]+/g, ' ')
-        .replace(/\s+\n/g, '\n')
-        .replace(/\n\s+/g, '\n')
-        .trim();
+// ─── soraFetch (existing wrapper) ───
+async function soraFetch(url, options = { headers: {}, method: "GET", body: null, encoding: "utf-8" }) {
+    try {
+        return await fetchv2(
+            url,
+            options.headers ?? {},
+            options.method ?? "GET",
+            options.body ?? null,
+            true,
+            options.encoding ?? "utf-8"
+        );
+    } catch (e) {
+        try {
+            return await fetch(url, options);
+        } catch (error) {
+            return null;
+        }
+    }
 }

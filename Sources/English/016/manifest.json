@@ -1,31 +1,21 @@
 {
-  "sourceName": "AllManga",
-  "iconUrl": "https://allmanga.to/pics/avatar-w.png",
+  "sourceName": "Anikoto",
+  "iconUrl": "https://git.luna-app.eu/ibro/services/raw/branch/main/anikoto/icon.png",
   "author": {
-    "name": "xdfkenny",
-    "icon": "https://yt3.googleusercontent.com/NHr6Y6qhYIUeoyIBdgeEYArXI1_ebVcLAuf562jPB6WSFTunOwPVuWC90eAG1zmeD6_Wy9_0mTs=s160-c-k-c0x00ffffff-no-rj",
-    "url": "https://github.com/xdfkenny"
+    "name": "ibro",
+    "icon": "https://git.luna-app.eu/ibro/services/raw/branch/main/profile.jpg",
+    "url": "https://github.com/xibrox"
   },
-  "description": "Módulo de AllManga (allmanga.to) — anime en inglés (sub/dub) vía el flow oficial AllAnime (aaReq + tobeparsed + clock). Auto-bootstrap de claves aaReq cuando rotan (build 136, epochs semanales), con fallback a keygen remoto y fuentes iframe (mp4upload/ok.ru) para mantener el flujo de video.",
-  "version": "1.9.0",
+  "version": "1.0.18",
   "language": "English",
-  "streamType": "HLS/MP4",
+  "streamType": "HLS",
   "quality": "1080p",
-  "baseUrl": "https://allmanga.to/",
-  "searchBaseUrl": "https://allmanga.to/search-anime?keyword=%s",
+  "baseUrl": "https://anikototv.to/",
+  "searchBaseUrl": "https://anikototv.to/search?query=%s",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/016/source.js",
   "type": "anime",
   "downloadSupport": true,
-  "combo": false,
   "asyncJS": true,
-  "streamAsyncJS": false,
-  "softsub": false,
-  "supportsMojuru": true,
-  "supportsDartotsu": true,
-  "supportsSora": true,
-  "supportsLuna": true,
-  "supportsAnymex": true,
-  "supportsTsumi": true,
-  "supportsHiyoku": true,
-  "id": "jzppd"
+  "softsub": true,
+  "id": "jF12G"
 }
