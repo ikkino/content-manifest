@@ -1,10 +1,22 @@
 {
-  "id": "mangayomi_782451093",
-  "sourceName": "AniNeko",
+  "sourceName": "VidLink",
+  "iconUrl": "https://vidlink.pro/favicon.ico",
+  "author": {
+    "name": "Local Repair"
+  },
+  "version": "1.0.1",
   "language": "English",
-  "type": "anime",
-  "baseUrl": "https://anineko.to",
+  "streamType": "MP4",
+  "quality": "1080p",
+  "baseUrl": "https://vidlink.pro/",
+  "searchBaseUrl": "https://vidlink.pro/",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/018/source.js",
-  "sourceCodeLanguage": "mangayomi-js",
-  "sourceCodeUrl": "https://raw.githubusercontent.com/Mallyd11/mangayomi-anime-extensions/refs/heads/main/javascript/anime/src/en/anineko.js"
+  "type": "anime",
+  "asyncJS": true,
+  "softsub": true,
+  "downloadSupport": false,
+  "supportsSora": true,
+  "supportsLuna": true,
+  "supportsShirox": true,
+  "id": "vidlink-local"
 }

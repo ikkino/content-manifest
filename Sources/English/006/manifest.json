@@ -1,28 +1,32 @@
 {
-  "sourceName": "IMDb",
-  "iconUrl": "https://m.media-amazon.com/images/G/01/imdb/images-ANDW73HA/favicon_iPhone_retina_180x180._CB1582158069_UX196_.png",
+  "sourceName": "AnimeGG",
+  "iconUrl": "https://files.catbox.moe/caq4am.png",
   "author": {
     "name": "50/50",
     "icon": "https://files.catbox.moe/741wp7.png"
   },
-  "version": "1.0.0",
+  "version": "1.0.1",
   "language": "English",
   "languageType": [
-    "Native"
+    "Subbed"
   ],
-  "streamType": "HLS",
+  "streamType": "mp4",
   "quality": "1080p",
-  "baseUrl": "https://www.imdb.com/",
-  "searchBaseUrl": "https://www.imdb.com/",
+  "baseUrl": "https://www.animegg.org/",
+  "searchBaseUrl": "https://www.animegg.org/",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/006/source.js",
-  "type": "shows/movies/anime",
+  "type": "anime",
   "asyncJS": true,
   "softsub": true,
-  "downloadSupport": false,
+  "downloadSupport": true,
   "supportsSora": true,
   "supportsLuna": true,
+  "supportsMojuru": true,
+  "supportsDartotsu": true,
+  "supportsAnymex": true,
   "supportsTsumi": true,
   "supportsHiyoku": true,
+  "supportsShirox": true,
   "supportsEclipse": true,
-  "id": "mod_336052763"
+  "id": "mod_932185679"
 }

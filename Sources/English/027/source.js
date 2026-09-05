@@ -1,4 +1,4 @@
-// Hexa Media Source Module
+// VidCore Media Source Module
 
 async function searchResults(keyword) {
     try {
@@ -168,15 +168,6 @@ async function extractEpisodes(url) {
     }
 }
 
-function generateHexKey() {
-    let hex = "";
-    const chars = "0123456789abcdef";
-    for (let i = 0; i < 64; i++) {
-        hex += chars[Math.floor(Math.random() * 16)];
-    }
-    return hex;
-}
-
 async function extractStreamUrl(ID) {
     try {
         let isMovie = ID.includes('movie');
@@ -196,68 +187,115 @@ async function extractStreamUrl(ID) {
             return JSON.stringify({ streams: [] });
         }
 
-        const key = generateHexKey();
+        const targetPageUrl = mediaType === "movie"
+            ? `https://vidcore.net/movie/${tmdbID}/`
+            : `https://vidcore.net/tv/${tmdbID}/${seasonNumber}/${episodeNumber}/`;
 
-        const encHexaRes = await soraFetch("https://enc-dec.app/api/enc-hexa");
-        if (!encHexaRes) throw new Error("Failed to get challenge token");
-        const encHexaJson = await encHexaRes.json();
-        const token = encHexaJson.result.token;
+        const response = await soraFetch(targetPageUrl);
+        if (!response) throw new Error("Failed to fetch vidcore page");
+        const html = await response.text();
 
-        const targetUrl = mediaType === "movie"
-            ? `https://theemoviedb.hexa.su/api/tmdb/movie/${tmdbID}/images`
-            : `https://theemoviedb.hexa.su/api/tmdb/tv/${tmdbID}/season/${seasonNumber}/episode/${episodeNumber}/images`;
+        const match = html.match(/\\"(?:en|token)\\":\\"(.*?)\\"/) || html.match(/"(?:en|token)":"(.*?)"/);
+        if (!match) throw new Error("Could not find payload text on vidcore page");
+        const text = match[1];
 
-        const response = await soraFetch(targetUrl, {
-            headers: {
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
-                "Referer": "https://hexa.su/",
-                "Accept": "text/plain",
-                "X-Fingerprint-Lite": "e9136c41504646444",
-                "X-Api-Key": key,
-                "X-Cap-Token": token
-            }
-        });
-        if (!response) throw new Error("Failed to fetch encrypted source data");
-        const encryptedText = await response.text();
+        const encVidcoreUrl = `https://enc-dec.app/api/enc-vidcore?text=${encodeURIComponent(text)}`;
+        const encRes = await soraFetch(encVidcoreUrl);
+        if (!encRes) throw new Error("Failed to call enc-vidcore API");
+        const encJson = await encRes.json();
+        const parts = encJson.result;
 
-        const decHeaders = {
-            "Content-Type": "application/json"
+        const { servers, stream, token } = parts;
+
+        const headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
+            "Referer": "https://vidcore.net/",
+            "X-Requested-With": "XMLHttpRequest",
+            "X-CSRF-Token": token
         };
-        const postData = JSON.stringify({
-            text: encryptedText,
-            key: key
-        });
-        const decryptedResponse = await fetchv2("https://enc-dec.app/api/dec-hexa", decHeaders, "POST", postData);
-        const decryptedJson = await decryptedResponse.json();
 
-        if (decryptedJson.status !== 200 || !decryptedJson.result) {
-            throw new Error(decryptedJson.error || "Decryption failed");
-        }
+        const serversRes = await fetchv2(servers, headers, "POST", null);
+        const serversEncrypted = await serversRes.text();
 
-        const sources = decryptedJson.result.sources || [];
-        const streamObjects = sources.map(src => ({
-            title: `[Hexa] ${src.server}`,
-            streamUrl: src.url,
-            headers: {
-                "Referer": "https://hexa.su/",
-                "Origin": "https://hexa.su"
-            }
+        const decRes = await fetchv2("https://enc-dec.app/api/dec-vidcore", { "Content-Type": "application/json" }, "POST", JSON.stringify({
+            text: serversEncrypted
         }));
+        const decJson = await decRes.json();
+        const serversDecrypted = decJson.result || [];
+
+        let streamObjects = [];
+        let allSubtitles = [];
+
+        const serverPromises = serversDecrypted.map(async (server) => {
+            try {
+                const streamUrl = `${stream}/${server.data}`;
+                const streamRes = await fetchv2(streamUrl, headers, "POST", null);
+                const streamEncrypted = await streamRes.text();
+
+                const decStreamRes = await fetchv2("https://enc-dec.app/api/dec-vidcore", { "Content-Type": "application/json" }, "POST", JSON.stringify({
+                    text: streamEncrypted
+                }));
+                const decStreamJson = await decStreamRes.json();
+                const streamDecrypted = decStreamJson.result;
+
+                if (streamDecrypted && streamDecrypted.url) {
+                    return {
+                        name: server.name,
+                        url: streamDecrypted.url,
+                        tracks: streamDecrypted.tracks || []
+                    };
+                }
+            } catch (err) {
+                console.log(`Error fetching/decrypting stream for VidCore server ${server.name}: ` + err.message);
+            }
+            return null;
+        });
+
+        const results = await Promise.all(serverPromises);
+
+        results.forEach(res => {
+            if (!res) return;
+            streamObjects.push({
+                title: `[VidCore] ${res.name}`,
+                streamUrl: res.url,
+                headers: {
+                    "Referer": "https://vidcore.net/",
+                    "Origin": "https://vidcore.net"
+                }
+            });
+
+            res.tracks.forEach(track => {
+                if (track.file && !allSubtitles.some(existing => existing.url === track.file)) {
+                    allSubtitles.push({
+                        url: track.file,
+                        language: track.label || "English"
+                    });
+                }
+            });
+        });
 
         if (streamObjects.length === 0) {
-            const fallbackUrl = mediaType === "movie"
-                ? `https://vidlink.pro/movie/${tmdbID}`
-                : `https://vidlink.pro/tv/${tmdbID}/${seasonNumber}/${episodeNumber}`;
+            let fallbackUrl = "https://vidlink.pro/";
+            if (ID.includes('movie')) {
+                const mId = ID.replace('/movie/', '').replace('/', '');
+                fallbackUrl = `https://vidlink.pro/movie/${mId}`;
+            } else if (ID.includes('tv')) {
+                const parts = ID.split('/');
+                fallbackUrl = `https://vidlink.pro/tv/${parts[2]}/${parts[3]}/${parts[4]}`;
+            }
             streamObjects.push({
-                title: "VidLink Backup",
+                title: "VidCore Backup",
                 streamUrl: fallbackUrl,
                 headers: { "Referer": "https://vidlink.pro/" }
             });
         }
 
+        const englishSubtitle = allSubtitles.find(sub => sub.language.toLowerCase() === 'english');
+        let subtitleUrl = englishSubtitle ? englishSubtitle.url : "";
+
         return JSON.stringify({
             streams: streamObjects,
-            subtitles: ""
+            subtitles: subtitleUrl
         });
     } catch (e) {
         console.log("Error in extractStreamUrl: " + e.message);
@@ -269,7 +307,7 @@ async function extractStreamUrl(ID) {
             const parts = ID.split('/');
             fallbackUrl = `https://vidlink.pro/tv/${parts[2]}/${parts[3]}/${parts[4]}`;
         }
-        return JSON.stringify({ streams: [{ title: "VidLink Backup", streamUrl: fallbackUrl, headers: { Referer: "https://vidlink.pro/" } }], subtitles: "" });
+        return JSON.stringify({ streams: [{ title: "VidCore Backup", streamUrl: fallbackUrl, headers: { Referer: "https://vidlink.pro/" } }], subtitles: "" });
     }
 }
 

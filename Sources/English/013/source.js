@@ -1,16 +1,21 @@
 async function searchResults(keyword) {
-    const regex = /<a href="([^"]*)" class="mse">[\s\S]*?<img src="([^"]*)" class="media-object">[\s\S]*?<h2>([^<]*?)<\/h2>/g;
     const results = [];
     try {
-        const response = await fetchv2("https://www.animegg.org/search/?q=" + encodeURIComponent(keyword));
-        const html = await response.text();
+        const response = await fetchv2("https://eng.animeapps.top/api/search2.php?keyword=" + encodeURIComponent(keyword) + "&page=1&limit=200");
+        const json = await response.json();
 
-        let match;
-        while ((match = regex.exec(html)) !== null) {
-            results.push({
-                title: match[3].trim(),
-                image: match[2].trim(),
-                href: "https://www.animegg.org" + match[1].trim()
+        if (json.status === "success" && json.data) {
+            json.data.forEach(item => {
+                let title = item.postname.trim();
+                title = title.replace(/\s*\(Uncensored\)\s*$/i, '');
+                title = title.replace(/\s*BD\s*$/i, '');
+                title = title.trim();
+
+                results.push({
+                    title: title,
+                    image: item.ani_cover_large,
+                    href: "https://anibd.app/" + item.postid + "?anilist=" + item.anilist
+                });
             });
         }
 
@@ -26,101 +31,111 @@ async function searchResults(keyword) {
 
 async function extractDetails(url) {
     try {
-        const response = await fetchv2(url);
-        const html = await response.text();
-
-        const descMatch = html.match(/<p class="ptext">(.*?)<\/p>/s);
-        const description = descMatch ? descMatch[1].trim() : "N/A";
-
-        return JSON.stringify([{
-            description: description,
-            aliases: "N/A",
-            airdate: "N/A"
-        }]);
+        const html = await (await fetchv2(url)).text();
+        const match = html.match(/<div class="full-description">[\s\S]*?<h4[^>]*>Synopsis<\/h4>([\s\S]*?)<\/div>/);
+        let description = "N/A";
+        if (match && match[1]) {
+            description = match[1]
+                .replace(/<p[^>]*>/g, '').replace(/<\/p>/g, ' ').replace(/<br\s*\/?>/gi, ' ')
+                .replace(/<[^>]*>/g, '').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"')
+                .replace(/&amp;/g, '&').replace(/&#39;/g, "'").replace(/&nbsp;/g, ' ')
+                .replace(/\(Source:.*?\)\s*/gi, '').replace(/\s+/g, ' ').trim();
+        }
+        return JSON.stringify([{ description, aliases: "N/A", airdate: "N/A" }]);
     } catch (err) {
-        return JSON.stringify([{
-            description: "Error",
-            aliases: "Error",
-            airdate: "Error"
-        }]);
+        return JSON.stringify([{ description: "Error", aliases: "Error", airdate: "Error" }]);
     }
 }
 
 async function extractEpisodes(url) {
-    const results = [];
     try {
-        const response = await fetchv2(url);
-        const html = await response.text();
+        const postid = url.match(/(\d+)/)?.[1];
+        if (!postid) return JSON.stringify([]);
 
-        const regex = /<a[^>]+href="([^"#]+)"[^>]*>\s*<strong>[^<]*?\s+(\d+)<\/strong>/gi;
-        let match;
-        const seen = new Set();
-        while ((match = regex.exec(html)) !== null) {
-            const href = match[1].startsWith('http') ? match[1].trim() : "https://www.animegg.org" + match[1].trim();
-            const epNum = parseInt(match[2], 10);
-            if (!seen.has(href)) {
-                seen.add(href);
-                results.push({ href: href, number: epNum });
-            }
+        let anilist = url.match(/anilist=([\d]+)/)?.[1];
+        if (!anilist) {
+            const html = await (await fetchv2(url)).text();
+            anilist = html.match(/const\s+EP_ID\s*=\s*["'](\d+)["']/)?.[1];
         }
+        if (!anilist) return JSON.stringify([]);
 
-        if (results.length === 0) {
-            const fallbackRegex = /<a[^>]+href="([^"#]+-episode-(\d+))"/gi;
-            while ((match = fallbackRegex.exec(html)) !== null) {
-                const href = match[1].startsWith('http') ? match[1].trim() : "https://www.animegg.org" + match[1].trim();
-                const epNum = parseInt(match[2], 10);
-                if (!seen.has(href)) {
-                    seen.add(href);
-                    results.push({ href: href, number: epNum });
-                }
-            }
+        const json = await (await fetchv2("https://epeng.animeapps.top/api2.php?epid=" + anilist)).json();
+        const results = [];
+        if (Array.isArray(json)) {
+            json.forEach(server => {
+                server.server_data?.forEach(ep => {
+                    results.push({
+                        number: parseInt(ep.name, 10),
+                        href: "https://epeng.animeapps.top/apilink.php?data=" + ep.link
+                    });
+                });
+            });
         }
-
-        return JSON.stringify(results.reverse());
+        return JSON.stringify(results);
     } catch (err) {
-        return JSON.stringify([{
-            href: "Error",
-            number: "Error"
-        }]);
+        return JSON.stringify([]);
     }
 }
 
 async function extractStreamUrl(url) {
     try {
         const response = await fetchv2(url);
-        const html = await response.text();
-        const ulMatch = html.match(/<ul id="videos"[^>]*>(.*?)<\/ul>/s);
-        if (!ulMatch) return JSON.stringify({streams: [], subtitle: "none"});
-        const ulHtml = ulMatch[1];
-        const liRegex = /<li><a[^>]*data-id='(\d+)'[^>]*data-version="(subbed|dubbed)"[^>]*>/g;
-        const versions = [];
-        let liMatch;
-        while ((liMatch = liRegex.exec(ulHtml)) !== null) {
-            versions.push({id: liMatch[1], type: liMatch[2]});
+        const text = await response.text();
+
+        let servers = [];
+        try {
+            servers = JSON.parse(text);
+        } catch (e) {
+            console.log("Failed to parse JSON:", e.message);
         }
-        const embedPromises = versions.map(async (ver) => {
-            const embedUrl = `https://www.animegg.org/embed/${ver.id}`;
-            const embedResponse = await fetchv2(embedUrl);
-            const embedHtml = await embedResponse.text();
-            const vsMatch = embedHtml.match(/(?:var|const|let) videoSources = (\[[\s\S]*?\]);/);
-            if (!vsMatch) return [];
-            const jsonString = vsMatch[1].replace(/([{,]\s*)([a-zA-Z_][a-zA-Z0-9_]*)\s*:/g, '$1"$2":');
-            const vsJson = JSON.parse(jsonString);
-            return vsJson.map(src => {
-                const quality = src.label;
-                const fileUrl = "https://www.animegg.org" + src.file;
-                const title = (ver.type === 'subbed' ? 'Sub' : 'Dub') + ' • ' + quality;
-                return {
-                    title: title,
-                    streamUrl: fileUrl,
-                    headers: { "Referer": "https://www.animegg.org/" }
-                };
-            });
+
+        const headers = {
+            "Referer": "https://anibd.app/"
+        };
+
+        const promises = (Array.isArray(servers) ? servers : []).map(async (server) => {
+            try {
+                const res = await fetchv2(server.link, headers);
+                const html = await res.text();
+
+                const match = html.match(/(?:videoUrl|url):\s*['"]([^'"]+)['"]/);
+                if (match) {
+                    let streamUrl = match[1];
+                    if (!streamUrl.startsWith("http")) {
+                        if (streamUrl.startsWith("/")) {
+                            const originMatch = server.link.match(/^(https?:\/\/[^\/]+)/);
+                            streamUrl = (originMatch ? originMatch[1] : "") + streamUrl;
+                        } else {
+                            const baseUrl = server.link.substring(0, server.link.lastIndexOf("/") + 1);
+                            streamUrl = baseUrl + streamUrl;
+                        }
+                    }
+                    return {
+                        title: server.server || "Server",
+                        streamUrl: streamUrl
+                    };
+                } else {
+                    console.log("Regex /(?:videoUrl|url):/ failed to match on server HTML");
+                }
+            } catch (err) {
+                console.log("Error processing server:", err.message);
+            }
+            return null;
         });
-        const streamArrays = await Promise.all(embedPromises);
-        const streams = streamArrays.flat();
-        return JSON.stringify({streams: streams, subtitle: "none"});
+
+        const results = await Promise.all(promises);
+        const streams = results.filter(s => s !== null);
+
+        return JSON.stringify({
+            type: "servers",
+            streams: streams,
+            subtitle: null
+        });
     } catch (err) {
-        return JSON.stringify({streams: [], subtitle: "none"});
+        return JSON.stringify({
+            type: "servers",
+            streams: [],
+            subtitle: null
+        });
     }
 }
