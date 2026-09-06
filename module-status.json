@@ -1,2325 +1,662 @@
 {
-  "generatedAt": "2026-09-06T09:14:48.315Z",
+  "generatedAt": "2026-09-06T11:05:56.880Z",
   "catalog": {
-    "repo": "ikkino/content-manifest",
+    "owner": "ikkino",
+    "repo": "content-manifest",
     "ref": "config",
-    "sourceFeeds": [
-      "https://github.com/Spyou/zangetsu-providers/tree/main/providers",
-      "https://modulesbypaul.dev/",
-      "https://git.luna-app.eu/50n50/sources",
-      "https://git.luna-app.eu/ibro/services",
-      "https://library.cufiy.net/library/?sortBy=newest",
-      "https://library.cufiy.net/api/modules.json",
-      "https://github.com/admknight/CloudstreamExtensions/tree/master/Anime",
-      "https://raw.githubusercontent.com/Mallyd11/mangayomi-anime-extensions/main/anime_index.json",
-      "https://raw.githubusercontent.com/m2k3a/mangayomi-extensions/refs/heads/main/anime_index.json",
-      "https://raw.githubusercontent.com/Swakshan/mangayomi-swak-extensions/refs/heads/main/anime_index.json",
-      "https://raw.githubusercontent.com/Schnitzel5/sugoi-modules/refs/heads/main/anime_index.json"
-    ],
-    "probeQuery": "one piece",
-    "ranking": "language, stability-weighted playback score, median full search/details/episodes/stream runtime, timeout penalties, URL health, curated-source bonus",
-    "languageNormalization": "Base language folder; dub/sub/hardsub/softsub language suffixes are stripped for every language."
+    "treeSHA": "d1a52e9f950c411e8447d4c2c6c66cbf8fb6ebad",
+    "probeQuery": "one piece"
   },
   "modules": {
     "Sources/Arabic/001": {
       "status": "working",
       "reason": null,
-      "lastChecked": "2026-09-06T09:14:48.315Z",
+      "lastChecked": "2026-09-06T11:00:10.895Z",
       "workingDomain": null,
       "catalogPath": "Sources/Arabic/001",
-      "rank": 1,
-      "durationMs": 901,
-      "durations": [
-        1116,
-        686
-      ],
-      "rankScore": 751,
-      "rankReason": "median=901ms · runs=1116ms/686ms",
       "sourceName": "Kawaiianime",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Arabic/001/source.js",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Arabic/001/manifest.json",
       "language": "Arabic",
-      "registry": "content-manifest",
-      "origin": "current",
-      "chosenCandidate": {
-        "id": "mod_120086266",
-        "sourceName": "Kawaiianime",
-        "language": "Arabic",
-        "registry": "content-manifest",
-        "origin": "current",
-        "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Arabic/001/manifest.json",
-        "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Arabic/001/source.js",
-        "repair": null
-      },
-      "rejectedAlternatives": [],
-      "repair": null
+      "manifestSHA": "64436513f9e7221ab58686679a5e8b76942cacd9",
+      "sourceSHA": "8bf19b4574c66285649b801c2424c16bc6dea8f8"
     },
     "Sources/Arabic/002": {
       "status": "working",
       "reason": null,
-      "lastChecked": "2026-09-06T09:14:48.315Z",
+      "lastChecked": "2026-09-06T11:00:10.897Z",
       "workingDomain": null,
       "catalogPath": "Sources/Arabic/002",
-      "rank": 2,
-      "durationMs": 2351,
-      "durations": [
-        3411,
-        1290
-      ],
-      "rankScore": 2497,
-      "rankReason": "median=2351ms · runs=3411ms/1290ms",
       "sourceName": "Risto Anime",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Arabic/002/source.js",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Arabic/003/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Arabic/002/manifest.json",
       "language": "Arabic",
-      "registry": "content-manifest",
-      "origin": "current",
-      "chosenCandidate": {
-        "id": "mod_1399949944",
-        "sourceName": "Risto Anime",
-        "language": "Arabic",
-        "registry": "content-manifest",
-        "origin": "current",
-        "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Arabic/003/manifest.json",
-        "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Arabic/003/source.js",
-        "repair": null
-      },
-      "rejectedAlternatives": [],
-      "repair": null
+      "manifestSHA": "7597e393dfc967c593a1826624612f5080870490",
+      "sourceSHA": "2deca583b8f7882db5cdbccb5c2330557fa7af9d"
     },
     "Sources/Arabic/003": {
       "status": "working",
       "reason": null,
-      "lastChecked": "2026-09-06T09:14:48.315Z",
+      "lastChecked": "2026-09-06T11:00:10.898Z",
       "workingDomain": null,
       "catalogPath": "Sources/Arabic/003",
-      "rank": 3,
-      "durationMs": 3205,
-      "durations": [
-        3782,
-        2628
-      ],
-      "rankScore": 3182,
-      "rankReason": "median=3205ms · runs=3782ms/2628ms",
       "sourceName": "AnimeCloud",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Arabic/003/source.js",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Arabic/002/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Arabic/003/manifest.json",
       "language": "Arabic",
-      "registry": "content-manifest",
-      "origin": "current",
-      "chosenCandidate": {
-        "id": "mod_1387465543",
-        "sourceName": "AnimeCloud",
-        "language": "Arabic",
-        "registry": "content-manifest",
-        "origin": "current",
-        "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Arabic/002/manifest.json",
-        "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Arabic/002/source.js",
-        "repair": null
-      },
-      "rejectedAlternatives": [],
-      "repair": null
+      "manifestSHA": "6237ac5f03b49c63f248b32981d97262a16b092e",
+      "sourceSHA": "8ddacaa71be92b688d1db56c360b610e77551689"
     },
     "Sources/Arabic/004": {
       "status": "working",
       "reason": null,
-      "lastChecked": "2026-09-06T09:14:48.315Z",
+      "lastChecked": "2026-09-06T11:00:10.898Z",
       "workingDomain": null,
       "catalogPath": "Sources/Arabic/004",
-      "rank": 4,
-      "durationMs": 3921,
-      "durations": [
-        4730,
-        3112
-      ],
-      "rankScore": 3979,
-      "rankReason": "median=3921ms · runs=4730ms/3112ms",
       "sourceName": "Okanime",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Arabic/004/source.js",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Arabic/004/manifest.json",
       "language": "Arabic",
-      "registry": "content-manifest",
-      "origin": "current",
-      "chosenCandidate": {
-        "id": "mod_107601865",
-        "sourceName": "Okanime",
-        "language": "Arabic",
-        "registry": "content-manifest",
-        "origin": "current",
-        "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Arabic/004/manifest.json",
-        "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Arabic/004/source.js",
-        "repair": null
-      },
-      "rejectedAlternatives": [],
-      "repair": null
+      "manifestSHA": "4515fc1c56c9c71f8c4d195b17ad005e3993f83a",
+      "sourceSHA": "d226ebbbdf5c3475425a52216803d6bf41698978"
     },
     "Sources/Chinese/001": {
       "status": "working",
       "reason": null,
-      "lastChecked": "2026-09-06T09:14:48.315Z",
+      "lastChecked": "2026-09-06T11:00:10.899Z",
       "workingDomain": null,
       "catalogPath": "Sources/Chinese/001",
-      "rank": 1,
-      "durationMs": 3874,
-      "durations": [
-        4048,
-        3700
-      ],
-      "rankScore": 3710,
-      "rankReason": "median=3874ms · runs=4048ms/3700ms",
       "sourceName": "Anoboye",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Chinese/001/source.js",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Chinese/001/manifest.json",
       "language": "Chinese",
-      "registry": "content-manifest",
-      "origin": "current",
-      "chosenCandidate": {
-        "id": "mod_1436047481",
-        "sourceName": "Anoboye",
-        "language": "Chinese",
-        "registry": "content-manifest",
-        "origin": "current",
-        "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Chinese/001/manifest.json",
-        "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Chinese/001/source.js",
-        "repair": null
-      },
-      "rejectedAlternatives": [],
-      "repair": null
+      "manifestSHA": "1e068c3d663d27393e70161565bf234ee4658647",
+      "sourceSHA": "164d9310532e9bca3676446efa3bc80d23dc4fd5"
     },
     "Sources/English/001": {
       "status": "working",
       "reason": null,
-      "lastChecked": "2026-09-06T09:14:48.315Z",
+      "lastChecked": "2026-09-06T11:00:10.900Z",
       "workingDomain": null,
       "catalogPath": "Sources/English/001",
-      "rank": 1,
-      "durationMs": 109,
-      "durations": [
-        161,
-        57
-      ],
-      "rankScore": 0,
-      "rankReason": "median=109ms · runs=161ms/57ms",
       "sourceName": "IPTV-org",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/001/source.js",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/001/manifest.json",
       "language": "English",
-      "registry": "content-manifest",
-      "origin": "current",
-      "chosenCandidate": {
-        "id": "mod_1798967734",
-        "sourceName": "IPTV-org",
-        "language": "English",
-        "registry": "content-manifest",
-        "origin": "current",
-        "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/001/manifest.json",
-        "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/001/source.js",
-        "repair": null
-      },
-      "rejectedAlternatives": [],
-      "repair": null
+      "manifestSHA": "8ed7a98b19adc6ed5832a96870f0a586abb9aded",
+      "sourceSHA": "e97ed4f738d8554a940341eec85b6796a0b6795e"
     },
     "Sources/English/002": {
       "status": "working",
       "reason": null,
-      "lastChecked": "2026-09-06T09:14:48.315Z",
+      "lastChecked": "2026-09-06T11:00:10.900Z",
       "workingDomain": null,
       "catalogPath": "Sources/English/002",
-      "rank": 2,
-      "durationMs": 253,
-      "durations": [
-        268,
-        238
-      ],
-      "rankScore": 258,
-      "rankReason": "median=253ms · runs=268ms/238ms",
       "sourceName": "AnimeHeaven",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/002/source.js",
-      "manifestUrl": "https://raw.githubusercontent.com/Mallyd11/mangayomi-anime-extensions/refs/heads/main/javascript/anime/src/en/animeheaven.js",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/002/manifest.json",
       "language": "English",
-      "registry": "mangayomi",
-      "origin": "mangayomi",
-      "chosenCandidate": {
-        "id": "mangayomi_1744325818",
-        "sourceName": "AnimeHeaven",
-        "language": "English",
-        "registry": "mangayomi",
-        "origin": "mangayomi",
-        "manifestUrl": "https://raw.githubusercontent.com/Mallyd11/mangayomi-anime-extensions/refs/heads/main/javascript/anime/src/en/animeheaven.js",
-        "scriptUrl": "https://raw.githubusercontent.com/Mallyd11/mangayomi-anime-extensions/refs/heads/main/javascript/anime/src/en/animeheaven.js",
-        "repair": null
-      },
-      "rejectedAlternatives": [
-        {
-          "id": "mod_291415925",
-          "sourceName": "AnimeHeaven",
-          "language": "English",
-          "registry": "content-manifest",
-          "origin": "current",
-          "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/002/manifest.json",
-          "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/002/source.js",
-          "repair": null,
-          "label": "initial",
-          "status": "working",
-          "durationMs": 577,
-          "errors": [],
-          "attempts": []
-        }
-      ],
-      "repair": null
+      "manifestSHA": "9ee27c82d20a681470300b4fe2aa848d4559fb6e",
+      "sourceSHA": "5a874522001451cb7195f9454e83a093bd14cc5f"
     },
     "Sources/English/003": {
       "status": "working",
       "reason": null,
-      "lastChecked": "2026-09-06T09:14:48.315Z",
+      "lastChecked": "2026-09-06T11:00:10.901Z",
       "workingDomain": null,
       "catalogPath": "Sources/English/003",
-      "rank": 3,
-      "durationMs": 570,
-      "durations": [
-        784,
-        356
-      ],
-      "rankScore": 420,
-      "rankReason": "median=570ms · runs=784ms/356ms",
       "sourceName": "XPass",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/003/source.js",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/004/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/003/manifest.json",
       "language": "English",
-      "registry": "content-manifest",
-      "origin": "current",
-      "chosenCandidate": {
-        "id": "mod_1571279603",
-        "sourceName": "XPass",
-        "language": "English",
-        "registry": "content-manifest",
-        "origin": "current",
-        "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/004/manifest.json",
-        "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/004/source.js",
-        "repair": null
-      },
-      "rejectedAlternatives": [],
-      "repair": null
+      "manifestSHA": "05cbe835203ace2624e30773df8451032899e4d8",
+      "sourceSHA": "e492733b890fc6d66dde6f63b1c7b3f72e36488c"
     },
     "Sources/English/004": {
       "status": "working",
       "reason": null,
-      "lastChecked": "2026-09-06T09:14:48.315Z",
+      "lastChecked": "2026-09-06T11:00:11.317Z",
       "workingDomain": null,
       "catalogPath": "Sources/English/004",
-      "rank": 4,
-      "durationMs": 487,
-      "durations": [
-        437,
-        537
-      ],
-      "rankScore": 505,
-      "rankReason": "median=487ms · runs=437ms/537ms",
       "sourceName": "JustAnime",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/004/source.js",
-      "manifestUrl": "https://raw.githubusercontent.com/Mallyd11/mangayomi-anime-extensions/refs/heads/main/javascript/anime/src/en/justanime.js",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/004/manifest.json",
       "language": "English",
-      "registry": "mangayomi",
-      "origin": "mangayomi",
-      "chosenCandidate": {
-        "id": "mangayomi_892345671",
-        "sourceName": "JustAnime",
-        "language": "English",
-        "registry": "mangayomi",
-        "origin": "mangayomi",
-        "manifestUrl": "https://raw.githubusercontent.com/Mallyd11/mangayomi-anime-extensions/refs/heads/main/javascript/anime/src/en/justanime.js",
-        "scriptUrl": "https://raw.githubusercontent.com/Mallyd11/mangayomi-anime-extensions/refs/heads/main/javascript/anime/src/en/justanime.js",
-        "repair": null
-      },
-      "rejectedAlternatives": [
-        {
-          "id": "mod_1216135884",
-          "sourceName": "JustAnime",
-          "language": "English",
-          "registry": "content-manifest",
-          "origin": "current",
-          "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/003/manifest.json",
-          "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/003/source.js",
-          "repair": null,
-          "label": "initial",
-          "status": "working",
-          "durationMs": 873,
-          "errors": [],
-          "attempts": []
-        }
-      ],
-      "repair": null
+      "manifestSHA": "65c794c29cc99c87ed74b237ef0e73f8f13156b6",
+      "sourceSHA": "19567367ab27fa8cda56380e2d7d3347a9a2b394"
     },
     "Sources/English/005": {
       "status": "working",
       "reason": null,
-      "lastChecked": "2026-09-06T09:14:48.315Z",
+      "lastChecked": "2026-09-06T11:00:12.269Z",
       "workingDomain": null,
       "catalogPath": "Sources/English/005",
-      "rank": 5,
-      "durationMs": 1246,
-      "durations": [
-        1331,
-        1161
-      ],
-      "rankScore": 801,
-      "rankReason": "median=1246ms · runs=1331ms/1161ms · curated-first-playback",
       "sourceName": "AnimeLand",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/005/source.js",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/010/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/005/manifest.json",
       "language": "English",
-      "registry": "content-manifest",
-      "origin": "current",
-      "chosenCandidate": {
-        "id": "mod_477913576",
-        "sourceName": "AnimeLand",
-        "language": "English",
-        "registry": "content-manifest",
-        "origin": "current",
-        "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/010/manifest.json",
-        "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/010/source.js",
-        "repair": null
-      },
-      "rejectedAlternatives": [],
-      "repair": null
+      "manifestSHA": "8029e8ba343ae6283faefe668d2f969f3276a036",
+      "sourceSHA": "e07f290227d9872d4e19b1f3c998ec67c787763d"
     },
     "Sources/English/006": {
       "status": "working",
       "reason": null,
-      "lastChecked": "2026-09-06T09:14:48.315Z",
+      "lastChecked": "2026-09-06T11:00:13.126Z",
       "workingDomain": null,
       "catalogPath": "Sources/English/006",
-      "rank": 6,
-      "durationMs": 907,
-      "durations": [
-        897,
-        916
-      ],
-      "rankScore": 910,
-      "rankReason": "median=907ms · runs=897ms/916ms",
       "sourceName": "AnimeSogo",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/006/source.js",
-      "manifestUrl": "source.js",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/006/manifest.json",
       "language": "English",
-      "registry": "mangayomi",
-      "origin": "mangayomi",
-      "chosenCandidate": {
-        "id": "animesogo-local",
-        "sourceName": "AnimeSogo",
-        "language": "English",
-        "registry": "mangayomi",
-        "origin": "mangayomi",
-        "manifestUrl": "source.js",
-        "scriptUrl": "source.js",
-        "repair": null
-      },
-      "rejectedAlternatives": [
-        {
-          "id": "mod_163960337",
-          "sourceName": "AnimeSogo",
-          "language": "English",
-          "registry": "content-manifest",
-          "origin": "current",
-          "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/008/manifest.json",
-          "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/008/source.js",
-          "repair": null,
-          "label": "initial",
-          "status": "working",
-          "durationMs": 1390,
-          "errors": [],
-          "attempts": []
-        }
-      ],
-      "repair": null
+      "manifestSHA": "3bb822708897f70103d5e46a7464b2bc6e24520c",
+      "sourceSHA": "7cba8a85337aa84135f536809dd7e7c7a0eb8067"
     },
     "Sources/English/007": {
       "status": "working",
       "reason": null,
-      "lastChecked": "2026-09-06T09:14:48.315Z",
+      "lastChecked": "2026-09-06T11:00:13.376Z",
       "workingDomain": null,
       "catalogPath": "Sources/English/007",
-      "rank": 7,
-      "durationMs": 1209,
-      "durations": [
-        1778,
-        639
-      ],
-      "rankScore": 933,
-      "rankReason": "median=1209ms · runs=1778ms/639ms · curated-first-playback",
       "sourceName": "Anikoto",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/007/source.js",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/009/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/007/manifest.json",
       "language": "English",
-      "registry": "content-manifest",
-      "origin": "current",
-      "chosenCandidate": {
-        "id": "mod_1671512146",
-        "sourceName": "Anikoto",
-        "language": "English",
-        "registry": "content-manifest",
-        "origin": "current",
-        "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/009/manifest.json",
-        "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/009/source.js",
-        "repair": null
-      },
-      "rejectedAlternatives": [],
-      "repair": null
+      "manifestSHA": "08aa8c43bb6c27ed3e8820f0fc35bd6a2c01e321",
+      "sourceSHA": "a3f5931edf2c76ae47a19b4869284e88d4a6d334"
     },
     "Sources/English/008": {
       "status": "working",
       "reason": null,
-      "lastChecked": "2026-09-06T09:14:48.315Z",
+      "lastChecked": "2026-09-06T11:00:13.417Z",
       "workingDomain": null,
       "catalogPath": "Sources/English/008",
-      "rank": 8,
-      "durationMs": 1096,
-      "durations": [
-        1437,
-        754
-      ],
-      "rankScore": 990,
-      "rankReason": "median=1096ms · runs=1437ms/754ms",
       "sourceName": "AnimeDefenders",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/008/source.js",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/013/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/008/manifest.json",
       "language": "English",
-      "registry": "content-manifest",
-      "origin": "current",
-      "chosenCandidate": {
-        "id": "mod_705601707",
-        "sourceName": "AnimeDefenders",
-        "language": "English",
-        "registry": "content-manifest",
-        "origin": "current",
-        "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/013/manifest.json",
-        "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/013/source.js",
-        "repair": null
-      },
-      "rejectedAlternatives": [],
-      "repair": null
+      "manifestSHA": "e763f2737a816c620085c8db28b5c16cfde733b6",
+      "sourceSHA": "8050168280bdcfd384a5905f937e01c44ca0359a"
     },
     "Sources/English/009": {
       "status": "working",
       "reason": null,
-      "lastChecked": "2026-09-06T09:14:48.315Z",
+      "lastChecked": "2026-09-06T11:00:14.534Z",
       "workingDomain": null,
       "catalogPath": "Sources/English/009",
-      "rank": 9,
-      "durationMs": 1197,
-      "durations": [
-        1421,
-        973
-      ],
-      "rankScore": 1050,
-      "rankReason": "median=1197ms · runs=1421ms/973ms",
       "sourceName": "AnimeKai (Unoriginal)",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/009/source.js",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/007/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/009/manifest.json",
       "language": "English",
-      "registry": "content-manifest",
-      "origin": "current",
-      "chosenCandidate": {
-        "id": "mod_1343591472",
-        "sourceName": "AnimeKai (Unoriginal)",
-        "language": "English",
-        "registry": "content-manifest",
-        "origin": "current",
-        "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/007/manifest.json",
-        "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/007/source.js",
-        "repair": null
-      },
-      "rejectedAlternatives": [
-        {
-          "id": "animekai-unoriginal-local",
-          "sourceName": "AnimeKai (Unoriginal)",
-          "language": "English",
-          "registry": "mangayomi",
-          "origin": "mangayomi",
-          "manifestUrl": "source.js",
-          "scriptUrl": "source.js",
-          "repair": null,
-          "label": "initial",
-          "status": "working",
-          "durationMs": 1103,
-          "errors": [],
-          "attempts": []
-        }
-      ],
-      "repair": null
+      "manifestSHA": "234224032a7942efb728cad9106157246824e7b6",
+      "sourceSHA": "a8f92cd8886f0cac32a027bea70e56d54845d1a1"
     },
     "Sources/English/010": {
       "status": "working",
       "reason": null,
-      "lastChecked": "2026-09-06T09:14:48.315Z",
+      "lastChecked": "2026-09-06T11:00:15.163Z",
       "workingDomain": null,
       "catalogPath": "Sources/English/010",
-      "rank": 10,
-      "durationMs": 1177,
-      "durations": [
-        1533,
-        820
-      ],
-      "rankScore": 1077,
-      "rankReason": "median=1177ms · runs=1533ms/820ms",
       "sourceName": "Kisskh",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/010/source.js",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/012/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/010/manifest.json",
       "language": "English",
-      "registry": "content-manifest",
-      "origin": "current",
-      "chosenCandidate": {
-        "id": "mod_801950102",
-        "sourceName": "Kisskh",
-        "language": "English",
-        "registry": "content-manifest",
-        "origin": "current",
-        "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/012/manifest.json",
-        "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/012/source.js",
-        "repair": null
-      },
-      "rejectedAlternatives": [],
-      "repair": null
+      "manifestSHA": "7df28a2cb52f82485dea4e40cdaad886a80e3e8a",
+      "sourceSHA": "33a9a2344d83c8396300bb7e6d48659e1f5d22b3"
     },
     "Sources/English/011": {
       "status": "working",
       "reason": null,
-      "lastChecked": "2026-09-06T09:14:48.315Z",
+      "lastChecked": "2026-09-06T11:00:16.160Z",
       "workingDomain": null,
       "catalogPath": "Sources/English/011",
-      "rank": 11,
-      "durationMs": 1173,
-      "durations": [
-        1895,
-        450
-      ],
-      "rankScore": 1201,
-      "rankReason": "median=1173ms · runs=1895ms/450ms",
       "sourceName": "Airflix",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/011/source.js",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/005/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/011/manifest.json",
       "language": "English",
-      "registry": "content-manifest",
-      "origin": "current",
-      "chosenCandidate": {
-        "id": "mod_63727794",
-        "sourceName": "Airflix",
-        "language": "English",
-        "registry": "content-manifest",
-        "origin": "current",
-        "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/005/manifest.json",
-        "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/005/source.js",
-        "repair": null
-      },
-      "rejectedAlternatives": [],
-      "repair": null
+      "manifestSHA": "816d27d10af6486a1d751ee3746613b3e252260a",
+      "sourceSHA": "396d9280b5cf7c6dfa719ae259b30ea5fd93562f"
     },
     "Sources/English/012": {
       "status": "working",
       "reason": null,
-      "lastChecked": "2026-09-06T09:14:48.315Z",
+      "lastChecked": "2026-09-06T11:00:17.133Z",
       "workingDomain": null,
       "catalogPath": "Sources/English/012",
-      "rank": 12,
-      "durationMs": 1374,
-      "durations": [
-        1527,
-        1220
-      ],
-      "rankScore": 1203,
-      "rankReason": "median=1374ms · runs=1527ms/1220ms",
       "sourceName": "VidFast",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/012/source.js",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/019/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/012/manifest.json",
       "language": "English",
-      "registry": "content-manifest",
-      "origin": "current",
-      "chosenCandidate": {
-        "id": "mod_1160977969",
-        "sourceName": "VidFast",
-        "language": "English",
-        "registry": "content-manifest",
-        "origin": "current",
-        "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/019/manifest.json",
-        "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/019/source.js",
-        "repair": null
-      },
-      "rejectedAlternatives": [],
-      "repair": null
+      "manifestSHA": "132e77bdcf18d1fcc46b827f2f0ecbb23469b63b",
+      "sourceSHA": "d3df2be9f17cbdbd7973a7978bd04b0a226cc4da"
     },
     "Sources/English/013": {
       "status": "working",
       "reason": null,
-      "lastChecked": "2026-09-06T09:14:48.315Z",
+      "lastChecked": "2026-09-06T11:00:17.630Z",
       "workingDomain": null,
       "catalogPath": "Sources/English/013",
-      "rank": 13,
-      "durationMs": 1435,
-      "durations": [
-        1529,
-        1340
-      ],
-      "rankScore": 1243,
-      "rankReason": "median=1435ms · runs=1529ms/1340ms",
       "sourceName": "VidLink",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/013/source.js",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/018/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/013/manifest.json",
       "language": "English",
-      "registry": "content-manifest",
-      "origin": "current",
-      "chosenCandidate": {
-        "id": "mod_346573840",
-        "sourceName": "VidLink",
-        "language": "English",
-        "registry": "content-manifest",
-        "origin": "current",
-        "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/018/manifest.json",
-        "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/018/source.js",
-        "repair": null
-      },
-      "rejectedAlternatives": [
-        {
-          "id": "vidlink-local",
-          "sourceName": "VidLink",
-          "language": "English",
-          "registry": "mangayomi",
-          "origin": "mangayomi",
-          "manifestUrl": "source.js",
-          "scriptUrl": "source.js",
-          "repair": null,
-          "label": "initial",
-          "status": "working",
-          "durationMs": 1317,
-          "errors": [],
-          "attempts": []
-        }
-      ],
-      "repair": null
+      "manifestSHA": "588b443123a869b48452d5c91b7987696908750f",
+      "sourceSHA": "f85a0e2ff86372bffbc33407ffcba1211094df7f"
     },
     "Sources/English/014": {
       "status": "working",
       "reason": null,
-      "lastChecked": "2026-09-06T09:14:48.315Z",
+      "lastChecked": "2026-09-06T11:00:17.665Z",
       "workingDomain": null,
       "catalogPath": "Sources/English/014",
-      "rank": 14,
-      "durationMs": 1599,
-      "durations": [
-        1454,
-        1744
-      ],
-      "rankScore": 1425,
-      "rankReason": "median=1599ms · runs=1454ms/1744ms",
       "sourceName": "IMDb",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/014/source.js",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/017/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/014/manifest.json",
       "language": "English",
-      "registry": "content-manifest",
-      "origin": "current",
-      "chosenCandidate": {
-        "id": "mod_1854125649",
-        "sourceName": "IMDb",
-        "language": "English",
-        "registry": "content-manifest",
-        "origin": "current",
-        "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/017/manifest.json",
-        "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/017/source.js",
-        "repair": null
-      },
-      "rejectedAlternatives": [],
-      "repair": null
+      "manifestSHA": "39564b05087b37c76e2beb5fd69bb6399e78c747",
+      "sourceSHA": "4ee0dd61cf1498d28535c0f94a6222e623efb16e"
     },
     "Sources/English/015": {
       "status": "working",
       "reason": null,
-      "lastChecked": "2026-09-06T09:14:48.315Z",
+      "lastChecked": "2026-09-06T11:00:18.196Z",
       "workingDomain": null,
       "catalogPath": "Sources/English/015",
-      "rank": 15,
-      "durationMs": 1579,
-      "durations": [
-        2005,
-        1153
-      ],
-      "rankScore": 1503,
-      "rankReason": "median=1579ms · runs=2005ms/1153ms",
       "sourceName": "AllManga",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/015/source.js",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/016/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/015/manifest.json",
       "language": "English",
-      "registry": "content-manifest",
-      "origin": "current",
-      "chosenCandidate": {
-        "id": "mod_933289838",
-        "sourceName": "AllManga",
-        "language": "English",
-        "registry": "content-manifest",
-        "origin": "current",
-        "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/016/manifest.json",
-        "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/016/source.js",
-        "repair": null
-      },
-      "rejectedAlternatives": [],
-      "repair": null
+      "manifestSHA": "a258277d830163dbe15f603f7da297c2c1e851d7",
+      "sourceSHA": "3479633c3fb7f08c91f81d9475ae3417d6f72937"
     },
     "Sources/English/016": {
       "status": "working",
       "reason": null,
-      "lastChecked": "2026-09-06T09:14:48.315Z",
+      "lastChecked": "2026-09-06T11:00:20.882Z",
       "workingDomain": null,
       "catalogPath": "Sources/English/016",
-      "rank": 16,
-      "durationMs": 1892,
-      "durations": [
-        3233,
-        551
-      ],
-      "rankScore": 2136,
-      "rankReason": "median=1892ms · runs=3233ms/551ms",
       "sourceName": "OneTouch TV",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/016/source.js",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/011/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/016/manifest.json",
       "language": "English",
-      "registry": "content-manifest",
-      "origin": "current",
-      "chosenCandidate": {
-        "id": "mod_1985465385",
-        "sourceName": "OneTouch TV",
-        "language": "English",
-        "registry": "content-manifest",
-        "origin": "current",
-        "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/011/manifest.json",
-        "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/011/source.js",
-        "repair": null
-      },
-      "rejectedAlternatives": [],
-      "repair": null
+      "manifestSHA": "b1271672cc8278d507b6c2bdebc4095c8af42332",
+      "sourceSHA": "d33ec439d94fba2e09cc303ed232fb5d86761cb2"
     },
     "Sources/English/017": {
       "status": "working",
       "reason": null,
-      "lastChecked": "2026-09-06T09:14:48.315Z",
+      "lastChecked": "2026-09-06T11:00:21.004Z",
       "workingDomain": null,
       "catalogPath": "Sources/English/017",
-      "rank": 17,
-      "durationMs": 2137,
-      "durations": [
-        2158,
-        2116
-      ],
-      "rankScore": 2144,
-      "rankReason": "median=2137ms · runs=2158ms/2116ms",
       "sourceName": "AniNeko",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/017/source.js",
-      "manifestUrl": "https://raw.githubusercontent.com/Mallyd11/mangayomi-anime-extensions/refs/heads/main/javascript/anime/src/en/anineko.js",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/017/manifest.json",
       "language": "English",
-      "registry": "mangayomi",
-      "origin": "mangayomi",
-      "chosenCandidate": {
-        "id": "mangayomi_782451093",
-        "sourceName": "AniNeko",
-        "language": "English",
-        "registry": "mangayomi",
-        "origin": "mangayomi",
-        "manifestUrl": "https://raw.githubusercontent.com/Mallyd11/mangayomi-anime-extensions/refs/heads/main/javascript/anime/src/en/anineko.js",
-        "scriptUrl": "https://raw.githubusercontent.com/Mallyd11/mangayomi-anime-extensions/refs/heads/main/javascript/anime/src/en/anineko.js",
-        "repair": null
-      },
-      "rejectedAlternatives": [
-        {
-          "id": "mod_574261971",
-          "sourceName": "AniNeko",
-          "language": "English",
-          "registry": "content-manifest",
-          "origin": "current",
-          "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/015/manifest.json",
-          "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/015/source.js",
-          "repair": null,
-          "label": "initial",
-          "status": "working",
-          "durationMs": 2802,
-          "errors": [],
-          "attempts": []
-        }
-      ],
-      "repair": null
+      "manifestSHA": "589ac35faf731c3900a84c5fff5a1b612e77aad8",
+      "sourceSHA": "6bc1a1faeb6ce37cd3499b60d3e2ed142d3456e3"
     },
     "Sources/English/018": {
       "status": "working",
       "reason": null,
-      "lastChecked": "2026-09-06T09:14:48.315Z",
+      "lastChecked": "2026-09-06T11:00:21.223Z",
       "workingDomain": null,
       "catalogPath": "Sources/English/018",
-      "rank": 18,
-      "durationMs": 2340,
-      "durations": [
-        2744,
-        1935
-      ],
-      "rankScore": 2256,
-      "rankReason": "median=2340ms · runs=2744ms/1935ms",
       "sourceName": "Hexa",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/018/source.js",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/026/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/018/manifest.json",
       "language": "English",
-      "registry": "content-manifest",
-      "origin": "current",
-      "chosenCandidate": {
-        "id": "mod_422755661",
-        "sourceName": "Hexa",
-        "language": "English",
-        "registry": "content-manifest",
-        "origin": "current",
-        "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/026/manifest.json",
-        "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/026/source.js",
-        "repair": null
-      },
-      "rejectedAlternatives": [],
-      "repair": null
+      "manifestSHA": "d5b39b2936fc481607dd02bcce1efadfcec5a8bb",
+      "sourceSHA": "698e3532823c60dae5d4387379b64fe734bf72f2"
     },
     "Sources/English/019": {
       "status": "working",
       "reason": null,
-      "lastChecked": "2026-09-06T09:14:48.315Z",
+      "lastChecked": "2026-09-06T11:00:21.745Z",
       "workingDomain": null,
       "catalogPath": "Sources/English/019",
-      "rank": 19,
-      "durationMs": 4187,
-      "durations": [
-        4462,
-        3912
-      ],
-      "rankScore": 4058,
-      "rankReason": "median=4187ms · runs=4462ms/3912ms",
       "sourceName": "AniWorld (ENG SUB)",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/019/source.js",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/022/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/019/manifest.json",
       "language": "English",
-      "registry": "content-manifest",
-      "origin": "current",
-      "chosenCandidate": {
-        "id": "mod_1312484279",
-        "sourceName": "AniWorld (ENG SUB)",
-        "language": "English",
-        "registry": "content-manifest",
-        "origin": "current",
-        "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/022/manifest.json",
-        "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/022/source.js",
-        "repair": null
-      },
-      "rejectedAlternatives": [],
-      "repair": null
+      "manifestSHA": "5a1e15cbc2a4486a7e30d6d41c23959d32e012e8",
+      "sourceSHA": "64ae86ee9ab21c68333cf89597578d7cb36fc6c1"
     },
     "Sources/English/020": {
       "status": "working",
       "reason": null,
-      "lastChecked": "2026-09-06T09:14:48.315Z",
+      "lastChecked": "2026-09-06T11:00:21.771Z",
       "workingDomain": null,
       "catalogPath": "Sources/English/020",
-      "rank": 20,
-      "durationMs": 7413,
-      "durations": [
-        8019,
-        6807
-      ],
-      "rankScore": 7625,
-      "rankReason": "median=7413ms · runs=8019ms/6807ms",
       "sourceName": "Just4Anime",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/020/source.js",
-      "manifestUrl": "https://raw.githubusercontent.com/Mallyd11/mangayomi-anime-extensions/refs/heads/main/javascript/anime/src/en/just4anime.js",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/020/manifest.json",
       "language": "English",
-      "registry": "mangayomi",
-      "origin": "mangayomi",
-      "chosenCandidate": {
-        "id": "mangayomi_573920184",
-        "sourceName": "Just4Anime",
-        "language": "English",
-        "registry": "mangayomi",
-        "origin": "mangayomi",
-        "manifestUrl": "https://raw.githubusercontent.com/Mallyd11/mangayomi-anime-extensions/refs/heads/main/javascript/anime/src/en/just4anime.js",
-        "scriptUrl": "https://raw.githubusercontent.com/Mallyd11/mangayomi-anime-extensions/refs/heads/main/javascript/anime/src/en/just4anime.js",
-        "repair": null
-      },
-      "rejectedAlternatives": [
-        {
-          "id": "mod_1474931208",
-          "sourceName": "Just4Anime",
-          "language": "English",
-          "registry": "content-manifest",
-          "origin": "current",
-          "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/021/manifest.json",
-          "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/021/source.js",
-          "repair": null,
-          "label": "initial",
-          "status": "working",
-          "durationMs": 11690,
-          "errors": [],
-          "attempts": []
-        }
-      ],
-      "repair": null
+      "manifestSHA": "ee37957d2fa157ca1fbba075ebe05205563175d0",
+      "sourceSHA": "8b1ffa6ae5734cf961ecbfebc422dcdebb8ba89b"
     },
     "Sources/English/021": {
       "status": "working",
       "reason": null,
-      "lastChecked": "2026-09-06T09:14:48.315Z",
+      "lastChecked": "2026-09-06T11:00:21.972Z",
       "workingDomain": null,
       "catalogPath": "Sources/English/021",
-      "rank": 21,
-      "durationMs": 8148,
-      "durations": [
-        8159,
-        8136
-      ],
-      "rankScore": 7927,
-      "rankReason": "median=8148ms · runs=8159ms/8136ms",
       "sourceName": "Animepahe (SUB)",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/021/source.js",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/023/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/021/manifest.json",
       "language": "English",
-      "registry": "content-manifest",
-      "origin": "current",
-      "chosenCandidate": {
-        "id": "mod_195067530",
-        "sourceName": "Animepahe (SUB)",
-        "language": "English",
-        "registry": "content-manifest",
-        "origin": "current",
-        "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/023/manifest.json",
-        "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/023/source.js",
-        "repair": null
-      },
-      "rejectedAlternatives": [],
-      "repair": null
+      "manifestSHA": "f38fa8053aa96e3da14de03d874b6444cc108799",
+      "sourceSHA": "cb7b5b94a213d4907406d5e0d424a34cbb075930"
     },
     "Sources/English/022": {
       "status": "working",
       "reason": null,
-      "lastChecked": "2026-09-06T09:14:48.315Z",
+      "lastChecked": "2026-09-06T11:00:22.428Z",
       "workingDomain": null,
       "catalogPath": "Sources/English/022",
-      "rank": 22,
-      "durationMs": 12113,
-      "durations": [
-        14881,
-        9344
-      ],
-      "rankScore": 12857,
-      "rankReason": "median=12113ms · runs=14881ms/9344ms",
       "sourceName": "Animepahe (DUB)",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/022/source.js",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/024/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/022/manifest.json",
       "language": "English",
-      "registry": "content-manifest",
-      "origin": "current",
-      "chosenCandidate": {
-        "id": "mod_1702619339",
-        "sourceName": "Animepahe (DUB)",
-        "language": "English",
-        "registry": "content-manifest",
-        "origin": "current",
-        "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/024/manifest.json",
-        "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/024/source.js",
-        "repair": null
-      },
-      "rejectedAlternatives": [],
-      "repair": null
+      "manifestSHA": "96129f1a594ed0867c793fe3c1f32f6ef0f2a840",
+      "sourceSHA": "cb7b5b94a213d4907406d5e0d424a34cbb075930"
     },
     "Sources/English/023": {
-      "status": "working",
-      "reason": null,
-      "lastChecked": "2026-09-06T09:14:48.315Z",
+      "status": "degraded",
+      "reason": "stream: extractStreamUrl timed out; stream: extractStreamUrl timed out; stream: extractStreamUrl timed out",
+      "lastChecked": "2026-09-06T11:00:22.506Z",
       "workingDomain": null,
       "catalogPath": "Sources/English/023",
-      "rank": 23,
-      "durationMs": 14179,
-      "durations": [
-        13486,
-        14871
-      ],
-      "rankScore": 14196,
-      "rankReason": "median=14179ms · runs=13486ms/14871ms",
       "sourceName": "Peachify",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/023/source.js",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/028/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/023/manifest.json",
       "language": "English",
-      "registry": "content-manifest",
-      "origin": "current",
-      "chosenCandidate": {
-        "id": "mod_857108017",
-        "sourceName": "Peachify",
-        "language": "English",
-        "registry": "content-manifest",
-        "origin": "current",
-        "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/028/manifest.json",
-        "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/028/source.js",
-        "repair": null
-      },
-      "rejectedAlternatives": [],
-      "repair": null
+      "manifestSHA": "e79bd840d635bb0316328d767af85eb09fea6b18",
+      "sourceSHA": "d8eb910656c7bd39eb904081ac3ce918bfb2f547"
     },
     "Sources/English/024": {
       "status": "working",
       "reason": null,
-      "lastChecked": "2026-09-06T09:14:48.315Z",
+      "lastChecked": "2026-09-06T11:00:22.953Z",
       "workingDomain": null,
       "catalogPath": "Sources/English/024",
-      "rank": 24,
-      "durationMs": 14606,
-      "durations": [
-        12852,
-        16359
-      ],
-      "rankScore": 14995,
-      "rankReason": "median=14606ms · runs=12852ms/16359ms",
       "sourceName": "VidCore",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/024/source.js",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/027/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/024/manifest.json",
       "language": "English",
-      "registry": "content-manifest",
-      "origin": "current",
-      "chosenCandidate": {
-        "id": "mod_1930307470",
-        "sourceName": "VidCore",
-        "language": "English",
-        "registry": "content-manifest",
-        "origin": "current",
-        "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/027/manifest.json",
-        "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/027/source.js",
-        "repair": null
-      },
-      "rejectedAlternatives": [],
-      "repair": null
+      "manifestSHA": "bb74ea04e1fb5381493551a8c311b3b2944e74af",
+      "sourceSHA": "afe3f2cc015c1863400f0af31e511ec09838e5fc"
     },
     "Sources/English/025": {
       "status": "working",
       "reason": null,
-      "lastChecked": "2026-09-06T09:14:48.315Z",
+      "lastChecked": "2026-09-06T11:00:24.601Z",
       "workingDomain": null,
       "catalogPath": "Sources/English/025",
-      "rank": 25,
-      "durationMs": 15767,
-      "durations": [
-        9873,
-        21660
-      ],
-      "rankScore": 17605,
-      "rankReason": "median=15767ms · runs=9873ms/21660ms",
       "sourceName": "AnimePahe",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/025/source.js",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/025/manifest.json",
       "language": "English",
-      "registry": "content-manifest",
-      "origin": "current",
-      "chosenCandidate": {
-        "id": "mod_1084796148",
-        "sourceName": "AnimePahe",
-        "language": "English",
-        "registry": "content-manifest",
-        "origin": "current",
-        "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/025/manifest.json",
-        "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/025/source.js",
-        "repair": null
-      },
-      "rejectedAlternatives": [],
-      "repair": null
+      "manifestSHA": "70b6a833027d63d4a1c7e0bf365b0bdbeee611c1",
+      "sourceSHA": "cb7b5b94a213d4907406d5e0d424a34cbb075930"
     },
     "Sources/English/026": {
       "status": "working",
       "reason": null,
-      "lastChecked": "2026-09-06T09:14:48.315Z",
+      "lastChecked": "2026-09-06T11:00:28.479Z",
       "workingDomain": null,
       "catalogPath": "Sources/English/026",
-      "rank": 26,
-      "durationMs": 16559,
-      "durations": [
-        1603,
-        31515
-      ],
-      "rankScore": 21569,
-      "rankReason": "median=16559ms · runs=1603ms/31515ms",
       "sourceName": "123Anime",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/026/source.js",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/014/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/026/manifest.json",
       "language": "English",
-      "registry": "content-manifest",
-      "origin": "current",
-      "chosenCandidate": {
-        "id": "mod_2081813780",
-        "sourceName": "123Anime",
-        "language": "English",
-        "registry": "content-manifest",
-        "origin": "current",
-        "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/014/manifest.json",
-        "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/014/source.js",
-        "repair": null
-      },
-      "rejectedAlternatives": [],
-      "repair": null
+      "manifestSHA": "67539652b22f578393fa137d898b6c378baf25b1",
+      "sourceSHA": "4e43e3cc6906daa6652cf9c83242a8f69ea790dd"
     },
     "Sources/English/027": {
       "status": "working",
       "reason": null,
-      "lastChecked": "2026-09-06T09:14:48.315Z",
+      "lastChecked": "2026-09-06T11:00:30.565Z",
       "workingDomain": null,
       "catalogPath": "Sources/English/027",
-      "rank": 27,
-      "durationMs": 18239,
-      "durations": [
-        32823,
-        3654
-      ],
-      "rankScore": 23118,
-      "rankReason": "median=18239ms · runs=32823ms/3654ms",
       "sourceName": "Aniwave",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/027/source.js",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/020/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/027/manifest.json",
       "language": "English",
-      "registry": "content-manifest",
-      "origin": "current",
-      "chosenCandidate": {
-        "id": "mod_32620601",
-        "sourceName": "Aniwave",
-        "language": "English",
-        "registry": "content-manifest",
-        "origin": "current",
-        "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/020/manifest.json",
-        "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/020/source.js",
-        "repair": null
-      },
-      "rejectedAlternatives": [],
-      "repair": null
+      "manifestSHA": "108ddebdcfb8d30e681acf5ec13d0992c57ab659",
+      "sourceSHA": "3682379d6744019bc9f0bdc3383b0bd2c8d5f964"
     },
     "Sources/English/028": {
       "status": "working",
       "reason": null,
-      "lastChecked": "2026-09-06T09:14:48.315Z",
+      "lastChecked": "2026-09-06T11:00:32.691Z",
       "workingDomain": null,
       "catalogPath": "Sources/English/028",
-      "rank": 28,
-      "durationMs": 40766,
-      "durations": [
-        52870,
-        28662
-      ],
-      "rankScore": 44777,
-      "rankReason": "median=40766ms · runs=52870ms/28662ms",
       "sourceName": "Anikuro",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/028/source.js",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/029/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/028/manifest.json",
       "language": "English",
-      "registry": "content-manifest",
-      "origin": "current",
-      "chosenCandidate": {
-        "id": "mod_650443792",
-        "sourceName": "Anikuro",
-        "language": "English",
-        "registry": "content-manifest",
-        "origin": "current",
-        "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/029/manifest.json",
-        "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/029/source.js",
-        "repair": null
-      },
-      "rejectedAlternatives": [],
-      "repair": null
+      "manifestSHA": "e89214d7703de027aacd6b2a62fb2f57a96693b9",
+      "sourceSHA": "4c8995049500dba1d782a3557dae1e6d88918397"
     },
     "Sources/French/001": {
       "status": "working",
       "reason": null,
-      "lastChecked": "2026-09-06T09:14:48.315Z",
+      "lastChecked": "2026-09-06T11:00:35.904Z",
       "workingDomain": null,
       "catalogPath": "Sources/French/001",
-      "rank": 1,
-      "durationMs": 3233,
-      "durations": [
-        3779,
-        2686
-      ],
-      "rankScore": 3199,
-      "rankReason": "median=3233ms · runs=3779ms/2686ms",
       "sourceName": "Nakanime",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/001/source.js",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/002/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/001/manifest.json",
       "language": "French",
-      "registry": "content-manifest",
-      "origin": "current",
-      "chosenCandidate": {
-        "id": "mod_2038029131",
-        "sourceName": "Nakanime",
-        "language": "French",
-        "registry": "content-manifest",
-        "origin": "current",
-        "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/002/manifest.json",
-        "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/002/source.js",
-        "repair": null
-      },
-      "rejectedAlternatives": [],
-      "repair": null
+      "manifestSHA": "2a0f5ee5231a93d73d4d00287beccfa42aa0cfa1",
+      "sourceSHA": "7fdc110ab5012208d81094a59fa5b45f30583d86"
     },
     "Sources/French/002": {
       "status": "working",
       "reason": null,
-      "lastChecked": "2026-09-06T09:14:48.315Z",
+      "lastChecked": "2026-09-06T11:00:37.322Z",
       "workingDomain": null,
       "catalogPath": "Sources/French/002",
-      "rank": 2,
-      "durationMs": 4755,
-      "durations": [
-        5041,
-        4468
-      ],
-      "rankScore": 4630,
-      "rankReason": "median=4755ms · runs=5041ms/4468ms",
       "sourceName": "VoirAnime",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/002/source.js",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/001/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/002/manifest.json",
       "language": "French",
-      "registry": "content-manifest",
-      "origin": "current",
-      "chosenCandidate": {
-        "id": "mod_749386356",
-        "sourceName": "VoirAnime",
-        "language": "French",
-        "registry": "content-manifest",
-        "origin": "current",
-        "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/001/manifest.json",
-        "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/001/source.js",
-        "repair": null
-      },
-      "rejectedAlternatives": [],
-      "repair": null
+      "manifestSHA": "b5ad5270395511e152b8e6672638191709c86f9e",
+      "sourceSHA": "8b22c73a87eec46fb339db0f2986f4799f689184"
     },
     "Sources/German/001": {
       "status": "working",
       "reason": null,
-      "lastChecked": "2026-09-06T09:14:48.315Z",
+      "lastChecked": "2026-09-06T11:00:44.367Z",
       "workingDomain": null,
       "catalogPath": "Sources/German/001",
-      "rank": 1,
-      "durationMs": 1779,
-      "durations": [
-        1944,
-        1613
-      ],
-      "rankScore": 1612,
-      "rankReason": "median=1779ms · runs=1944ms/1613ms",
       "sourceName": "FireAnime SUB",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/001/source.js",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/001/manifest.json",
       "language": "German",
-      "registry": "content-manifest",
-      "origin": "current",
-      "chosenCandidate": {
-        "id": "mod_789816160",
-        "sourceName": "FireAnime SUB",
-        "language": "German",
-        "registry": "content-manifest",
-        "origin": "current",
-        "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/001/manifest.json",
-        "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/001/source.js",
-        "repair": null
-      },
-      "rejectedAlternatives": [],
-      "repair": null
+      "manifestSHA": "74a051ba2ac8ac108b3d823890e49659d8723770",
+      "sourceSHA": "0da4cc7502495a04c01a7d51b9d53dc7ed8442a5"
     },
     "Sources/German/002": {
       "status": "working",
       "reason": null,
-      "lastChecked": "2026-09-06T09:14:48.315Z",
+      "lastChecked": "2026-09-06T11:00:44.637Z",
       "workingDomain": null,
       "catalogPath": "Sources/German/002",
-      "rank": 2,
-      "durationMs": 2138,
-      "durations": [
-        2653,
-        1622
-      ],
-      "rankScore": 2093,
-      "rankReason": "median=2138ms · runs=2653ms/1622ms",
       "sourceName": "FireAnime DUB",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/002/source.js",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/002/manifest.json",
       "language": "German",
-      "registry": "content-manifest",
-      "origin": "current",
-      "chosenCandidate": {
-        "id": "mod_1997599327",
-        "sourceName": "FireAnime DUB",
-        "language": "German",
-        "registry": "content-manifest",
-        "origin": "current",
-        "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/002/manifest.json",
-        "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/002/source.js",
-        "repair": null
-      },
-      "rejectedAlternatives": [],
-      "repair": null
+      "manifestSHA": "022e39c139e2755444c4be2ba39a19c977af703f",
+      "sourceSHA": "2db3042cdcd98714a896704e4c7ebe32b75911eb"
     },
     "Sources/German/003": {
       "status": "working",
       "reason": null,
-      "lastChecked": "2026-09-06T09:14:48.315Z",
+      "lastChecked": "2026-09-06T11:00:44.671Z",
       "workingDomain": null,
       "catalogPath": "Sources/German/003",
-      "rank": 3,
-      "durationMs": 4060,
-      "durations": [
-        4178,
-        3942
-      ],
-      "rankScore": 3876,
-      "rankReason": "median=4060ms · runs=4178ms/3942ms",
       "sourceName": "AniWorld (GER SUB)",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/003/source.js",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/004/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/003/manifest.json",
       "language": "German",
-      "registry": "content-manifest",
-      "origin": "current",
-      "chosenCandidate": {
-        "id": "mod_1017504291",
-        "sourceName": "AniWorld (GER SUB)",
-        "language": "German",
-        "registry": "content-manifest",
-        "origin": "current",
-        "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/004/manifest.json",
-        "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/004/source.js",
-        "repair": null
-      },
-      "rejectedAlternatives": [],
-      "repair": null
+      "manifestSHA": "8d9dd951d2899cf0c1ca0f129b368c91a7124633",
+      "sourceSHA": "480d71cc671d311f5b2c6079a0668c1f7aa0a408"
     },
     "Sources/German/004": {
       "status": "working",
       "reason": null,
-      "lastChecked": "2026-09-06T09:14:48.315Z",
+      "lastChecked": "2026-09-06T11:00:44.682Z",
       "workingDomain": null,
       "catalogPath": "Sources/German/004",
-      "rank": 4,
-      "durationMs": 4236,
-      "durations": [
-        4025,
-        4446
-      ],
-      "rankScore": 4085,
-      "rankReason": "median=4236ms · runs=4025ms/4446ms",
       "sourceName": "AniWorld (GER DUB)",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/004/source.js",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/003/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/004/manifest.json",
       "language": "German",
-      "registry": "content-manifest",
-      "origin": "current",
-      "chosenCandidate": {
-        "id": "mod_490047518",
-        "sourceName": "AniWorld (GER DUB)",
-        "language": "German",
-        "registry": "content-manifest",
-        "origin": "current",
-        "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/003/manifest.json",
-        "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/003/source.js",
-        "repair": null
-      },
-      "rejectedAlternatives": [],
-      "repair": null
+      "manifestSHA": "429c1fb783b461475c94b6aa156f8059ad13cedc",
+      "sourceSHA": "0c3cdcba944faffbde639f016afff6566c6bb68d"
     },
     "Sources/Indonesian/001": {
       "status": "working",
       "reason": null,
-      "lastChecked": "2026-09-06T09:14:48.315Z",
+      "lastChecked": "2026-09-06T11:00:47.834Z",
       "workingDomain": null,
       "catalogPath": "Sources/Indonesian/001",
-      "rank": 1,
-      "durationMs": 3808,
-      "durations": [
-        3897,
-        3719
-      ],
-      "rankScore": 3614,
-      "rankReason": "median=3808ms · runs=3897ms/3719ms",
       "sourceName": "Nimegami",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Indonesian/001/source.js",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Indonesian/001/manifest.json",
       "language": "Indonesian",
-      "registry": "content-manifest",
-      "origin": "current",
-      "chosenCandidate": {
-        "id": "mod_1034771324",
-        "sourceName": "Nimegami",
-        "language": "Indonesian",
-        "registry": "content-manifest",
-        "origin": "current",
-        "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Indonesian/001/manifest.json",
-        "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Indonesian/001/source.js",
-        "repair": null
-      },
-      "rejectedAlternatives": [],
-      "repair": null
+      "manifestSHA": "3b811be06f7801dccbce3452d6309871f3c9653b",
+      "sourceSHA": "cf8809ace357f2fcc0fff26c8b673c7b2cad421a"
     },
     "Sources/Italian/001": {
       "status": "working",
       "reason": null,
-      "lastChecked": "2026-09-06T09:14:48.315Z",
+      "lastChecked": "2026-09-06T11:00:48.328Z",
       "workingDomain": null,
       "catalogPath": "Sources/Italian/001",
-      "rank": 1,
-      "durationMs": 1844,
-      "durations": [
-        1994,
-        1693
-      ],
-      "rankScore": 1672,
-      "rankReason": "median=1844ms · runs=1994ms/1693ms",
       "sourceName": "AnimeWorld",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Italian/001/source.js",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Italian/001/manifest.json",
       "language": "Italian",
-      "registry": "content-manifest",
-      "origin": "current",
-      "chosenCandidate": {
-        "id": "mod_1493441498",
-        "sourceName": "AnimeWorld",
-        "language": "Italian",
-        "registry": "content-manifest",
-        "origin": "current",
-        "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Italian/001/manifest.json",
-        "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Italian/001/source.js",
-        "repair": null
-      },
-      "rejectedAlternatives": [],
-      "repair": null
+      "manifestSHA": "298c1ca141dd8ab15f583f714759ef38b9c23555",
+      "sourceSHA": "f54c298df0b4dc1e4e72e3a4a22229465171ab98"
     },
     "Sources/Multi/001": {
       "status": "working",
       "reason": null,
-      "lastChecked": "2026-09-06T09:14:48.315Z",
+      "lastChecked": "2026-09-06T11:00:50.734Z",
       "workingDomain": null,
       "catalogPath": "Sources/Multi/001",
-      "rank": 1,
-      "durationMs": 80,
-      "durations": [
-        110,
-        50
-      ],
-      "rankScore": 0,
-      "rankReason": "median=80ms · runs=110ms/50ms",
       "sourceName": "IPTV-org",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Multi/001/source.js",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Multi/001/manifest.json",
       "language": "Multi",
-      "registry": "content-manifest",
-      "origin": "current",
-      "chosenCandidate": {
-        "id": "mod_1314519251",
-        "sourceName": "IPTV-org",
-        "language": "Multi",
-        "registry": "content-manifest",
-        "origin": "current",
-        "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Multi/001/manifest.json",
-        "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Multi/001/source.js",
-        "repair": null
-      },
-      "rejectedAlternatives": [],
-      "repair": null
+      "manifestSHA": "5adbf04e58a04748b058c5dae85b771ecae7f31c",
+      "sourceSHA": "e97ed4f738d8554a940341eec85b6796a0b6795e"
     },
     "Sources/Multi/002": {
       "status": "working",
       "reason": null,
-      "lastChecked": "2026-09-06T09:14:48.315Z",
+      "lastChecked": "2026-09-06T11:00:51.097Z",
       "workingDomain": null,
       "catalogPath": "Sources/Multi/002",
-      "rank": 2,
-      "durationMs": 799,
-      "durations": [
-        845,
-        752
-      ],
-      "rankScore": 590,
-      "rankReason": "median=799ms · runs=845ms/752ms",
       "sourceName": "Anibd.App",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Multi/002/source.js",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Multi/002/manifest.json",
       "language": "Multi",
-      "registry": "content-manifest",
-      "origin": "current",
-      "chosenCandidate": {
-        "id": "mod_1472896236",
-        "sourceName": "Anibd.App",
-        "language": "Multi",
-        "registry": "content-manifest",
-        "origin": "current",
-        "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Multi/002/manifest.json",
-        "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Multi/002/source.js",
-        "repair": null
-      },
-      "rejectedAlternatives": [
-        {
-          "id": "mangayomi_829457287",
-          "sourceName": "Anibd.App",
-          "language": "Multi",
-          "registry": "mangayomi",
-          "origin": "mangayomi",
-          "manifestUrl": "https://raw.githubusercontent.com/Swakshan/mangayomi-swak-extensions/refs/heads/main/javascript/anime/src/all/anibd.app.js",
-          "scriptUrl": "https://raw.githubusercontent.com/Swakshan/mangayomi-swak-extensions/refs/heads/main/javascript/anime/src/all/anibd.app.js",
-          "repair": null,
-          "label": "initial",
-          "status": "working",
-          "durationMs": 830,
-          "errors": [],
-          "attempts": []
-        }
-      ],
-      "repair": null
+      "manifestSHA": "93d8d661dc0950dfd3992c8d253a9753a5c4b167",
+      "sourceSHA": "24042a695a00605fe5bcfbd528da2d6644989a29"
     },
     "Sources/Portuguese/001": {
       "status": "working",
       "reason": null,
-      "lastChecked": "2026-09-06T09:14:48.315Z",
+      "lastChecked": "2026-09-06T11:00:51.410Z",
       "workingDomain": null,
       "catalogPath": "Sources/Portuguese/001",
-      "rank": 1,
-      "durationMs": 1794,
-      "durations": [
-        2038,
-        1549
-      ],
-      "rankScore": 1654,
-      "rankReason": "median=1794ms · runs=2038ms/1549ms",
       "sourceName": "AnimesDigital",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Portuguese/001/source.js",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Portuguese/001/manifest.json",
       "language": "Portuguese",
-      "registry": "content-manifest",
-      "origin": "current",
-      "chosenCandidate": {
-        "id": "mod_1582804401",
-        "sourceName": "AnimesDigital",
-        "language": "Portuguese",
-        "registry": "content-manifest",
-        "origin": "current",
-        "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Portuguese/001/manifest.json",
-        "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Portuguese/001/source.js",
-        "repair": null
-      },
-      "rejectedAlternatives": [],
-      "repair": null
+      "manifestSHA": "be93360c92f0d31535ca8850c662a75aeb412c7f",
+      "sourceSHA": "6a50dc791daf78fef4748d0b86756da1b0955305"
     },
     "Sources/Russian/001": {
       "status": "working",
       "reason": null,
-      "lastChecked": "2026-09-06T09:14:48.315Z",
+      "lastChecked": "2026-09-06T11:00:51.695Z",
       "workingDomain": null,
       "catalogPath": "Sources/Russian/001",
-      "rank": 1,
-      "durationMs": 7734,
-      "durations": [
-        7496,
-        7971
-      ],
-      "rankScore": 7592,
-      "rankReason": "median=7734ms · runs=7496ms/7971ms",
       "sourceName": "AnimeLib",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Russian/001/source.js",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Russian/001/manifest.json",
       "language": "Russian",
-      "registry": "content-manifest",
-      "origin": "current",
-      "chosenCandidate": {
-        "id": "mod_539148115",
-        "sourceName": "AnimeLib",
-        "language": "Russian",
-        "registry": "content-manifest",
-        "origin": "current",
-        "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Russian/001/manifest.json",
-        "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Russian/001/source.js",
-        "repair": null
-      },
-      "rejectedAlternatives": [],
-      "repair": null
+      "manifestSHA": "a13dff493e9c1a17f2ce598cfea0dfbb4fe05ae7",
+      "sourceSHA": "4408788efcc13cea3ef1fe70d72d75c6409b44d2"
     },
     "Sources/Spanish/001": {
       "status": "working",
       "reason": null,
-      "lastChecked": "2026-09-06T09:14:48.315Z",
+      "lastChecked": "2026-09-06T11:00:52.439Z",
       "workingDomain": null,
       "catalogPath": "Sources/Spanish/001",
-      "rank": 1,
-      "durationMs": 1177,
-      "durations": [
-        1350,
-        1003
-      ],
-      "rankScore": 1013,
-      "rankReason": "median=1177ms · runs=1350ms/1003ms",
       "sourceName": "AnimeAV1",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/001/source.js",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/002/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/001/manifest.json",
       "language": "Spanish",
-      "registry": "content-manifest",
-      "origin": "current",
-      "chosenCandidate": {
-        "id": "mod_1898613263",
-        "sourceName": "AnimeAV1",
-        "language": "Spanish",
-        "registry": "content-manifest",
-        "origin": "current",
-        "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/002/manifest.json",
-        "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/002/source.js",
-        "repair": null
-      },
-      "rejectedAlternatives": [],
-      "repair": null
+      "manifestSHA": "874e0c34daaad2654d73e56e3b7764e309a24949",
+      "sourceSHA": "65b29c54c46d0688b298b873a70b0892dd226869"
     },
     "Sources/Spanish/002": {
       "status": "working",
       "reason": null,
-      "lastChecked": "2026-09-06T09:14:48.315Z",
+      "lastChecked": "2026-09-06T11:00:53.028Z",
       "workingDomain": null,
       "catalogPath": "Sources/Spanish/002",
-      "rank": 2,
-      "durationMs": 1720,
-      "durations": [
-        1932,
-        1508
-      ],
-      "rankScore": 1569,
-      "rankReason": "median=1720ms · runs=1932ms/1508ms",
       "sourceName": "Monoschinos2",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/002/source.js",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/003/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/002/manifest.json",
       "language": "Spanish",
-      "registry": "content-manifest",
-      "origin": "current",
-      "chosenCandidate": {
-        "id": "mod_888802224",
-        "sourceName": "Monoschinos2",
-        "language": "Spanish",
-        "registry": "content-manifest",
-        "origin": "current",
-        "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/003/manifest.json",
-        "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/003/source.js",
-        "repair": null
-      },
-      "rejectedAlternatives": [],
-      "repair": null
+      "manifestSHA": "fe74e661ec049b18401c911bc886b2a45b9d9ca0",
+      "sourceSHA": "28b37b5362526ee6c63072e171572e6367272e5f"
     },
     "Sources/Spanish/003": {
       "status": "working",
       "reason": null,
-      "lastChecked": "2026-09-06T09:14:48.315Z",
+      "lastChecked": "2026-09-06T11:00:54.171Z",
       "workingDomain": null,
       "catalogPath": "Sources/Spanish/003",
-      "rank": 3,
-      "durationMs": 2863,
-      "durations": [
-        4835,
-        890
-      ],
-      "rankScore": 3328,
-      "rankReason": "median=2863ms · runs=4835ms/890ms",
       "sourceName": "Latanime",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/003/source.js",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/001/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/003/manifest.json",
       "language": "Spanish",
-      "registry": "content-manifest",
-      "origin": "current",
-      "chosenCandidate": {
-        "id": "mod_391061454",
-        "sourceName": "Latanime",
-        "language": "Spanish",
-        "registry": "content-manifest",
-        "origin": "current",
-        "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/001/manifest.json",
-        "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/001/source.js",
-        "repair": null
-      },
-      "rejectedAlternatives": [],
-      "repair": null
+      "manifestSHA": "47e4d73d4f0e44dcf578673af6f2af25415a73c2",
+      "sourceSHA": "386a2a04b4485303b8bfc5280941f538e8adbdfd"
     },
     "Sources/Spanish/004": {
       "status": "working",
       "reason": null,
-      "lastChecked": "2026-09-06T09:14:48.315Z",
+      "lastChecked": "2026-09-06T11:00:54.599Z",
       "workingDomain": null,
       "catalogPath": "Sources/Spanish/004",
-      "rank": 4,
-      "durationMs": 6277,
-      "durations": [
-        6641,
-        5912
-      ],
-      "rankScore": 6179,
-      "rankReason": "median=6277ms · runs=6641ms/5912ms",
       "sourceName": "AnimeJara",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/004/source.js",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/004/manifest.json",
       "language": "Spanish",
-      "registry": "content-manifest",
-      "origin": "current",
-      "chosenCandidate": {
-        "id": "mod_618749585",
-        "sourceName": "AnimeJara",
-        "language": "Spanish",
-        "registry": "content-manifest",
-        "origin": "current",
-        "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/004/manifest.json",
-        "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/004/source.js",
-        "repair": null
-      },
-      "rejectedAlternatives": [],
-      "repair": null
+      "manifestSHA": "89c68a896751536c911f3110daf13e0ac8a81625",
+      "sourceSHA": "3c034ee8411bd9f580b5e750be0cb1796e4c9327"
     },
     "Sources/Spanish/005": {
-      "status": "working",
-      "reason": null,
-      "lastChecked": "2026-09-06T09:14:48.315Z",
+      "status": "degraded",
+      "reason": "episodes: extractEpisodes returned an unusable result; stream: extractStreamUrl timed out; episodes: extractEpisodes returned an unusable result",
+      "lastChecked": "2026-09-06T11:00:56.041Z",
       "workingDomain": null,
       "catalogPath": "Sources/Spanish/005",
-      "rank": 5,
-      "durationMs": 15441,
-      "durations": [
-        15502,
-        15379
-      ],
-      "rankScore": 15237,
-      "rankReason": "median=15441ms · runs=15502ms/15379ms",
       "sourceName": "JKanime",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/005/source.js",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/005/manifest.json",
       "language": "Spanish",
-      "registry": "content-manifest",
-      "origin": "current",
-      "chosenCandidate": {
-        "id": "mod_2126301394",
-        "sourceName": "JKanime",
-        "language": "Spanish",
-        "registry": "content-manifest",
-        "origin": "current",
-        "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/005/manifest.json",
-        "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/005/source.js",
-        "repair": null
-      },
-      "rejectedAlternatives": [],
-      "repair": null
-    },
-    "Rejected/English/AnimeGG": {
-      "status": "degraded",
-      "reason": "search: searchResults timed out",
-      "lastChecked": "2026-09-06T09:14:48.315Z",
-      "workingDomain": null,
-      "catalogPath": "Rejected/English/AnimeGG",
-      "sourceName": "AnimeGG",
-      "language": "English",
-      "candidates": [
-        {
-          "id": "mod_1443824015",
-          "sourceName": "AnimeGG",
-          "language": "English",
-          "registry": "content-manifest",
-          "origin": "current",
-          "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/006/manifest.json",
-          "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/006/source.js",
-          "repair": null,
-          "label": "initial",
-          "status": "needs_fix",
-          "failureKind": "module_runtime_failure",
-          "durationMs": 30051,
-          "errors": [
-            "search: searchResults timed out"
-          ],
-          "attempts": [
-            {
-              "name": "url_health",
-              "status": "skipped_dead_or_empty",
-              "health": {
-                "base": {
-                  "url": "https://www.animegg.org/",
-                  "ok": false,
-                  "hasData": false,
-                  "reason": "Timeout after 30000ms"
-                },
-                "endpoints": [
-                  {
-                    "url": "https://www.animegg.org/search/?q=",
-                    "ok": false,
-                    "hasData": false,
-                    "reason": "Timeout after 30000ms"
-                  },
-                  {
-                    "url": "https://www.animegg.org",
-                    "ok": false,
-                    "hasData": false,
-                    "reason": "Timeout after 30000ms"
-                  },
-                  {
-                    "url": "https://www.animegg.org/embed/${ver.id}",
-                    "ok": false,
-                    "hasData": false,
-                    "reason": "Timeout after 30000ms"
-                  }
-                ]
-              }
-            }
-          ],
-          "health": {
-            "base": {
-              "url": "https://www.animegg.org/",
-              "ok": false,
-              "hasData": false,
-              "reason": "Timeout after 30000ms"
-            },
-            "endpoints": [
-              {
-                "url": "https://www.animegg.org/search/?q=",
-                "ok": false,
-                "hasData": false,
-                "reason": "Timeout after 30000ms"
-              },
-              {
-                "url": "https://www.animegg.org",
-                "ok": false,
-                "hasData": false,
-                "reason": "Timeout after 30000ms"
-              },
-              {
-                "url": "https://www.animegg.org/embed/${ver.id}",
-                "ok": false,
-                "hasData": false,
-                "reason": "Timeout after 30000ms"
-              }
-            ]
-          }
-        }
-      ]
-    },
-    "Rejected/Vietnamese/AnimeVietSub.pw": {
-      "status": "degraded",
-      "reason": "stream: extractStreamUrl returned an unusable result; stream: extractStreamUrl returned an unusable result",
-      "lastChecked": "2026-09-06T09:14:48.315Z",
-      "workingDomain": null,
-      "catalogPath": "Rejected/Vietnamese/AnimeVietSub.pw",
-      "sourceName": "AnimeVietSub.pw",
-      "language": "Vietnamese",
-      "candidates": [
-        {
-          "id": "mod_20745433",
-          "sourceName": "AnimeVietSub.pw",
-          "language": "Vietnamese",
-          "registry": "content-manifest",
-          "origin": "current",
-          "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Vietnamese/001/manifest.json",
-          "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Vietnamese/001/source.js",
-          "repair": null,
-          "label": "initial",
-          "status": "needs_fix",
-          "failureKind": "stream_resolution_failed_in_test_harness",
-          "durationMs": 7465,
-          "errors": [
-            "stream: extractStreamUrl returned an unusable result",
-            "stream: extractStreamUrl returned an unusable result",
-            "stream: extractStreamUrl returned an unusable result",
-            "stream: extractStreamUrl returned an unusable result",
-            "stream: extractStreamUrl returned an unusable result"
-          ],
-          "attempts": [],
-          "health": {
-            "base": {
-              "url": "https://animevietsub.pw",
-              "status": 200,
-              "ok": true,
-              "contentType": "text/html; charset=UTF-8",
-              "bytes": 111495,
-              "hasData": true,
-              "reason": "ok"
-            },
-            "endpoints": []
-          }
-        }
-      ]
-    },
-    "Rejected/English/AllAnime (Zangetsu)": {
-      "status": "degraded",
-      "reason": "search: AllAnime: HTTP undefined",
-      "lastChecked": "2026-09-06T09:14:48.315Z",
-      "workingDomain": null,
-      "catalogPath": "Rejected/English/AllAnime (Zangetsu)",
-      "sourceName": "AllAnime (Zangetsu)",
-      "language": "English",
-      "candidates": [
-        {
-          "id": "zangetsu_allanime",
-          "sourceName": "AllAnime (Zangetsu)",
-          "language": "English",
-          "registry": "zangetsu",
-          "origin": "zangetsu",
-          "manifestUrl": "https://raw.githubusercontent.com/Spyou/zangetsu-providers/main/index.json",
-          "scriptUrl": "https://raw.githubusercontent.com/Spyou/zangetsu-providers/main/providers/allanime.js",
-          "repair": null,
-          "label": "initial",
-          "status": "needs_fix",
-          "failureKind": "module_runtime_failure",
-          "durationMs": 376,
-          "errors": [
-            "search: AllAnime: HTTP undefined"
-          ],
-          "attempts": [],
-          "health": {
-            "base": {
-              "ok": false,
-              "hasData": false,
-              "reason": "missing_url"
-            },
-            "endpoints": [
-              {
-                "url": "https://allanime.to",
-                "ok": false,
-                "hasData": false,
-                "reason": "fetch failed"
-              },
-              {
-                "url": "https://api.allanime.day/api",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 5761,
-                "hasData": false,
-                "reason": "http_403"
-              },
-              {
-                "url": "https://allanime.to/favicon.ico",
-                "ok": false,
-                "hasData": false,
-                "reason": "fetch failed"
-              },
-              {
-                "url": "https://kitsu.io/api/edge/mappings?filter%5BexternalSite%5D=myanimelist/anime",
-                "status": 200,
-                "ok": true,
-                "contentType": "application/vnd.api+json",
-                "bytes": 3885,
-                "hasData": true,
-                "reason": "ok"
-              }
-            ]
-          }
-        }
-      ]
-    },
-    "Rejected/English/AniKoto (Zangetsu)": {
-      "status": "degraded",
-      "reason": "search: search returned an unusable result",
-      "lastChecked": "2026-09-06T09:14:48.315Z",
-      "workingDomain": null,
-      "catalogPath": "Rejected/English/AniKoto (Zangetsu)",
-      "sourceName": "AniKoto (Zangetsu)",
-      "language": "English",
-      "candidates": [
-        {
-          "id": "zangetsu_anikoto",
-          "sourceName": "AniKoto (Zangetsu)",
-          "language": "English",
-          "registry": "zangetsu",
-          "origin": "zangetsu",
-          "manifestUrl": "https://raw.githubusercontent.com/Spyou/zangetsu-providers/main/index.json",
-          "scriptUrl": "https://raw.githubusercontent.com/Spyou/zangetsu-providers/main/providers/anikoto.js",
-          "repair": null,
-          "label": "initial",
-          "status": "needs_fix",
-          "failureKind": "module_runtime_failure",
-          "durationMs": 172,
-          "errors": [
-            "search: search returned an unusable result"
-          ],
-          "attempts": [],
-          "health": {
-            "base": {
-              "ok": false,
-              "hasData": false,
-              "reason": "missing_url"
-            },
-            "endpoints": [
-              {
-                "url": "https://anikotoapi.site",
-                "status": 200,
-                "ok": true,
-                "contentType": "text/html; charset=utf-8",
-                "bytes": 21170,
-                "hasData": true,
-                "reason": "ok"
-              }
-            ]
-          }
-        }
-      ]
-    },
-    "Rejected/Chinese/AnimeCube (Zangetsu)": {
-      "status": "degraded",
-      "reason": "search: search returned an unusable result",
-      "lastChecked": "2026-09-06T09:14:48.315Z",
-      "workingDomain": null,
-      "catalogPath": "Rejected/Chinese/AnimeCube (Zangetsu)",
-      "sourceName": "AnimeCube (Zangetsu)",
-      "language": "Chinese",
-      "candidates": [
-        {
-          "id": "zangetsu_animecube",
-          "sourceName": "AnimeCube (Zangetsu)",
-          "language": "Chinese",
-          "registry": "zangetsu",
-          "origin": "zangetsu",
-          "manifestUrl": "https://raw.githubusercontent.com/Spyou/zangetsu-providers/main/index.json",
-          "scriptUrl": "https://raw.githubusercontent.com/Spyou/zangetsu-providers/main/providers/animecube.js",
-          "repair": null,
-          "label": "initial",
-          "status": "needs_fix",
-          "failureKind": "module_runtime_failure",
-          "durationMs": 104,
-          "errors": [
-            "search: search returned an unusable result"
-          ],
-          "attempts": [
-            {
-              "name": "url_health",
-              "status": "skipped_dead_or_empty",
-              "health": {
-                "base": {
-                  "ok": false,
-                  "hasData": false,
-                  "reason": "missing_url"
-                },
-                "endpoints": [
-                  {
-                    "url": "https://animecube.live",
-                    "status": 403,
-                    "ok": false,
-                    "contentType": "text/html; charset=UTF-8",
-                    "bytes": 5661,
-                    "hasData": false,
-                    "reason": "http_403"
-                  }
-                ]
-              }
-            }
-          ],
-          "health": {
-            "base": {
-              "ok": false,
-              "hasData": false,
-              "reason": "missing_url"
-            },
-            "endpoints": [
-              {
-                "url": "https://animecube.live",
-                "status": 403,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 5661,
-                "hasData": false,
-                "reason": "http_403"
-              }
-            ]
-          }
-        }
-      ]
-    },
-    "Rejected/English/AnimeKai (Zangetsu)": {
-      "status": "degraded",
-      "reason": "search: search returned an unusable result",
-      "lastChecked": "2026-09-06T09:14:48.315Z",
-      "workingDomain": null,
-      "catalogPath": "Rejected/English/AnimeKai (Zangetsu)",
-      "sourceName": "AnimeKai (Zangetsu)",
-      "language": "English",
-      "candidates": [
-        {
-          "id": "zangetsu_animekai",
-          "sourceName": "AnimeKai (Zangetsu)",
-          "language": "English",
-          "registry": "zangetsu",
-          "origin": "zangetsu",
-          "manifestUrl": "https://raw.githubusercontent.com/Spyou/zangetsu-providers/main/index.json",
-          "scriptUrl": "https://raw.githubusercontent.com/Spyou/zangetsu-providers/main/providers/animekai.js",
-          "repair": null,
-          "label": "initial",
-          "status": "needs_fix",
-          "failureKind": "module_runtime_failure",
-          "durationMs": 276,
-          "errors": [
-            "search: search returned an unusable result"
-          ],
-          "attempts": [
-            {
-              "name": "url_health",
-              "status": "skipped_dead_or_empty",
-              "health": {
-                "base": {
-                  "ok": false,
-                  "hasData": false,
-                  "reason": "missing_url"
-                },
-                "endpoints": [
-                  {
-                    "url": "https://enc-dec.app/api/dec-mega",
-                    "status": 400,
-                    "ok": false,
-                    "contentType": "application/json; charset=utf-8",
-                    "bytes": 126,
-                    "hasData": false,
-                    "reason": "http_400"
-                  }
-                ]
-              }
-            }
-          ],
-          "health": {
-            "base": {
-              "ok": false,
-              "hasData": false,
-              "reason": "missing_url"
-            },
-            "endpoints": [
-              {
-                "url": "https://enc-dec.app/api/dec-mega",
-                "status": 400,
-                "ok": false,
-                "contentType": "application/json; charset=utf-8",
-                "bytes": 126,
-                "hasData": false,
-                "reason": "http_400"
-              }
-            ]
-          }
-        }
-      ]
-    },
-    "Rejected/English/HiAnime (Zangetsu)": {
-      "status": "degraded",
-      "reason": "search: search timed out",
-      "lastChecked": "2026-09-06T09:14:48.315Z",
-      "workingDomain": null,
-      "catalogPath": "Rejected/English/HiAnime (Zangetsu)",
-      "sourceName": "HiAnime (Zangetsu)",
-      "language": "English",
-      "candidates": [
-        {
-          "id": "zangetsu_hianime",
-          "sourceName": "HiAnime (Zangetsu)",
-          "language": "English",
-          "registry": "zangetsu",
-          "origin": "zangetsu",
-          "manifestUrl": "https://raw.githubusercontent.com/Spyou/zangetsu-providers/main/index.json",
-          "scriptUrl": "https://raw.githubusercontent.com/Spyou/zangetsu-providers/main/providers/hianime.js",
-          "repair": null,
-          "label": "initial",
-          "status": "needs_fix",
-          "failureKind": "module_runtime_failure",
-          "durationMs": 30045,
-          "errors": [
-            "search: search timed out"
-          ],
-          "attempts": [],
-          "health": {
-            "base": {
-              "ok": false,
-              "hasData": false,
-              "reason": "missing_url"
-            },
-            "endpoints": [
-              {
-                "url": "https://animedata.cfd/api",
-                "status": 521,
-                "ok": false,
-                "contentType": null,
-                "bytes": 0,
-                "hasData": false,
-                "reason": "http_521"
-              },
-              {
-                "url": "https://hianimes.se",
-                "status": 200,
-                "ok": true,
-                "contentType": "text/html; charset=utf-8",
-                "bytes": 28869,
-                "hasData": true,
-                "reason": "ok"
-              },
-              {
-                "url": "https://kitsu.io/api/edge/mappings?filter%5BexternalSite%5D=myanimelist/anime",
-                "status": 200,
-                "ok": true,
-                "contentType": "application/vnd.api+json",
-                "bytes": 3885,
-                "hasData": true,
-                "reason": "ok"
-              },
-              {
-                "url": "https://kitsu.io/api/edge/anime/",
-                "status": 200,
-                "ok": true,
-                "contentType": "application/vnd.api+json",
-                "bytes": 59787,
-                "hasData": true,
-                "reason": "ok"
-              }
-            ]
-          }
-        }
-      ]
-    },
-    "Rejected/English/Anikage": {
-      "status": "degraded",
-      "reason": "search: Anikage HTTP 403",
-      "lastChecked": "2026-09-06T09:14:48.315Z",
-      "workingDomain": null,
-      "catalogPath": "Rejected/English/Anikage",
-      "sourceName": "Anikage",
-      "language": "English",
-      "candidates": [
-        {
-          "id": "anikage-local",
-          "sourceName": "Anikage",
-          "language": "English",
-          "registry": "mangayomi",
-          "origin": "mangayomi",
-          "manifestUrl": "source.js",
-          "scriptUrl": "source.js",
-          "repair": null,
-          "label": "initial",
-          "status": "needs_fix",
-          "failureKind": "module_runtime_failure",
-          "durationMs": 51,
-          "errors": [
-            "search: Anikage HTTP 403"
-          ],
-          "attempts": [
-            {
-              "name": "url_health",
-              "status": "skipped_dead_or_empty",
-              "health": {
-                "base": {
-                  "url": "https://anikage.cc/",
-                  "status": 403,
-                  "ok": false,
-                  "contentType": "text/html; charset=UTF-8",
-                  "bytes": 5636,
-                  "hasData": false,
-                  "reason": "http_403"
-                },
-                "endpoints": []
-              }
-            }
-          ],
-          "health": {
-            "base": {
-              "url": "https://anikage.cc/",
-              "status": 403,
-              "ok": false,
-              "contentType": "text/html; charset=UTF-8",
-              "bytes": 5636,
-              "hasData": false,
-              "reason": "http_403"
-            },
-            "endpoints": []
-          }
-        }
-      ]
+      "manifestSHA": "238c8f1a71f38fb0c1513bb6481d33f99775fc0c",
+      "sourceSHA": "c3b6ea3604511d322fc14be591cea60cd705a349"
     }
   }
 }
