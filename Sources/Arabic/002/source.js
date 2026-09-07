@@ -1,106 +1,168 @@
-const BASE_URL = "https://ristoanime.me";
-const USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
+const API_URL = "https://khkhkhkh.com/animecp/animeapi65/";
+const API_HEADERS = {
+    "Content-Type": "application/x-www-form-urlencoded; charset=utf-8",
+    "User-Agent": "AnimeCloud/1.0 iOS"
+};
+let CRYPTO_JS = null;
 
-async function getText(url, referer) {
-    const response = await fetchv2(url, {
-        "User-Agent": USER_AGENT,
-        "Referer": referer || BASE_URL + "/"
-    });
-    return response.text();
+async function api(command, fields) {
+    const values = Object.assign({ command: command }, fields || {});
+    const body = Object.keys(values).map((key) => encodeURIComponent(key) + "=" + encodeURIComponent(values[key])).join("&");
+    const response = await fetchv2(API_URL, API_HEADERS, "POST", body);
+    return response.json();
 }
 
-function text(value) {
-    return value.replace(/<[^>]*>/g, "").replace(/&amp;/g, "&").trim();
-}
-
-function absoluteUrl(url) {
-    return url.startsWith("http") ? url : BASE_URL + (url.startsWith("/") ? url : "/" + url);
+function animeId(url) {
+    return String(url).split("?")[0].replace(/\/$/, "").split("/").pop();
 }
 
 async function searchResults(keyword) {
     try {
-        const html = await getText(BASE_URL + "/?s=" + encodeURIComponent(keyword));
-        const results = [];
-        const pattern = /<div[^>]+class=["'][^"']*\bMovieItem\b[^"']*["'][^>]*>\s*<a[^>]+href=["']([^"']+)["'][^>]*>[\s\S]*?<div[^>]+class=["'][^"']*\bposter\b[^"']*["'][^>]+(?:style|data-style)=["'][^"']*?url\(([^)]+)\)[^"']*["'][^>]*>[\s\S]*?<h4[^>]*>([\s\S]*?)<\/h4>/gi;
-        let match;
-
-        while ((match = pattern.exec(html)) !== null) {
-            results.push({
-                title: text(match[3]),
-                image: absoluteUrl(match[2].replace(/["']/g, "").trim()),
-                href: absoluteUrl(match[1])
-            });
-        }
-
+        const json = await api("getAllAnime", { cmode: "0", hiddenMode: "1" });
+        const query = keyword.trim().toLocaleLowerCase();
+        const results = (json.result || []).filter((anime) => {
+            return (anime.name + " " + (anime.keywords || "") + " " + (anime.year || "")).toLocaleLowerCase().includes(query);
+        }).slice(0, 50).map((anime) => ({
+            title: anime.name,
+            image: anime.image || "",
+            href: "https://animecloudapp.com/anime/" + anime.id
+        }));
         return JSON.stringify(results);
     } catch (error) {
-        console.log("Risto Anime search error: " + error);
+        console.log("Anime Cloud search error: " + error);
         return JSON.stringify([]);
     }
 }
 
 async function extractDetails(url) {
     try {
-        const html = await getText(url);
-        const description = text((html.match(/<div[^>]+class=["'][^"']*\bStoryArea\b[^"']*["'][^>]*>[\s\S]*?<p[^>]*>([\s\S]*?)<\/p>/i) || [, ""])[1]) || "No description available";
-        const airdate = text((html.match(/تاريخ الاصدار\s*:[\s\S]{0,200}?<a[^>]*>([\s\S]*?)<\/a>/i) || [, ""])[1]) || "Unknown";
-
+        const id = animeId(url);
+        const responses = await Promise.all([
+            api("getAnimeDetails", { animeID: id }),
+            api("getAnimeMoreDetails", { animeID: id })
+        ]);
+        const summary = (responses[0].mainResult || [])[0] || {};
+        const more = (responses[1].result || [])[0] || {};
         return JSON.stringify([{
-            description: description,
-            aliases: "N/A",
-            airdate: airdate
+            description: more.story || "No description available",
+            aliases: more.genres || "N/A",
+            airdate: [more.year, more.status, summary.age, summary.rank ? "Rating: " + summary.rank : ""].filter(Boolean).join(" | ") || "Unknown"
         }]);
     } catch (error) {
-        console.log("Risto Anime details error: " + error);
+        console.log("Anime Cloud details error: " + error);
         return JSON.stringify([]);
     }
 }
 
 async function extractEpisodes(url) {
     try {
-        const html = await getText(url);
-        const episodes = [];
-        const pattern = /<a[^>]+href=["']([^"']+)["'][^>]*>\s*الحلقة\s*<em>\s*(\d+)\s*<\/em>/gi;
-        let match;
-
-        while ((match = pattern.exec(html)) !== null) {
-            const episodeUrl = absoluteUrl(match[1]);
-            episodes.push({
-                href: episodeUrl.endsWith("/watch/") ? episodeUrl : episodeUrl + (episodeUrl.endsWith("/") ? "watch/" : "/watch/"),
-                number: Number(match[2])
-            });
-        }
-
+        const json = await api("getAnimeDetails", { animeID: animeId(url) });
+        const episodes = (json.result || []).map((episode, index) => {
+            const match = episode.name && episode.name.match(/\d+(?:\.\d+)?/);
+            return {
+                href: String(episode.id),
+                number: match ? Number(match[0]) : index + 1,
+                title: episode.name || "Episode " + (index + 1),
+                image: episode.image300 || episode.image170 || ""
+            };
+        });
         episodes.sort((a, b) => a.number - b.number);
         return JSON.stringify(episodes);
     } catch (error) {
-        console.log("Risto Anime episodes error: " + error);
+        console.log("Anime Cloud episodes error: " + error);
         return JSON.stringify([]);
     }
 }
 
-async function extractStreamUrl(url) {
-    try {
-        const html = await getText(url);
-        const providerMatch = html.match(/data-watch=["']([^"']*vidmoly[^"']+)["']/i)
-            || html.match(/<iframe[^>]+src=["']([^"']*vidmoly[^"']+)["']/i);
-        if (!providerMatch) return JSON.stringify({ streams: [], subtitles: "" });
+async function decryptPlayback(payload) {
+    const encrypted = Uint8Array.from(atob(payload.trim().replace(/^"|"$/g, "")), (character) => character.charCodeAt(0));
+    if (encrypted[0] !== 3 || encrypted.length < 67) throw new Error("Invalid playback payload");
+    const material = await crypto.subtle.importKey(
+        "raw",
+        new TextEncoder().encode("anime5w&f4H&434*"),
+        "PBKDF2",
+        false,
+        ["deriveKey"]
+    );
+    const key = await crypto.subtle.deriveKey(
+        { name: "PBKDF2", salt: encrypted.slice(2, 10), iterations: 10000, hash: "SHA-1" },
+        material,
+        { name: "AES-CBC", length: 256 },
+        false,
+        ["decrypt"]
+    );
+    const plaintext = await crypto.subtle.decrypt(
+        { name: "AES-CBC", iv: encrypted.slice(18, 34) },
+        key,
+        encrypted.slice(34, -32)
+    );
+    const json = JSON.parse(new TextDecoder().decode(plaintext));
+    const source = (json.result || [])[0] || json;
+    if (!source.url) throw new Error("No playable source returned");
+    return source.url;
+}
 
-        const providerUrl = providerMatch[1].replace(/&amp;/g, "&");
-        const providerHtml = await getText(providerUrl, url);
-        const streamMatch = providerHtml.match(/\bsources\s*:\s*\[\s*\{\s*file\s*:\s*["'](https?:\/\/[^"']+\.m3u8\?[^"']+)["']/i);
-        if (!streamMatch) return JSON.stringify({ streams: [], subtitles: "" });
-
-        return JSON.stringify({
-            streams: [{
-                title: "VidMoly",
-                streamUrl: streamMatch[1].replace(/&amp;/g, "&"),
-                headers: { "User-Agent": USER_AGENT }
-            }],
-            subtitles: ""
-        });
-    } catch (error) {
-        console.log("Risto Anime stream error: " + error);
-        return JSON.stringify({ streams: [], subtitles: "" });
+async function decryptPlaybackWithCryptoJs(payload) {
+    if (!CRYPTO_JS) {
+        const response = await fetchv2("https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js");
+        const load = new Function("module", "exports", "define", await response.text() + ";return this.CryptoJS;");
+        CRYPTO_JS = load();
     }
+
+    const encoded = payload.trim().replace(/^"|"$/g, "");
+    const hex = CRYPTO_JS.enc.Base64.parse(encoded).toString(CRYPTO_JS.enc.Hex);
+    const salt = CRYPTO_JS.enc.Hex.parse(hex.slice(4, 20));
+    const iv = CRYPTO_JS.enc.Hex.parse(hex.slice(36, 68));
+    const ciphertext = CRYPTO_JS.enc.Hex.parse(hex.slice(68, -64));
+    const key = CRYPTO_JS.PBKDF2("anime5w&f4H&434*", salt, {
+        keySize: 8,
+        iterations: 10000,
+        hasher: CRYPTO_JS.algo.SHA1
+    });
+    const plaintext = CRYPTO_JS.AES.decrypt({ ciphertext: ciphertext }, key, {
+        iv: iv,
+        mode: CRYPTO_JS.mode.CBC,
+        padding: CRYPTO_JS.pad.Pkcs7
+    }).toString(CRYPTO_JS.enc.Utf8);
+    const json = JSON.parse(plaintext);
+    const source = (json.result || [])[0] || json;
+    if (!source.url) throw new Error("No playable source returned");
+    return source.url;
+}
+
+async function encryptedStreamUrl(payload) {
+    if (typeof crypto !== "undefined" && crypto.subtle) return decryptPlayback(payload);
+    return decryptPlaybackWithCryptoJs(payload);
+}
+
+async function extractStreamUrl(episodeId) {
+    const streams = [];
+    for (const quality of ["1", "2"]) {
+        try {
+            const response = await fetchv2(
+                API_URL,
+                API_HEADERS,
+                "POST",
+                "command=getVideoURL&epID=" + encodeURIComponent(episodeId) + "&quality=" + quality
+            );
+            const payload = (await response.text()).trim();
+            let streamUrl = "";
+            try {
+                const json = JSON.parse(payload);
+                streamUrl = ((json.result || [])[0] || json).url || "";
+            } catch (_) {
+                streamUrl = await encryptedStreamUrl(payload);
+            }
+            if (streamUrl && !streams.some((stream) => stream.streamUrl === streamUrl)) {
+                streams.push({
+                    title: "Anime Cloud " + (quality === "1" ? "HD" : "SD"),
+                    streamUrl: streamUrl,
+                    headers: {}
+                });
+            }
+        } catch (error) {
+            console.log("Anime Cloud quality " + quality + " error: " + error);
+        }
+    }
+    return JSON.stringify({ streams: streams, subtitles: "" });
 }

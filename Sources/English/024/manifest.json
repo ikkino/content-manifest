@@ -1,32 +1,22 @@
 {
-  "sourceName": "VidCore",
-  "iconUrl": "https://vidcore.net/favicon.ico",
+  "sourceName": "VidLink",
+  "iconUrl": "https://vidlink.pro/favicon.ico",
   "author": {
-    "name": "50/50",
-    "icon": "https://files.catbox.moe/741wp7.png"
+    "name": "Local Repair"
   },
-  "version": "1.0.3",
+  "version": "1.0.1",
   "language": "English",
-  "languageType": [
-    "Native"
-  ],
-  "streamType": "HLS",
+  "streamType": "MP4",
   "quality": "1080p",
-  "baseUrl": "https://vidcore.net/",
-  "searchBaseUrl": "https://vidcore.net/",
+  "baseUrl": "https://vidlink.pro/",
+  "searchBaseUrl": "https://vidlink.pro/",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/024/source.js",
-  "type": "shows/movies/anime",
+  "type": "anime",
   "asyncJS": true,
   "softsub": true,
-  "downloadSupport": true,
+  "downloadSupport": false,
   "supportsSora": true,
   "supportsLuna": true,
-  "supportsDartotsu": true,
-  "supportsAnymex": true,
-  "supportsTsumi": true,
-  "supportsHiyoku": true,
   "supportsShirox": true,
-  "supportsMojuru": true,
-  "supportsEclipse": true,
-  "id": "mod_697391865"
+  "id": "vidlink-local"
 }

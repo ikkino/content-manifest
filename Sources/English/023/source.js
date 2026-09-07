@@ -256,7 +256,7 @@ async function extractStreamUrl(ID) {
         results.forEach(res => {
             if (!res) return;
             const { serverLabel, sources, subtitles } = res;
-            
+
             sources.forEach(src => {
                 if (src.url && !streamObjects.some(existing => existing.streamUrl === src.url)) {
                     streamObjects.push({

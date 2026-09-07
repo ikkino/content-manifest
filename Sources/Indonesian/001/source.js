@@ -69,7 +69,7 @@ async function extractEpisodes(url) {
         // First try to extract individual episodes (excluding batch)
         const htmlWithoutBatch = html.replace(/<div class="batch-dlcuy">[\s\S]*?<\/div>/g, '');
         const episodeRegex = /<h4>([^<]*Episode\s+(\d+)[^<]*)<\/h4>\s*<ul>([\s\S]*?)<\/ul>/gi;
-        
+
         let episodeMatch;
         while ((episodeMatch = episodeRegex.exec(htmlWithoutBatch)) !== null) {
             const episodeTitle = episodeMatch[1];
@@ -140,24 +140,24 @@ async function extractStreamUrl(url) {
         const html = await response.text();
 
         const streams = [];
-        
+
         const downloadDivMatch = html.match(/<div id="download_div"[\s\S]*?<\/div>/);
         if (downloadDivMatch) {
             const downloadDiv = downloadDivMatch[0];
-            
+
             const linkRegex = /<a[^>]*href="([^"]+)"[^>]*id="ini_download_[^"]*"[^>]*>/g;
             let linkMatch;
             let serverCount = 1;
-            
+
             while ((linkMatch = linkRegex.exec(downloadDiv)) !== null) {
                 const streamUrl = linkMatch[1].trim();
-                
+
                 streams.push({
                     title: `Server ${serverCount}`,
                     streamUrl: streamUrl,
                     headers: {}
                 });
-                
+
                 serverCount++;
             }
         }

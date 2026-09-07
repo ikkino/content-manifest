@@ -1,168 +1,141 @@
-const API_URL = "https://khkhkhkh.com/animecp/animeapi65/";
-const API_HEADERS = {
-    "Content-Type": "application/x-www-form-urlencoded; charset=utf-8",
-    "User-Agent": "AnimeCloud/1.0 iOS"
-};
-let CRYPTO_JS = null;
+const BASE_URL = "https://ww3.okanime.xyz";
+const USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
 
-async function api(command, fields) {
-    const values = Object.assign({ command: command }, fields || {});
-    const body = Object.keys(values).map((key) => encodeURIComponent(key) + "=" + encodeURIComponent(values[key])).join("&");
-    const response = await fetchv2(API_URL, API_HEADERS, "POST", body);
-    return response.json();
+async function getText(url, referer) {
+    const response = await fetchv2(url, {
+        "User-Agent": USER_AGENT,
+        "Referer": referer || BASE_URL + "/"
+    });
+    return response.text();
 }
 
-function animeId(url) {
-    return String(url).split("?")[0].replace(/\/$/, "").split("/").pop();
+function text(value) {
+    return value.replace(/<[^>]*>/g, "").replace(/&amp;/g, "&").trim();
+}
+
+function absoluteUrl(url) {
+    return url.startsWith("http") ? url : BASE_URL + (url.startsWith("/") ? url : "/" + url);
 }
 
 async function searchResults(keyword) {
     try {
-        const json = await api("getAllAnime", { cmode: "0", hiddenMode: "1" });
-        const query = keyword.trim().toLocaleLowerCase();
-        const results = (json.result || []).filter((anime) => {
-            return (anime.name + " " + (anime.keywords || "") + " " + (anime.year || "")).toLocaleLowerCase().includes(query);
-        }).slice(0, 50).map((anime) => ({
-            title: anime.name,
-            image: anime.image || "",
-            href: "https://animecloudapp.com/anime/" + anime.id
-        }));
+        const html = await getText(BASE_URL + "/anime-list?q=" + encodeURIComponent(keyword));
+        const results = [];
+        const cardPattern = /<div class="anime-card anime-hover">[\s\S]*?<img[^>]+src="([^"]+)"[^>]+alt="([^"]+)"[\s\S]*?<a href="([^"]*\/anime\/[^\"]+)" class="clickable"/g;
+        let match;
+
+        while ((match = cardPattern.exec(html)) !== null) {
+            results.push({
+                title: text(match[2]).replace(/\s*\|.*$/, ""),
+                image: absoluteUrl(match[1]),
+                href: absoluteUrl(match[3])
+            });
+        }
+
         return JSON.stringify(results);
     } catch (error) {
-        console.log("Anime Cloud search error: " + error);
+        console.log("Okanime search error: " + error);
         return JSON.stringify([]);
     }
 }
 
 async function extractDetails(url) {
     try {
-        const id = animeId(url);
-        const responses = await Promise.all([
-            api("getAnimeDetails", { animeID: id }),
-            api("getAnimeMoreDetails", { animeID: id })
-        ]);
-        const summary = (responses[0].mainResult || [])[0] || {};
-        const more = (responses[1].result || [])[0] || {};
+        const html = await getText(url);
+        const description = text((html.match(/<div class="synopsis-text"[^>]*>([\s\S]*?)<\/div>/) || [, ""])[1]) || "No description available";
+        const year = text((html.match(/<dt>سنة العرض<\/dt>\s*<dd>([\s\S]*?)<\/dd>/) || [, ""])[1]) || "Unknown";
+        const genres = [];
+        const genrePattern = /<a[^>]+class="genre-tag"[^>]*>([\s\S]*?)<\/a>/g;
+        let genre;
+
+        while ((genre = genrePattern.exec(html)) !== null) genres.push(text(genre[1]));
+
         return JSON.stringify([{
-            description: more.story || "No description available",
-            aliases: more.genres || "N/A",
-            airdate: [more.year, more.status, summary.age, summary.rank ? "Rating: " + summary.rank : ""].filter(Boolean).join(" | ") || "Unknown"
+            description: description,
+            aliases: genres.join(", ") || "N/A",
+            airdate: year
         }]);
     } catch (error) {
-        console.log("Anime Cloud details error: " + error);
+        console.log("Okanime details error: " + error);
         return JSON.stringify([]);
     }
 }
 
 async function extractEpisodes(url) {
     try {
-        const json = await api("getAnimeDetails", { animeID: animeId(url) });
-        const episodes = (json.result || []).map((episode, index) => {
-            const match = episode.name && episode.name.match(/\d+(?:\.\d+)?/);
-            return {
-                href: String(episode.id),
-                number: match ? Number(match[0]) : index + 1,
-                title: episode.name || "Episode " + (index + 1),
-                image: episode.image300 || episode.image170 || ""
-            };
-        });
-        episodes.sort((a, b) => a.number - b.number);
+        const html = await getText(url);
+        const episodes = [];
+        const episodePattern = /<a href="([^"]*\/episode\/[^\"]+)"\s+class="ep-compact-btn[^\"]*"\s+title="[^\"]*?(\d+)">/g;
+        let match;
+
+        while ((match = episodePattern.exec(html)) !== null) {
+            episodes.push({ href: absoluteUrl(match[1]), number: Number(match[2]) });
+        }
+
         return JSON.stringify(episodes);
     } catch (error) {
-        console.log("Anime Cloud episodes error: " + error);
+        console.log("Okanime episodes error: " + error);
         return JSON.stringify([]);
     }
 }
 
-async function decryptPlayback(payload) {
-    const encrypted = Uint8Array.from(atob(payload.trim().replace(/^"|"$/g, "")), (character) => character.charCodeAt(0));
-    if (encrypted[0] !== 3 || encrypted.length < 67) throw new Error("Invalid playback payload");
-    const material = await crypto.subtle.importKey(
-        "raw",
-        new TextEncoder().encode("anime5w&f4H&434*"),
-        "PBKDF2",
-        false,
-        ["deriveKey"]
-    );
-    const key = await crypto.subtle.deriveKey(
-        { name: "PBKDF2", salt: encrypted.slice(2, 10), iterations: 10000, hash: "SHA-1" },
-        material,
-        { name: "AES-CBC", length: 256 },
-        false,
-        ["decrypt"]
-    );
-    const plaintext = await crypto.subtle.decrypt(
-        { name: "AES-CBC", iv: encrypted.slice(18, 34) },
-        key,
-        encrypted.slice(34, -32)
-    );
-    const json = JSON.parse(new TextDecoder().decode(plaintext));
-    const source = (json.result || [])[0] || json;
-    if (!source.url) throw new Error("No playable source returned");
-    return source.url;
+function unpack(source) {
+    const match = /}\('(.+)',\s*(\d+),\s*(\d+),\s*'(.+)'\.split\('\|'\)/.exec(source);
+    if (!match) return "";
+
+    const payload = match[1];
+    const radix = Number(match[2]);
+    const symbols = match[4].split("|");
+    const alphabet = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+    const decode = (value) => {
+        if (radix <= 36) return parseInt(value, radix);
+        return value.split("").reduce((total, character) => total * radix + alphabet.indexOf(character), 0);
+    };
+
+    return payload.replace(/\b\w+\b/g, (word) => symbols[decode(word)] || word);
 }
 
-async function decryptPlaybackWithCryptoJs(payload) {
-    if (!CRYPTO_JS) {
-        const response = await fetchv2("https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js");
-        const load = new Function("module", "exports", "define", await response.text() + ";return this.CryptoJS;");
-        CRYPTO_JS = load();
-    }
-
-    const encoded = payload.trim().replace(/^"|"$/g, "");
-    const hex = CRYPTO_JS.enc.Base64.parse(encoded).toString(CRYPTO_JS.enc.Hex);
-    const salt = CRYPTO_JS.enc.Hex.parse(hex.slice(4, 20));
-    const iv = CRYPTO_JS.enc.Hex.parse(hex.slice(36, 68));
-    const ciphertext = CRYPTO_JS.enc.Hex.parse(hex.slice(68, -64));
-    const key = CRYPTO_JS.PBKDF2("anime5w&f4H&434*", salt, {
-        keySize: 8,
-        iterations: 10000,
-        hasher: CRYPTO_JS.algo.SHA1
-    });
-    const plaintext = CRYPTO_JS.AES.decrypt({ ciphertext: ciphertext }, key, {
-        iv: iv,
-        mode: CRYPTO_JS.mode.CBC,
-        padding: CRYPTO_JS.pad.Pkcs7
-    }).toString(CRYPTO_JS.enc.Utf8);
-    const json = JSON.parse(plaintext);
-    const source = (json.result || [])[0] || json;
-    if (!source.url) throw new Error("No playable source returned");
-    return source.url;
+function streamUrlFromEmbed(html) {
+    const packed = html.match(/eval\(function\(p,a,c,k,e,d\)[\s\S]*?\.split\('\|'\)\)\)/);
+    const source = packed ? unpack(packed[0]) : html;
+    const match = source.match(/(?:file|src)\s*:\s*["']([^"']+\.(?:m3u8|mp4)[^"']*)/i)
+        || source.match(/["'](https?:[^"']+\.(?:m3u8|mp4)[^"']*)["']/i);
+    return match ? match[1].replace(/\\\//g, "/").replace(/&amp;/g, "&") : null;
 }
 
-async function encryptedStreamUrl(payload) {
-    if (typeof crypto !== "undefined" && crypto.subtle) return decryptPlayback(payload);
-    return decryptPlaybackWithCryptoJs(payload);
-}
+async function extractStreamUrl(url) {
+    try {
+        const html = await getText(url);
+        const streams = [];
+        const serverPattern = /data-server="([^"]+)"[\s\S]*?@click="setServer\('([^']+)'\)"[\s\S]*?<span>([^<]+)<\/span>/g;
+        let match;
 
-async function extractStreamUrl(episodeId) {
-    const streams = [];
-    for (const quality of ["1", "2"]) {
-        try {
-            const response = await fetchv2(
-                API_URL,
-                API_HEADERS,
-                "POST",
-                "command=getVideoURL&epID=" + encodeURIComponent(episodeId) + "&quality=" + quality
-            );
-            const payload = (await response.text()).trim();
-            let streamUrl = "";
+        while ((match = serverPattern.exec(html)) !== null) {
+            const name = match[1];
+            const embedUrl = match[2].replace(/&amp;/g, "&");
+
             try {
-                const json = JSON.parse(payload);
-                streamUrl = ((json.result || [])[0] || json).url || "";
-            } catch (_) {
-                streamUrl = await encryptedStreamUrl(payload);
+                const embedHtml = await getText(embedUrl, url);
+                const streamUrl = streamUrlFromEmbed(embedHtml);
+                if (streamUrl && !streams.some((stream) => stream.streamUrl === streamUrl)) {
+                    streams.push({
+                        title: name + " " + match[3].trim(),
+                        streamUrl: streamUrl,
+                        headers: {
+                            "Referer": embedUrl,
+                            "User-Agent": USER_AGENT
+                        }
+                    });
+                }
+            } catch (error) {
+                console.log("Okanime provider unavailable (" + name + "): " + error);
             }
-            if (streamUrl && !streams.some((stream) => stream.streamUrl === streamUrl)) {
-                streams.push({
-                    title: "Anime Cloud " + (quality === "1" ? "HD" : "SD"),
-                    streamUrl: streamUrl,
-                    headers: {}
-                });
-            }
-        } catch (error) {
-            console.log("Anime Cloud quality " + quality + " error: " + error);
         }
+
+        return JSON.stringify({ streams: streams, subtitles: "" });
+    } catch (error) {
+        console.log("Okanime stream error: " + error);
+        return JSON.stringify({ streams: [], subtitles: "" });
     }
-    return JSON.stringify({ streams: streams, subtitles: "" });
 }
