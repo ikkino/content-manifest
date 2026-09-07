@@ -1,4 +1,4 @@
-// thank you ibro for the search i love you!!
+// Sora module for Peachify using enc-dec.app API
 
 async function searchResults(keyword) {
     try {
@@ -13,10 +13,8 @@ async function searchResults(keyword) {
         };
 
         const skipTitleFilter = Object.values(keywordGroups).flat();
-
         const shouldFilter = !matchesKeyword(keyword, skipTitleFilter);
 
-        // --- TMDB Section ---
         const encodedKeyword = encodeURIComponent(keyword);
         let baseUrlTemplate = null;
 
@@ -37,7 +35,7 @@ async function searchResults(keyword) {
         let dataResults = [];
 
         if (baseUrlTemplate) {
-            const pagePromises = Array.from({ length: 2 }, (_, i) =>
+            const pagePromises = Array.from({ length: 5 }, (_, i) =>
                 soraFetch(baseUrlTemplate(i + 1)).then(r => r.json())
             );
             const pages = await Promise.all(pagePromises);
@@ -47,7 +45,6 @@ async function searchResults(keyword) {
         if (dataResults.length > 0) {
             transformedResults = transformedResults.concat(
                 dataResults
-                    .filter(result => !Array.isArray(result.genre_ids) || result.genre_ids.includes(16))
                     .map(result => {
                         if (result.media_type === "movie" || result.title) {
                             return {
@@ -85,7 +82,7 @@ function matchesKeyword(keyword, commands) {
 
 async function extractDetails(url) {
     try {
-        if(url.includes('movie')) {
+        if (url.includes('movie')) {
             const match = url.match(/movie\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
 
@@ -100,7 +97,7 @@ async function extractDetails(url) {
             }];
 
             return JSON.stringify(transformedResults);
-        } else if(url.includes('tv')) {
+        } else if (url.includes('tv')) {
             const match = url.match(/tv\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
 
@@ -131,22 +128,19 @@ async function extractDetails(url) {
 
 async function extractEpisodes(url) {
     try {
-        if(url.includes('movie')) {
+        if (url.includes('movie')) {
             const match = url.match(/movie\/([^\/]+)/);
-
             if (!match) throw new Error("Invalid URL format");
 
             const movieId = match[1];
-
             const movie = [
                 { href: `/movie/${movieId}`, number: 1, title: "Full Movie" }
             ];
 
             console.log(movie);
             return JSON.stringify(movie);
-        } else if(url.includes('tv')) {
+        } else if (url.includes('tv')) {
             const match = url.match(/tv\/([^\/]+)\/([^\/]+)\/([^\/]+)/);
-
             if (!match) throw new Error("Invalid URL format");
 
             const showId = match[1];
@@ -157,8 +151,7 @@ async function extractEpisodes(url) {
             let allEpisodes = [];
             for (const season of showData.seasons) {
                 const seasonNumber = season.season_number;
-
-                if(seasonNumber === 0) continue;
+                if (seasonNumber === 0) continue;
 
                 const seasonResponseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}/season/${seasonNumber}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
                 const seasonData = await seasonResponseText.json();
@@ -184,80 +177,161 @@ async function extractEpisodes(url) {
     }
 }
 
+function getQualityWeight(title) {
+    if (title.includes("2160p") || title.includes("4K")) return 2160;
+    if (title.includes("1080p")) return 1080;
+    if (title.includes("720p")) return 720;
+    if (title.includes("480p")) return 480;
+    if (title.includes("360p")) return 360;
+    if (title.includes("Auto")) return 1;
+    return 0;
+}
+
 async function extractStreamUrl(ID) {
-  if (ID.includes('movie')) {
-    const parts = ID.split('/');
-    const tmdbID = parts[2];
-
-    const response = await fetchv2("https://enc-dec.app/api/enc-vidlink?text=" + tmdbID);
-    const data = await response.json();
-
-    console.log(data.result);
-    const responseTwo = await fetchv2(`https://vidlink.pro/api/b/movie/${data.result}?multiLang=0`);
-    const dataTwo = await responseTwo.json();
-    console.log('Data Two: ' + JSON.stringify(dataTwo));
-    const streamUrl = bestVidLinkStream(dataTwo.stream);
-    if (!streamUrl) return JSON.stringify({ streams: [], subtitles: "" });
-
-    const englishSubtitle = dataTwo.stream.captions.find(
-      sub => sub.language.toLowerCase().includes("english")
-    )?.url || null;
-
-    return JSON.stringify({
-      streams: ["Primary", streamUrl],
-      subtitles: englishSubtitle
-    });
-} else if (ID.includes('tv')) {
-    const parts = ID.split('/');
-    const tmdbID = parts[2];
-    const seasonNumber = parts[3];
-    const episodeNumber = parts[4];
-    console.log(`TMDB ID: ${tmdbID}, Season: ${seasonNumber}, Episode: ${episodeNumber}`);
-    const response = await fetchv2("https://enc-dec.app/api/enc-vidlink?text=" + tmdbID);
-    const data = await response.json();
-
-    console.log(data.result);
-    const responseTwo = await fetchv2(`https://vidlink.pro/api/b/tv/${data.result}/${seasonNumber}/${episodeNumber}?multiLang=0`);
-    const dataTwo = await responseTwo.json();
-    console.log('Data Two: ' + JSON.stringify(dataTwo));
-    const streamUrl = bestVidLinkStream(dataTwo.stream);
-    if (!streamUrl) return JSON.stringify({ streams: [], subtitles: "" });
-
-    const englishSubtitle = dataTwo.stream.captions.find(
-      sub => sub.language.toLowerCase().includes("english")
-    )?.url || null;
-
-    return JSON.stringify({
-      streams: ["Primary", streamUrl],
-      subtitles: englishSubtitle
-    });
-  }
-}
-
-function bestVidLinkStream(stream) {
-  if (!stream) return null;
-  if (typeof stream.playlist === 'string' && stream.playlist) return stream.playlist;
-  const qualities = stream.qualities || {};
-  return Object.keys(qualities)
-    .sort((a, b) => Number(b) - Number(a))
-    .map(key => qualities[key] && qualities[key].url)
-    .find(url => typeof url === 'string' && /^https?:\/\//i.test(url)) || null;
-}
-
-async function soraFetch(url, options = { headers: {}, method: 'GET', body: null, encoding: 'utf-8' }) {
     try {
-        return await fetchv2(
-            url,
-            options.headers ?? {},
-            options.method ?? 'GET',
-            options.body ?? null,
-            true,
-            options.encoding ?? 'utf-8'
-        );
-    } catch(e) {
+        let isMovie = ID.includes('movie');
+        let tmdbID, seasonNumber = "1", episodeNumber = "1";
+        let mediaType = "";
+
+        const parts = ID.split('/').filter(Boolean);
+        if (isMovie) {
+            tmdbID = parts[parts.length - 1];
+            mediaType = "movie";
+        } else if (ID.includes('tv')) {
+            tmdbID = parts[1];
+            seasonNumber = parts[2];
+            episodeNumber = parts[3];
+            mediaType = "tv";
+        } else {
+            return JSON.stringify({ streams: [] });
+        }
+
+        const servers = [
+            {"label": "Wolf", "path": "air", "api": "https://usa.eat-peach.sbs"},
+            {"label": "Spider", "path": "holly", "api": "https://usa.eat-peach.sbs"},
+            {"label": "Iron", "path": "moviebox", "api": "https://uwu.eat-peach.sbs"},
+            {"label": "Multi", "path": "multi", "api": "https://usa.eat-peach.sbs"},
+            {"label": "Dark", "path": "net", "api": "https://uwu.eat-peach.sbs"},
+        ];
+
+        const requestHeaders = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
+            "Origin": "https://peachify.top",
+            "Referer": "https://peachify.top/"
+        };
+
+        let streamObjects = [];
+        let allSubtitles = [];
+
+        const serverPromises = servers.map(async (server) => {
+            try {
+                const url = mediaType === "movie"
+                    ? `${server.api}/${server.path}/movie/${tmdbID}`
+                    : `${server.api}/${server.path}/tv/${tmdbID}/${seasonNumber}/${episodeNumber}`;
+
+                const response = await soraFetch(url, { headers: requestHeaders });
+                if (!response) return null;
+                const jsonRes = await response.json();
+                if (!jsonRes || !jsonRes.data) return null;
+
+                const dec_peachify = "https://enc-dec.app/api/dec-peachify";
+                const decResponse = await fetchv2(dec_peachify, { "Content-Type": "application/json" }, "POST", JSON.stringify({ text: jsonRes.data }));
+                const decData = await decResponse.json();
+
+                if (decData && decData.status === 200 && decData.result) {
+                    return {
+                        serverLabel: server.label,
+                        sources: decData.result.sources || [],
+                        subtitles: decData.result.subtitles || []
+                    };
+                }
+            } catch (err) {
+                console.log(`Error processing Peachify server ${server.label}: ${err.message}`);
+            }
+            return null;
+        });
+
+        const results = await Promise.all(serverPromises);
+
+        results.forEach(res => {
+            if (!res) return;
+            const { serverLabel, sources, subtitles } = res;
+
+            sources.forEach(src => {
+                if (src.url && !streamObjects.some(existing => existing.streamUrl === src.url)) {
+                    streamObjects.push({
+                        title: `[Peachify - ${serverLabel}] ${src.dub || 'HLS'}`,
+                        streamUrl: src.url,
+                        headers: {
+                            "Origin": "https://peachify.top",
+                            "Referer": "https://peachify.top/",
+                            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
+                            ...(src.headers || {})
+                        }
+                    });
+                }
+            });
+
+            subtitles.forEach(sub => {
+                if (sub.url && !allSubtitles.some(existing => existing.url === sub.url)) {
+                    allSubtitles.push(sub);
+                }
+            });
+        });
+
+        streamObjects.sort((a, b) => {
+            const weightA = getQualityWeight(a.title);
+            const weightB = getQualityWeight(b.title);
+            return weightB - weightA;
+        });
+
+        if (streamObjects.length === 0) {
+            const fallbackUrl = mediaType === "movie"
+                ? `https://vidlink.pro/movie/${tmdbID}`
+                : `https://vidlink.pro/tv/${tmdbID}/${seasonNumber}/${episodeNumber}`;
+            streamObjects.push({
+                title: "Peachify Backup",
+                streamUrl: fallbackUrl,
+                headers: { "Referer": "https://vidlink.pro/" }
+            });
+        }
+
+        const englishSubtitle = allSubtitles.find(sub => (sub.language || sub.lang || sub.label || '').toLowerCase() === 'english');
+        let subtitleUrl = englishSubtitle ? englishSubtitle.url : "";
+
+        if (subtitleUrl) {
+            subtitleUrl = `https://passthrough-worker.simplepostrequest.workers.dev/?url=${encodeURIComponent(subtitleUrl)}&type=vtt&referer=https%3A%2F%2Fpeachify.top%2F`;
+        }
+
+        return JSON.stringify({
+            streams: streamObjects,
+            subtitles: subtitleUrl
+        });
+    } catch (error) {
+        console.log('Fetch error in extractStreamUrl: ' + error);
+        let fallbackUrl = "https://vidlink.pro/";
+        if (ID.includes('movie')) {
+            const mId = ID.replace('/movie/', '').replace('/', '');
+            fallbackUrl = `https://vidlink.pro/movie/${mId}`;
+        } else if (ID.includes('tv')) {
+            const parts = ID.split('/');
+            fallbackUrl = `https://vidlink.pro/tv/${parts[2]}/${parts[3]}/${parts[4]}`;
+        }
+        return JSON.stringify({ streams: [{ title: "Peachify Backup", streamUrl: fallbackUrl, headers: { Referer: "https://vidlink.pro/" } }], subtitles: "" });
+    }
+}
+
+async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
+    const headers = options.headers || {};
+    if (!headers["User-Agent"]) {
+        headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
+    }
+    try {
+        return await fetchv2(url, headers, options.method || 'GET', options.body || null);
+    } catch (e) {
         try {
             return await fetch(url, options);
-        } catch(error) {
+        } catch (error) {
             return null;
         }
     }

@@ -1,127 +1,118 @@
 async function searchResults(keyword) {
-  const results = [];
-  try {
-    const response = await fetchv2("https://www.anitube.news/?s=" + keyword);
-    const html = await response.text();
+    const results = [];
+    try {
+        const headers = {
+            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+            "X-Requested-With": "XMLHttpRequest"
+        };
+        const postdata = `token=c1deb78cd4&pagina=1&search=${keyword}&limit=3000&type=lista&filters=%7B%22filter_data%22%3A%22filter_letter%3D0%26type_url%3Danimes%26filter_audio%3Dlegendado%26filter_order%3Dname%22%2C%22filter_genre_add%22%3A%5B%5D%2C%22filter_genre_del%22%3A%5B%5D%7D`;
 
-    const regex = /<div class="aniItem">\s*<a href="([^"]+)"[^>]*>[\s\S]*?<img src="([^"]+)"[^>]*>[\s\S]*?<div class="aniItemNome">\s*([^<]+)\s*<\/div>/g;
+        const response = await fetchv2("https://animesdigital.org/func/listanime", headers, "POST", postdata);
+        const data = await response.json();
 
-    let match;
-    while ((match = regex.exec(html)) !== null) {
-      results.push({
-        href: match[1].trim(),
-        image: match[2].trim(),
-        title: match[3].trim()
-      });
+        const regex = /<a href="([^"]+)"[^>]*>.*?<img src="([^"]+)"[^>]*>.*?<span class="title_anime">(.*?)<\/span>/s;
+
+        for (const item of data.results) {
+            const match = regex.exec(item);
+            if (match) {
+                results.push({
+                    href: match[1].trim(),
+                    image: match[2].trim(),
+                    title: match[3].trim()
+                });
+            }
+        }
+
+        return JSON.stringify(results);
+    } catch (err) {
+        return JSON.stringify([{
+            title: "Error",
+            image: "Error",
+            href: "Error"
+        }]);
     }
-
-    return JSON.stringify(results);
-  } catch (err) {
-    return JSON.stringify([{
-      title: "Error",
-      image: "Error",
-      href: "Error"
-    }]);
-  }
 }
 
 async function extractDetails(url) {
-  try {
-    const response = await fetchv2(url);
-    const html = await response.text();
+    try {
+        const response = await fetchv2(url);
+        const html = await response.text();
 
-    const regex = /<div id="sinopse2">(.*?)<\/div>/s;
-    const match = regex.exec(html);
+        const regex = /<div class="sinopse">(.*?)<\/div>/s;
+        const match = regex.exec(html);
 
-    let description = "N/A";
-    if (match) {
-      description = match[1]
-        .replace(/<br\s*\/?>/gi, "\n")
-        .replace(/<p[^>]*>/gi, "")
-        .replace(/<\/p>/gi, "\n")
-        .replace(/&nbsp;/g, " ")
-        .replace(/<[^>]*>/g, "")
-        .replace(/\n\s*\n+/g, "\n")
-        .trim();
+        const description = match ? match[1]
+            .replace(/&nbsp;/g, " ")
+            .replace(/\s+/g, " ")
+            .trim() : "N/A";
+
+        return JSON.stringify([{
+            description: description,
+            aliases: "N/A",
+            airdate: "N/A"
+        }]);
+    } catch (err) {
+        return JSON.stringify([{
+            description: "Error",
+            aliases: "Error",
+            airdate: "Error"
+        }]);
     }
-
-    return JSON.stringify([{
-      description: description,
-      aliases: "N/A",
-      airdate: "N/A"
-    }]);
-  } catch (err) {
-    return JSON.stringify([{
-      description: "Error",
-      aliases: "Error",
-      airdate: "Error"
-    }]);
-  }
 }
 
 async function extractEpisodes(url) {
-  try {
-    const response = await fetchv2(url);
-    const html = await response.text();
+    const results = [];
+    try {
+        const response = await fetchv2(url);
+        const html = await response.text();
 
-    const episodes = [];
-    const epRegex = /<a href="([^"]+)" title="([^"]+)">/g;
+        const regex = /<a href="([^"]+)"[^>]*>[\s\S]*?<div class="title_anime">.*?Epis[oó]dio\s*([0-9]+(?:\.[0-9]+)?)<\/div>/g;
 
-    let match;
-    let counter = 1;
-    while ((match = epRegex.exec(html)) !== null) {
-      const href = match[1].trim();
+        let match;
+        while ((match = regex.exec(html)) !== null) {
+            results.push({
+                href: match[1].trim(),
+                number: Math.round(parseFloat(match[2]))
+            });
+        }
 
-      if (!href.includes("/video/")) continue;
-
-      const title = match[2];
-      const numMatch = /Episódio\s+(\d+)/.exec(title);
-      const number = numMatch ? parseInt(numMatch[1], 10) : counter++;
-
-      episodes.push({
-        number: number,
-        href: href
-      });
+        return JSON.stringify(results.reverse());
+    } catch (err) {
+        return JSON.stringify([{
+            href: "Error",
+            number: "Error"
+        }]);
     }
-
-    if (episodes.length > 1 && episodes[0].number > episodes[1].number) {
-      episodes.reverse();
-    }
-
-    return JSON.stringify(episodes);
-  } catch (err) {
-    return JSON.stringify([{
-      number: -1,
-      href: "Error"
-    }]);
-  }
 }
 
 async function extractStreamUrl(url) {
-  try {
-    const response = await fetchv2(url);
-    const html = await response.text();
+    try {
+        const response = await fetchv2(url);
+        const html = await response.text();
 
-    const regex = /src="https:\/\/api\.anivideo\.net\/videohls\.php\?d=([^"&]+\.m3u8)[^"]*"/;
-    const match = regex.exec(html);
+        const iframeRegex = /<iframe[^>]*src=["']\s*([^"']*anivideo\.net[^"']*?)\s*["'][^>]*>/i;
+        const iframeMatch = html.match(iframeRegex);
 
-    if (!match) {
-      return JSON.stringify({ streams: [], subtitle: "" });
-    }
-
-    const hlsUrl = decodeURIComponent(match[1]);
-
-    return JSON.stringify({
-      streams: [{
-        title: "Standard",
-        streamUrl: hlsUrl,
-        headers: {
-          "Referer": "https://api.anivideo.net/"
+        if (!iframeMatch) {
+            return "https://files.catbox.moe/avolvc.mp4";
         }
-      }],
-      subtitle: ""
-    });
-  } catch (err) {
-    return JSON.stringify({ streams: [], subtitle: "" });
-  }
+
+        const apiUrl = iframeMatch[1];
+
+        const apiResponse = await fetchv2(apiUrl);
+        const apiHtml = await apiResponse.text();
+
+        const m3u8Regex = /file:\s*['"]([^'"]*\.m3u8[^'"]*)['"]/i;
+        const m3u8Match = apiHtml.match(m3u8Regex);
+
+        if (m3u8Match) {
+            return m3u8Match[1];
+        }
+
+        return "https://files.catbox.moe/avolvc.mp4";
+
+    } catch (err) {
+        console.error('Error extracting stream URL:', err);
+        return "https://files.catbox.moe/avolvc.mp4";
+    }
 }
