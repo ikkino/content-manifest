@@ -1,5 +1,3 @@
-//Thanks ibro for the TMDB search!
-
 async function searchResults(keyword) {
     try {
         let transformedResults = [];
@@ -13,9 +11,9 @@ async function searchResults(keyword) {
         };
 
         const skipTitleFilter = Object.values(keywordGroups).flat();
-
         const shouldFilter = !matchesKeyword(keyword, skipTitleFilter);
 
+        // --- TMDB Section ---
         const encodedKeyword = encodeURIComponent(keyword);
         let baseUrlTemplate = null;
 
@@ -37,7 +35,7 @@ async function searchResults(keyword) {
 
         if (baseUrlTemplate) {
             const pagePromises = Array.from({ length: 5 }, (_, i) =>
-                soraFetch(baseUrlTemplate(i + 1)).then(r => r.json())
+                soraFetch(baseUrlTemplate(i + 1)).then(r => r ? r.json() : { results: [] }).catch(() => ({ results: [] }))
             );
             const pages = await Promise.all(pagePromises);
             dataResults = pages.flatMap(p => p.results || []);
@@ -62,8 +60,6 @@ async function searchResults(keyword) {
                         }
                     })
                     .filter(Boolean)
-                    .filter(result => result.title !== "Overflow")
-                    .filter(result => result.title !== "My Marriage Partner Is My Student, a Cocky Troublemaker")
                     .filter(r => !shouldFilter || r.title.toLowerCase().includes(keyword.toLowerCase()))
             );
         }
@@ -131,11 +127,9 @@ async function extractEpisodes(url) {
     try {
         if (url.includes('movie')) {
             const match = url.match(/movie\/([^\/]+)/);
-
             if (!match) throw new Error("Invalid URL format");
 
             const movieId = match[1];
-
             const movie = [
                 { href: `/movie/${movieId}`, number: 1, title: "Full Movie" }
             ];
@@ -143,34 +137,37 @@ async function extractEpisodes(url) {
             console.log(movie);
             return JSON.stringify(movie);
         } else if (url.includes('tv')) {
-            const match = url.match(/tv\/([^\/]+)\/([^\/]+)\/([^\/]+)/);
-
+            const match = url.match(/tv\/([^\/]+)/);
             if (!match) throw new Error("Invalid URL format");
 
             const showId = match[1];
-
             const showResponseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
             const showData = await showResponseText.json();
 
-            let allEpisodes = [];
-            for (const season of showData.seasons) {
+            const seasonPromises = (showData.seasons || []).map(async (season) => {
                 const seasonNumber = season.season_number;
+                if (seasonNumber === 0) return [];
 
-                if (seasonNumber === 0) continue;
+                try {
+                    const seasonResponseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}/season/${seasonNumber}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
+                    if (!seasonResponseText) return [];
+                    const seasonData = await seasonResponseText.json();
 
-                const seasonResponseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}/season/${seasonNumber}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
-                const seasonData = await seasonResponseText.json();
-
-                if (seasonData.episodes && seasonData.episodes.length) {
-                    const episodes = seasonData.episodes.map(episode => ({
-                        href: `/tv/${showId}/${seasonNumber}/${episode.episode_number}`,
-                        number: episode.episode_number,
-                        title: episode.name || ""
-                    }));
-                    allEpisodes = allEpisodes.concat(episodes);
+                    if (seasonData.episodes && seasonData.episodes.length) {
+                        return seasonData.episodes.map(episode => ({
+                            href: `/tv/${showId}/${seasonNumber}/${episode.episode_number}`,
+                            number: episode.episode_number,
+                            title: episode.name || ""
+                        }));
+                    }
+                } catch (e) {
+                    console.log(`Failed to fetch season ${seasonNumber}: ${e.message}`);
                 }
-            }
+                return [];
+            });
 
+            const results = await Promise.all(seasonPromises);
+            const allEpisodes = results.flat();
             console.log(allEpisodes);
             return JSON.stringify(allEpisodes);
         } else {
@@ -183,65 +180,113 @@ async function extractEpisodes(url) {
 }
 
 async function extractStreamUrl(ID) {
-    const startTime = Date.now();
-    let isMovie = ID.includes('movie');
-    let tmdbID, seasonNumber = "1", episodeNumber = "1";
-    let isSeries = false;
-
-    if (isMovie) {
-        tmdbID = ID.replace('/movie/', '').replace('/', '');
-    } else if (ID.includes('tv')) {
-        const parts = ID.split('/');
-        tmdbID = parts[2];
-        seasonNumber = parts[3];
-        episodeNumber = parts[4];
-        isSeries = true;
-    } else {
-        return JSON.stringify({ streams: [] });
-    }
-
     try {
-        const streamResponse = await ilovefeet(tmdbID, isSeries, seasonNumber, episodeNumber, 'm3u8');
-        const streams = [];
+        let isMovie = ID.includes('movie');
+        let tmdbID = "";
+        let seasonNumber = "1";
+        let episodeNumber = "1";
+        let mediaType = "";
+        let reqUrl = "";
+        let referer = "";
 
-        if (streamResponse && Array.isArray(streamResponse.streams)) {
-            for (const s of streamResponse.streams) {
-                streams.push({
-                    title: s.title,
-                    streamUrl: s.url,
-                    headers: {
-                        "Referer": "https://vidfast.vc/",
-                        "Origin": "https://vidfast.vc"
-                    }
-                });
-            }
+        if (isMovie) {
+            tmdbID = ID.replace('/movie/', '').replace('movie/', '');
+            mediaType = "movie";
+            reqUrl = `https://play.xpass.top/data/movie/${tmdbID}?autostart=false`;
+            referer = `https://play.xpass.top/e/movie/${tmdbID}`;
+        } else if (ID.includes('tv')) {
+            const parts = ID.split('/');
+            const cleanParts = parts.filter(p => p !== "");
+            tmdbID = cleanParts[1];
+            seasonNumber = cleanParts[2];
+            episodeNumber = cleanParts[3];
+            mediaType = "tv";
+            reqUrl = `https://play.xpass.top/data/tv/${tmdbID}/${seasonNumber}/${episodeNumber}?autostart=false`;
+            referer = `https://play.xpass.top/e/tv/${tmdbID}/${seasonNumber}/${episodeNumber}`;
+        } else {
+            return JSON.stringify({ streams: [] });
         }
 
-        if (streams.length === 0) {
-            const fallbackUrl = isSeries ? `https://vidlink.pro/tv/${tmdbID}/${seasonNumber}/${episodeNumber}` : `https://vidlink.pro/movie/${tmdbID}`;
-            streams.push({
-                title: "VidFast Backup",
+        const headers = {
+            "Cookie": "auth_token=c2685c63f0016d6ab3a3548eeb1e111551acfc1bbd65fc2b1e2b043af659b39a",
+            "Referer": referer,
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:152.0) Gecko/20100101 Firefox/152.0",
+            "Accept": "*/*"
+        };
+
+        const response = await soraFetch(reqUrl, { headers });
+        if (!response) throw new Error("Failed to fetch server list from XPass");
+
+        const serverList = await response.json();
+        if (!Array.isArray(serverList)) throw new Error("Invalid server list response");
+
+        const serverPromises = serverList.map(async (server) => {
+            try {
+                if (!server.url) return [];
+                const playlistUrl = `https://play.xpass.top${server.url}`;
+                const playlistResponse = await soraFetch(playlistUrl, { headers });
+                if (!playlistResponse) return [];
+                const playlistData = await playlistResponse.json();
+
+                let results = [];
+                if (playlistData && playlistData.playlist && playlistData.playlist.length > 0) {
+                    playlistData.playlist.forEach(item => {
+                        if (item.sources && Array.isArray(item.sources)) {
+                            item.sources.forEach(src => {
+                                if (src.file) {
+                                    const isTik = src.file.includes("tik.1x2.space") ||
+                                                  (src.label && src.label.toUpperCase().includes("TIK")) ||
+                                                  (server.name && server.name.toUpperCase().includes("TIK"));
+                                    if (!isTik) {
+                                        results.push({
+                                            title: `[XPass] ${server.name || 'Server'} - ${src.label || 'HLS'}`,
+                                            streamUrl: src.file,
+                                            headers: {
+                                                "Origin": "https://play.xpass.top",
+                                                "Connection": "keep-alive",
+                                                "Referer": "https://play.xpass.top/"
+                                            }
+                                        });
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+                return results;
+            } catch (err) {
+                console.log(`Error fetching playlist for server ${server.name}: ` + err);
+                return [];
+            }
+        });
+
+        const resolvedStreams = await Promise.all(serverPromises);
+        if (streamObjects.length === 0) {
+            const fallbackUrl = mediaType === "movie"
+                ? `https://vidlink.pro/movie/${tmdbID}`
+                : `https://vidlink.pro/tv/${tmdbID}/${seasonNumber}/${episodeNumber}`;
+            streamObjects.push({
+                title: "XPass Backup",
                 streamUrl: fallbackUrl,
                 headers: { "Referer": "https://vidlink.pro/" }
             });
         }
 
-        const final = {
-            streams,
-            subtitles: streamResponse ? streamResponse.subtitles || "" : ""
-        };
-
-        const endTime = Date.now();
-        const elapsed = ((endTime - startTime) / 1000).toFixed(2);
-        console.log(`Stream fetched in ${elapsed}s`);
-        return JSON.stringify(final);
-    } catch (e) {
-        console.log("Error in extractStreamUrl: " + e.message);
-        const fallbackUrl = isSeries ? `https://vidlink.pro/tv/${tmdbID}/${seasonNumber}/${episodeNumber}` : `https://vidlink.pro/movie/${tmdbID}`;
         return JSON.stringify({
-            streams: [{ title: "VidFast Backup", streamUrl: fallbackUrl, headers: { Referer: "https://vidlink.pro/" } }],
+            streams: streamObjects,
             subtitles: ""
         });
+    } catch (error) {
+        console.log('Fetch error in extractStreamUrl: ' + error);
+        let fallbackUrl = "https://vidlink.pro/";
+        if (ID.includes('movie')) {
+            const mId = ID.replace('/movie/', '').replace('/', '');
+            fallbackUrl = `https://vidlink.pro/movie/${mId}`;
+        } else if (ID.includes('tv')) {
+            const parts = ID.split('/');
+            fallbackUrl = `https://vidlink.pro/tv/${parts[2]}/${parts[3]}/${parts[4]}`;
+        }
+        return JSON.stringify({ streams: [{ title: "XPass Backup", streamUrl: fallbackUrl, headers: { Referer: "https://vidlink.pro/" } }], subtitles: "" });
     }
 }
 
@@ -259,243 +304,4 @@ async function soraFetch(url, options = { headers: {}, method: 'GET', body: null
             return null;
         }
     }
-}
-
-async function ilovearmpits(m3u8Url) {
-    try {
-        const headers = {
-            "Accept": "*/*",
-            "User-Agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Mobile Safari/537.36",
-            "Referer": "https://vidfast.vc/",
-            "X-Requested-With": "XMLHttpRequest"
-        };
-
-        const response = await fetchv2(m3u8Url, headers);
-        const playlistContent = await response.text();
-
-        const has4K = playlistContent.includes('RESOLUTION=3840x2160');
-
-        if (!has4K) {
-            console.log(`4K Check for ${m3u8Url}: NO`);
-            return { available: false, url: null };
-        }
-
-        const lines = playlistContent.split('\n');
-        let fourKPath = null;
-        let fourKCount = 0;
-
-        for (let i = 0; i < lines.length; i++) {
-            if (lines[i].includes('RESOLUTION=3840x2160')) {
-                fourKCount++;
-                if (fourKCount === 2 && i + 1 < lines.length) {
-                    fourKPath = lines[i + 1].trim();
-                    break;
-                }
-            }
-        }
-
-        if (!fourKPath && fourKCount === 1) {
-            for (let i = 0; i < lines.length; i++) {
-                if (lines[i].includes('RESOLUTION=3840x2160')) {
-                    if (i + 1 < lines.length) {
-                        fourKPath = lines[i + 1].trim();
-                        break;
-                    }
-                }
-            }
-        }
-
-        if (!fourKPath) {
-            console.log('4K resolution found but could not extract path');
-            return { available: false, url: null };
-        }
-
-        let baseUrl = '';
-        if (m3u8Url.startsWith('https://')) {
-            const afterProtocol = m3u8Url.substring(8);
-            const hostEnd = afterProtocol.indexOf('/');
-            const host = hostEnd !== -1 ? afterProtocol.substring(0, hostEnd) : afterProtocol;
-            baseUrl = 'https://' + host;
-        } else if (m3u8Url.startsWith('http://')) {
-            const afterProtocol = m3u8Url.substring(7);
-            const hostEnd = afterProtocol.indexOf('/');
-            const host = hostEnd !== -1 ? afterProtocol.substring(0, hostEnd) : afterProtocol;
-            baseUrl = 'http://' + host;
-        }
-
-        const full4KUrl = fourKPath.startsWith('http') ? fourKPath : `${baseUrl}${fourKPath}`;
-
-        return { available: true, url: full4KUrl };
-    } catch (error) {
-        console.log('Error checking 4K availability: ' + error);
-        return { available: false, url: null };
-    }
-}
-
-async function ilovefeet(imdbId, isSeries = false, season = null, episode = null, preferredFormat = null) {
-    let baseUrl;
-    if (isSeries) {
-        baseUrl = `https://vidfast.vc/tv/${imdbId}/${season}/${episode}`;
-    } else {
-        baseUrl = `https://vidfast.vc/movie/${imdbId}`;
-    }
-
-    const headers = {
-        "Accept": "*/*",
-        "User-Agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Mobile Safari/537.36",
-        "Referer": baseUrl,
-        "X-Requested-With": "XMLHttpRequest"
-    };
-
-    console.log(`Requesting Base URL: ${baseUrl}`);
-    const pageResponse = await fetchv2(baseUrl, headers);
-    const pageText = await pageResponse.text();
-
-    let match = pageText.match(/\\"(?:en|token)\\":\\"([^"]+)\\"/) ||
-        pageText.match(/"(?:en|token)":"([^"]+)"/) ||
-        pageText.match(/'(?:en|token)':'([^']+)'/) ||
-        pageText.match(/["'](?:en|token)["']:\s*["']([^"']+)["']/);
-
-    if (!match) {
-        throw new Error('Could not find data in page');
-    }
-    const rawData = match[1];
-    console.log("Raw Data extracted:", rawData);
-
-    const apiUrl = `https://enc-dec.app/api/enc-vidfast?text=${encodeURIComponent(rawData)}&version=1`;
-    console.log(`Requesting Decrypt API: ${apiUrl}`);
-    const apiResponse = await soraFetch(apiUrl);
-    const apiData = await apiResponse.json();
-    console.log("API Data from enc-dec.app:", JSON.stringify(apiData));
-
-    if (apiData.status !== 200 || !apiData.result) {
-        throw new Error('Failed to decrypt data via enc-dec.app API');
-    }
-
-    const apiServers = apiData.result.servers;
-    const streamBase = apiData.result.stream;
-    const csrfToken = apiData.result.token;
-
-    if (csrfToken) {
-        headers["X-CSRF-Token"] = csrfToken;
-    }
-
-    console.log(`Requesting Servers URL: ${apiServers}`);
-    const serversResponse = await soraFetch(apiServers, { method: 'POST', headers: headers });
-    const serversEncrypted = await serversResponse.text();
-
-    const decServersResponse = await soraFetch('https://enc-dec.app/api/dec-vidfast', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: serversEncrypted, version: "1" })
-    });
-    const decServersData = await decServersResponse.json();
-
-    if (decServersData.status !== 200 || !decServersData.result) {
-        throw new Error('Failed to decrypt servers data via enc-dec.app API');
-    }
-    const serverList = decServersData.result;
-
-    if (!serverList || serverList.length === 0) {
-        throw new Error('No servers available');
-    }
-
-    const testServer = async (serverObj, index) => {
-        const server = serverObj.data;
-        const apiStream = streamBase + '/' + server;
-
-        try {
-            console.log(`Requesting Stream URL for server ${index}: ${apiStream}`);
-            const streamResponse = await soraFetch(apiStream, { method: 'POST', headers: headers });
-            if (!streamResponse) return null;
-
-            const streamEncrypted = await streamResponse.text();
-            if (!streamEncrypted || streamEncrypted.includes("Attention Required") || streamEncrypted.includes("Cloudflare")) {
-                return null;
-            }
-
-            const decStreamResponse = await soraFetch('https://enc-dec.app/api/dec-vidfast', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ text: streamEncrypted, version: "1" })
-            });
-            if (!decStreamResponse) return null;
-            const decStreamData = await decStreamResponse.json();
-
-            if (decStreamData.status !== 200 || !decStreamData.result) {
-                return null;
-            }
-
-            let data = decStreamData.result;
-            if (!data.url) {
-                return null;
-            }
-
-            const format = data.url.includes('.m3u8') ? 'm3u8' : data.url.includes('.mpd') ? 'mpd' : 'unknown';
-
-            let englishSubtitles = null;
-            if (data.tracks && Array.isArray(data.tracks)) {
-                const englishTrack = data.tracks.find(track =>
-                    track.label && track.label.toLowerCase().includes('english') && track.file
-                );
-                if (englishTrack) {
-                    englishSubtitles = englishTrack.file;
-                }
-            }
-
-            return {
-                name: serverObj.name || `Server ${index}`,
-                url: data.url,
-                format,
-                subtitles: englishSubtitles
-            };
-        } catch (error) {
-            console.log(`Server ${index} failed: ${error.message}`);
-            return null;
-        }
-    };
-
-    const timeout = (ms) => new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), ms));
-
-    const serverPromises = serverList.map(async (serverObj, index) => {
-        try {
-            return await Promise.race([
-                testServer(serverObj, index),
-                timeout(4000)
-            ]);
-        } catch (e) {
-            console.log(`Server ${index} timed out or failed`);
-            return null;
-        }
-    });
-
-    const results = await Promise.all(serverPromises);
-    const workingStreams = results.filter(r => r !== null);
-
-    const workingStreamsMapped = [];
-    let englishSubs = null;
-
-    for (const item of workingStreams) {
-        let streamUrl = item.url;
-        if (item.name === 'vFast') {
-            const fourKResult = await ilovearmpits(streamUrl);
-            if (fourKResult.available && fourKResult.url) {
-                streamUrl = fourKResult.url;
-            }
-        }
-
-        workingStreamsMapped.push({
-            title: item.name,
-            url: streamUrl
-        });
-
-        if (item.subtitles && !englishSubs) {
-            englishSubs = item.subtitles;
-        }
-    }
-
-    return {
-        streams: workingStreamsMapped,
-        subtitles: englishSubs
-    };
 }

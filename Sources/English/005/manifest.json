@@ -1,24 +1,29 @@
 {
-  "sourceName": "Bingebox",
-  "iconUrl": "https://git.luna-app.eu/MXFia19/sources/raw/branch/main/bingebox/favicon.png",
+  "sourceName": "Airflix",
+  "iconUrl": "https://img.icons8.com/color/48/netflix.png",
   "author": {
-    "name": "MXFia19",
-    "icon": "https://i.pinimg.com/1200x/89/78/33/89783349d3270e4ab071db9a038db8ea.jpg",
-    "url": "https://github.com/MXFia19"
+    "name": "50/50",
+    "icon": "https://files.catbox.moe/741wp7.png"
   },
-  "version": "1.0.5",
+  "version": "1.0.1",
   "language": "English",
+  "languageType": [
+    "Subbed"
+  ],
   "streamType": "HLS",
   "quality": "1080p",
-  "baseUrl": "https://bingebox.ac/",
-  "searchBaseUrl": "https://bingebox.ac/",
+  "baseUrl": "https://streamdata.vaplayer.ru/",
+  "searchBaseUrl": "https://streamdata.vaplayer.ru/",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/005/source.js",
-  "type": "movies/shows/anime",
-  "downloadSupport": true,
+  "type": "shows/movies/anime",
   "asyncJS": true,
   "softsub": true,
+  "downloadSupport": false,
   "supportsSora": true,
   "supportsLuna": true,
-  "changelog": "",
-  "id": "jWuL6"
+  "jsonUrl": "https://modules.modulesbypaul.workers.dev/airflix/airflix.json",
+  "supportsTsumi": true,
+  "supportsHiyoku": true,
+  "supportsEclipse": true,
+  "id": "jg3nm"
 }

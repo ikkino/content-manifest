@@ -1,423 +1,152 @@
+const ANIKOTO_BASE = "https://animekaitv.to";
+const ANIKOTO_NAME = "AnimeKai (Unoriginal)";
 
-class MProvider {
-  constructor() {
-    this.source = typeof mangayomiSources !== "undefined" && Array.isArray(mangayomiSources) ? mangayomiSources[0] : {};
-    globalThis.__mangayomiBaseUrl = this.source.baseUrl || this.source.apiUrl || "";
-  }
-}
-
-class SharedPreferences {
-  get(key) {
-    const defaults = {
-      pref_content_priority: "series",
-      pref_latest_time_window: "day",
-      pref_video_resolution: "1080",
-      autoembed_stream_source_4: "4",
-      autoembed_pref_navtive_subtitle: false,
-      autoembed_split_stream_quality: false,
-      autoembed_pref_subtitle_source_2: "1"
-    };
-    return defaults[key] ?? "";
-  }
-
-  getString(key) {
-    return String(this.get(key) ?? "");
-  }
-
-  getInt(key) {
-    return Number.parseInt(this.get(key), 10) || 0;
-  }
-
-  getBool(key) {
-    return Boolean(this.get(key));
-  }
-}
-
-class Client {
-  async get(url, headers = {}) {
-    const response = await fetchv2(this.normalizeUrl(url), { headers });
-    return {
-      body: await response.text(),
-      statusCode: response.status,
-      headers: Object.fromEntries(response.headers?.entries?.() ?? [])
-    };
-  }
-
-  async post(url, headers = {}, body = null) {
-    const response = await fetchv2(this.normalizeUrl(url), {
-      method: "POST",
-      headers,
-      body
-    });
-    return {
-      body: await response.text(),
-      statusCode: response.status,
-      headers: Object.fromEntries(response.headers?.entries?.() ?? [])
-    };
-  }
-
-  normalizeUrl(url) {
-    const value = String(url ?? "");
-    if (/^https?:\/\//i.test(value)) return value;
-    const base = globalThis.__mangayomiBaseUrl || "";
-    if (!base) return value;
-    return new URL(value, base.endsWith("/") ? base : base + "/").toString();
-  }
-}
-
-
-const mangayomiSources = [
-  {
-    "name": "AnimeHeaven",
-    "id": -1744325818,
-    "lang": "en",
-    "baseUrl": "https://animeheaven.me",
-    "iconUrl": "https://www.google.com/s2/favicons?sz=256&domain=https://animeheaven.me",
-    "typeSource": "single",
-    "itemType": 1,
-    "version": "0.0.7",
-    "pkgPath": "anime/src/en/animeheaven.js",
-    "isManga": false,
-    "isNsfw": false,
-    "hasCloudflare": false,
-    "isFullData": false,
-    "appMinVerReq": "0.5.0",
-    "sourceCodeUrl": "https://raw.githubusercontent.com/Mallyd11/mangayomi-anime-extensions/refs/heads/main/javascript/anime/src/en/animeheaven.js",
-    "dateFormat": "",
-    "dateFormatLocale": "",
-    "additionalParams": "",
-    "sourceCodeLanguage": 1,
-    "notes": "",
-  },
-];
-
-class DefaultExtension extends MProvider {
-  constructor() {
-    super();
-    this.client = new Client();
-  }
-
-  get ua() {
-    return "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36";
-  }
-
-  get headers() {
-    return {
-      "User-Agent": this.ua,
-      "Referer": this.source.baseUrl + "/",
-    };
-  }
-
-  async fetchHtml(path) {
-    var url = path.startsWith("http") ? path : this.source.baseUrl + "/" + path.replace(/^\/+/, "");
-    var res = await this.client.get(url, this.headers);
-    return res.body || "";
-  }
-
-  // Parse a list page (popular.php / new.php / search.php).
-  // Site structure per item:
-  //   <a href="anime.php?CODE"><img src="image.php?CODE"></a>
-  //   <a href="anime.php?CODE">Title Text</a>
-  // Attributes use double quotes; no class on img tags.
-  parseList(html) {
-    var list = [];
-    var seen = {};
-
-    // First pass: build href → imgSrc map from image-anchor elements.
-    var imgMap = {};
-    var imgRx = /<a[^>]+href=["'](anime\.php\?[\w]+)["'][^>]*>\s*<img[^>]+src=["']([^"']+)["']/g;
-    var im;
-    while ((im = imgRx.exec(html)) !== null) {
-      if (!imgMap[im[1]]) imgMap[im[1]] = im[2];
+async function anikotoText(url, headers) {
+  const response = await fetchv2(url, {
+    headers: {
+      "Accept": "text/html,application/xhtml+xml,application/json,*/*",
+      "Referer": ANIKOTO_BASE + "/",
+      "X-Requested-With": "XMLHttpRequest",
+      ...(headers || {})
     }
+  });
+  if (!response.ok) throw new Error(`${ANIKOTO_NAME} HTTP ${response.status}`);
+  return response.text();
+}
 
-    // Second pass: find plain-text title anchors and assemble list items.
-    var titleRx = /<a[^>]+href=["'](anime\.php\?[\w]+)["'][^>]*>([^<]{2,120})<\/a>/g;
-    var tm;
-    while ((tm = titleRx.exec(html)) !== null) {
-      var href = tm[1];
-      var name = tm[2].trim();
-      if (!name || seen[href]) continue;
-      seen[href] = true;
-      var imgSrc = imgMap[href] || "";
-      var imageUrl = imgSrc ? (imgSrc.indexOf("http") === 0 ? imgSrc : this.source.baseUrl + "/" + imgSrc) : "";
-      list.push({
-        name: this._decodeHtml(name),
-        link: this.source.baseUrl + "/" + href,
-        imageUrl: imageUrl,
-      });
+function rc4Base64Url(key, input) {
+  const s = Array.from({ length: 256 }, (_, i) => i);
+  const k = Array.from(String(key), (c) => c.charCodeAt(0));
+  let j = 0;
+  for (let i = 0; i < 256; i += 1) {
+    j = (j + s[i] + k[i % k.length]) & 255;
+    const tmp = s[i]; s[i] = s[j]; s[j] = tmp;
+  }
+  let i = 0; j = 0;
+  let binary = "";
+  for (const ch of String(input)) {
+    i = (i + 1) & 255;
+    j = (j + s[i]) & 255;
+    const tmp = s[i]; s[i] = s[j]; s[j] = tmp;
+    binary += String.fromCharCode(ch.charCodeAt(0) ^ s[(s[i] + s[j]) & 255]);
+  }
+  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, "");
+}
+
+function exchange(input, from, to) {
+  return Array.from(String(input), (ch) => {
+    const index = from.indexOf(ch);
+    return index >= 0 ? to[index] : ch;
+  }).join("");
+}
+
+function vrfEncrypt(value) {
+  let vrf = String(value);
+  vrf = exchange(vrf, "AP6GeR8H0lwUz1", "UAz8Gwl10P6ReH");
+  vrf = rc4Base64Url("ItFKjuWokn4ZpB", vrf);
+  vrf = rc4Base64Url("fOyt97QWFB3", vrf);
+  vrf = exchange(vrf, "1majSlPQd2M5", "da1l2jSmP5QM");
+  vrf = exchange(vrf, "CPYvHj09Au3", "0jHA9CPYu3v");
+  vrf = Array.from(vrf).reverse().join("");
+  vrf = rc4Base64Url("736y1uTJpBLUX", vrf);
+  return encodeURIComponent(btoa(vrf).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/g, ""));
+}
+
+function stripTags(html) {
+  return String(html || "").replace(/<script[\s\S]*?<\/script>/gi, "").replace(/<style[\s\S]*?<\/style>/gi, "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+}
+
+function decodeHtml(value) {
+  return String(value || "").replace(/&#39;/g, "'").replace(/&quot;/g, '"').replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+}
+
+function showPath(href) {
+  const path = String(href || "").replace(ANIKOTO_BASE, "").split("?")[0];
+  return path.replace(/\/ep-\d+.*$/, "");
+}
+
+function titleFromPath(path) {
+  const slug = String(path || "").split("/watch/").pop() || "";
+  return slug
+    .replace(/-[a-z0-9]{5}$/i, "")
+    .replace(/-/g, " ")
+    .replace(/\b\w/g, (ch) => ch.toUpperCase())
+    .trim();
+}
+
+async function searchResults(query) {
+  const html = await anikotoText(`${ANIKOTO_BASE}/filter?keyword=${encodeURIComponent(query)}&page=1&vrf=${vrfEncrypt(query)}`);
+  const seen = new Set();
+  const results = [];
+  const regex = /<a\b[^>]*href=["']([^"']*\/watch\/[^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi;
+  let match;
+  while ((match = regex.exec(html)) && results.length < 20) {
+    const path = showPath(match[1]);
+    if (!path || seen.has(path)) continue;
+    seen.add(path);
+    const block = match[2];
+    const rawTitle = decodeHtml((block.match(/class=["'][^"']*(?:name|title)[^"']*["'][^>]*>([^<]+)/i) || [])[1] || stripTags(block));
+    const title = /[a-z]{3,}/i.test(rawTitle) ? rawTitle : titleFromPath(path);
+    results.push({ title, href: JSON.stringify({ path, title }), image: ((block.match(/(?:data-src|src)=["']([^"']+)/i) || [])[1] || ""), source: ANIKOTO_NAME });
+  }
+  return results.filter((item) => item.title && item.href);
+}
+
+async function extractDetails(href) {
+  const data = JSON.parse(href);
+  const html = await anikotoText(ANIKOTO_BASE + data.path);
+  const id = (html.match(/data-id=["']([^"']+)/i) || [])[1] || (html.match(/data-tip=["']([^"']+)/i) || [])[1] || "";
+  const title = decodeHtml((html.match(/<h[12][^>]*class=["'][^"']*title[^"']*["'][^>]*>([^<]+)/i) || [])[1] || data.title || "");
+  const description = decodeHtml(stripTags((html.match(/<(?:div|p)[^>]*class=["'][^"']*(?:synopsis|description|content)[^"']*["'][^>]*>([\s\S]*?)<\/(?:div|p)>/i) || [])[1] || title));
+  return [{ title, description, aliases: id ? `${title}, ${id}` : title, airdate: "", href: JSON.stringify({ ...data, id }) }];
+}
+
+async function extractEpisodes(href) {
+  const data = JSON.parse(href);
+  let id = data.id;
+  if (!id) {
+    const detail = await extractDetails(href);
+    id = JSON.parse(detail[0].href).id;
+  }
+  if (!id) throw new Error(`${ANIKOTO_NAME}: missing anime id`);
+  const text = await anikotoText(`${ANIKOTO_BASE}/ajax/episode/list/${id}?vrf=${vrfEncrypt(id)}`, { "Referer": ANIKOTO_BASE + data.path });
+  const payload = JSON.parse(text);
+  const html = payload.result || "";
+  const episodes = [];
+  const regex = /<a\b([^>]*data-num=["'][^"']+["'][^>]*)>/gi;
+  let match;
+  while ((match = regex.exec(html))) {
+    const attrs = match[1];
+    const number = Number((attrs.match(/data-num=["']([^"']+)/i) || [])[1]);
+    const ids = (attrs.match(/data-ids=["']([^"']+)/i) || [])[1] || "";
+    const title = decodeHtml((html.slice(Math.max(0, match.index - 180), match.index).match(/<li[^>]*title=["']([^"']+)/i) || [])[1] || `Episode ${number}`);
+    if (Number.isFinite(number) && ids) {
+      episodes.push({ number, title, href: JSON.stringify({ ...data, id, number, ids }) });
     }
-    return list;
   }
+  return episodes.sort((lhs, rhs) => lhs.number - rhs.number);
+}
 
-  _decodeHtml(s) {
-    return (s || "")
-      .replace(/&#0*39;|&apos;/g, "'")
-      .replace(/&#0*34;|&quot;/g, '"')
-      .replace(/&#0*38;|&amp;/g, "&")
-      .replace(/&#0*60;|&lt;/g, "<")
-      .replace(/&#0*62;|&gt;/g, ">")
-      .replace(/&nbsp;/g, " ")
-      .replace(/&#(\d+);/g, function(_m, n) { return String.fromCharCode(parseInt(n, 10)); })
-      .replace(/&#x([0-9a-fA-F]+);/g, function(_m, n) { return String.fromCharCode(parseInt(n, 16)); });
-  }
-
-  get supportsLatest() {
-    return true;
-  }
-
-  async getPopular(page) {
-    // The site returns all items on one HTML page. We slice client-side so
-    // Mangayomi only receives 30 items at a time and can load more on scroll.
-    var html = await this.fetchHtml("popular.php");
-    var all = this.parseList(html);
-    var pageSize = 30;
-    var start = (page - 1) * pageSize;
-    var slice = all.slice(start, start + pageSize);
-    return { list: slice, hasNextPage: (start + pageSize) < all.length };
-  }
-
-  async getLatestUpdates(page) {
-    var html = await this.fetchHtml("new.php");
-    var all = this.parseList(html);
-    var pageSize = 30;
-    var start = (page - 1) * pageSize;
-    var slice = all.slice(start, start + pageSize);
-    return { list: slice, hasNextPage: (start + pageSize) < all.length };
-  }
-
-  async search(query, page, filters) {
-    if (page > 1) return { list: [], hasNextPage: false };
+async function extractStreamUrl(href) {
+  const data = JSON.parse(href);
+  const epPath = `${data.path}/ep-${data.number}`;
+  const text = await anikotoText(`${ANIKOTO_BASE}/ajax/server/list?servers=${encodeURIComponent(data.ids)}`, { "Referer": ANIKOTO_BASE + epPath });
+  const payload = JSON.parse(text);
+  const html = payload.result || "";
+  const serverIds = Array.from(html.matchAll(/data-link-id=["']([^"']+)["'][^>]*>([\s\S]*?)<\/(?:li|a)>/gi))
+    .map((match) => ({ id: match[1], name: stripTags(match[2]) }))
+    .filter((item) => item.id);
+  for (const server of serverIds.slice(0, 5)) {
     try {
-      var html = await this.fetchHtml("search.php?s=" + encodeURIComponent(query));
-      return { list: this.parseList(html), hasNextPage: false };
-    } catch (e) {
-      return { list: [], hasNextPage: false };
-    }
+      const serverText = await anikotoText(`${ANIKOTO_BASE}/ajax/server?get=${encodeURIComponent(server.id)}`, { "Referer": ANIKOTO_BASE + epPath });
+      const serverPayload = JSON.parse(serverText);
+      const url = serverPayload?.result?.url || serverPayload?.url || "";
+      if (!url) continue;
+      if (/\.m3u8|\/stream\//i.test(url)) return [{ title: `${ANIKOTO_NAME} ${server.name}`.trim(), streamUrl: url, headers: { "Referer": ANIKOTO_BASE + "/" } }];
+      const page = await anikotoText(url, { "Referer": ANIKOTO_BASE + "/" });
+      const m3u8 = (page.match(/https?:\/\/[^\s"'<>]+\.m3u8[^\s"'<>]*/i) || [])[0];
+      if (m3u8) return [{ title: `${ANIKOTO_NAME} ${server.name}`.trim(), streamUrl: m3u8, headers: { "Referer": url } }];
+    } catch (_) {}
   }
-
-  // Status mapping. AnimeHeaven uses "Currently Airing" / "Finished Airing".
-  statusCode(status) {
-    var s = (status || "").toLowerCase();
-    if (s.includes("finished") || s.includes("completed")) return 1;
-    if (s.includes("not yet") || s.includes("upcoming")) return 4;
-    if (s.includes("airing") || s.includes("ongoing") || s.includes("releasing")) return 0;
-    return 5;
-  }
-
-  async getDetail(url) {
-    var html = await this.fetchHtml(url);
-
-    // Title
-    var name = "";
-    var nameMatch = html.match(/<div class='infotitle c'>([^<]+)<\/div>/);
-    if (nameMatch) name = this._decodeHtml(nameMatch[1].trim());
-
-    // Cover image — detail page uses class='posterimg' for the main poster.
-    // Do NOT match 'coverimg'; those are related-anime thumbnails lower on the page.
-    // Fall back to og:image which always points to the correct art.
-    var imageUrl = "";
-    var posterMatch = html.match(/<img[^>]+class='[^']*posterimg[^']*'[^>]+src='([^']+)'/);
-    if (posterMatch) {
-      var rel = posterMatch[1];
-      imageUrl = rel.indexOf("http") === 0 ? rel : this.source.baseUrl + "/" + rel.replace(/^\/+/, "");
-    }
-    if (!imageUrl) {
-      var og = html.match(/<meta property='og:image' content='([^']+)'/);
-      if (og) imageUrl = og[1];
-    }
-
-    // Description
-    var description = "";
-    var descMatch = html.match(/<div class='infodes c'>([\s\S]*?)<\/div>/);
-    if (descMatch) {
-      description = this._decodeHtml(descMatch[1].replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim());
-    }
-
-    // Genres — every <a class='boxitem ...'> in the tags section is a genre tag.
-    var genre = [];
-    var genreSection = html.match(/<div class='infotags[^']*'[^>]*>([\s\S]*?)<\/div>\s*<div class='infoyear/);
-    if (genreSection) {
-      var gRx = /<a[^>]+href='tags\.php\?[^']+'[^>]*>([^<]+)<\/a>/g;
-      var gm;
-      while ((gm = gRx.exec(genreSection[1])) !== null) {
-        genre.push(this._decodeHtml(gm[1].trim()));
-      }
-    }
-    // Fallback: just look for any tags.php links
-    if (genre.length === 0) {
-      var gRx2 = /<a[^>]+href='tags\.php\?tag=([^']+)'/g;
-      var seen = {};
-      var gm2;
-      while ((gm2 = gRx2.exec(html)) !== null) {
-        var t = decodeURIComponent(gm2[1]);
-        if (!seen[t]) { seen[t] = true; genre.push(t); }
-      }
-    }
-
-    // Status — site shows "Status:" inline followed by an inline div.
-    // "Episodes:" 11 etc. are in inline divs after labels. Use "Status" label if present.
-    var status = 5;
-    var statusBlock = html.match(/Status[\s\S]{0,40}?<div[^>]+class='inline c2'>([^<]+)</);
-    if (statusBlock) status = this.statusCode(statusBlock[1]);
-    else {
-      // If no status label, infer: if "Episodes" count appears followed by total, treat as completed; else default unknown
-      // Site mostly shows finished anime; default to 5 (UNKNOWN) when not stated.
-    }
-
-    // Episodes — every anchor with onclick="gatea(...)" is an episode.
-    var chapters = [];
-    var epRx = /<a[^>]*onclick='gatea\(\\?["']([a-f0-9]+)\\?["']\)'[^>]*>([\s\S]*?)<\/a>/g;
-    var em;
-    while ((em = epRx.exec(html)) !== null) {
-      var hash = em[1];
-      var body = em[2];
-      var numMatch = body.match(/watch2[^>]*>(\d+(?:\.\d+)?)/);
-      var epNum = numMatch ? numMatch[1] : String(chapters.length + 1);
-      chapters.push({
-        name: "Episode " + epNum,
-        url: hash, // chapter URL is just the gate cookie key
-      });
-    }
-    // Latest episode is usually first in the source; reverse so episode 1 is at the
-    // bottom (Mangayomi convention: most recent at top).
-    // The site already lists newest first, so no reverse needed.
-
-    return {
-      name: name,
-      imageUrl: imageUrl,
-      description: description,
-      genre: genre,
-      status: status,
-      link: url,
-      chapters: chapters,
-    };
-  }
-
-  // Fetch the gate.php page for an episode and pull every video URL out of it.
-  async getVideoList(url) {
-    var hash = url; // we stored just the hash as the chapter URL
-    var streams = [];
-
-    var refer = this.source.baseUrl + "/anime.php";
-    var headers = {
-      "User-Agent": this.ua,
-      "Referer": refer,
-      "Cookie": "key=" + hash,
-    };
-    var res;
-    try {
-      res = await this.client.get(this.source.baseUrl + "/gate.php", headers);
-    } catch (e) {
-      return streams;
-    }
-    var html = res.body || "";
-
-    // Pull every distinct mp4 URL. Different subdomains rotate per refresh, but
-    // each page lists ax/ct/ck etc. as fallbacks. We surface them as quality options.
-    var seen = {};
-    var rx = /['"](https?:\/\/[\w\-]+\.animeheaven\.me\/video\.mp4\?[^'"\s]+)['"]/g;
-    var m;
-    // The video CDN validates access via the token embedded in the URL query
-    // string, not via cookies. Sending only UA + Referer keeps the request
-    // clean and avoids any cookie-related rejection by the CDN or downloader.
-    var streamHeaders = {
-      "User-Agent": this.ua,
-      "Referer": this.source.baseUrl + "/",
-    };
-    while ((m = rx.exec(html)) !== null) {
-      var u = m[1];
-      // The player embeds three kinds of URL suffix:
-      //   &error  → Server 2 fallback
-      //   &error2 → Server 3 fallback
-      //   &d      → "download alias" — INTENTIONALLY omits the access token,
-      //             making it a different (broken) URL that returns HTTP 404.
-      //             Skip it; the full-token Server 1–3 URLs are downloadable.
-      if (/&d(\b|$)/.test(u)) continue;
-
-      // Strip &error / &error2 to get the clean URL with the access token.
-      var clean = u.replace(/&error2?$/, "");
-      if (seen[clean]) continue;
-      seen[clean] = true;
-
-      // Label by suffix so users can pick a fallback if the primary fails.
-      var label;
-      if (/&error2(\b|$)/.test(u)) label = "Server 3";
-      else if (/&error(\b|$)/.test(u)) label = "Server 2";
-      else label = "Server 1";
-
-      streams.push({
-        url: clean,
-        originalUrl: clean,
-        quality: label,
-        headers: streamHeaders,
-        subtitles: [],
-      });
-    }
-    return streams;
-  }
-
-  getFilterList() {
-    return [];
-  }
-
-  getSourcePreferences() {
-    return [];
-  }
-}
-
-
-const __mangayomiExtension = new DefaultExtension();
-
-function __list(value) {
-  if (!value) return [];
-  if (Array.isArray(value)) return value;
-  if (Array.isArray(value.list)) return value.list;
-  return [];
-}
-
-function __text(value) {
-  return String(value ?? "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
-}
-
-async function searchResults(keyword) {
-  const result = await __mangayomiExtension.search(keyword, 1, []);
-  return JSON.stringify(__list(result).map((item) => ({
-    title: __text(item.name || item.title),
-    image: item.imageUrl || item.image || "",
-    href: item.link || item.url || ""
-  })).filter((item) => item.title && item.href));
-}
-
-async function extractDetails(url) {
-  const detail = await __mangayomiExtension.getDetail(url);
-  return JSON.stringify([{
-    description: __text(detail.description || "Not available"),
-    aliases: Array.isArray(detail.genre) ? detail.genre.join(", ") : __text(detail.genre || detail.name || "Not available"),
-    airdate: detail.status != null ? "Status: " + detail.status : "Not available"
-  }]);
-}
-
-async function extractEpisodes(url) {
-  const detail = await __mangayomiExtension.getDetail(url);
-  const chapters = Array.isArray(detail.chapters) ? detail.chapters : [];
-  return JSON.stringify(chapters.map((chapter, index) => {
-    const label = String(chapter.name || chapter.title || "");
-    const parsed = label.match(/(?:episode|ep|capitulo|chapter)\s*([\d.]+)/i)?.[1] || label.match(/\b([\d.]+)\b/)?.[1];
-    return {
-      href: chapter.url || chapter.link || "",
-      number: Number.parseFloat(parsed) || index + 1
-    };
-  }).filter((item) => item.href));
-}
-
-async function extractStreamUrl(url) {
-  const videos = await __mangayomiExtension.getVideoList(url);
-  const streams = __list(videos).map((video) => ({
-    title: video.quality || video.name || video.label || "Stream",
-    streamUrl: video.url || video.originalUrl || video.file || "",
-    url: video.url || video.originalUrl || video.file || "",
-    headers: video.headers || {}
-  })).filter((item) => /^https?:\/\//i.test(item.streamUrl));
-  return JSON.stringify({ streams, subtitles: "" });
+  throw new Error(`${ANIKOTO_NAME}: no playable streams`);
 }

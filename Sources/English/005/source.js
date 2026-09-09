@@ -1,296 +1,273 @@
-// ==========================================
-// ⚙️ SORA MODULE — BINGEBOX v3 (API .ac Unifiée)
-// ==========================================
-
-const TMDB_API_KEY = "f5b2cdde0b678e87f5c68b61b43c688c";
-const BINGEBOX_API = "https://bingebox.ac/api/sources";
-const BINGEBOX_REFERER = "https://bingebox.ac/";
-const DEFAULT_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
-
-// Priorité des langues pour le sous-titre par défaut (Seulement Anglais)
-const SUB_PRIORITY = ["eng", "english", "en"];
-
-// ==========================================
-// 🛠️ HELPERS
-// ==========================================
-
-function parseQuery(queryString) {
-    const params = {};
-    const pairs = queryString.split('&');
-    for (let pair of pairs) {
-        const idx = pair.indexOf('=');
-        if (idx === -1) continue;
-        const key = decodeURIComponent(pair.slice(0, idx));
-        const val = decodeURIComponent(pair.slice(idx + 1));
-        params[key] = val;
-    }
-    return params;
-}
-
-// Sélection du meilleur sous-titre selon priorité de langue
-function selectBestSubtitle(allSubtitles) {
-    for (let lang of SUB_PRIORITY) {
-        const found = allSubtitles.find(s =>
-            (s.label || "").toLowerCase().includes(lang) ||
-            (s.language || "").toLowerCase().includes(lang)
-        );
-        if (found) return found.url;
-    }
-    return allSubtitles.length > 0 ? allSubtitles[0].url : "";
-}
-
-function makeHeaders(referer) {
-    return { "User-Agent": DEFAULT_USER_AGENT, "Referer": referer || BINGEBOX_REFERER };
-}
-
-// ==========================================
-// ⚙️ CORE LOGIC
-// ==========================================
-
-// 1. RECHERCHE (Via TMDB)
 async function searchResults(keyword) {
-    console.log(`[Bingebox] 🔍 Recherche de : "${keyword}"`);
     try {
-        const url = `https://api.themoviedb.org/3/search/multi?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(keyword)}&page=1&include_adult=false&language=en-US`;
-        const res = await soraFetch(url);
-        if (!res) return JSON.stringify([]);
+        let transformedResults = [];
 
-        const data = JSON.parse(await res.text());
-        const results = [];
+        const keywordGroups = {
+            trending: ["!trending", "!hot", "!tr", "!!"],
+            topRatedMovie: ["!top-rated-movie", "!topmovie", "!tm", "??"],
+            topRatedTV: ["!top-rated-tv", "!toptv", "!tt", "::"],
+            popularMovie: ["!popular-movie", "!popmovie", "!pm", ";;"],
+            popularTV: ["!popular-tv", "!poptv", "!pt", "++"],
+        };
 
-        for (let item of (data.results || [])) {
-            if (item.media_type !== 'movie' && item.media_type !== 'tv') continue;
+        const skipTitleFilter = Object.values(keywordGroups).flat();
+        const shouldFilter = !matchesKeyword(keyword, skipTitleFilter);
 
-            const title = item.title || item.name || "Titre inconnu";
-            const year = (item.release_date || item.first_air_date || '').split('-')[0];
-            const image = item.poster_path
-                ? `https://image.tmdb.org/t/p/w500${item.poster_path}`
-                : 'https://via.placeholder.com/500x750?text=No+Image';
+        // --- TMDB Section ---
+        const encodedKeyword = encodeURIComponent(keyword);
+        let baseUrlTemplate = null;
 
-            const href = `bingebox://${item.media_type}/${item.id}?title=${encodeURIComponent(title)}&year=${year}`;
-
-            results.push({
-                title: year ? `${title} (${year})` : title,
-                image,
-                href
-            });
+        if (matchesKeyword(keyword, keywordGroups.trending)) {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/trending/all/week?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+        } else if (matchesKeyword(keyword, keywordGroups.topRatedMovie)) {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/top_rated?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+        } else if (matchesKeyword(keyword, keywordGroups.topRatedTV)) {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/top_rated?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+        } else if (matchesKeyword(keyword, keywordGroups.popularMovie)) {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/popular?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+        } else if (matchesKeyword(keyword, keywordGroups.popularTV)) {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/popular?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+        } else {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/search/multi?api_key=9801b6b0548ad57581d111ea690c85c8&query=${encodedKeyword}&include_adult=false&page=${page}`)}&simple=true`;
         }
 
-        console.log(`[Bingebox] ✅ ${results.length} résultats trouvés.`);
-        return JSON.stringify(results);
-    } catch (e) {
-        console.error(`[Bingebox] ❌ Erreur Recherche: ${e.message}`);
-        return JSON.stringify([]);
-    }
-}
+        let dataResults = [];
 
-// 2. DÉTAILS (Via TMDB)
-async function extractDetails(url) {
-    console.log(`[Bingebox] 📖 Chargement détails : ${url}`);
-    try {
-        const match = url.match(/bingebox:\/\/([^/]+)\/([^?]+)/);
-        if (!match) throw new Error("URL invalide");
-
-        const [, type, id] = match;
-        const res = await soraFetch(`https://api.themoviedb.org/3/${type}/${id}?api_key=${TMDB_API_KEY}&language=en-US`);
-        if (!res) throw new Error("Échec réseau TMDB");
-
-        const data = JSON.parse(await res.text());
-
-        return JSON.stringify([{
-            description: data.overview || "No description available.",
-            aliases: `Rating: ${data.vote_average ? data.vote_average.toFixed(1) + '/10' : 'N/A'}`,
-            airdate: `Released: ${data.release_date || data.first_air_date || 'Unknown'}`
-        }]);
-    } catch (e) {
-        console.error(`[Bingebox] ❌ Erreur Détails: ${e.message}`);
-        return JSON.stringify([{ description: "Erreur lors du chargement des détails." }]);
-    }
-}
-
-// 3. ÉPISODES / FILM
-async function extractEpisodes(url) {
-    console.log(`[Bingebox] 📂 Chargement épisodes : ${url}`);
-    try {
-        const match = url.match(/bingebox:\/\/([^/]+)\/([^?]+)\?(.+)/);
-        if (!match) throw new Error("URL invalide");
-
-        const type = match[1];
-        const id   = match[2];
-        const params = parseQuery(match[3]);
-        const title = params['title'] || "";
-        const year  = params['year']  || "";
-
-        // CAS A : Film
-        if (type === 'movie') {
-            return JSON.stringify([{
-                href: `bingebox-play://movie/${id}?title=${encodeURIComponent(title)}&year=${year}`,
-                title: "Full Movie",
-                number: 1,
-                season: 1
-            }]);
-        }
-
-        // CAS B : Série
-        const res = await soraFetch(`https://api.themoviedb.org/3/tv/${id}?api_key=${TMDB_API_KEY}&language=en-US`);
-        if (!res) throw new Error("Échec réseau TMDB");
-        const data = JSON.parse(await res.text());
-
-        let episodes = [];
-
-        const seasonPromises = (data.seasons || []).map(async (season) => {
-            if (season.season_number === 0) return;
-
-            const sRes = await soraFetch(
-                `https://api.themoviedb.org/3/tv/${id}/season/${season.season_number}?api_key=${TMDB_API_KEY}&language=en-US`
+        if (baseUrlTemplate) {
+            const pagePromises = Array.from({ length: 5 }, (_, i) =>
+                soraFetch(baseUrlTemplate(i + 1)).then(r => r ? r.json() : { results: [] }).catch(() => ({ results: [] }))
             );
-            if (!sRes) return;
+            const pages = await Promise.all(pagePromises);
+            dataResults = pages.flatMap(p => p.results || []);
+        }
 
-            const sData = JSON.parse(await sRes.text());
-            for (let ep of (sData.episodes || [])) {
-                episodes.push({
-                    href: `bingebox-play://tv/${id}?title=${encodeURIComponent(title)}&year=${year}&s=${season.season_number}&e=${ep.episode_number}`,
-                    title: ep.name || `Episode ${ep.episode_number}`,
-                    number: ep.episode_number,
-                    season: season.season_number,
-                    image: ep.still_path ? `https://image.tmdb.org/t/p/w500${ep.still_path}` : ''
-                });
-            }
-        });
+        if (dataResults.length > 0) {
+            transformedResults = transformedResults.concat(
+                dataResults
+                    .map(result => {
+                        if (result.media_type === "movie" || result.title) {
+                            return {
+                                title: result.title || result.name || result.original_title || result.original_name || "Untitled",
+                                image: result.poster_path ? `https://image.tmdb.org/t/p/w500${result.poster_path}` : "",
+                                href: `movie/${result.id}`,
+                            };
+                        } else if (result.media_type === "tv" || result.name) {
+                            return {
+                                title: result.name || result.title || result.original_name || result.original_title || "Untitled",
+                                image: result.poster_path ? `https://image.tmdb.org/t/p/w500${result.poster_path}` : "",
+                                href: `tv/${result.id}/1/1`,
+                            };
+                        }
+                    })
+                    .filter(Boolean)
+                    .filter(r => !shouldFilter || r.title.toLowerCase().includes(keyword.toLowerCase()))
+            );
+        }
 
-        await Promise.all(seasonPromises);
-        episodes.sort((a, b) => a.season !== b.season ? a.season - b.season : a.number - b.number);
+        console.log("Transformed Results: " + JSON.stringify(transformedResults));
+        return JSON.stringify(transformedResults);
+    } catch (error) {
+        console.log("Fetch error in searchResults: " + error);
+        return JSON.stringify([{ title: "Error", image: "", href: "" }]);
+    }
+}
 
-        console.log(`[Bingebox] ✅ ${episodes.length} épisodes chargés.`);
-        return JSON.stringify(episodes);
+function matchesKeyword(keyword, commands) {
+    const lower = keyword.toLowerCase();
+    return commands.some(cmd => lower.startsWith(cmd.toLowerCase()));
+}
 
-    } catch (e) {
-        console.error(`[Bingebox] ❌ Erreur Épisodes: ${e.message}`);
+async function extractDetails(url) {
+    try {
+        if (url.includes('movie')) {
+            const match = url.match(/movie\/([^\/]+)/);
+            if (!match) throw new Error("Invalid URL format");
+
+            const movieId = match[1];
+            const responseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/${movieId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
+            const data = await responseText.json();
+
+            const transformedResults = [{
+                description: data.overview || 'No description available',
+                aliases: `Duration: ${data.runtime ? data.runtime + " minutes" : 'Unknown'}`,
+                airdate: `Released: ${data.release_date ? data.release_date : 'Unknown'}`
+            }];
+
+            return JSON.stringify(transformedResults);
+        } else if (url.includes('tv')) {
+            const match = url.match(/tv\/([^\/]+)/);
+            if (!match) throw new Error("Invalid URL format");
+
+            const showId = match[1];
+            const responseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
+            const data = await responseText.json();
+
+            const transformedResults = [{
+                description: data.overview || 'No description available',
+                aliases: `Duration: ${data.episode_run_time && data.episode_run_time.length ? data.episode_run_time.join(', ') + " minutes" : 'Unknown'}`,
+                airdate: `Aired: ${data.first_air_date ? data.first_air_date : 'Unknown'}`
+            }];
+
+            console.log(JSON.stringify(transformedResults));
+            return JSON.stringify(transformedResults);
+        } else {
+            throw new Error("Invalid URL format");
+        }
+    } catch (error) {
+        console.log('Details error: ' + error);
+        return JSON.stringify([{
+            description: 'Error loading description',
+            aliases: 'Duration: Unknown',
+            airdate: 'Aired/Released: Unknown'
+        }]);
+    }
+}
+
+async function extractEpisodes(url) {
+    try {
+        if (url.includes('movie')) {
+            const match = url.match(/movie\/([^\/]+)/);
+            if (!match) throw new Error("Invalid URL format");
+
+            const movieId = match[1];
+            const movie = [
+                { href: `/movie/${movieId}`, number: 1, title: "Full Movie" }
+            ];
+
+            console.log(movie);
+            return JSON.stringify(movie);
+        } else if (url.includes('tv')) {
+            const match = url.match(/tv\/([^\/]+)/);
+            if (!match) throw new Error("Invalid URL format");
+
+            const showId = match[1];
+            const showResponseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
+            const showData = await showResponseText.json();
+
+            const seasonPromises = (showData.seasons || []).map(async (season) => {
+                const seasonNumber = season.season_number;
+                if (seasonNumber === 0) return [];
+
+                try {
+                    const seasonResponseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}/season/${seasonNumber}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
+                    if (!seasonResponseText) return [];
+                    const seasonData = await seasonResponseText.json();
+
+                    if (seasonData.episodes && seasonData.episodes.length) {
+                        return seasonData.episodes.map(episode => ({
+                            href: `/tv/${showId}/${seasonNumber}/${episode.episode_number}`,
+                            number: episode.episode_number,
+                            title: episode.name || ""
+                        }));
+                    }
+                } catch (e) {
+                    console.log(`Failed to fetch season ${seasonNumber}: ${e.message}`);
+                }
+                return [];
+            });
+
+            const results = await Promise.all(seasonPromises);
+            const allEpisodes = results.flat();
+            console.log(allEpisodes);
+            return JSON.stringify(allEpisodes);
+        } else {
+            throw new Error("Invalid URL format");
+        }
+    } catch (error) {
+        console.log('Fetch error in extractEpisodes: ' + error);
         return JSON.stringify([]);
     }
 }
 
-// 4. LECTEUR VIDÉO
-async function extractStreamUrl(url) {
-    console.log(`[Bingebox] 🎬 Extraction vidéo : ${url}`);
+async function extractStreamUrl(ID) {
     try {
-        const match = url.match(/bingebox-play:\/\/([^/]+)\/([^?]+)\?(.+)/);
-        if (!match) throw new Error("URL Play invalide");
+        let isMovie = ID.includes('movie');
+        let tmdbID = "";
+        let seasonNumber = "1";
+        let episodeNumber = "1";
+        let mediaType = "";
 
-        const type   = match[1];
-        const id     = match[2];
-        const params = parseQuery(match[3]);
-        const title  = params['title'] || "";
-        const year   = params['year']  || "";
-        const s      = params['s'];
-        const e      = params['e'];
-
-        const apiMediaType = type === 'tv' ? 'show' : 'movie';
-
-        // Nouvelle API Bingebox unifiée qui renvoie toutes les sources d'un coup
-        let apiUrl = `${BINGEBOX_API}?tmdbId=${id}&mediaType=${apiMediaType}&title=${encodeURIComponent(title)}&year=${year}`;
-        if (type === 'tv' && s && e) apiUrl += `&season=${s}&episode=${e}`;
-
-        console.log(`[Bingebox] 📡 Appel API globale : ${apiUrl}`);
-
-        const res = await soraFetch(apiUrl, { headers: makeHeaders(BINGEBOX_REFERER) });
-        if (!res) throw new Error("Pas de réponse de l'API Bingebox");
-
-        const text = await res.text();
-        const json = JSON.parse(text);
-
-        if (!json.success || !json.sources || json.sources.length === 0) {
-            console.log(`[Bingebox] ⚠️ Aucune source retournée par l'API.`);
-            return JSON.stringify({ type: "none" });
+        if (isMovie) {
+            tmdbID = ID.replace('/movie/', '').replace('movie/', '');
+            mediaType = "movie";
+        } else if (ID.includes('tv')) {
+            const parts = ID.split('/');
+            const cleanParts = parts.filter(p => p !== "");
+            tmdbID = cleanParts[1];
+            seasonNumber = cleanParts[2];
+            episodeNumber = cleanParts[3];
+            mediaType = "tv";
+        } else {
+            return JSON.stringify({ streams: [] });
         }
 
-        let streams = [];
-        let allSubtitles = [];
-        const seenUrls = new Set();
-        const seenSubUrls = new Set();
+        let streamUrl = `https://streamdata.vaplayer.ru/api.php?tmdb=${tmdbID}&type=${mediaType}`;
+        if (mediaType === "tv") {
+            streamUrl += `&season=${seasonNumber}&episode=${episodeNumber}`;
+        }
 
-        // Parcourir le tableau `sources`
-        for (let source of json.sources) {
-            const serverName = source.label || source.sourceId || "Serveur inconnu";
+        const fetchOpts = {
+            headers: {
+                "Referer": "https://nextgencloudfabric.com/",
+                "Origin": "https://nextgencloudfabric.com",
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+            }
+        };
 
-            if (source.stream) {
-                // Flux vidéo (priorité à `playlist`, fallback sur `url`)
-                const videoUrl = source.stream.playlist || source.stream.url;
+        const response = await soraFetch(streamUrl, fetchOpts);
+        if (!response) throw new Error("Failed to fetch Airflix stream data");
 
-                if (videoUrl && !seenUrls.has(videoUrl)) {
-                    seenUrls.add(videoUrl);
+        const streamData = await response.json();
+        let streamObjects = [];
+        let subtitleUrl = "";
 
-                    streams.push({
-                        title: `Bingebox ${serverName.toUpperCase()}`,
-                        streamUrl: videoUrl,
-                        headers: makeHeaders(BINGEBOX_REFERER)
-                    });
-
-                    console.log(`   ✅ [${serverName}] Ajouté : ${videoUrl.split('?')[0]}`);
-                }
-
-                // Sous-titres
-                if (Array.isArray(source.stream.captions)) {
-                    for (let cap of source.stream.captions) {
-                        if (!cap.url || seenSubUrls.has(cap.url)) continue;
-                        seenSubUrls.add(cap.url);
-
-                        const subReferer = (cap.url.match(/https?:\/\/[^/]+/) || [BINGEBOX_REFERER])[0] + "/";
-
-                        allSubtitles.push({
-                            url: cap.url,
-                            label: cap.label || cap.language || "SUB",
-                            language: cap.language || "",
-                            kind: cap.type === 'srt' ? 'subtitles' : 'captions',
-                            headers: { "Referer": subReferer }
-                        });
+        if (streamData && streamData.status_code === "200" && streamData.data) {
+            const urls = streamData.data.stream_urls || [];
+            urls.forEach((url, index) => {
+                streamObjects.push({
+                    title: `[Airflix] Server ${index + 1}`,
+                    streamUrl: url,
+                    headers: {
+                        "Referer": "https://nextgencloudfabric.com/",
+                        "Origin": "https://nextgencloudfabric.com",
+                        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
                     }
-                }
+                });
+            });
+
+            if (streamData.data.default_subs && Array.isArray(streamData.data.default_subs) && streamData.data.default_subs.length > 0) {
+                const engSub = streamData.data.default_subs.find(sub => {
+                    if (typeof sub === 'string') return sub.toLowerCase().includes('eng');
+                    const lang = (sub.label || sub.language || sub.lang || "").toLowerCase();
+                    return lang.includes('eng');
+                });
+                const chosenSub = engSub || streamData.data.default_subs[0];
+                subtitleUrl = typeof chosenSub === 'string' ? chosenSub : (chosenSub.url || chosenSub.file || "");
             }
         }
-
-        console.log(`[Bingebox] 📊 ${streams.length} streams | ${allSubtitles.length} sous-titres`);
-
-        if (streams.length === 0) return JSON.stringify({ type: "none" });
-
-        // Trier les sous-titres selon la priorité (Anglais)
-        allSubtitles.sort((a, b) => {
-            const getPrio = (s) => {
-                const lang = (s.label || s.language || "").toLowerCase();
-                for (let i = 0; i < SUB_PRIORITY.length; i++) {
-                    if (lang.includes(SUB_PRIORITY[i])) return i;
-                }
-                return 99; // Priorité la plus basse
-            };
-            return getPrio(a) - getPrio(b);
-        });
 
         return JSON.stringify({
-            type: "servers",
-            streams,
-            subtitles: selectBestSubtitle(allSubtitles),
-            subtitlesHeaders: allSubtitles.length > 0
-                ? allSubtitles.find(s => s.url === selectBestSubtitle(allSubtitles))?.headers || {}
-                : {},
-            allSubtitles
+            streams: streamObjects,
+            subtitles: subtitleUrl
         });
-
-    } catch (e) {
-        console.error(`[Bingebox] ❌ Erreur Stream: ${e.message}`);
-        return JSON.stringify({ type: "none" });
+    } catch (error) {
+        console.log('Fetch error in extractStreamUrl: ' + error);
+        return JSON.stringify({ streams: [], subtitles: "" });
     }
 }
 
-// ==========================================
-// 🛠️ OUTIL RÉSEAU
-// ==========================================
 async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
+    const headers = options.headers || {};
+    if (!headers["User-Agent"]) {
+        headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
+    }
     try {
-        if (typeof fetchv2 !== 'undefined') {
-            return await fetchv2(url, options.headers ?? {}, options.method ?? 'GET', options.body ?? null);
+        return await fetchv2(url, headers, options.method || 'GET', options.body || null);
+    } catch (e) {
+        try {
+            return await fetch(url, options);
+        } catch (error) {
+            return null;
         }
-        return await fetch(url, options);
-    } catch(e) {
-        try { return await fetch(url, options); } catch { return null; }
     }
 }
