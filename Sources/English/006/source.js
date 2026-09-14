@@ -1,501 +1,611 @@
-//Thanks ibro for the TMDB search!
 
-async function searchResults(keyword) {
-    try {
-        let transformedResults = [];
-
-        const keywordGroups = {
-            trending: ["!trending", "!hot", "!tr", "!!"],
-            topRatedMovie: ["!top-rated-movie", "!topmovie", "!tm", "??"],
-            topRatedTV: ["!top-rated-tv", "!toptv", "!tt", "::"],
-            popularMovie: ["!popular-movie", "!popmovie", "!pm", ";;"],
-            popularTV: ["!popular-tv", "!poptv", "!pt", "++"],
-        };
-
-        const skipTitleFilter = Object.values(keywordGroups).flat();
-
-        const shouldFilter = !matchesKeyword(keyword, skipTitleFilter);
-
-        const encodedKeyword = encodeURIComponent(keyword);
-        let baseUrlTemplate = null;
-
-        if (matchesKeyword(keyword, keywordGroups.trending)) {
-            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/trending/all/week?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
-        } else if (matchesKeyword(keyword, keywordGroups.topRatedMovie)) {
-            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/top_rated?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
-        } else if (matchesKeyword(keyword, keywordGroups.topRatedTV)) {
-            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/top_rated?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
-        } else if (matchesKeyword(keyword, keywordGroups.popularMovie)) {
-            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/popular?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
-        } else if (matchesKeyword(keyword, keywordGroups.popularTV)) {
-            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/popular?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
-        } else {
-            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/search/multi?api_key=9801b6b0548ad57581d111ea690c85c8&query=${encodedKeyword}&include_adult=false&page=${page}`)}&simple=true`;
-        }
-
-        let dataResults = [];
-
-        if (baseUrlTemplate) {
-            const pagePromises = Array.from({ length: 5 }, (_, i) =>
-                soraFetch(baseUrlTemplate(i + 1)).then(r => r.json())
-            );
-            const pages = await Promise.all(pagePromises);
-            dataResults = pages.flatMap(p => p.results || []);
-        }
-
-        if (dataResults.length > 0) {
-            transformedResults = transformedResults.concat(
-                dataResults
-                    .map(result => {
-                        if (result.media_type === "movie" || result.title) {
-                            return {
-                                title: result.title || result.name || result.original_title || result.original_name || "Untitled",
-                                image: result.poster_path ? `https://image.tmdb.org/t/p/w500${result.poster_path}` : "",
-                                href: `movie/${result.id}`,
-                            };
-                        } else if (result.media_type === "tv" || result.name) {
-                            return {
-                                title: result.name || result.title || result.original_name || result.original_title || "Untitled",
-                                image: result.poster_path ? `https://image.tmdb.org/t/p/w500${result.poster_path}` : "",
-                                href: `tv/${result.id}/1/1`,
-                            };
-                        }
-                    })
-                    .filter(Boolean)
-                    .filter(result => result.title !== "Overflow")
-                    .filter(result => result.title !== "My Marriage Partner Is My Student, a Cocky Troublemaker")
-                    .filter(r => !shouldFilter || r.title.toLowerCase().includes(keyword.toLowerCase()))
-            );
-        }
-
-        console.log("Transformed Results: " + JSON.stringify(transformedResults));
-        return JSON.stringify(transformedResults);
-    } catch (error) {
-        console.log("Fetch error in searchResults: " + error);
-        return JSON.stringify([{ title: "Error", image: "", href: "" }]);
-    }
+class MProvider {
+  constructor() {
+    this.source = typeof mangayomiSources !== "undefined" && Array.isArray(mangayomiSources) ? mangayomiSources[0] : {};
+    globalThis.__mangayomiBaseUrl = this.source.baseUrl || this.source.apiUrl || "";
+  }
 }
 
-function matchesKeyword(keyword, commands) {
-    const lower = keyword.toLowerCase();
-    return commands.some(cmd => lower.startsWith(cmd.toLowerCase()));
-}
-
-async function extractDetails(url) {
-    try {
-        if (url.includes('movie')) {
-            const match = url.match(/movie\/([^\/]+)/);
-            if (!match) throw new Error("Invalid URL format");
-
-            const movieId = match[1];
-            const responseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/${movieId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
-            const data = await responseText.json();
-
-            const transformedResults = [{
-                description: data.overview || 'No description available',
-                aliases: `Duration: ${data.runtime ? data.runtime + " minutes" : 'Unknown'}`,
-                airdate: `Released: ${data.release_date ? data.release_date : 'Unknown'}`
-            }];
-
-            return JSON.stringify(transformedResults);
-        } else if (url.includes('tv')) {
-            const match = url.match(/tv\/([^\/]+)/);
-            if (!match) throw new Error("Invalid URL format");
-
-            const showId = match[1];
-            const responseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
-            const data = await responseText.json();
-
-            const transformedResults = [{
-                description: data.overview || 'No description available',
-                aliases: `Duration: ${data.episode_run_time && data.episode_run_time.length ? data.episode_run_time.join(', ') + " minutes" : 'Unknown'}`,
-                airdate: `Aired: ${data.first_air_date ? data.first_air_date : 'Unknown'}`
-            }];
-
-            console.log(JSON.stringify(transformedResults));
-            return JSON.stringify(transformedResults);
-        } else {
-            throw new Error("Invalid URL format");
-        }
-    } catch (error) {
-        console.log('Details error: ' + error);
-        return JSON.stringify([{
-            description: 'Error loading description',
-            aliases: 'Duration: Unknown',
-            airdate: 'Aired/Released: Unknown'
-        }]);
-    }
-}
-
-async function extractEpisodes(url) {
-    try {
-        if (url.includes('movie')) {
-            const match = url.match(/movie\/([^\/]+)/);
-
-            if (!match) throw new Error("Invalid URL format");
-
-            const movieId = match[1];
-
-            const movie = [
-                { href: `/movie/${movieId}`, number: 1, title: "Full Movie" }
-            ];
-
-            console.log(movie);
-            return JSON.stringify(movie);
-        } else if (url.includes('tv')) {
-            const match = url.match(/tv\/([^\/]+)\/([^\/]+)\/([^\/]+)/);
-
-            if (!match) throw new Error("Invalid URL format");
-
-            const showId = match[1];
-
-            const showResponseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
-            const showData = await showResponseText.json();
-
-            let allEpisodes = [];
-            for (const season of showData.seasons) {
-                const seasonNumber = season.season_number;
-
-                if (seasonNumber === 0) continue;
-
-                const seasonResponseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}/season/${seasonNumber}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
-                const seasonData = await seasonResponseText.json();
-
-                if (seasonData.episodes && seasonData.episodes.length) {
-                    const episodes = seasonData.episodes.map(episode => ({
-                        href: `/tv/${showId}/${seasonNumber}/${episode.episode_number}`,
-                        number: episode.episode_number,
-                        title: episode.name || ""
-                    }));
-                    allEpisodes = allEpisodes.concat(episodes);
-                }
-            }
-
-            console.log(allEpisodes);
-            return JSON.stringify(allEpisodes);
-        } else {
-            throw new Error("Invalid URL format");
-        }
-    } catch (error) {
-        console.log('Fetch error in extractEpisodes: ' + error);
-        return JSON.stringify([]);
-    }
-}
-
-async function extractStreamUrl(ID) {
-    const startTime = Date.now();
-    let isMovie = ID.includes('movie');
-    let tmdbID, seasonNumber = "1", episodeNumber = "1";
-    let isSeries = false;
-
-    if (isMovie) {
-        tmdbID = ID.replace('/movie/', '').replace('/', '');
-    } else if (ID.includes('tv')) {
-        const parts = ID.split('/');
-        tmdbID = parts[2];
-        seasonNumber = parts[3];
-        episodeNumber = parts[4];
-        isSeries = true;
-    } else {
-        return JSON.stringify({ streams: [] });
-    }
-
-    try {
-        const streamResponse = await ilovefeet(tmdbID, isSeries, seasonNumber, episodeNumber, 'm3u8');
-        const streams = [];
-
-        if (streamResponse && Array.isArray(streamResponse.streams)) {
-            for (const s of streamResponse.streams) {
-                streams.push({
-                    title: s.title,
-                    streamUrl: s.url,
-                    headers: {
-                        "Referer": "https://vidfast.vc/",
-                        "Origin": "https://vidfast.vc"
-                    }
-                });
-            }
-        }
-
-        if (streams.length === 0) {
-            const fallbackUrl = isSeries ? `https://vidlink.pro/tv/${tmdbID}/${seasonNumber}/${episodeNumber}` : `https://vidlink.pro/movie/${tmdbID}`;
-            streams.push({
-                title: "VidFast Backup",
-                streamUrl: fallbackUrl,
-                headers: { "Referer": "https://vidlink.pro/" }
-            });
-        }
-
-        const final = {
-            streams,
-            subtitles: streamResponse ? streamResponse.subtitles || "" : ""
-        };
-
-        const endTime = Date.now();
-        const elapsed = ((endTime - startTime) / 1000).toFixed(2);
-        console.log(`Stream fetched in ${elapsed}s`);
-        return JSON.stringify(final);
-    } catch (e) {
-        console.log("Error in extractStreamUrl: " + e.message);
-        const fallbackUrl = isSeries ? `https://vidlink.pro/tv/${tmdbID}/${seasonNumber}/${episodeNumber}` : `https://vidlink.pro/movie/${tmdbID}`;
-        return JSON.stringify({
-            streams: [{ title: "VidFast Backup", streamUrl: fallbackUrl, headers: { Referer: "https://vidlink.pro/" } }],
-            subtitles: ""
-        });
-    }
-}
-
-async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
-    const headers = options.headers || {};
-    if (!headers["User-Agent"]) {
-        headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
-    }
-    try {
-        return await fetchv2(url, headers, options.method || 'GET', options.body || null);
-    } catch (e) {
-        try {
-            return await fetch(url, options);
-        } catch (error) {
-            return null;
-        }
-    }
-}
-
-async function ilovearmpits(m3u8Url) {
-    try {
-        const headers = {
-            "Accept": "*/*",
-            "User-Agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Mobile Safari/537.36",
-            "Referer": "https://vidfast.vc/",
-            "X-Requested-With": "XMLHttpRequest"
-        };
-
-        const response = await fetchv2(m3u8Url, headers);
-        const playlistContent = await response.text();
-
-        const has4K = playlistContent.includes('RESOLUTION=3840x2160');
-
-        if (!has4K) {
-            console.log(`4K Check for ${m3u8Url}: NO`);
-            return { available: false, url: null };
-        }
-
-        const lines = playlistContent.split('\n');
-        let fourKPath = null;
-        let fourKCount = 0;
-
-        for (let i = 0; i < lines.length; i++) {
-            if (lines[i].includes('RESOLUTION=3840x2160')) {
-                fourKCount++;
-                if (fourKCount === 2 && i + 1 < lines.length) {
-                    fourKPath = lines[i + 1].trim();
-                    break;
-                }
-            }
-        }
-
-        if (!fourKPath && fourKCount === 1) {
-            for (let i = 0; i < lines.length; i++) {
-                if (lines[i].includes('RESOLUTION=3840x2160')) {
-                    if (i + 1 < lines.length) {
-                        fourKPath = lines[i + 1].trim();
-                        break;
-                    }
-                }
-            }
-        }
-
-        if (!fourKPath) {
-            console.log('4K resolution found but could not extract path');
-            return { available: false, url: null };
-        }
-
-        let baseUrl = '';
-        if (m3u8Url.startsWith('https://')) {
-            const afterProtocol = m3u8Url.substring(8);
-            const hostEnd = afterProtocol.indexOf('/');
-            const host = hostEnd !== -1 ? afterProtocol.substring(0, hostEnd) : afterProtocol;
-            baseUrl = 'https://' + host;
-        } else if (m3u8Url.startsWith('http://')) {
-            const afterProtocol = m3u8Url.substring(7);
-            const hostEnd = afterProtocol.indexOf('/');
-            const host = hostEnd !== -1 ? afterProtocol.substring(0, hostEnd) : afterProtocol;
-            baseUrl = 'http://' + host;
-        }
-
-        const full4KUrl = fourKPath.startsWith('http') ? fourKPath : `${baseUrl}${fourKPath}`;
-
-        return { available: true, url: full4KUrl };
-    } catch (error) {
-        console.log('Error checking 4K availability: ' + error);
-        return { available: false, url: null };
-    }
-}
-
-async function ilovefeet(imdbId, isSeries = false, season = null, episode = null, preferredFormat = null) {
-    let baseUrl;
-    if (isSeries) {
-        baseUrl = `https://vidfast.vc/tv/${imdbId}/${season}/${episode}`;
-    } else {
-        baseUrl = `https://vidfast.vc/movie/${imdbId}`;
-    }
-
-    const headers = {
-        "Accept": "*/*",
-        "User-Agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Mobile Safari/537.36",
-        "Referer": baseUrl,
-        "X-Requested-With": "XMLHttpRequest"
+class SharedPreferences {
+  get(key) {
+    const defaults = {
+      pref_content_priority: "series",
+      pref_latest_time_window: "day",
+      pref_video_resolution: "1080",
+      autoembed_stream_source_4: "4",
+      autoembed_pref_navtive_subtitle: false,
+      autoembed_split_stream_quality: false,
+      autoembed_pref_subtitle_source_2: "1"
     };
+    return defaults[key] ?? "";
+  }
 
-    console.log(`Requesting Base URL: ${baseUrl}`);
-    const pageResponse = await fetchv2(baseUrl, headers);
-    const pageText = await pageResponse.text();
+  getString(key) {
+    return String(this.get(key) ?? "");
+  }
 
-    let match = pageText.match(/\\"(?:en|token)\\":\\"([^"]+)\\"/) ||
-        pageText.match(/"(?:en|token)":"([^"]+)"/) ||
-        pageText.match(/'(?:en|token)':'([^']+)'/) ||
-        pageText.match(/["'](?:en|token)["']:\s*["']([^"']+)["']/);
+  getInt(key) {
+    return Number.parseInt(this.get(key), 10) || 0;
+  }
 
-    if (!match) {
-        throw new Error('Could not find data in page');
-    }
-    const rawData = match[1];
-    console.log("Raw Data extracted:", rawData);
+  getBool(key) {
+    return Boolean(this.get(key));
+  }
+}
 
-    const apiUrl = `https://enc-dec.app/api/enc-vidfast?text=${encodeURIComponent(rawData)}&version=1`;
-    console.log(`Requesting Decrypt API: ${apiUrl}`);
-    const apiResponse = await soraFetch(apiUrl);
-    const apiData = await apiResponse.json();
-    console.log("API Data from enc-dec.app:", JSON.stringify(apiData));
-
-    if (apiData.status !== 200 || !apiData.result) {
-        throw new Error('Failed to decrypt data via enc-dec.app API');
-    }
-
-    const apiServers = apiData.result.servers;
-    const streamBase = apiData.result.stream;
-    const csrfToken = apiData.result.token;
-
-    if (csrfToken) {
-        headers["X-CSRF-Token"] = csrfToken;
-    }
-
-    console.log(`Requesting Servers URL: ${apiServers}`);
-    const serversResponse = await soraFetch(apiServers, { method: 'POST', headers: headers });
-    const serversEncrypted = await serversResponse.text();
-
-    const decServersResponse = await soraFetch('https://enc-dec.app/api/dec-vidfast', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: serversEncrypted, version: "1" })
-    });
-    const decServersData = await decServersResponse.json();
-
-    if (decServersData.status !== 200 || !decServersData.result) {
-        throw new Error('Failed to decrypt servers data via enc-dec.app API');
-    }
-    const serverList = decServersData.result;
-
-    if (!serverList || serverList.length === 0) {
-        throw new Error('No servers available');
-    }
-
-    const testServer = async (serverObj, index) => {
-        const server = serverObj.data;
-        const apiStream = streamBase + '/' + server;
-
-        try {
-            console.log(`Requesting Stream URL for server ${index}: ${apiStream}`);
-            const streamResponse = await soraFetch(apiStream, { method: 'POST', headers: headers });
-            if (!streamResponse) return null;
-
-            const streamEncrypted = await streamResponse.text();
-            if (!streamEncrypted || streamEncrypted.includes("Attention Required") || streamEncrypted.includes("Cloudflare")) {
-                return null;
-            }
-
-            const decStreamResponse = await soraFetch('https://enc-dec.app/api/dec-vidfast', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ text: streamEncrypted, version: "1" })
-            });
-            if (!decStreamResponse) return null;
-            const decStreamData = await decStreamResponse.json();
-
-            if (decStreamData.status !== 200 || !decStreamData.result) {
-                return null;
-            }
-
-            let data = decStreamData.result;
-            if (!data.url) {
-                return null;
-            }
-
-            const format = data.url.includes('.m3u8') ? 'm3u8' : data.url.includes('.mpd') ? 'mpd' : 'unknown';
-
-            let englishSubtitles = null;
-            if (data.tracks && Array.isArray(data.tracks)) {
-                const englishTrack = data.tracks.find(track =>
-                    track.label && track.label.toLowerCase().includes('english') && track.file
-                );
-                if (englishTrack) {
-                    englishSubtitles = englishTrack.file;
-                }
-            }
-
-            return {
-                name: serverObj.name || `Server ${index}`,
-                url: data.url,
-                format,
-                subtitles: englishSubtitles
-            };
-        } catch (error) {
-            console.log(`Server ${index} failed: ${error.message}`);
-            return null;
-        }
+class Client {
+  async get(url, headers = {}) {
+    const response = await fetchv2(this.normalizeUrl(url), { headers });
+    return {
+      body: await response.text(),
+      statusCode: response.status,
+      headers: Object.fromEntries(response.headers?.entries?.() ?? [])
     };
+  }
 
-    const timeout = (ms) => new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), ms));
-
-    const serverPromises = serverList.map(async (serverObj, index) => {
-        try {
-            return await Promise.race([
-                testServer(serverObj, index),
-                timeout(4000)
-            ]);
-        } catch (e) {
-            console.log(`Server ${index} timed out or failed`);
-            return null;
-        }
+  async post(url, headers = {}, body = null) {
+    const response = await fetchv2(this.normalizeUrl(url), {
+      method: "POST",
+      headers,
+      body
     });
+    return {
+      body: await response.text(),
+      statusCode: response.status,
+      headers: Object.fromEntries(response.headers?.entries?.() ?? [])
+    };
+  }
 
-    const results = await Promise.all(serverPromises);
-    const workingStreams = results.filter(r => r !== null);
+  normalizeUrl(url) {
+    const value = String(url ?? "");
+    if (/^https?:\/\//i.test(value)) return value;
+    const base = globalThis.__mangayomiBaseUrl || "";
+    if (!base) return value;
+    return new URL(value, base.endsWith("/") ? base : base + "/").toString();
+  }
+}
 
-    const workingStreamsMapped = [];
-    let englishSubs = null;
 
-    for (const item of workingStreams) {
-        let streamUrl = item.url;
-        if (item.name === 'vFast') {
-            const fourKResult = await ilovearmpits(streamUrl);
-            if (fourKResult.available && fourKResult.url) {
-                streamUrl = fourKResult.url;
-            }
-        }
+const mangayomiSources = [
+  {
+    "name": "JustAnime",
+    "id": 892345671,
+    "lang": "en",
+    "baseUrl": "https://justanime.to",
+    "apiUrl": "https://core.justanime.to/api",
+    "iconUrl": "https://www.google.com/s2/favicons?sz=256&domain=https://justanime.to",
+    "typeSource": "single",
+    "itemType": 1,
+    "version": "0.2.8",
+    "pkgPath": "anime/src/en/justanime.js",
+    "isManga": false,
+    "isNsfw": false,
+    "hasCloudflare": false,
+    "isFullData": false,
+    "appMinVerReq": "0.5.0",
+    "sourceCodeUrl": "https://raw.githubusercontent.com/Mallyd11/mangayomi-anime-extensions/refs/heads/main/javascript/anime/src/en/justanime.js",
+    "dateFormat": "",
+    "dateFormatLocale": "",
+    "additionalParams": "",
+    "sourceCodeLanguage": 1,
+    "notes": "",
+  },
+];
 
-        workingStreamsMapped.push({
-            title: item.name,
-            url: streamUrl
-        });
+class DefaultExtension extends MProvider {
+  get headers() {
+    return {
+      "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+      "Origin": "https://justanime.to",
+      "Referer": "https://justanime.to/",
+      "Accept": "application/json",
+    };
+  }
 
-        if (item.subtitles && !englishSubs) {
-            englishSubs = item.subtitles;
-        }
+  async apiGet(path) {
+    var res = await new Client().get(this.source.apiUrl + path, this.headers);
+    return JSON.parse(res.body);
+  }
+
+  animeTitle(item) {
+    if (!item.title) return item.name || "";
+    if (typeof item.title === "string") return item.title;
+    return item.title.english || item.title.romaji || "";
+  }
+
+  parseAnimeList(items) {
+    var list = [];
+    for (var i = 0; i < items.length; i++) {
+      var item = items[i];
+      list.push({
+        name: this.animeTitle(item),
+        link: String(item.id),
+        imageUrl: item.cover || (item.coverImage && item.coverImage.extraLarge) || "",
+      });
+    }
+    return list;
+  }
+
+  statusCode(status) {
+    return ({
+      "RELEASING": 0,
+      "FINISHED": 1,
+      "NOT_YET_RELEASED": 4,
+      "CANCELLED": 5,
+      "HIATUS": 6,
+    }[status]) || 5;
+  }
+
+  stripHtml(str) {
+    return (str || "").replace(/<[^>]*>/g, " ").replace(/\s{2,}/g, " ").trim();
+  }
+
+  titleToSlug(title) {
+    return (title || "")
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, "")
+      .trim()
+      .replace(/\s+/g, "-");
+  }
+
+  // Accepts bare ID, /anime/{id}/slug, or legacy /{slug}-{id}
+  extractId(url) {
+    var base = this.source.baseUrl;
+    if (url.startsWith(base)) {
+      var path = url.slice(base.length).replace(/^\//, "");
+      if (path.startsWith("anime/")) {
+        return path.split("/")[1];
+      }
+      return path.split("-").pop();
+    }
+    return url;
+  }
+
+  // ── Listings ──────────────────────────────────────────────────────────────
+
+  get supportsLatest() { return true; }
+
+  // /search with no keyword returns ~5000 anime paginated by popularity (24/page)
+  async getPopular(page) {
+    try {
+      var data = await this.apiGet("/search?page=" + page);
+      var items = data.results || [];
+      var hasNextPage = !!(data.pageInfo && data.pageInfo.hasNextPage);
+      return { list: this.parseAnimeList(items), hasNextPage: hasNextPage };
+    } catch (e) {
+      return { list: [], hasNextPage: false };
+    }
+  }
+
+  // /home latestEpisode is the only source for recently-updated anime; no paginated endpoint exists
+  async getLatestUpdates(page) {
+    if (page > 1) return { list: [], hasNextPage: false };
+    try {
+      var data = await this.apiGet("/home");
+      var items = data.latestEpisode || data.airing || [];
+      return { list: this.parseAnimeList(items), hasNextPage: false };
+    } catch (e) {
+      return { list: [], hasNextPage: false };
+    }
+  }
+
+  async search(query, page, filters) {
+    var encoded = encodeURIComponent(query.replace(/[?!]/g, "").trim());
+    var items = [];
+    var hasNextPage = false;
+    try {
+      var data = await this.apiGet("/search?query=" + encoded + "&page=" + page);
+      items = data.results || [];
+      hasNextPage = !!(data.pageInfo && data.pageInfo.hasNextPage);
+    } catch (e) {}
+    return { list: this.parseAnimeList(items), hasNextPage: hasNextPage };
+  }
+
+  // ── Detail ────────────────────────────────────────────────────────────────
+
+  async getDetail(url) {
+    var id = this.extractId(url);
+
+    var infoData = await this.apiGet("/anime/" + id);
+    var anime = infoData.data || {};
+
+    var title = this.animeTitle(anime) || id;
+    var imageUrl = (anime.coverImage && anime.coverImage.extraLarge) || anime.cover || "";
+    var description = this.stripHtml(anime.description || "");
+    var genres = anime.genres || [];
+    var total = anime.episodes || 0;
+
+    var chapters = [];
+    for (var i = 1; i <= total; i++) {
+      chapters.push({ name: "Episode " + i, url: id + "||" + i });
     }
 
     return {
-        streams: workingStreamsMapped,
-        subtitles: englishSubs
+      name: title,
+      imageUrl: imageUrl,
+      description: description,
+      genre: genres,
+      status: this.statusCode(anime.status || ""),
+      link: this.source.baseUrl + "/anime/" + id + "/" + this.titleToSlug(title),
+      chapters: chapters.reverse(),
     };
+  }
+
+  // ── HLS helpers ───────────────────────────────────────────────────────────
+
+  // Fetch a master HLS playlist and return absolute variant URLs with quality.
+  // Returns [] if the URL is already a flat playlist (no #EXT-X-STREAM-INF).
+  async resolveMasterPlaylist(masterUrl, headers) {
+    try {
+      var res = await new Client().get(masterUrl, headers);
+      var body = res.body || "";
+      if (body.indexOf("#EXT-X-STREAM-INF") < 0) return [];
+
+      var base = masterUrl.substring(0, masterUrl.lastIndexOf("/") + 1);
+      var variants = [];
+      var lines = body.split("\n");
+      for (var i = 0; i < lines.length; i++) {
+        var line = lines[i].trim();
+        if (line.indexOf("#EXT-X-STREAM-INF") !== 0) continue;
+        var resMatch = line.match(/RESOLUTION=\d+x(\d+)/);
+        var quality = resMatch ? resMatch[1] + "p" : "auto";
+        for (var j = i + 1; j < lines.length; j++) {
+          var u = lines[j].trim();
+          if (!u || u.charAt(0) === "#") continue;
+          variants.push({ url: u.indexOf("http") === 0 ? u : base + u, quality: quality });
+          break;
+        }
+      }
+      // Sort highest resolution first
+      variants.sort(function(a, b) {
+        return (parseInt(b.quality) || 0) - (parseInt(a.quality) || 0);
+      });
+      return variants;
+    } catch (e) {
+      return [];
+    }
+  }
+
+  // Returns false if the playlist body contains ByteDance/ibyteimg ad segments.
+  async isPlaylistClean(url, headers) {
+    try {
+      var res = await new Client().get(url, headers);
+      var body = res.body || "";
+      return body.indexOf("ibyteimg") < 0 && body.indexOf("p16-ad-") < 0;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // anineko uses a two-step API:
+  //   Step 1: /watch/{id}/episode/{ep}/anineko → {langs: {sub:[{server,name}...], dub:[...]}}
+  //   Step 2: /watch/{id}/episode/{ep}/anineko/{lang}/{server} → {sources, subtitles, headers}
+  // HLS streams are checked for ad-poisoning before being included.
+  async getAninekoStreams(animeId, epNum, ua, autoSubs) {
+    var subVideos = [];
+    var dubVideos = [];
+    try {
+      var avail = await this.apiGet("/watch/" + animeId + "/episode/" + epNum + "/anineko");
+      var langs = avail.langs || {};
+      var langKeys = ["sub", "dub"];
+      for (var li = 0; li < langKeys.length; li++) {
+        var lang = langKeys[li];
+        var servers = langs[lang] || [];
+        for (var si = 0; si < servers.length; si++) {
+          var serverName = servers[si].server;
+          var serverLabel = servers[si].name || serverName;
+          try {
+            var data = await this.apiGet(
+              "/watch/" + animeId + "/episode/" + epNum + "/anineko/" + lang + "/" + serverName
+            );
+            if (!data || data.error || !Array.isArray(data.sources) || !data.sources.length) continue;
+
+            var apiHeaders = data.headers || {};
+            var streamHeaders = {
+              "User-Agent": ua,
+              "Referer": apiHeaders["Referer"] || "https://justanime.to/",
+              "Origin": apiHeaders["Origin"] || "https://justanime.to",
+            };
+
+            // anineko returns subtitles[].url + .lang (not .file + .label)
+            var rawSubs = data.subtitles || [];
+            var subtitles = [];
+            for (var ti = 0; ti < rawSubs.length; ti++) {
+              var t = rawSubs[ti];
+              var fileUrl = t.file || t.url;
+              if (!fileUrl) continue;
+              subtitles.push({ file: fileUrl, label: t.label || t.lang || "Unknown" });
+            }
+            if (autoSubs && subtitles.length > 0) subtitles[0].default = true;
+
+            for (var i = 0; i < data.sources.length; i++) {
+              var s = data.sources[i];
+              var streamUrl = s.url || s.file;
+              if (!streamUrl) continue;
+
+              var isHls = s.isM3U8 || streamUrl.indexOf(".m3u8") >= 0;
+              if (isHls) {
+                var variants = await this.resolveMasterPlaylist(streamUrl, streamHeaders);
+                if (variants.length > 0) {
+                  var clean = await this.isPlaylistClean(variants[0].url, streamHeaders);
+                  if (!clean) continue;
+                  for (var vi = 0; vi < variants.length; vi++) {
+                    var entry = {
+                      url: variants[vi].url,
+                      originalUrl: streamUrl,
+                      quality: "anineko " + serverLabel + " " + lang.toUpperCase() + " [" + variants[vi].quality + "]",
+                      headers: streamHeaders,
+                      subtitles: subtitles,
+                    };
+                    if (lang === "dub") dubVideos.push(entry); else subVideos.push(entry);
+                  }
+                } else {
+                  // Flat playlist
+                  var clean = await this.isPlaylistClean(streamUrl, streamHeaders);
+                  if (!clean) continue;
+                  var qual = s.quality || "auto";
+                  if (qual !== "auto" && !/p$/i.test(qual)) qual += "p";
+                  var entry = {
+                    url: streamUrl,
+                    originalUrl: streamUrl,
+                    quality: "anineko " + serverLabel + " " + lang.toUpperCase() + " [" + qual + "]",
+                    headers: streamHeaders,
+                    subtitles: subtitles,
+                  };
+                  if (lang === "dub") dubVideos.push(entry); else subVideos.push(entry);
+                }
+              } else {
+                var qual = s.quality || "auto";
+                if (qual !== "auto" && !/p$/i.test(qual)) qual += "p";
+                var entry = {
+                  url: streamUrl,
+                  originalUrl: streamUrl,
+                  quality: "anineko " + serverLabel + " " + lang.toUpperCase() + " [" + qual + "]",
+                  headers: streamHeaders,
+                  subtitles: subtitles,
+                };
+                if (lang === "dub") dubVideos.push(entry); else subVideos.push(entry);
+              }
+            }
+          } catch (e) {}
+        }
+      }
+    } catch (e) {}
+    return { subVideos: subVideos, dubVideos: dubVideos };
+  }
+
+  // ── Video sources ─────────────────────────────────────────────────────────
+
+  async getVideoList(url) {
+    // url format: "{animeId}||{epNum}"
+    var parts = url.split("||");
+    var animeId = parts[0];
+    var epNum = parts[1];
+
+    var subVideos = [];
+    var dubVideos = [];
+    var ua = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36";
+
+    var autoSubs = false;
+    try { autoSubs = new SharedPreferences().get("justanime_pref_auto_subs") === "true"; } catch (e) {}
+
+    var serverPref = "megaplay";
+    try { serverPref = new SharedPreferences().get("justanime_pref_server") || "megaplay"; } catch (e) {}
+
+    // Resolve which simple providers (megaplay/animegg) to query
+    var providers = [];
+    if (serverPref === "megaplay" || serverPref === "all") providers.push("megaplay");
+    if (serverPref === "animegg"  || serverPref === "all") providers.push("animegg");
+
+    for (var pi = 0; pi < providers.length; pi++) {
+      var provider = providers[pi];
+      try {
+        var data = await this.apiGet("/watch/" + animeId + "/episode/" + epNum + "/" + provider);
+        if (data.error || (!data.sub && !data.dub)) continue;
+
+        var types = ["sub", "dub"];
+        for (var ti = 0; ti < types.length; ti++) {
+          var type = types[ti];
+          var typeData = data[type];
+          if (!typeData || !typeData.sources) continue;
+
+          // MegaPlay CDN requires hardcoded headers; other providers use what the API returns
+          var apiHeaders = typeData.headers || {};
+          var streamHeaders = provider === "megaplay"
+            ? { "User-Agent": ua, "Referer": "https://megaplay.buzz/", "Origin": "https://megaplay.buzz" }
+            : { "User-Agent": ua, "Referer": apiHeaders["Referer"] || "https://justanime.to/" };
+
+          // Collect subtitles — sort so Crunchyroll > English 2 > other English > rest.
+          // Drop bare "English" when a Crunchyroll track exists (they share the same content).
+          var rawTracks = typeData.subtitles || typeData.tracks || [];
+          var hasCR = false;
+          for (var sti = 0; sti < rawTracks.length; sti++) {
+            if ((rawTracks[sti].label || "").toLowerCase().indexOf("crunchyroll") >= 0) { hasCR = true; break; }
+          }
+          var subtitles = [];
+          var trackOrder = ["crunchyroll", "english 2", "english", ""];
+          for (var oi = 0; oi < trackOrder.length; oi++) {
+            for (var sti = 0; sti < rawTracks.length; sti++) {
+              var track = rawTracks[sti];
+              if (!track.file) continue;
+              if (track.kind && track.kind !== "captions" && track.kind !== "subtitles") continue;
+              var lbl = (track.label || "").toLowerCase();
+              var tier = oi === 0 ? lbl.indexOf("crunchyroll") >= 0
+                       : oi === 1 ? lbl === "english 2"
+                       : oi === 2 ? lbl === "english"
+                       : lbl.indexOf("crunchyroll") < 0 && lbl !== "english 2" && lbl !== "english";
+              if (!tier) continue;
+              // skip bare "English" when Crunchyroll is present — same content, avoid duplicate
+              if (oi === 2 && hasCR) continue;
+              subtitles.push({ file: track.file, label: track.label || "Unknown" });
+            }
+          }
+          if (autoSubs && subtitles.length > 0) subtitles[0].default = true;
+
+          var sources = typeData.sources;
+          for (var si = 0; si < sources.length; si++) {
+            var s = sources[si];
+            var streamUrl = s.url || s.file;
+            if (!streamUrl) continue;
+
+            // For master HLS playlists resolve to absolute variant URLs so
+            // Mangayomi's player gets direct variant URLs. This avoids the
+            // cross-domain Referer propagation issue (mewstream → ovexa).
+            if (s.isM3U8 || streamUrl.indexOf(".m3u8") >= 0) {
+              var variants = await this.resolveMasterPlaylist(streamUrl, streamHeaders);
+              if (variants.length > 0) {
+                for (var vi = 0; vi < variants.length; vi++) {
+                  var v = variants[vi];
+                  var entry = {
+                    url: v.url,
+                    originalUrl: streamUrl,
+                    quality: provider + " " + type.toUpperCase() + " [" + v.quality + "]",
+                    headers: streamHeaders,
+                    subtitles: subtitles,
+                  };
+                  if (type === "dub") dubVideos.push(entry);
+                  else subVideos.push(entry);
+                }
+                continue;
+              }
+              // Already a flat playlist — fall through and use as-is
+            }
+
+            // Non-HLS or flat playlist
+            var qual = (s.quality || "auto");
+            if (qual !== "auto" && !/p$/i.test(qual)) qual += "p";
+            var entry = {
+              url: streamUrl,
+              originalUrl: streamUrl,
+              quality: provider + " " + type.toUpperCase() + " [" + qual + "]",
+              headers: streamHeaders,
+              subtitles: subtitles,
+            };
+            if (type === "dub") dubVideos.push(entry);
+            else subVideos.push(entry);
+          }
+        }
+      } catch (e) {}
+    }
+
+    // anineko: two-step API with ad-poisoning filter — adds clean HLS streams
+    if (serverPref === "anineko" || serverPref === "all") {
+      var nekoResult = await this.getAninekoStreams(animeId, epNum, ua, autoSubs);
+      subVideos = subVideos.concat(nekoResult.subVideos);
+      dubVideos = dubVideos.concat(nekoResult.dubVideos);
+    }
+
+    // Sort highest quality first (1080p → 720p → 360p → auto)
+    function sortByQuality(arr) {
+      return arr.sort(function(a, b) {
+        var qa = parseInt((a.quality.match(/\[(\d+)p\]/) || [0, 0])[1], 10) || 0;
+        var qb = parseInt((b.quality.match(/\[(\d+)p\]/) || [0, 0])[1], 10) || 0;
+        return qb - qa;
+      });
+    }
+    subVideos = sortByQuality(subVideos);
+    dubVideos = sortByQuality(dubVideos);
+
+    var pref = "sub";
+    try { pref = new SharedPreferences().get("justanime_pref_audio") || "sub"; } catch (e) {}
+    if (pref === "dub") {
+      return dubVideos.concat(subVideos);
+    }
+    return subVideos.concat(dubVideos);
+  }
+
+  // ── Preferences ───────────────────────────────────────────────────────────
+
+  getFilterList() {
+    return [];
+  }
+
+  getSourcePreferences() {
+    return [
+      {
+        key: "justanime_pref_server",
+        listPreference: {
+          title: "Preferred server",
+          summary: "Which streaming server to use. MegaPlay is default; AnimeGG is a clean 360p fallback; AniNeko filters out ad-poisoned streams automatically.",
+          valueIndex: 0,
+          entries: ["MegaPlay (default)", "AnimeGG (clean MP4, 360p)", "AniNeko (clean HLS, ad-filtered)", "All servers"],
+          entryValues: ["megaplay", "animegg", "anineko", "all"],
+        },
+      },
+      {
+        key: "justanime_pref_audio",
+        listPreference: {
+          title: "Preferred language",
+          summary: "Primary language to use. If unavailable, the other will be used as fallback.",
+          valueIndex: 0,
+          entries: ["Sub first, Dub fallback", "Dub first, Sub fallback"],
+          entryValues: ["sub", "dub"],
+        },
+      },
+      {
+        key: "justanime_pref_auto_subs",
+        checkBoxPreference: {
+          title: "Auto-enable subtitles",
+          summary: "Automatically activate English subtitles when playing an episode.",
+          value: false,
+        },
+      },
+    ];
+  }
+}
+
+
+const __mangayomiExtension = new DefaultExtension();
+
+function __list(value) {
+  if (!value) return [];
+  if (Array.isArray(value)) return value;
+  if (Array.isArray(value.list)) return value.list;
+  return [];
+}
+
+function __text(value) {
+  return String(value ?? "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+}
+
+async function searchResults(keyword) {
+  const result = await __mangayomiExtension.search(keyword, 1, []);
+  return JSON.stringify(__list(result).map((item) => ({
+    title: __text(item.name || item.title),
+    image: item.imageUrl || item.image || "",
+    href: item.link || item.url || ""
+  })).filter((item) => item.title && item.href));
+}
+
+async function extractDetails(url) {
+  const detail = await __mangayomiExtension.getDetail(url);
+  return JSON.stringify([{
+    description: __text(detail.description || "Not available"),
+    aliases: Array.isArray(detail.genre) ? detail.genre.join(", ") : __text(detail.genre || detail.name || "Not available"),
+    airdate: detail.status != null ? "Status: " + detail.status : "Not available"
+  }]);
+}
+
+async function extractEpisodes(url) {
+  const detail = await __mangayomiExtension.getDetail(url);
+  const chapters = Array.isArray(detail.chapters) ? detail.chapters : [];
+  return JSON.stringify(chapters.map((chapter, index) => {
+    const label = String(chapter.name || chapter.title || "");
+    const parsed = label.match(/(?:episode|ep|capitulo|chapter)\s*([\d.]+)/i)?.[1] || label.match(/\b([\d.]+)\b/)?.[1];
+    return {
+      href: chapter.url || chapter.link || "",
+      number: Number.parseFloat(parsed) || index + 1
+    };
+  }).filter((item) => item.href));
+}
+
+async function extractStreamUrl(url) {
+  const videos = await __mangayomiExtension.getVideoList(url);
+  const streams = __list(videos).map((video) => ({
+    title: video.quality || video.name || video.label || "Stream",
+    streamUrl: video.url || video.originalUrl || video.file || "",
+    url: video.url || video.originalUrl || video.file || "",
+    headers: video.headers || {}
+  })).filter((item) => /^https?:\/\//i.test(item.streamUrl));
+  return JSON.stringify({ streams, subtitles: "" });
 }
