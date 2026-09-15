@@ -1,423 +1,501 @@
-
-class MProvider {
-  constructor() {
-    this.source = typeof mangayomiSources !== "undefined" && Array.isArray(mangayomiSources) ? mangayomiSources[0] : {};
-    globalThis.__mangayomiBaseUrl = this.source.baseUrl || this.source.apiUrl || "";
-  }
-}
-
-class SharedPreferences {
-  get(key) {
-    const defaults = {
-      pref_content_priority: "series",
-      pref_latest_time_window: "day",
-      pref_video_resolution: "1080",
-      autoembed_stream_source_4: "4",
-      autoembed_pref_navtive_subtitle: false,
-      autoembed_split_stream_quality: false,
-      autoembed_pref_subtitle_source_2: "1"
-    };
-    return defaults[key] ?? "";
-  }
-
-  getString(key) {
-    return String(this.get(key) ?? "");
-  }
-
-  getInt(key) {
-    return Number.parseInt(this.get(key), 10) || 0;
-  }
-
-  getBool(key) {
-    return Boolean(this.get(key));
-  }
-}
-
-class Client {
-  async get(url, headers = {}) {
-    const response = await fetchv2(this.normalizeUrl(url), { headers });
-    return {
-      body: await response.text(),
-      statusCode: response.status,
-      headers: Object.fromEntries(response.headers?.entries?.() ?? [])
-    };
-  }
-
-  async post(url, headers = {}, body = null) {
-    const response = await fetchv2(this.normalizeUrl(url), {
-      method: "POST",
-      headers,
-      body
-    });
-    return {
-      body: await response.text(),
-      statusCode: response.status,
-      headers: Object.fromEntries(response.headers?.entries?.() ?? [])
-    };
-  }
-
-  normalizeUrl(url) {
-    const value = String(url ?? "");
-    if (/^https?:\/\//i.test(value)) return value;
-    const base = globalThis.__mangayomiBaseUrl || "";
-    if (!base) return value;
-    return new URL(value, base.endsWith("/") ? base : base + "/").toString();
-  }
-}
-
-
-const mangayomiSources = [
-  {
-    "name": "AnimeHeaven",
-    "id": -1744325818,
-    "lang": "en",
-    "baseUrl": "https://animeheaven.me",
-    "iconUrl": "https://www.google.com/s2/favicons?sz=256&domain=https://animeheaven.me",
-    "typeSource": "single",
-    "itemType": 1,
-    "version": "0.0.7",
-    "pkgPath": "anime/src/en/animeheaven.js",
-    "isManga": false,
-    "isNsfw": false,
-    "hasCloudflare": false,
-    "isFullData": false,
-    "appMinVerReq": "0.5.0",
-    "sourceCodeUrl": "https://raw.githubusercontent.com/Mallyd11/mangayomi-anime-extensions/refs/heads/main/javascript/anime/src/en/animeheaven.js",
-    "dateFormat": "",
-    "dateFormatLocale": "",
-    "additionalParams": "",
-    "sourceCodeLanguage": 1,
-    "notes": "",
-  },
-];
-
-class DefaultExtension extends MProvider {
-  constructor() {
-    super();
-    this.client = new Client();
-  }
-
-  get ua() {
-    return "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36";
-  }
-
-  get headers() {
-    return {
-      "User-Agent": this.ua,
-      "Referer": this.source.baseUrl + "/",
-    };
-  }
-
-  async fetchHtml(path) {
-    var url = path.startsWith("http") ? path : this.source.baseUrl + "/" + path.replace(/^\/+/, "");
-    var res = await this.client.get(url, this.headers);
-    return res.body || "";
-  }
-
-  // Parse a list page (popular.php / new.php / search.php).
-  // Site structure per item:
-  //   <a href="anime.php?CODE"><img src="image.php?CODE"></a>
-  //   <a href="anime.php?CODE">Title Text</a>
-  // Attributes use double quotes; no class on img tags.
-  parseList(html) {
-    var list = [];
-    var seen = {};
-
-    // First pass: build href → imgSrc map from image-anchor elements.
-    var imgMap = {};
-    var imgRx = /<a[^>]+href=["'](anime\.php\?[\w]+)["'][^>]*>\s*<img[^>]+src=["']([^"']+)["']/g;
-    var im;
-    while ((im = imgRx.exec(html)) !== null) {
-      if (!imgMap[im[1]]) imgMap[im[1]] = im[2];
-    }
-
-    // Second pass: find plain-text title anchors and assemble list items.
-    var titleRx = /<a[^>]+href=["'](anime\.php\?[\w]+)["'][^>]*>([^<]{2,120})<\/a>/g;
-    var tm;
-    while ((tm = titleRx.exec(html)) !== null) {
-      var href = tm[1];
-      var name = tm[2].trim();
-      if (!name || seen[href]) continue;
-      seen[href] = true;
-      var imgSrc = imgMap[href] || "";
-      var imageUrl = imgSrc ? (imgSrc.indexOf("http") === 0 ? imgSrc : this.source.baseUrl + "/" + imgSrc) : "";
-      list.push({
-        name: this._decodeHtml(name),
-        link: this.source.baseUrl + "/" + href,
-        imageUrl: imageUrl,
-      });
-    }
-    return list;
-  }
-
-  _decodeHtml(s) {
-    return (s || "")
-      .replace(/&#0*39;|&apos;/g, "'")
-      .replace(/&#0*34;|&quot;/g, '"')
-      .replace(/&#0*38;|&amp;/g, "&")
-      .replace(/&#0*60;|&lt;/g, "<")
-      .replace(/&#0*62;|&gt;/g, ">")
-      .replace(/&nbsp;/g, " ")
-      .replace(/&#(\d+);/g, function(_m, n) { return String.fromCharCode(parseInt(n, 10)); })
-      .replace(/&#x([0-9a-fA-F]+);/g, function(_m, n) { return String.fromCharCode(parseInt(n, 16)); });
-  }
-
-  get supportsLatest() {
-    return true;
-  }
-
-  async getPopular(page) {
-    // The site returns all items on one HTML page. We slice client-side so
-    // Mangayomi only receives 30 items at a time and can load more on scroll.
-    var html = await this.fetchHtml("popular.php");
-    var all = this.parseList(html);
-    var pageSize = 30;
-    var start = (page - 1) * pageSize;
-    var slice = all.slice(start, start + pageSize);
-    return { list: slice, hasNextPage: (start + pageSize) < all.length };
-  }
-
-  async getLatestUpdates(page) {
-    var html = await this.fetchHtml("new.php");
-    var all = this.parseList(html);
-    var pageSize = 30;
-    var start = (page - 1) * pageSize;
-    var slice = all.slice(start, start + pageSize);
-    return { list: slice, hasNextPage: (start + pageSize) < all.length };
-  }
-
-  async search(query, page, filters) {
-    if (page > 1) return { list: [], hasNextPage: false };
-    try {
-      var html = await this.fetchHtml("search.php?s=" + encodeURIComponent(query));
-      return { list: this.parseList(html), hasNextPage: false };
-    } catch (e) {
-      return { list: [], hasNextPage: false };
-    }
-  }
-
-  // Status mapping. AnimeHeaven uses "Currently Airing" / "Finished Airing".
-  statusCode(status) {
-    var s = (status || "").toLowerCase();
-    if (s.includes("finished") || s.includes("completed")) return 1;
-    if (s.includes("not yet") || s.includes("upcoming")) return 4;
-    if (s.includes("airing") || s.includes("ongoing") || s.includes("releasing")) return 0;
-    return 5;
-  }
-
-  async getDetail(url) {
-    var html = await this.fetchHtml(url);
-
-    // Title
-    var name = "";
-    var nameMatch = html.match(/<div class='infotitle c'>([^<]+)<\/div>/);
-    if (nameMatch) name = this._decodeHtml(nameMatch[1].trim());
-
-    // Cover image — detail page uses class='posterimg' for the main poster.
-    // Do NOT match 'coverimg'; those are related-anime thumbnails lower on the page.
-    // Fall back to og:image which always points to the correct art.
-    var imageUrl = "";
-    var posterMatch = html.match(/<img[^>]+class='[^']*posterimg[^']*'[^>]+src='([^']+)'/);
-    if (posterMatch) {
-      var rel = posterMatch[1];
-      imageUrl = rel.indexOf("http") === 0 ? rel : this.source.baseUrl + "/" + rel.replace(/^\/+/, "");
-    }
-    if (!imageUrl) {
-      var og = html.match(/<meta property='og:image' content='([^']+)'/);
-      if (og) imageUrl = og[1];
-    }
-
-    // Description
-    var description = "";
-    var descMatch = html.match(/<div class='infodes c'>([\s\S]*?)<\/div>/);
-    if (descMatch) {
-      description = this._decodeHtml(descMatch[1].replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim());
-    }
-
-    // Genres — every <a class='boxitem ...'> in the tags section is a genre tag.
-    var genre = [];
-    var genreSection = html.match(/<div class='infotags[^']*'[^>]*>([\s\S]*?)<\/div>\s*<div class='infoyear/);
-    if (genreSection) {
-      var gRx = /<a[^>]+href='tags\.php\?[^']+'[^>]*>([^<]+)<\/a>/g;
-      var gm;
-      while ((gm = gRx.exec(genreSection[1])) !== null) {
-        genre.push(this._decodeHtml(gm[1].trim()));
-      }
-    }
-    // Fallback: just look for any tags.php links
-    if (genre.length === 0) {
-      var gRx2 = /<a[^>]+href='tags\.php\?tag=([^']+)'/g;
-      var seen = {};
-      var gm2;
-      while ((gm2 = gRx2.exec(html)) !== null) {
-        var t = decodeURIComponent(gm2[1]);
-        if (!seen[t]) { seen[t] = true; genre.push(t); }
-      }
-    }
-
-    // Status — site shows "Status:" inline followed by an inline div.
-    // "Episodes:" 11 etc. are in inline divs after labels. Use "Status" label if present.
-    var status = 5;
-    var statusBlock = html.match(/Status[\s\S]{0,40}?<div[^>]+class='inline c2'>([^<]+)</);
-    if (statusBlock) status = this.statusCode(statusBlock[1]);
-    else {
-      // If no status label, infer: if "Episodes" count appears followed by total, treat as completed; else default unknown
-      // Site mostly shows finished anime; default to 5 (UNKNOWN) when not stated.
-    }
-
-    // Episodes — every anchor with onclick="gatea(...)" is an episode.
-    var chapters = [];
-    var epRx = /<a[^>]*onclick='gatea\(\\?["']([a-f0-9]+)\\?["']\)'[^>]*>([\s\S]*?)<\/a>/g;
-    var em;
-    while ((em = epRx.exec(html)) !== null) {
-      var hash = em[1];
-      var body = em[2];
-      var numMatch = body.match(/watch2[^>]*>(\d+(?:\.\d+)?)/);
-      var epNum = numMatch ? numMatch[1] : String(chapters.length + 1);
-      chapters.push({
-        name: "Episode " + epNum,
-        url: hash, // chapter URL is just the gate cookie key
-      });
-    }
-    // Latest episode is usually first in the source; reverse so episode 1 is at the
-    // bottom (Mangayomi convention: most recent at top).
-    // The site already lists newest first, so no reverse needed.
-
-    return {
-      name: name,
-      imageUrl: imageUrl,
-      description: description,
-      genre: genre,
-      status: status,
-      link: url,
-      chapters: chapters,
-    };
-  }
-
-  // Fetch the gate.php page for an episode and pull every video URL out of it.
-  async getVideoList(url) {
-    var hash = url; // we stored just the hash as the chapter URL
-    var streams = [];
-
-    var refer = this.source.baseUrl + "/anime.php";
-    var headers = {
-      "User-Agent": this.ua,
-      "Referer": refer,
-      "Cookie": "key=" + hash,
-    };
-    var res;
-    try {
-      res = await this.client.get(this.source.baseUrl + "/gate.php", headers);
-    } catch (e) {
-      return streams;
-    }
-    var html = res.body || "";
-
-    // Pull every distinct mp4 URL. Different subdomains rotate per refresh, but
-    // each page lists ax/ct/ck etc. as fallbacks. We surface them as quality options.
-    var seen = {};
-    var rx = /['"](https?:\/\/[\w\-]+\.animeheaven\.me\/video\.mp4\?[^'"\s]+)['"]/g;
-    var m;
-    // The video CDN validates access via the token embedded in the URL query
-    // string, not via cookies. Sending only UA + Referer keeps the request
-    // clean and avoids any cookie-related rejection by the CDN or downloader.
-    var streamHeaders = {
-      "User-Agent": this.ua,
-      "Referer": this.source.baseUrl + "/",
-    };
-    while ((m = rx.exec(html)) !== null) {
-      var u = m[1];
-      // The player embeds three kinds of URL suffix:
-      //   &error  → Server 2 fallback
-      //   &error2 → Server 3 fallback
-      //   &d      → "download alias" — INTENTIONALLY omits the access token,
-      //             making it a different (broken) URL that returns HTTP 404.
-      //             Skip it; the full-token Server 1–3 URLs are downloadable.
-      if (/&d(\b|$)/.test(u)) continue;
-
-      // Strip &error / &error2 to get the clean URL with the access token.
-      var clean = u.replace(/&error2?$/, "");
-      if (seen[clean]) continue;
-      seen[clean] = true;
-
-      // Label by suffix so users can pick a fallback if the primary fails.
-      var label;
-      if (/&error2(\b|$)/.test(u)) label = "Server 3";
-      else if (/&error(\b|$)/.test(u)) label = "Server 2";
-      else label = "Server 1";
-
-      streams.push({
-        url: clean,
-        originalUrl: clean,
-        quality: label,
-        headers: streamHeaders,
-        subtitles: [],
-      });
-    }
-    return streams;
-  }
-
-  getFilterList() {
-    return [];
-  }
-
-  getSourcePreferences() {
-    return [];
-  }
-}
-
-
-const __mangayomiExtension = new DefaultExtension();
-
-function __list(value) {
-  if (!value) return [];
-  if (Array.isArray(value)) return value;
-  if (Array.isArray(value.list)) return value.list;
-  return [];
-}
-
-function __text(value) {
-  return String(value ?? "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
-}
+//Thanks ibro for the TMDB search!
 
 async function searchResults(keyword) {
-  const result = await __mangayomiExtension.search(keyword, 1, []);
-  return JSON.stringify(__list(result).map((item) => ({
-    title: __text(item.name || item.title),
-    image: item.imageUrl || item.image || "",
-    href: item.link || item.url || ""
-  })).filter((item) => item.title && item.href));
+    try {
+        let transformedResults = [];
+
+        const keywordGroups = {
+            trending: ["!trending", "!hot", "!tr", "!!"],
+            topRatedMovie: ["!top-rated-movie", "!topmovie", "!tm", "??"],
+            topRatedTV: ["!top-rated-tv", "!toptv", "!tt", "::"],
+            popularMovie: ["!popular-movie", "!popmovie", "!pm", ";;"],
+            popularTV: ["!popular-tv", "!poptv", "!pt", "++"],
+        };
+
+        const skipTitleFilter = Object.values(keywordGroups).flat();
+
+        const shouldFilter = !matchesKeyword(keyword, skipTitleFilter);
+
+        const encodedKeyword = encodeURIComponent(keyword);
+        let baseUrlTemplate = null;
+
+        if (matchesKeyword(keyword, keywordGroups.trending)) {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/trending/all/week?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+        } else if (matchesKeyword(keyword, keywordGroups.topRatedMovie)) {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/top_rated?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+        } else if (matchesKeyword(keyword, keywordGroups.topRatedTV)) {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/top_rated?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+        } else if (matchesKeyword(keyword, keywordGroups.popularMovie)) {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/popular?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+        } else if (matchesKeyword(keyword, keywordGroups.popularTV)) {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/popular?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+        } else {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/search/multi?api_key=9801b6b0548ad57581d111ea690c85c8&query=${encodedKeyword}&include_adult=false&page=${page}`)}&simple=true`;
+        }
+
+        let dataResults = [];
+
+        if (baseUrlTemplate) {
+            const pagePromises = Array.from({ length: 5 }, (_, i) =>
+                soraFetch(baseUrlTemplate(i + 1)).then(r => r.json())
+            );
+            const pages = await Promise.all(pagePromises);
+            dataResults = pages.flatMap(p => p.results || []);
+        }
+
+        if (dataResults.length > 0) {
+            transformedResults = transformedResults.concat(
+                dataResults
+                    .map(result => {
+                        if (result.media_type === "movie" || result.title) {
+                            return {
+                                title: result.title || result.name || result.original_title || result.original_name || "Untitled",
+                                image: result.poster_path ? `https://image.tmdb.org/t/p/w500${result.poster_path}` : "",
+                                href: `movie/${result.id}`,
+                            };
+                        } else if (result.media_type === "tv" || result.name) {
+                            return {
+                                title: result.name || result.title || result.original_name || result.original_title || "Untitled",
+                                image: result.poster_path ? `https://image.tmdb.org/t/p/w500${result.poster_path}` : "",
+                                href: `tv/${result.id}/1/1`,
+                            };
+                        }
+                    })
+                    .filter(Boolean)
+                    .filter(result => result.title !== "Overflow")
+                    .filter(result => result.title !== "My Marriage Partner Is My Student, a Cocky Troublemaker")
+                    .filter(r => !shouldFilter || r.title.toLowerCase().includes(keyword.toLowerCase()))
+            );
+        }
+
+        console.log("Transformed Results: " + JSON.stringify(transformedResults));
+        return JSON.stringify(transformedResults);
+    } catch (error) {
+        console.log("Fetch error in searchResults: " + error);
+        return JSON.stringify([{ title: "Error", image: "", href: "" }]);
+    }
+}
+
+function matchesKeyword(keyword, commands) {
+    const lower = keyword.toLowerCase();
+    return commands.some(cmd => lower.startsWith(cmd.toLowerCase()));
 }
 
 async function extractDetails(url) {
-  const detail = await __mangayomiExtension.getDetail(url);
-  return JSON.stringify([{
-    description: __text(detail.description || "Not available"),
-    aliases: Array.isArray(detail.genre) ? detail.genre.join(", ") : __text(detail.genre || detail.name || "Not available"),
-    airdate: detail.status != null ? "Status: " + detail.status : "Not available"
-  }]);
+    try {
+        if (url.includes('movie')) {
+            const match = url.match(/movie\/([^\/]+)/);
+            if (!match) throw new Error("Invalid URL format");
+
+            const movieId = match[1];
+            const responseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/${movieId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
+            const data = await responseText.json();
+
+            const transformedResults = [{
+                description: data.overview || 'No description available',
+                aliases: `Duration: ${data.runtime ? data.runtime + " minutes" : 'Unknown'}`,
+                airdate: `Released: ${data.release_date ? data.release_date : 'Unknown'}`
+            }];
+
+            return JSON.stringify(transformedResults);
+        } else if (url.includes('tv')) {
+            const match = url.match(/tv\/([^\/]+)/);
+            if (!match) throw new Error("Invalid URL format");
+
+            const showId = match[1];
+            const responseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
+            const data = await responseText.json();
+
+            const transformedResults = [{
+                description: data.overview || 'No description available',
+                aliases: `Duration: ${data.episode_run_time && data.episode_run_time.length ? data.episode_run_time.join(', ') + " minutes" : 'Unknown'}`,
+                airdate: `Aired: ${data.first_air_date ? data.first_air_date : 'Unknown'}`
+            }];
+
+            console.log(JSON.stringify(transformedResults));
+            return JSON.stringify(transformedResults);
+        } else {
+            throw new Error("Invalid URL format");
+        }
+    } catch (error) {
+        console.log('Details error: ' + error);
+        return JSON.stringify([{
+            description: 'Error loading description',
+            aliases: 'Duration: Unknown',
+            airdate: 'Aired/Released: Unknown'
+        }]);
+    }
 }
 
 async function extractEpisodes(url) {
-  const detail = await __mangayomiExtension.getDetail(url);
-  const chapters = Array.isArray(detail.chapters) ? detail.chapters : [];
-  return JSON.stringify(chapters.map((chapter, index) => {
-    const label = String(chapter.name || chapter.title || "");
-    const parsed = label.match(/(?:episode|ep|capitulo|chapter)\s*([\d.]+)/i)?.[1] || label.match(/\b([\d.]+)\b/)?.[1];
-    return {
-      href: chapter.url || chapter.link || "",
-      number: Number.parseFloat(parsed) || index + 1
-    };
-  }).filter((item) => item.href));
+    try {
+        if (url.includes('movie')) {
+            const match = url.match(/movie\/([^\/]+)/);
+
+            if (!match) throw new Error("Invalid URL format");
+
+            const movieId = match[1];
+
+            const movie = [
+                { href: `/movie/${movieId}`, number: 1, title: "Full Movie" }
+            ];
+
+            console.log(movie);
+            return JSON.stringify(movie);
+        } else if (url.includes('tv')) {
+            const match = url.match(/tv\/([^\/]+)\/([^\/]+)\/([^\/]+)/);
+
+            if (!match) throw new Error("Invalid URL format");
+
+            const showId = match[1];
+
+            const showResponseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
+            const showData = await showResponseText.json();
+
+            let allEpisodes = [];
+            for (const season of showData.seasons) {
+                const seasonNumber = season.season_number;
+
+                if (seasonNumber === 0) continue;
+
+                const seasonResponseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}/season/${seasonNumber}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
+                const seasonData = await seasonResponseText.json();
+
+                if (seasonData.episodes && seasonData.episodes.length) {
+                    const episodes = seasonData.episodes.map(episode => ({
+                        href: `/tv/${showId}/${seasonNumber}/${episode.episode_number}`,
+                        number: episode.episode_number,
+                        title: episode.name || ""
+                    }));
+                    allEpisodes = allEpisodes.concat(episodes);
+                }
+            }
+
+            console.log(allEpisodes);
+            return JSON.stringify(allEpisodes);
+        } else {
+            throw new Error("Invalid URL format");
+        }
+    } catch (error) {
+        console.log('Fetch error in extractEpisodes: ' + error);
+        return JSON.stringify([]);
+    }
 }
 
-async function extractStreamUrl(url) {
-  const videos = await __mangayomiExtension.getVideoList(url);
-  const streams = __list(videos).map((video) => ({
-    title: video.quality || video.name || video.label || "Stream",
-    streamUrl: video.url || video.originalUrl || video.file || "",
-    url: video.url || video.originalUrl || video.file || "",
-    headers: video.headers || {}
-  })).filter((item) => /^https?:\/\//i.test(item.streamUrl));
-  return JSON.stringify({ streams, subtitles: "" });
+async function extractStreamUrl(ID) {
+    const startTime = Date.now();
+    let isMovie = ID.includes('movie');
+    let tmdbID, seasonNumber = "1", episodeNumber = "1";
+    let isSeries = false;
+
+    if (isMovie) {
+        tmdbID = ID.replace('/movie/', '').replace('/', '');
+    } else if (ID.includes('tv')) {
+        const parts = ID.split('/');
+        tmdbID = parts[2];
+        seasonNumber = parts[3];
+        episodeNumber = parts[4];
+        isSeries = true;
+    } else {
+        return JSON.stringify({ streams: [] });
+    }
+
+    try {
+        const streamResponse = await ilovefeet(tmdbID, isSeries, seasonNumber, episodeNumber, 'm3u8');
+        const streams = [];
+
+        if (streamResponse && Array.isArray(streamResponse.streams)) {
+            for (const s of streamResponse.streams) {
+                streams.push({
+                    title: s.title,
+                    streamUrl: s.url,
+                    headers: {
+                        "Referer": "https://vidfast.vc/",
+                        "Origin": "https://vidfast.vc"
+                    }
+                });
+            }
+        }
+
+        if (streams.length === 0) {
+            const fallbackUrl = isSeries ? `https://vidlink.pro/tv/${tmdbID}/${seasonNumber}/${episodeNumber}` : `https://vidlink.pro/movie/${tmdbID}`;
+            streams.push({
+                title: "VidFast Backup",
+                streamUrl: fallbackUrl,
+                headers: { "Referer": "https://vidlink.pro/" }
+            });
+        }
+
+        const final = {
+            streams,
+            subtitles: streamResponse ? streamResponse.subtitles || "" : ""
+        };
+
+        const endTime = Date.now();
+        const elapsed = ((endTime - startTime) / 1000).toFixed(2);
+        console.log(`Stream fetched in ${elapsed}s`);
+        return JSON.stringify(final);
+    } catch (e) {
+        console.log("Error in extractStreamUrl: " + e.message);
+        const fallbackUrl = isSeries ? `https://vidlink.pro/tv/${tmdbID}/${seasonNumber}/${episodeNumber}` : `https://vidlink.pro/movie/${tmdbID}`;
+        return JSON.stringify({
+            streams: [{ title: "VidFast Backup", streamUrl: fallbackUrl, headers: { Referer: "https://vidlink.pro/" } }],
+            subtitles: ""
+        });
+    }
+}
+
+async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
+    const headers = options.headers || {};
+    if (!headers["User-Agent"]) {
+        headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
+    }
+    try {
+        return await fetchv2(url, headers, options.method || 'GET', options.body || null);
+    } catch (e) {
+        try {
+            return await fetch(url, options);
+        } catch (error) {
+            return null;
+        }
+    }
+}
+
+async function ilovearmpits(m3u8Url) {
+    try {
+        const headers = {
+            "Accept": "*/*",
+            "User-Agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Mobile Safari/537.36",
+            "Referer": "https://vidfast.vc/",
+            "X-Requested-With": "XMLHttpRequest"
+        };
+
+        const response = await fetchv2(m3u8Url, headers);
+        const playlistContent = await response.text();
+
+        const has4K = playlistContent.includes('RESOLUTION=3840x2160');
+
+        if (!has4K) {
+            console.log(`4K Check for ${m3u8Url}: NO`);
+            return { available: false, url: null };
+        }
+
+        const lines = playlistContent.split('\n');
+        let fourKPath = null;
+        let fourKCount = 0;
+
+        for (let i = 0; i < lines.length; i++) {
+            if (lines[i].includes('RESOLUTION=3840x2160')) {
+                fourKCount++;
+                if (fourKCount === 2 && i + 1 < lines.length) {
+                    fourKPath = lines[i + 1].trim();
+                    break;
+                }
+            }
+        }
+
+        if (!fourKPath && fourKCount === 1) {
+            for (let i = 0; i < lines.length; i++) {
+                if (lines[i].includes('RESOLUTION=3840x2160')) {
+                    if (i + 1 < lines.length) {
+                        fourKPath = lines[i + 1].trim();
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (!fourKPath) {
+            console.log('4K resolution found but could not extract path');
+            return { available: false, url: null };
+        }
+
+        let baseUrl = '';
+        if (m3u8Url.startsWith('https://')) {
+            const afterProtocol = m3u8Url.substring(8);
+            const hostEnd = afterProtocol.indexOf('/');
+            const host = hostEnd !== -1 ? afterProtocol.substring(0, hostEnd) : afterProtocol;
+            baseUrl = 'https://' + host;
+        } else if (m3u8Url.startsWith('http://')) {
+            const afterProtocol = m3u8Url.substring(7);
+            const hostEnd = afterProtocol.indexOf('/');
+            const host = hostEnd !== -1 ? afterProtocol.substring(0, hostEnd) : afterProtocol;
+            baseUrl = 'http://' + host;
+        }
+
+        const full4KUrl = fourKPath.startsWith('http') ? fourKPath : `${baseUrl}${fourKPath}`;
+
+        return { available: true, url: full4KUrl };
+    } catch (error) {
+        console.log('Error checking 4K availability: ' + error);
+        return { available: false, url: null };
+    }
+}
+
+async function ilovefeet(imdbId, isSeries = false, season = null, episode = null, preferredFormat = null) {
+    let baseUrl;
+    if (isSeries) {
+        baseUrl = `https://vidfast.vc/tv/${imdbId}/${season}/${episode}`;
+    } else {
+        baseUrl = `https://vidfast.vc/movie/${imdbId}`;
+    }
+
+    const headers = {
+        "Accept": "*/*",
+        "User-Agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Mobile Safari/537.36",
+        "Referer": baseUrl,
+        "X-Requested-With": "XMLHttpRequest"
+    };
+
+    console.log(`Requesting Base URL: ${baseUrl}`);
+    const pageResponse = await fetchv2(baseUrl, headers);
+    const pageText = await pageResponse.text();
+
+    let match = pageText.match(/\\"(?:en|token)\\":\\"([^"]+)\\"/) ||
+        pageText.match(/"(?:en|token)":"([^"]+)"/) ||
+        pageText.match(/'(?:en|token)':'([^']+)'/) ||
+        pageText.match(/["'](?:en|token)["']:\s*["']([^"']+)["']/);
+
+    if (!match) {
+        throw new Error('Could not find data in page');
+    }
+    const rawData = match[1];
+    console.log("Raw Data extracted:", rawData);
+
+    const apiUrl = `https://enc-dec.app/api/enc-vidfast?text=${encodeURIComponent(rawData)}&version=1`;
+    console.log(`Requesting Decrypt API: ${apiUrl}`);
+    const apiResponse = await soraFetch(apiUrl);
+    const apiData = await apiResponse.json();
+    console.log("API Data from enc-dec.app:", JSON.stringify(apiData));
+
+    if (apiData.status !== 200 || !apiData.result) {
+        throw new Error('Failed to decrypt data via enc-dec.app API');
+    }
+
+    const apiServers = apiData.result.servers;
+    const streamBase = apiData.result.stream;
+    const csrfToken = apiData.result.token;
+
+    if (csrfToken) {
+        headers["X-CSRF-Token"] = csrfToken;
+    }
+
+    console.log(`Requesting Servers URL: ${apiServers}`);
+    const serversResponse = await soraFetch(apiServers, { method: 'POST', headers: headers });
+    const serversEncrypted = await serversResponse.text();
+
+    const decServersResponse = await soraFetch('https://enc-dec.app/api/dec-vidfast', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: serversEncrypted, version: "1" })
+    });
+    const decServersData = await decServersResponse.json();
+
+    if (decServersData.status !== 200 || !decServersData.result) {
+        throw new Error('Failed to decrypt servers data via enc-dec.app API');
+    }
+    const serverList = decServersData.result;
+
+    if (!serverList || serverList.length === 0) {
+        throw new Error('No servers available');
+    }
+
+    const testServer = async (serverObj, index) => {
+        const server = serverObj.data;
+        const apiStream = streamBase + '/' + server;
+
+        try {
+            console.log(`Requesting Stream URL for server ${index}: ${apiStream}`);
+            const streamResponse = await soraFetch(apiStream, { method: 'POST', headers: headers });
+            if (!streamResponse) return null;
+
+            const streamEncrypted = await streamResponse.text();
+            if (!streamEncrypted || streamEncrypted.includes("Attention Required") || streamEncrypted.includes("Cloudflare")) {
+                return null;
+            }
+
+            const decStreamResponse = await soraFetch('https://enc-dec.app/api/dec-vidfast', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: streamEncrypted, version: "1" })
+            });
+            if (!decStreamResponse) return null;
+            const decStreamData = await decStreamResponse.json();
+
+            if (decStreamData.status !== 200 || !decStreamData.result) {
+                return null;
+            }
+
+            let data = decStreamData.result;
+            if (!data.url) {
+                return null;
+            }
+
+            const format = data.url.includes('.m3u8') ? 'm3u8' : data.url.includes('.mpd') ? 'mpd' : 'unknown';
+
+            let englishSubtitles = null;
+            if (data.tracks && Array.isArray(data.tracks)) {
+                const englishTrack = data.tracks.find(track =>
+                    track.label && track.label.toLowerCase().includes('english') && track.file
+                );
+                if (englishTrack) {
+                    englishSubtitles = englishTrack.file;
+                }
+            }
+
+            return {
+                name: serverObj.name || `Server ${index}`,
+                url: data.url,
+                format,
+                subtitles: englishSubtitles
+            };
+        } catch (error) {
+            console.log(`Server ${index} failed: ${error.message}`);
+            return null;
+        }
+    };
+
+    const timeout = (ms) => new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), ms));
+
+    const serverPromises = serverList.map(async (serverObj, index) => {
+        try {
+            return await Promise.race([
+                testServer(serverObj, index),
+                timeout(4000)
+            ]);
+        } catch (e) {
+            console.log(`Server ${index} timed out or failed`);
+            return null;
+        }
+    });
+
+    const results = await Promise.all(serverPromises);
+    const workingStreams = results.filter(r => r !== null);
+
+    const workingStreamsMapped = [];
+    let englishSubs = null;
+
+    for (const item of workingStreams) {
+        let streamUrl = item.url;
+        if (item.name === 'vFast') {
+            const fourKResult = await ilovearmpits(streamUrl);
+            if (fourKResult.available && fourKResult.url) {
+                streamUrl = fourKResult.url;
+            }
+        }
+
+        workingStreamsMapped.push({
+            title: item.name,
+            url: streamUrl
+        });
+
+        if (item.subtitles && !englishSubs) {
+            englishSubs = item.subtitles;
+        }
+    }
+
+    return {
+        streams: workingStreamsMapped,
+        subtitles: englishSubs
+    };
 }
