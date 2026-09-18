@@ -412,11 +412,16 @@ class DefaultExtension extends MProvider {
           var typeData = data[type];
           if (!typeData || !typeData.sources) continue;
 
-          // MegaPlay CDN requires hardcoded headers; other providers use what the API returns
+          // MegaPlay CDN requires hardcoded headers; other providers use what the API returns.
+          // AnimeGG currently returns its required Referer on each source rather than on
+          // the parent audio group, so source-level headers are merged below as well.
           var apiHeaders = typeData.headers || {};
           var streamHeaders = provider === "megaplay"
             ? { "User-Agent": ua, "Referer": "https://megaplay.buzz/", "Origin": "https://megaplay.buzz" }
-            : { "User-Agent": ua, "Referer": apiHeaders["Referer"] || "https://justanime.to/" };
+            : Object.assign({}, apiHeaders, {
+                "User-Agent": apiHeaders["User-Agent"] || ua,
+                "Referer": apiHeaders["Referer"] || "https://www.animegg.org/",
+              });
 
           // Collect subtitles — sort so Crunchyroll > English 2 > other English > rest.
           // Drop bare "English" when a Crunchyroll track exists (they share the same content).
@@ -450,12 +455,17 @@ class DefaultExtension extends MProvider {
             var s = sources[si];
             var streamUrl = s.url || s.file;
             if (!streamUrl) continue;
+            var sourceHeaders = Object.assign({}, streamHeaders, s.headers || {});
+            sourceHeaders["User-Agent"] = sourceHeaders["User-Agent"] || ua;
+            if (provider === "animegg") {
+              sourceHeaders["Referer"] = sourceHeaders["Referer"] || "https://www.animegg.org/";
+            }
 
             // For master HLS playlists resolve to absolute variant URLs so
             // Mangayomi's player gets direct variant URLs. This avoids the
             // cross-domain Referer propagation issue (mewstream → ovexa).
             if (s.isM3U8 || streamUrl.indexOf(".m3u8") >= 0) {
-              var variants = await this.resolveMasterPlaylist(streamUrl, streamHeaders);
+              var variants = await this.resolveMasterPlaylist(streamUrl, sourceHeaders);
               if (variants.length > 0) {
                 for (var vi = 0; vi < variants.length; vi++) {
                   var v = variants[vi];
@@ -463,7 +473,7 @@ class DefaultExtension extends MProvider {
                     url: v.url,
                     originalUrl: streamUrl,
                     quality: provider + " " + type.toUpperCase() + " [" + v.quality + "]",
-                    headers: streamHeaders,
+                    headers: sourceHeaders,
                     subtitles: subtitles,
                   };
                   if (type === "dub") dubVideos.push(entry);
@@ -481,7 +491,7 @@ class DefaultExtension extends MProvider {
               url: streamUrl,
               originalUrl: streamUrl,
               quality: provider + " " + type.toUpperCase() + " [" + qual + "]",
-              headers: streamHeaders,
+              headers: sourceHeaders,
               subtitles: subtitles,
             };
             if (type === "dub") dubVideos.push(entry);
