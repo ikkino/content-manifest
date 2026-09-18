@@ -1,34 +1,34 @@
 async function searchResults(keyword) {
+    const baseUrl = "https://w7.animeland.tv";
     const results = [];
     try {
-        const response = await fetchv2("https://iptv-org.github.io/iptv/index.m3u");
-        const m3uContent = await response.text();
+        const response = await fetchv2(baseUrl + "/?s=" + encodeURIComponent(keyword));
+        const html = await response.text();
 
-        const lines = m3uContent.split('\n');
+        const regex = /<a href="([^"]+)"[^>]*>\s*<img[^>]*src="([^"]*)"[^>]*alt="([^"]*)"/g;
 
-        for (let i = 0; i < lines.length; i++) {
-            const line = lines[i].trim();
+        let match;
+        while ((match = regex.exec(html)) !== null) {
+            let href = match[1].trim();
+            let image = match[2].trim();
+            let title = match[3].trim();
 
-            if (line.startsWith('#EXTINF:')) {
-                const logoMatch = line.match(/tvg-logo="([^"]*)"/);
-                const logo = logoMatch ? logoMatch[1] : '';
-
-                const lastCommaIndex = line.lastIndexOf(',');
-                const fullName = lastCommaIndex !== -1 ? line.substring(lastCommaIndex + 1).trim() : '';
-
-                const streamUrl = (i + 1 < lines.length) ? lines[i + 1].trim() : '';
-
-                const hlsEndings = [".m3u8", ".m3u", ".m3u?", ".m3u8?", ".m3u#", ".m3u8#"];
-                const urlLower = streamUrl.toLowerCase();
-                const isHls = hlsEndings.some(ending => urlLower.endsWith(ending));
-                if (fullName.toLowerCase().includes(keyword.toLowerCase()) && isHls) {
-                    results.push({
-                        title: fullName,
-                        image: logo,
-                        href: streamUrl
-                    });
-                }
+            if (href.startsWith("/")) {
+                href = baseUrl + href;
             }
+            if (image.startsWith("/")) {
+                image = baseUrl + image;
+            }
+
+            if (href === baseUrl + "/" || href.includes("kissanimes.net")) {
+                continue;
+            }
+
+            results.push({
+                href,
+                image,
+                title
+            });
         }
 
         return JSON.stringify(results);
@@ -43,8 +43,16 @@ async function searchResults(keyword) {
 
 async function extractDetails(url) {
     try {
+        const response = await fetchv2(url);
+        const html = await response.text();
+
+        const regex = /<div class="Anime Info">\s*<\/div>\s*([\s\S]*?)<\/div>/i;
+        const match = html.match(regex);
+
+        const description = match ? match[1].trim() : "N/A";
+
         return JSON.stringify([{
-            description: "N/A",
+            description: description,
             aliases: "N/A",
             airdate: "N/A"
         }]);
@@ -60,14 +68,32 @@ async function extractDetails(url) {
 async function extractEpisodes(url) {
     const results = [];
     try {
+        const response = await fetchv2(url);
+        const html = await response.text();
 
-        results.push({
-            href: url,
-            number: 1
-        });
+        const regex = /<li class="play"><a[^>]*href="([^"]+)"[^>]*>([^<]*)<\/a><\/li>/g;
 
+        let match;
+        while ((match = regex.exec(html)) !== null) {
+            const href = match[1].trim();
+            const text = match[2].trim();
 
-        return JSON.stringify(results);
+            let number = null;
+            const urlMatch = href.match(/-episode-(\d+)/i);
+            if (urlMatch) {
+                number = parseInt(urlMatch[1], 10);
+            } else {
+                const textMatch = text.match(/Episode\s*(\d+)/i);
+                if (textMatch) number = parseInt(textMatch[1], 10);
+            }
+
+            results.push({
+                href,
+                number
+            });
+        }
+
+        return JSON.stringify(results.reverse());
     } catch (err) {
         return JSON.stringify([{
             href: "Error",
@@ -78,17 +104,19 @@ async function extractEpisodes(url) {
 
 async function extractStreamUrl(url) {
     try {
-        return JSON.stringify({
-            "streams": [
-                {
-                "title": "Server 1",
-                "streamUrl": url,
-                "headers": {}
-                }
-            ],
-            "subtitle": ""
-            });
+        const response = await fetchv2(url);
+        const html = await response.text();
+        const match = html.match(/file=([a-zA-Z0-9]+\.html)/);
+        if (match) {
+            const filename = match[1];
+            console.log('Filename:' + filename);
+            const videoUrl = `https://animesource.me/cache/${filename}.mp4`;
+            console.log('Video URL:' + videoUrl);
+            return videoUrl;
+        }
+
     } catch (err) {
-        return "https://error.org/";
+        console.error("Error:" + err);
+        return null;
     }
 }

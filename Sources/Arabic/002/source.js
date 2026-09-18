@@ -1,168 +1,134 @@
-const API_URL = "https://khkhkhkh.com/animecp/animeapi65/";
-const API_HEADERS = {
-    "Content-Type": "application/x-www-form-urlencoded; charset=utf-8",
-    "User-Agent": "AnimeCloud/1.0 iOS"
+const SUPABASE_URL = 'https://axfutjtkvqjdhooxrwjn.supabase.co/rest/v1/anime_mapping';
+const SUPABASE_KEY = 'sb_publishable_x_O6uBy2QHZTg5r8D7H3kQ_2cXuZsEe';
+
+const GENRES = {
+    'Action': 'أكشن', 'Adventure': 'مغامرة', 'Comedy': 'كوميديا', 'Drama': 'دراما',
+    'Fantasy': 'فانتازيا', 'Horror': 'رعب', 'Mystery': 'غموض', 'Psychological': 'نفسي',
+    'Romance': 'رومانسي', 'Sci-Fi': 'خيال علمي', 'Slice of Life': 'حياة يومية',
+    'Sports': 'رياضة', 'Supernatural': 'خارق', 'Thriller': 'إثارة', 'Mecha': 'ميكا',
+    'Music': 'موسيقى', 'Ecchi': 'إيتشي', 'Hentai': 'هنتاي', 'Demons': 'شياطين',
+    'Game': 'ألعاب', 'Historical': 'تاريخي', 'Josei': 'جوسيي', 'Kids': 'أطفال',
+    'Magic': 'سحر', 'Martial Arts': 'فنون قتالية', 'Military': 'عسكري', 'Parody': 'باروديا',
+    'Police': 'شرطة', 'Samurai': 'ساموراي', 'School': 'مدرسة', 'Seinen': 'سينين',
+    'Shoujo': 'شوجو', 'Shounen': 'شونين', 'Space': 'فضاء', 'Super Power': 'قوى خارقة',
+    'Vampire': 'مصاصو دماء', 'Yaoi': 'يايوي', 'Yuri': 'يوري', 'Harem': 'حريم',
+    'Isekai': 'إيسيكاي', 'Reincarnation': 'تقمص', 'Survival': 'نجاة'
 };
-let CRYPTO_JS = null;
 
-async function api(command, fields) {
-    const values = Object.assign({ command: command }, fields || {});
-    const body = Object.keys(values).map((key) => encodeURIComponent(key) + "=" + encodeURIComponent(values[key])).join("&");
-    const response = await fetchv2(API_URL, API_HEADERS, "POST", body);
-    return response.json();
-}
+const SEASONS = { WINTER: 'شتاء', SPRING: 'ربيع', SUMMER: 'صيف', FALL: 'خريف' };
 
-function animeId(url) {
-    return String(url).split("?")[0].replace(/\/$/, "").split("/").pop();
-}
+const GQL = 'https://graphql.anilist.co';
+const gql = async (query, variables) => {
+    const r = await soraFetch(GQL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query, variables })
+    });
+    return JSON.parse(await r.text());
+};
 
 async function searchResults(keyword) {
     try {
-        const json = await api("getAllAnime", { cmode: "0", hiddenMode: "1" });
-        const query = keyword.trim().toLocaleLowerCase();
-        const results = (json.result || []).filter((anime) => {
-            return (anime.name + " " + (anime.keywords || "") + " " + (anime.year || "")).toLocaleLowerCase().includes(query);
-        }).slice(0, 50).map((anime) => ({
-            title: anime.name,
-            image: anime.image || "",
-            href: "https://animecloudapp.com/anime/" + anime.id
-        }));
-        return JSON.stringify(results);
-    } catch (error) {
-        console.log("Anime Cloud search error: " + error);
-        return JSON.stringify([]);
+        const { data } = await gql(`
+            query ($s: String) {
+                Page(perPage: 20) {
+                    media(search: $s, type: ANIME, sort: POPULARITY_DESC) {
+                        id title { romaji english } coverImage { extraLarge }
+                    }
+                }
+            }`, { s: keyword });
+        return JSON.stringify(data.Page.media.map(a => ({
+            title: a.title.english || a.title.romaji,
+            image: a.coverImage.extraLarge,
+            href: `https://kawaiianime.cc/anime/${a.id}`
+        })));
+    } catch (e) {
+        return JSON.stringify([{ title: 'Error', image: '', href: '' }]);
     }
 }
 
 async function extractDetails(url) {
     try {
-        const id = animeId(url);
-        const responses = await Promise.all([
-            api("getAnimeDetails", { animeID: id }),
-            api("getAnimeMoreDetails", { animeID: id })
-        ]);
-        const summary = (responses[0].mainResult || [])[0] || {};
-        const more = (responses[1].result || [])[0] || {};
-        return JSON.stringify([{
-            description: more.story || "No description available",
-            aliases: more.genres || "N/A",
-            airdate: [more.year, more.status, summary.age, summary.rank ? "Rating: " + summary.rank : ""].filter(Boolean).join(" | ") || "Unknown"
-        }]);
-    } catch (error) {
-        console.log("Anime Cloud details error: " + error);
-        return JSON.stringify([]);
+        const id = url.match(/\/anime\/(\d+)/)[1];
+        const { data } = await gql(`
+            query ($id: Int) {
+                Media(id: $id, type: ANIME) {
+                    description(asHtml: false) genres episodes duration season seasonYear
+                    studios(isMain: true) { nodes { name } }
+                }
+            }`, { id: parseInt(id) });
+        const m = data.Media;
+        const rawDesc = (m.description || '').replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g, '');
+
+        let description = rawDesc;
+        try {
+            const tr = await soraFetch(`https://kawaiianime.cc/api/translate-description?id=${id}&text=BlaBlaFaaah`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' },
+            });
+            console.log(tr)
+            const trData = JSON.parse(await tr.text());
+            if (trData?.arabic) description = trData.arabic;
+        } catch (_) { }
+
+        return JSON.stringify({
+            description,
+            aliases: `${m.studios.nodes[0]?.name || 'Unknown'} | ${m.genres.map(g => GENRES[g] || g).join(', ')}`,
+            airdate: `${SEASONS[m.season] || ''} ${m.seasonYear || ''} | ${m.episodes || '?'} حلقة | ${m.duration || '?'} دقيقة`
+        });
+    } catch (e) {
+        return JSON.stringify({ description: 'Error', aliases: 'Unknown', airdate: 'Unknown' });
     }
 }
-
 async function extractEpisodes(url) {
     try {
-        const json = await api("getAnimeDetails", { animeID: animeId(url) });
-        const episodes = (json.result || []).map((episode, index) => {
-            const match = episode.name && episode.name.match(/\d+(?:\.\d+)?/);
-            return {
-                href: String(episode.id),
-                number: match ? Number(match[0]) : index + 1,
-                title: episode.name || "Episode " + (index + 1),
-                image: episode.image300 || episode.image170 || ""
-            };
+        const matchId = url.match(/\/anime\/(\d+)/);
+        if (!matchId) return JSON.stringify([]);
+        const id = matchId[1];
+
+        const targetUrl = url.startsWith('http') ? url : `https://kawaii-anime.com/anime/${id}`;
+
+        const res = await soraFetch(targetUrl, {
+            method: 'GET',
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+            }
         });
-        episodes.sort((a, b) => a.number - b.number);
-        return JSON.stringify(episodes);
-    } catch (error) {
-        console.log("Anime Cloud episodes error: " + error);
+        const html = await res.text();
+
+        const match = html.match(/\\?"(?:numberOfEpisodes|episodes)\\?"\s*:\s*(\d+)/);
+        const count = match ? parseInt(match[1], 10) : 0;
+
+        return JSON.stringify(Array.from({ length: count }, (_, i) => ({
+            href: `https://kawaii-anime.com/watch/${id}?num=${i + 1}`,
+            number: i + 1
+        })));
+    } catch (e) {
         return JSON.stringify([]);
     }
 }
 
-async function decryptPlayback(payload) {
-    const encrypted = Uint8Array.from(atob(payload.trim().replace(/^"|"$/g, "")), (character) => character.charCodeAt(0));
-    if (encrypted[0] !== 3 || encrypted.length < 67) throw new Error("Invalid playback payload");
-    const material = await crypto.subtle.importKey(
-        "raw",
-        new TextEncoder().encode("anime5w&f4H&434*"),
-        "PBKDF2",
-        false,
-        ["deriveKey"]
-    );
-    const key = await crypto.subtle.deriveKey(
-        { name: "PBKDF2", salt: encrypted.slice(2, 10), iterations: 10000, hash: "SHA-1" },
-        material,
-        { name: "AES-CBC", length: 256 },
-        false,
-        ["decrypt"]
-    );
-    const plaintext = await crypto.subtle.decrypt(
-        { name: "AES-CBC", iv: encrypted.slice(18, 34) },
-        key,
-        encrypted.slice(34, -32)
-    );
-    const json = JSON.parse(new TextDecoder().decode(plaintext));
-    const source = (json.result || [])[0] || json;
-    if (!source.url) throw new Error("No playable source returned");
-    return source.url;
-}
-
-async function decryptPlaybackWithCryptoJs(payload) {
-    if (!CRYPTO_JS) {
-        const response = await fetchv2("https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js");
-        const load = new Function("module", "exports", "define", await response.text() + ";return this.CryptoJS;");
-        CRYPTO_JS = load();
+async function extractStreamUrl(url) {
+    try {
+        const id = url.match(/\/watch\/(\d+)/)[1];
+        const ep = url.match(/num=(\d+)/)[1];
+        const { data } = JSON.parse(await (await soraFetch(
+            `https://kawaiianime.cc/api/miruro?anilistId=${id}&ep=${ep}&category=sub`,
+            { method: 'GET', headers: { 'User-Agent': 'Mozilla/5.0' } }
+        )).text());
+        return JSON.stringify({
+            streams: data.sources.map(s => ({ title: s.quality, streamUrl: s.url, headers: data.headers || {} })),
+            subtitle: data.subtitles?.find(s => s.lang === 'Arabic')?.url || data.subtitles?.[0]?.url || ''
+        });
+    } catch (e) {
+        return JSON.stringify({ streams: [] });
     }
-
-    const encoded = payload.trim().replace(/^"|"$/g, "");
-    const hex = CRYPTO_JS.enc.Base64.parse(encoded).toString(CRYPTO_JS.enc.Hex);
-    const salt = CRYPTO_JS.enc.Hex.parse(hex.slice(4, 20));
-    const iv = CRYPTO_JS.enc.Hex.parse(hex.slice(36, 68));
-    const ciphertext = CRYPTO_JS.enc.Hex.parse(hex.slice(68, -64));
-    const key = CRYPTO_JS.PBKDF2("anime5w&f4H&434*", salt, {
-        keySize: 8,
-        iterations: 10000,
-        hasher: CRYPTO_JS.algo.SHA1
-    });
-    const plaintext = CRYPTO_JS.AES.decrypt({ ciphertext: ciphertext }, key, {
-        iv: iv,
-        mode: CRYPTO_JS.mode.CBC,
-        padding: CRYPTO_JS.pad.Pkcs7
-    }).toString(CRYPTO_JS.enc.Utf8);
-    const json = JSON.parse(plaintext);
-    const source = (json.result || [])[0] || json;
-    if (!source.url) throw new Error("No playable source returned");
-    return source.url;
 }
 
-async function encryptedStreamUrl(payload) {
-    if (typeof crypto !== "undefined" && crypto.subtle) return decryptPlayback(payload);
-    return decryptPlaybackWithCryptoJs(payload);
-}
-
-async function extractStreamUrl(episodeId) {
-    const streams = [];
-    for (const quality of ["1", "2"]) {
-        try {
-            const response = await fetchv2(
-                API_URL,
-                API_HEADERS,
-                "POST",
-                "command=getVideoURL&epID=" + encodeURIComponent(episodeId) + "&quality=" + quality
-            );
-            const payload = (await response.text()).trim();
-            let streamUrl = "";
-            try {
-                const json = JSON.parse(payload);
-                streamUrl = ((json.result || [])[0] || json).url || "";
-            } catch (_) {
-                streamUrl = await encryptedStreamUrl(payload);
-            }
-            if (streamUrl && !streams.some((stream) => stream.streamUrl === streamUrl)) {
-                streams.push({
-                    title: "Anime Cloud " + (quality === "1" ? "HD" : "SD"),
-                    streamUrl: streamUrl,
-                    headers: {}
-                });
-            }
-        } catch (error) {
-            console.log("Anime Cloud quality " + quality + " error: " + error);
-        }
+async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
+    try {
+        return await fetchv2(url, options.headers ?? {}, options.method ?? 'GET', options.body ?? null);
+    } catch (e) {
+        try { return await fetch(url, options); } catch (_) { return null; }
     }
-    return JSON.stringify({ streams: streams, subtitles: "" });
 }
