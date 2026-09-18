@@ -15,7 +15,10 @@ class SharedPreferences {
       autoembed_stream_source_4: "4",
       autoembed_pref_navtive_subtitle: false,
       autoembed_split_stream_quality: false,
-      autoembed_pref_subtitle_source_2: "1"
+      autoembed_pref_subtitle_source_2: "1",
+      justanime_pref_server: "animegg",
+      justanime_pref_audio: "sub",
+      justanime_pref_auto_subs: false
     };
     return defaults[key] ?? "";
   }
