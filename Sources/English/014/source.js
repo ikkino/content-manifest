@@ -1,460 +1,246 @@
-// ==========================================
-// ⚙️ SORA MODULE — VIDHAWK
-// ==========================================
-// VidHawk (vidhawk.buzz) indexes its anime by AniList id. The catalogue
-// therefore comes straight from AniList's public API, and playback from
-// VidHawk's own internal chain:
-//   1. /api/stream/race?...   -> {winner, ticket, servers:[{id,label,ticket}]}
-//   2. /api/play?t=<ticket>   -> audio tracks (sub/dub/jpn/hin), captions, intro/outro
-// No signed token, no encryption: the tickets are opaque but are simply
-// relayed as they come.
-
-const VH_BASE = "https://vidhawk.buzz";
-const ANILIST_API = "https://graphql.anilist.co";
-
-// Servers the site's player advertises. "race" queries them all at once;
-// "resolve" is the per-server fallback.
-const VH_SERVERS = ["flow", "zuri"];
-
-// Display order for the audio tracks.
-const VH_AUDIO_ORDER = ["sub", "dub", "jpn", "hin"];
-
-const VH_UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36";
-
-// ==========================================
-// 🗄️ SUPABASE TRACKER
-// ==========================================
-const SUPABASE_URL = "https://qyeisgowjisqbatrmqta.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_F68CBjFVPh71U0SdD9BQJg_UJgL9-Fj";
-
-async function sendSupabaseLog(moduleName, actionType, dataPayload) {
-    try {
-        const payload = { module: moduleName, action: actionType, data: dataPayload };
-        const headers = {
-            "Content-Type": "application/json", "apikey": SUPABASE_ANON_KEY,
-            "Authorization": `Bearer ${SUPABASE_ANON_KEY}`, "Prefer": "return=minimal"
-        };
-        if (typeof fetchv2 !== 'undefined') {
-            await fetchv2(`${SUPABASE_URL}/rest/v1/app_logs`, headers, "POST", JSON.stringify(payload));
-        } else {
-            await fetch(`${SUPABASE_URL}/rest/v1/app_logs`, { method: "POST", headers: headers, body: JSON.stringify(payload) });
-        }
-    } catch (e) {
-        console.log(`[Tracker] 🚨 Failed to send to Supabase: ${e.message}`);
-    }
-}
-
-// ==========================================
-// 🌐 NETWORK
-// ==========================================
-
-async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
-    // The host expects every request to carry a User-Agent; fill one in when
-    // the caller did not set one (AniList and TMDB calls, notably).
-    const headers = options.headers || {};
-    if (!headers["User-Agent"]) headers["User-Agent"] = VH_UA;
-    try {
-        if (typeof fetchv2 !== 'undefined') {
-            return await fetchv2(url, headers, options.method ?? 'GET', options.body ?? null);
-        } else {
-            return await fetch(url, { ...options, headers: headers });
-        }
-    } catch (e) {
-        try { return await fetch(url, { ...options, headers: headers }); } catch (error) { return null; }
-    }
-}
-
-async function readBody(response) {
-    if (!response) return "";
-    if (typeof response.text === 'function') return await response.text();
-    if (typeof response.data === 'string') return response.data;
-    return "";
-}
-
-async function vhGetJson(path, referer) {
-    const headers = {
-        "User-Agent": VH_UA,
-        "Accept": "application/json",
-        "Referer": referer || `${VH_BASE}/`
-    };
-    const response = await soraFetch(`${VH_BASE}${path}`, { method: 'GET', headers: headers });
-    const body = await readBody(response);
-    if (!body) return null;
-    try { return JSON.parse(body); } catch (e) { return null; }
-}
-
-async function anilistQuery(query, variables) {
-    const headers = { "Content-Type": "application/json", "Accept": "application/json" };
-    const body = JSON.stringify({ query: query, variables: variables });
-    const response = await soraFetch(ANILIST_API, { method: 'POST', headers: headers, body: body });
-    const text = await readBody(response);
-    if (!text) return null;
-    try {
-        const parsed = JSON.parse(text);
-        return parsed && parsed.data ? parsed.data : null;
-    } catch (e) { return null; }
-}
-
-function cleanText(html) {
-    if (!html) return "";
-    return String(html)
-        .replace(/<br\s*\/?>/gi, ' ')
-        .replace(/<[^>]+>/g, '')
-        .replace(/&quot;/g, '"').replace(/&#039;/g, "'").replace(/&amp;/g, '&')
-        .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&nbsp;/g, ' ')
-        .replace(/\s+/g, ' ')
-        .trim();
-}
-
-// ==========================================
-// 🔍 SEARCH
-// ==========================================
-
-const SEARCH_QUERY = `query ($q: String) {
-  Page(page: 1, perPage: 30) {
-    media(search: $q, type: ANIME, sort: SEARCH_MATCH, isAdult: false) {
-      id
-      title { romaji english native }
-      coverImage { large medium }
-      format
-      seasonYear
-    }
-  }
-}`;
-
 async function searchResults(keyword) {
-    console.log(`[Search] 🔍 VidHawk — searching for "${keyword}"`);
     try {
-        const data = await anilistQuery(SEARCH_QUERY, { q: keyword });
-        const media = data && data.Page && Array.isArray(data.Page.media) ? data.Page.media : [];
+        const encodedKeyword = encodeURIComponent(keyword);
+        const responseText = await soraFetch(`https://aniwaves.ru/filter?keyword=${encodedKeyword}`);
+        const html = await responseText.text();
+
+        const regex = /<div\s+class="item\s*">[\s\S]*?<a\s+href="([^"]+)">[\s\S]*?<img\s+src="([^"]+)"[^>]*>[\s\S]*?<a\s+class="name\s+d-title"[^>]*>([^<]+)<\/a>/g;
 
         const results = [];
-        for (const item of media) {
-            if (!item || !item.id) continue;
-            const title = (item.title && (item.title.english || item.title.romaji || item.title.native)) || `AniList ${item.id}`;
-            const image = (item.coverImage && (item.coverImage.large || item.coverImage.medium)) || "";
+        let match;
+
+        while ((match = regex.exec(html)) !== null) {
+            if (match[3].trim() === "Omiai Aite Wa Oshiego Tsuyokina Mondaiji") {
+                continue;
+            }
+
             results.push({
-                title: item.seasonYear ? `${title} (${item.seasonYear})` : title,
-                image: image,
-                href: `vidhawk://${item.id}`
+                title: match[3].trim(),
+                image: match[2].trim(),
+                href: `https://aniwaves.ru${match[1].trim()}`
             });
         }
 
-        console.log(`[Search] ✅ ${results.length} result(s)`);
-        sendSupabaseLog("VidHawk", "SEARCH", {
-            keyword: keyword,
-            results_count: results.length,
-            top_results: results.slice(0, 3).map(r => r.title)
-        });
         return JSON.stringify(results);
     } catch (error) {
-        sendSupabaseLog("VidHawk", "ERROR", { keyword: keyword, error_message: String(error) });
-        return JSON.stringify([]);
+        console.log('Fetch error in searchResults:', error);
+        return JSON.stringify([{ title: 'Error', image: '', href: '' }]);
     }
 }
-
-// ==========================================
-// 📖 DETAILS
-// ==========================================
-
-const DETAILS_QUERY = `query ($id: Int) {
-  Media(id: $id, type: ANIME) {
-    id
-    title { romaji english native }
-    description
-    episodes
-    status
-    seasonYear
-    averageScore
-    genres
-    synonyms
-    startDate { year month day }
-    nextAiringEpisode { episode }
-  }
-}`;
 
 async function extractDetails(url) {
-    const anilistId = url.replace('vidhawk://', '');
-    console.log(`[Details] 📖 VidHawk — AniList entry ${anilistId}`);
-    sendSupabaseLog("VidHawk", "DETAILS", { media_url: `${VH_BASE}/embed/ani/${anilistId}/1/sub` });
-
     try {
-        const data = await anilistQuery(DETAILS_QUERY, { id: parseInt(anilistId, 10) });
-        const media = data && data.Media ? data.Media : null;
-        if (!media) {
-            return JSON.stringify([{ description: 'Entry not found on AniList.', aliases: '', airdate: '' }]);
-        }
+        const responseText = await soraFetch(url);
+        const html = await responseText.text();
 
-        const description = cleanText(media.description) || "No synopsis available.";
+        // Description: match synopsis div, then find any div with class containing "content"
+        const descriptionMatch = html.match(/<div class="synopsis mb-3">[\s\S]*?<div[^>]*class="[^"]*content[^"]*"[^>]*>(.*?)<\/div>/);
+        let description = descriptionMatch ? descriptionMatch[1].trim() : 'No description available';
 
-        const aliasParts = [];
-        if (media.averageScore) aliasParts.push(`Score: ${media.averageScore}/100`);
-        if (Array.isArray(media.genres) && media.genres.length) aliasParts.push(media.genres.join(', '));
-        if (Array.isArray(media.synonyms) && media.synonyms.length) aliasParts.push(media.synonyms.slice(0, 3).join(' · '));
+        // Remove possible "Aired, ..." prefix (only on episode pages)
+        description = description.replace(/^Aired,\s+[^,]+,\s*/, '');
 
-        let airdate = media.seasonYear ? `Year: ${media.seasonYear}` : "";
-        const start = media.startDate;
-        if (start && start.year && start.month && start.day) {
-            const mm = String(start.month).padStart(2, '0');
-            const dd = String(start.day).padStart(2, '0');
-            airdate = `${start.year}-${mm}-${dd}`;
-        }
-        if (media.status) airdate = airdate ? `${airdate} · ${media.status}` : media.status;
+        const aliasesMatch = html.match(/<div class="names font-italic mb-2">(.*?)<\/div>/);
+        const aliases = aliasesMatch ? aliasesMatch[1].trim() : 'No aliases available';
 
-        return JSON.stringify([{
-            description: description,
-            aliases: aliasParts.join(' | '),
-            airdate: airdate
-        }]);
+        const airdateMatch = html.match(/Date aired:\s*<span><span[^>]*>(.*?)<\/span>/);
+        const airdate = airdateMatch ? `Aired: ${airdateMatch[1].trim()}` : 'Aired: Unknown';
+
+        const transformedResults = [{
+            description,
+            aliases,
+            airdate
+        }];
+
+        return JSON.stringify(transformedResults);
     } catch (error) {
-        sendSupabaseLog("VidHawk", "ERROR", { media_url: `vidhawk://${anilistId}`, error_message: String(error) });
-        return JSON.stringify([{ description: 'Loading error.', aliases: '', airdate: '' }]);
+        console.log('Details error:', error);
+        return JSON.stringify([{
+            description: 'Error loading description',
+            aliases: 'Duration: Unknown',
+            airdate: 'Aired/Released: Unknown'
+        }]);
     }
 }
-
-// ==========================================
-// 📂 EPISODES
-// ==========================================
 
 async function extractEpisodes(url) {
-    const anilistId = url.replace('vidhawk://', '');
-    console.log(`[Episodes] 📂 VidHawk — episodes of ${anilistId}`);
-
     try {
-        const data = await anilistQuery(DETAILS_QUERY, { id: parseInt(anilistId, 10) });
-        const media = data && data.Media ? data.Media : null;
-        if (!media) return JSON.stringify([]);
+        // Extract series slug from URLs like https://aniwaves.ru/watch/kimetsu-no-yaiba-77717
+        const slugMatch = url.match(/https:\/\/aniwaves\.ru\/watch\/([^\/]+)/);
+        if (!slugMatch) throw new Error("Invalid URL format");
+        const animeSlug = slugMatch[1];
 
-        // An ongoing series does not advertise its episode count; fall back to
-        // the next scheduled episode, minus one.
-        let total = 0;
-        if (typeof media.episodes === 'number' && media.episodes > 0) {
-            total = media.episodes;
-        } else if (media.nextAiringEpisode && media.nextAiringEpisode.episode > 1) {
-            total = media.nextAiringEpisode.episode - 1;
+        // First hyphen-separated word for fallback (e.g., "kimetsu")
+        const firstWordMatch = animeSlug.match(/^([^-]+)/);
+        const firstSlugWord = firstWordMatch ? firstWordMatch[1] : animeSlug;
+
+        const responseText = await soraFetch(url);
+        const html = await responseText.text();
+
+        // Capture episode count: "Episodes: <span>26 / 26</span>" -> take first number
+        const episodesMatch = html.match(/Episodes:\s*<span>(\d+)/);
+        const episodesCount = episodesMatch ? parseInt(episodesMatch[1], 10) : 0;
+
+        const transformedResults = [];
+
+        if (episodesCount > 0) {
+            for (let i = 1; i <= episodesCount; i++) {
+                transformedResults.push({
+                    href: `${url}/episode/${i}`,
+                    number: i
+                });
+            }
+        } else {
+            // Fallback search using the API
+            const apiUrl = `https://aniwaves.ru/filter?keyword=${encodeURIComponent(firstSlugWord)}`;
+            const searchResponse = await soraFetch(apiUrl);
+            const searchHtml = await searchResponse.text();
+
+            // Match a search result card: <a href="/watch/..." ...><span>Ep: 26</span>
+            const regex = new RegExp(
+                `<a\\s+[^>]*href="\\/watch\\/${animeSlug}"[^>]*>[\\s\\S]*?<span>Ep:\\s*(\\d+)<\\/span>`,
+                'i'
+            );
+            const epMatch = searchHtml.match(regex);
+            const fallbackCount = epMatch ? parseInt(epMatch[1], 10) : 0;
+
+            for (let i = 1; i <= fallbackCount; i++) {
+                transformedResults.push({
+                    href: `${url}/episode/${i}`,
+                    number: i
+                });
+            }
         }
-        if (total <= 0) total = 1;
 
-        const episodes = [];
-        for (let n = 1; n <= total; n++) {
-            episodes.push({
-                href: `vidhawk-play://${anilistId}/${n}`,
-                number: n,
-                season: 1,
-                title: `Episode ${n}`
-            });
-        }
-
-        console.log(`[Episodes] ✅ ${episodes.length} episode(s)`);
-        return JSON.stringify(episodes);
+        return JSON.stringify(transformedResults);
     } catch (error) {
-        sendSupabaseLog("VidHawk", "ERROR", { media_url: `vidhawk://${anilistId}`, error_message: String(error) });
+        console.log('Fetch error in extractEpisodes:', error);
         return JSON.stringify([]);
     }
-}
-
-// ==========================================
-// 🎬 PLAYBACK
-// ==========================================
-
-// Without "stream=1", /api/stream/race answers in one block in ~1 s:
-//   {winner, ticket, servers:[{id,label,ticket,ok,ms}], anilistId, malId, episode}
-// With "stream=1" it holds the connection open and drips NDJSON
-// ({"type":"row","row":{…}}) — unusable from Sora, which waits for the end of
-// the body. So we query the block variant, while still tolerating NDJSON in
-// case the server reverts to it.
-function parseRaceRows(body) {
-    const rows = [];
-    if (!body) return rows;
-
-    // Block variant: a single JSON object with a "servers" array.
-    try {
-        const whole = JSON.parse(body);
-        if (whole && Array.isArray(whole.servers)) {
-            for (const server of whole.servers) {
-                if (server && server.ticket) rows.push(server);
-            }
-            if (rows.length === 0 && whole.ticket) {
-                rows.push({ id: whole.winner || 'flow', label: whole.winner || 'VidHawk', ticket: whole.ticket, ok: true });
-            }
-            return rows;
-        }
-    } catch (e) { /* not a single object: try NDJSON */ }
-
-    for (const line of String(body).split('\n')) {
-        const trimmed = line.trim();
-        if (!trimmed || trimmed.charAt(0) !== '{') continue;
-        let event;
-        try { event = JSON.parse(trimmed); } catch (e2) { continue; }
-        if (event && event.type === 'row' && event.row && event.row.ticket) {
-            rows.push(event.row);
-        }
-    }
-    return rows;
-}
-
-async function raceTickets(anilistId, epNumber, referer) {
-    const query = `episode=${encodeURIComponent(epNumber)}&audio=sub&server=flow&anilistId=${encodeURIComponent(anilistId)}`;
-    const headers = { "User-Agent": VH_UA, "Accept": "application/json", "Referer": referer };
-    const response = await soraFetch(`${VH_BASE}/api/stream/race?${query}`, { method: 'GET', headers: headers });
-    const body = await readBody(response);
-
-    const rows = parseRaceRows(body);
-
-    // 403 + {"blocked":true} = the parent host is not allowed to embed VidHawk.
-    if (rows.length === 0 && body && body.indexOf('"blocked"') !== -1) {
-        console.log(`[Player] 🚫 VidHawk refuses to be embedded from this host.`);
-    }
-    return rows;
-}
-
-async function resolveTicket(anilistId, epNumber, server, referer) {
-    const query = `episode=${encodeURIComponent(epNumber)}&server=${encodeURIComponent(server)}&audio=sub&fast=1&anilistId=${encodeURIComponent(anilistId)}`;
-    const data = await vhGetJson(`/api/stream/resolve?${query}`, referer);
-    if (!data || !data.ticket) return null;
-    return { id: data.server || server, label: data.serverLabel || server, ticket: data.ticket, ok: true };
-}
-
-async function playTicket(ticket, referer) {
-    return await vhGetJson(`/api/play?t=${encodeURIComponent(ticket)}`, referer);
-}
-
-function audioRank(id) {
-    const index = VH_AUDIO_ORDER.indexOf(String(id || '').toLowerCase());
-    return index === -1 ? VH_AUDIO_ORDER.length : index;
 }
 
 async function extractStreamUrl(url) {
-    const startTime = Date.now();
-    const parts = url.replace('vidhawk-play://', '').split('/');
-    const anilistId = parts[0];
-    const epNumber = parts.length > 1 ? parts[1] : '1';
-    const referer = `${VH_BASE}/embed/ani/${anilistId}/${epNumber}/sub`;
-
-    console.log(`[Player] 🎬 VidHawk — AniList ${anilistId}, episode ${epNumber}`);
-
-    const streams = [];
-    const allSubtitles = [];
-    const failedLinks = [];
-    let bestSubtitle = "";
-    let bestSubtitleHeaders = {};
-
     try {
-        const rows = await raceTickets(anilistId, epNumber, referer);
-        console.log(`[Player] 🏁 race: ${rows.length} server(s)`);
+        console.log("Input URL: " + url);
+        const match = url.match(/https:\/\/aniwaves\.ru\/watch\/([^\/]+)\/episode\/(\d+)/);
+        if (!match) throw new Error("Invalid URL format – expected /watch/SLUG/episode/NUM");
 
-        // Per-server fallback if the race came back empty.
-        if (rows.length === 0) {
-            for (const server of VH_SERVERS) {
-                const row = await resolveTicket(anilistId, epNumber, server, referer);
-                if (row) rows.push(row);
-                else failedLinks.push({ server_name: server, url: `${VH_BASE}/api/stream/resolve`, reason: "No ticket returned" });
-            }
-            console.log(`[Player] 🔁 resolve: ${rows.length} server(s)`);
-        }
+        const animeSlug = match[1];
+        const episodeNumber = match[2];
+        console.log("Anime slug: " + animeSlug + ", Episode: " + episodeNumber);
 
-        const seenTickets = new Set();
-        const seenStreams = new Set();
+        const idMatch = animeSlug.match(/(\d+)$/);
+        if (!idMatch) throw new Error("Could not extract show ID from slug");
+        const showId = idMatch[1];
+        console.log("Show ID: " + showId);
 
-        for (const row of rows) {
-            if (!row.ticket || seenTickets.has(row.ticket)) continue;
-            seenTickets.add(row.ticket);
+        const headers = { 'Referer': url };
 
-            const serverLabel = row.label || row.id || "VidHawk";
+        // Step 1: Get server list (JSON -> extract result HTML)
+        const listUrl = "https://aniwaves.ru/ajax/server/list?servers=" + showId + "&eps=" + episodeNumber;
+        console.log("Fetching server list: " + listUrl);
+        const listResp = await soraFetch(listUrl, { headers });
+        if (!listResp) throw new Error("No response for server list");
+        const rawText = await listResp.text();
+        const listJson = JSON.parse(rawText);
+        const html = listJson.result;                     // the actual HTML
+        console.log("Server list HTML (first 500 chars): " + html.substring(0, 500));
 
-            let payload;
+        // Extract first sub link-id (overall first)
+        const subIdMatch = html.match(/data-link-id="([^"]+)"/);
+        console.log("Sub ID match: " + (subIdMatch ? subIdMatch[1] : "null"));
+        // Extract first dub link-id inside the dub block
+        const dubIdMatch = html.match(/<div class="type" data-type="dub">[\s\S]*?data-link-id="([^"]+)"/);
+        console.log("Dub ID match: " + (dubIdMatch ? dubIdMatch[1] : "null"));
+
+        const subUrls = [];
+        const dubUrls = [];
+
+        async function resolveM3u8(linkId, type) {
+            console.log("\n--- Resolving " + type + " stream for link ID: " + linkId + " ---");
             try {
-                payload = await playTicket(row.ticket, referer);
+                // Step 2: get embed URL
+                const srcUrl = "https://aniwaves.ru/ajax/sources?id=" + encodeURIComponent(linkId) + "&asi=0&autoPlay=0";
+                console.log("Fetching source: " + srcUrl);
+                const srcResp = await soraFetch(srcUrl, { headers });
+                if (!srcResp) { console.log("No response for source API"); return null; }
+                const srcText = await srcResp.text();
+                console.log("Source API response (first 500 chars): " + srcText.substring(0, 500));
+                const srcData = JSON.parse(srcText);
+                const embedUrl = srcData?.result?.url;
+                if (!embedUrl) { console.log("No embed URL in source response"); return null; }
+                console.log("Embed URL: " + embedUrl);
+
+                // Step 3: fetch embed page, extract data-id for getSources
+                console.log("Fetching embed page...");
+                const embedResp = await soraFetch(embedUrl, { headers });
+                if (!embedResp) { console.log("No response for embed page"); return null; }
+                const embedHtml = await embedResp.text();
+                console.log("Embed HTML (first 500 chars): " + embedHtml.substring(0, 500));
+
+                // NEW: extract data-id from the player div
+                const dataIdMatch = embedHtml.match(/data-id="([^"]+)"/);
+                if (!dataIdMatch) { console.log("No data-id found in embed page"); return null; }
+                const sourceId = dataIdMatch[1];
+                console.log("getSources ID (data-id): " + sourceId);
+
+                // Step 4: call getSources
+                const getSrcUrl = "https://play.echovideo.ru/embed-1/getSources?id=" + sourceId;
+                console.log("Fetching getSources: " + getSrcUrl);
+                const getSrcResp = await soraFetch(getSrcUrl, { headers });
+                if (!getSrcResp) { console.log("No response for getSources"); return null; }
+                const getSrcText = await getSrcResp.text();
+                console.log("getSources response: " + getSrcText);
+                const srcData2 = JSON.parse(getSrcText);
+                const sources = srcData2?.sources;
+                if (!sources) { console.log("No 'sources' field in getSources response"); return null; }
+                console.log("Found M3U8: " + sources);
+                return sources;
             } catch (e) {
-                failedLinks.push({ server_name: serverLabel, url: `${VH_BASE}/api/play`, reason: e.message });
-                continue;
-            }
-
-            if (!payload || !Array.isArray(payload.tracks) || payload.tracks.length === 0) {
-                failedLinks.push({ server_name: serverLabel, url: `${VH_BASE}/api/play`, reason: "No track in the response" });
-                continue;
-            }
-
-            const tracks = payload.tracks.slice().sort((a, b) => audioRank(a.id) - audioRank(b.id));
-
-            for (const track of tracks) {
-                const src = track.src || track.url || "";
-                if (!src || seenStreams.has(src)) continue;
-                seenStreams.add(src);
-
-                const audioLabel = (track.label || track.id || "Audio").toUpperCase();
-                streams.push({
-                    title: `VidHawk ${serverLabel} [${audioLabel}]`,
-                    streamUrl: src,
-                    headers: { "Referer": `${VH_BASE}/`, "User-Agent": VH_UA }
-                });
-                console.log(`   -> ${serverLabel} / ${audioLabel}: ${src.slice(0, 80)}…`);
-            }
-
-            // Captions are grouped per audio track under "captions".
-            const captions = payload.captions || {};
-            for (const audioKey of Object.keys(captions)) {
-                const list = captions[audioKey];
-                if (!Array.isArray(list)) continue;
-                for (const caption of list) {
-                    const subUrl = caption.src || caption.url || caption.file || "";
-                    if (!subUrl) continue;
-                    if (allSubtitles.some(s => s.url === subUrl)) continue;
-
-                    const label = caption.label || caption.language || caption.lang || "Unknown";
-                    allSubtitles.push({
-                        url: subUrl,
-                        label: label,
-                        kind: caption.kind || "captions",
-                        headers: { "Referer": `${VH_BASE}/` }
-                    });
-
-                    const lower = String(label).toLowerCase();
-                    const isEnglish = lower.indexOf('eng') !== -1;
-                    const isForced = lower.indexOf('forced') !== -1;
-                    if (bestSubtitle === "" || (isEnglish && !isForced)) {
-                        bestSubtitle = subUrl;
-                        bestSubtitleHeaders = { "Referer": `${VH_BASE}/` };
-                    }
-                }
+                console.log("Error resolving " + type + ": " + e);
+                return null;
             }
         }
 
-        console.log(`-----------------------------------------------------`);
-        console.log(`[Player] 📊 Summary: ${streams.length} link(s), ${allSubtitles.length} subtitle track(s).`);
-
-        sendSupabaseLog("VidHawk", "PLAYER", {
-            media_url: referer,
-            season_number: "1",
-            ep_number: epNumber,
-            streams_found: streams.length,
-            subtitles_found: bestSubtitle !== "",
-            allSubtitles_count: allSubtitles.length,
-            execution_time_ms: Date.now() - startTime,
-            servers: streams.map(s => ({ nom: s.title, lien: s.streamUrl }))
-        });
-
-        if (failedLinks.length > 0) {
-            sendSupabaseLog("VidHawk", "UNSUPPORTED_HOSTS", {
-                media_url: referer,
-                season_number: "1",
-                ep_number: epNumber,
-                failed_count: failedLinks.length,
-                failed_links: failedLinks
-            });
+        if (subIdMatch) {
+            const m3u8 = await resolveM3u8(subIdMatch[1], "SUB");
+            if (m3u8) subUrls.push(m3u8);
         }
 
-        if (streams.length === 0) return JSON.stringify({ type: "none" });
+        if (dubIdMatch) {
+            const m3u8 = await resolveM3u8(dubIdMatch[1], "DUB");
+            if (m3u8) dubUrls.push(m3u8);
+        }
 
-        return JSON.stringify({
-            type: "servers",
-            streams: streams,
-            subtitles: bestSubtitle,
-            subtitlesHeaders: bestSubtitleHeaders,
-            allSubtitles: allSubtitles
-        });
+        console.log("\nFinal SUB URLs: " + JSON.stringify(subUrls));
+        console.log("Final DUB URLs: " + JSON.stringify(dubUrls));
+
+        const streams = [];
+        if (subUrls[0]) streams.push({ title: "SUB", streamUrl: subUrls[0], headers: { 'Referer': url } });
+        if (dubUrls[0]) streams.push({ title: "DUB", streamUrl: dubUrls[0], headers: { 'Referer': url } });
+
+        const result = { streams, subtitles: "" };
+        console.log("Result: " + JSON.stringify(result));
+        return JSON.stringify(result);
+
     } catch (error) {
-        sendSupabaseLog("VidHawk", "ERROR", { media_url: referer, season_number: "1", error_message: String(error) });
-        return JSON.stringify({ type: "none" });
+        console.log("Fetch error in extractStreamUrl: " + error);
+        const result = { streams: "", subtitles: "" };
+        console.log("Error result: " + JSON.stringify(result));
+        return JSON.stringify(result);
+    }
+}
+
+// extractStreamUrl(`https://aniwaves.ru/anime-watch/one-piece/ep-1`);
+
+async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
+    try {
+        return await fetchv2(url, options.headers ?? {}, options.method ?? 'GET', options.body ?? null);
+    } catch(e) {
+        try {
+            return await fetch(url, options);
+        } catch(error) {
+            return null;
+        }
     }
 }

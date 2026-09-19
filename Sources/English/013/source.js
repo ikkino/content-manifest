@@ -1,448 +1,264 @@
-// ==========================================
-// ⚙️ SORA MODULE — ANIMESALT
-// ==========================================
-// animesalt.cx is a WordPress site (DooPlay theme). Nothing is encrypted; the
-// whole chain fits in HTML plus two POSTs:
-//
-//   1. Search    GET  /?s=<text>              -> <article> with /series/<slug>/
-//   2. Seasons   POST /wp-admin/admin-ajax.php
-//                     action=action_select_season&season=<n>&post=<id>
-//                -> the <li> of every episode in that season
-//   3. Episode   GET  /episode/<slug>-<S>x<E>/
-//                -> <iframe src="https://as-cdnNN.top/video/<hash>">
-//                   plus a multi-language player whose links are base64
-//   4. Stream    POST https://as-cdnNN.top/player/index.php?data=<hash>&do=getVideo
-//                     hash=<hash>&r=<referrer>
-//                -> {"hls":true,"videoSource":"…/master.m3u8?md5=…&expires=…"}
-//
-// The final link is signed (`?md5=…&expires=…`) and **bound to the IP** of the
-// client that called getVideo: nginx's `secure_link` takes `remote_addr` into
-// its hash. From a player this is transparent — the same machine makes both
-// calls. From a rotating-IP sandbox the stream returns 403 about one time in
-// fifteen, when both requests happen to land on the same egress: the chain up
-// to `videoSource` is therefore verified, the final playback is not verifiable
-// from there. Same situation as FireStream (section 15 of DECRYPTORS.md).
-//
-// Practical consequence: do not cache the link, and consume it immediately
-// after getVideo.
-
-const AS_BASE = "https://animesalt.cx";
-
-const AS_UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36";
-
-// ==========================================
-// 🗄️ SUPABASE TRACKER
-// ==========================================
-const SUPABASE_URL = "https://qyeisgowjisqbatrmqta.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_F68CBjFVPh71U0SdD9BQJg_UJgL9-Fj";
-
-async function sendSupabaseLog(moduleName, actionType, dataPayload) {
-    try {
-        const payload = { module: moduleName, action: actionType, data: dataPayload };
-        const headers = {
-            "Content-Type": "application/json", "apikey": SUPABASE_ANON_KEY,
-            "Authorization": `Bearer ${SUPABASE_ANON_KEY}`, "Prefer": "return=minimal"
-        };
-        if (typeof fetchv2 !== 'undefined') {
-            await fetchv2(`${SUPABASE_URL}/rest/v1/app_logs`, headers, "POST", JSON.stringify(payload));
-        } else {
-            await fetch(`${SUPABASE_URL}/rest/v1/app_logs`, { method: "POST", headers: headers, body: JSON.stringify(payload) });
-        }
-    } catch (e) {
-        console.log(`[Tracker] 🚨 Failed to send to Supabase: ${e.message}`);
-    }
-}
-
-// ==========================================
-// 🌐 NETWORK
-// ==========================================
-
-async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
-    // The host expects every request to carry a User-Agent; fill one in when
-    // the caller did not set one (AniList and TMDB calls, notably).
-    const headers = options.headers || {};
-    if (!headers["User-Agent"]) headers["User-Agent"] = AS_UA;
-    try {
-        if (typeof fetchv2 !== 'undefined') {
-            return await fetchv2(url, headers, options.method ?? 'GET', options.body ?? null);
-        } else {
-            return await fetch(url, { ...options, headers: headers });
-        }
-    } catch (e) {
-        try { return await fetch(url, { ...options, headers: headers }); } catch (error) { return null; }
-    }
-}
-
-async function readBody(response) {
-    if (!response) return "";
-    if (typeof response.text === 'function') return await response.text();
-    if (typeof response.data === 'string') return response.data;
-    return "";
-}
-
-async function asGet(url, referer) {
-    const headers = {
-        "User-Agent": AS_UA,
-        "Accept": "text/html,application/xhtml+xml,*/*;q=0.8",
-        "Referer": referer || `${AS_BASE}/`
-    };
-    return await readBody(await soraFetch(url, { method: 'GET', headers: headers }));
-}
-
-async function asPost(url, referer, body) {
-    const headers = {
-        "User-Agent": AS_UA,
-        "Accept": "*/*",
-        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-        "X-Requested-With": "XMLHttpRequest",
-        "Referer": referer
-    };
-    return await readBody(await soraFetch(url, { method: 'POST', headers: headers, body: body }));
-}
-
-function decodeEntities(text) {
-    if (!text) return "";
-    return String(text)
-        .replace(/&#8217;|&#039;|&#39;|&rsquo;/g, "'")
-        .replace(/&#8211;|&ndash;/g, '–')
-        .replace(/&quot;|&#34;/g, '"')
-        .replace(/&amp;/g, '&')
-        .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&nbsp;/g, ' ')
-        .replace(/&#(\d+);/g, (m, code) => String.fromCharCode(parseInt(code, 10)))
-        .trim();
-}
-
-function stripTags(html) {
-    return decodeEntities(String(html || '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' '));
-}
-
-// ==========================================
-// 🔍 SEARCH
-// ==========================================
+// thank you ibro for the search i love you!!
 
 async function searchResults(keyword) {
-    console.log(`[Search] 🔍 AnimeSalt — searching for "${keyword}"`);
     try {
-        const html = await asGet(`${AS_BASE}/?s=${encodeURIComponent(keyword)}`, `${AS_BASE}/`);
+        let transformedResults = [];
 
-        const results = [];
-        const seen = new Set();
+        const keywordGroups = {
+            trending: ["!trending", "!hot", "!tr", "!!"],
+            topRatedMovie: ["!top-rated-movie", "!topmovie", "!tm", "??"],
+            topRatedTV: ["!top-rated-tv", "!toptv", "!tt", "::"],
+            popularMovie: ["!popular-movie", "!popmovie", "!pm", ";;"],
+            popularTV: ["!popular-tv", "!poptv", "!pt", "++"],
+        };
 
-        // Each result is an <article> carrying its title, its poster and, last,
-        // the full-block link to the entry.
-        const articles = html.match(/<article[^>]*class="post[^"]*"[\s\S]*?<\/article>/g) || [];
-        for (const article of articles) {
-            const hrefMatch = article.match(/href="(https:\/\/animesalt\.cx\/(?:series|movies)\/[^"]+)"/);
-            if (!hrefMatch) continue;
-            const href = hrefMatch[1];
-            if (seen.has(href)) continue;
-            seen.add(href);
+        const skipTitleFilter = Object.values(keywordGroups).flat();
 
-            const titleMatch = article.match(/<h2[^>]*class="entry-title"[^>]*>([\s\S]*?)<\/h2>/);
-            const title = titleMatch ? stripTags(titleMatch[1]) : href;
+        const shouldFilter = !matchesKeyword(keyword, skipTitleFilter);
 
-            // The poster sits in data-src (lazy loading) and often has no
-            // protocol.
-            const imgMatch = article.match(/data-src="([^"]+)"/) || article.match(/<img[^>]+src="(https?:[^"]+)"/);
-            let image = imgMatch ? imgMatch[1] : "";
-            if (image.indexOf('//') === 0) image = `https:${image}`;
+        // --- TMDB Section ---
+        const encodedKeyword = encodeURIComponent(keyword);
+        let baseUrlTemplate = null;
 
-            const kind = href.indexOf('/movies/') !== -1 ? 'Movie' : 'Series';
-            results.push({ title: `${title} · ${kind}`, image: image, href: href });
+        if (matchesKeyword(keyword, keywordGroups.trending)) {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/trending/all/week?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+        } else if (matchesKeyword(keyword, keywordGroups.topRatedMovie)) {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/top_rated?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+        } else if (matchesKeyword(keyword, keywordGroups.topRatedTV)) {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/top_rated?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+        } else if (matchesKeyword(keyword, keywordGroups.popularMovie)) {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/popular?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+        } else if (matchesKeyword(keyword, keywordGroups.popularTV)) {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/popular?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+        } else {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/search/multi?api_key=9801b6b0548ad57581d111ea690c85c8&query=${encodedKeyword}&include_adult=false&page=${page}`)}&simple=true`;
         }
 
-        console.log(`[Search] ✅ ${results.length} result(s)`);
-        sendSupabaseLog("AnimeSalt", "SEARCH", {
-            keyword: keyword,
-            results_count: results.length,
-            top_results: results.slice(0, 3).map(r => r.title)
-        });
-        return JSON.stringify(results);
+        let dataResults = [];
+
+        if (baseUrlTemplate) {
+            const pagePromises = Array.from({ length: 2 }, (_, i) =>
+                soraFetch(baseUrlTemplate(i + 1)).then(r => r.json())
+            );
+            const pages = await Promise.all(pagePromises);
+            dataResults = pages.flatMap(p => p.results || []);
+        }
+
+        if (dataResults.length > 0) {
+            transformedResults = transformedResults.concat(
+                dataResults
+                    .filter(result => !Array.isArray(result.genre_ids) || result.genre_ids.includes(16))
+                    .map(result => {
+                        if (result.media_type === "movie" || result.title) {
+                            return {
+                                title: result.title || result.name || result.original_title || result.original_name || "Untitled",
+                                image: result.poster_path ? `https://image.tmdb.org/t/p/w500${result.poster_path}` : "",
+                                href: `movie/${result.id}`,
+                            };
+                        } else if (result.media_type === "tv" || result.name) {
+                            return {
+                                title: result.name || result.title || result.original_name || result.original_title || "Untitled",
+                                image: result.poster_path ? `https://image.tmdb.org/t/p/w500${result.poster_path}` : "",
+                                href: `tv/${result.id}/1/1`,
+                            };
+                        }
+                    })
+                    .filter(Boolean)
+                    .filter(result => result.title !== "Overflow")
+                    .filter(result => result.title !== "My Marriage Partner Is My Student, a Cocky Troublemaker")
+                    .filter(r => !shouldFilter || r.title.toLowerCase().includes(keyword.toLowerCase()))
+            );
+        }
+
+        console.log("Transformed Results: " + JSON.stringify(transformedResults));
+        return JSON.stringify(transformedResults);
     } catch (error) {
-        sendSupabaseLog("AnimeSalt", "ERROR", { keyword: keyword, error_message: String(error) });
-        return JSON.stringify([]);
+        console.log("Fetch error in searchResults: " + error);
+        return JSON.stringify([{ title: "Error", image: "", href: "" }]);
     }
 }
 
-// ==========================================
-// 📖 DETAILS
-// ==========================================
+function matchesKeyword(keyword, commands) {
+    const lower = keyword.toLowerCase();
+    return commands.some(cmd => lower.startsWith(cmd.toLowerCase()));
+}
 
 async function extractDetails(url) {
-    console.log(`[Details] 📖 AnimeSalt — ${url}`);
-    sendSupabaseLog("AnimeSalt", "DETAILS", { media_url: url });
-
     try {
-        const html = await asGet(url, `${AS_BASE}/`);
+        if(url.includes('movie')) {
+            const match = url.match(/movie\/([^\/]+)/);
+            if (!match) throw new Error("Invalid URL format");
 
-        let description = "";
-        const descMatch = html.match(/<div[^>]*class="[^"]*description[^"]*"[^>]*>([\s\S]*?)<\/div>/);
-        if (descMatch) description = stripTags(descMatch[1]);
-        if (!description) {
-            const ogMatch = html.match(/<meta[^>]+property="og:description"[^>]+content="([^"]*)"/);
-            if (ogMatch) description = decodeEntities(ogMatch[1]);
+            const movieId = match[1];
+            const responseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/${movieId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
+            const data = await responseText.json();
+
+            const transformedResults = [{
+                description: data.overview || 'No description available',
+                aliases: `Duration: ${data.runtime ? data.runtime + " minutes" : 'Unknown'}`,
+                airdate: `Released: ${data.release_date ? data.release_date : 'Unknown'}`
+            }];
+
+            return JSON.stringify(transformedResults);
+        } else if(url.includes('tv')) {
+            const match = url.match(/tv\/([^\/]+)/);
+            if (!match) throw new Error("Invalid URL format");
+
+            const showId = match[1];
+            const responseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
+            const data = await responseText.json();
+
+            const transformedResults = [{
+                description: data.overview || 'No description available',
+                aliases: `Duration: ${data.episode_run_time && data.episode_run_time.length ? data.episode_run_time.join(', ') + " minutes" : 'Unknown'}`,
+                airdate: `Aired: ${data.first_air_date ? data.first_air_date : 'Unknown'}`
+            }];
+
+            console.log(JSON.stringify(transformedResults));
+            return JSON.stringify(transformedResults);
+        } else {
+            throw new Error("Invalid URL format");
         }
-
-        const aliasParts = [];
-        const ratingMatch = html.match(/<span[^>]*class="[^"]*dt_rating_vgs[^"]*"[^>]*>([^<]+)</);
-        if (ratingMatch) aliasParts.push(`Rating: ${ratingMatch[1].trim()}`);
-
-        const genres = [];
-        const genreBlock = html.match(/<div[^>]*class="[^"]*sgeneros[^"]*"[^>]*>([\s\S]*?)<\/div>/);
-        if (genreBlock) {
-            const links = genreBlock[1].match(/>([^<>]+)<\/a>/g) || [];
-            for (const g of links) genres.push(stripTags(g));
-        }
-        if (genres.length) aliasParts.push(genres.join(', '));
-
-        let airdate = "";
-        const dateMatch = html.match(/<span[^>]*class="date"[^>]*>([^<]+)</) || html.match(/annee-(\d{4})/);
-        if (dateMatch) airdate = decodeEntities(dateMatch[1]);
-
-        return JSON.stringify([{
-            description: description || "No synopsis available.",
-            aliases: aliasParts.join(' | '),
-            airdate: airdate
-        }]);
     } catch (error) {
-        sendSupabaseLog("AnimeSalt", "ERROR", { media_url: url, error_message: String(error) });
-        return JSON.stringify([{ description: 'Loading error.', aliases: '', airdate: '' }]);
+        console.log('Details error: ' + error);
+        return JSON.stringify([{
+            description: 'Error loading description',
+            aliases: 'Duration: Unknown',
+            airdate: 'Aired/Released: Unknown'
+        }]);
     }
-}
-
-// ==========================================
-// 📂 EPISODES
-// ==========================================
-
-// The <li> returned by the entry page and by the season AJAX share one shape.
-function parseEpisodeItems(html, seasonNumber) {
-    const episodes = [];
-    const items = html.match(/<li>[\s\S]*?<\/li>/g) || [];
-
-    for (const item of items) {
-        const hrefMatch = item.match(/href="(https:\/\/animesalt\.cx\/episode\/[^"]+)"/);
-        if (!hrefMatch) continue;
-
-        // The episode number sits in <span class="num-epi">, and the URL
-        // confirms it in the form -<S>x<E>/.
-        const numMatch = item.match(/<span[^>]*class="num-epi"[^>]*>\s*(\d+)/);
-        const urlMatch = hrefMatch[1].match(/-(\d+)x(\d+)\/?$/);
-
-        const season = urlMatch ? parseInt(urlMatch[1], 10) : seasonNumber;
-        const number = urlMatch ? parseInt(urlMatch[2], 10) : (numMatch ? parseInt(numMatch[1], 10) : 0);
-        if (!number) continue;
-
-        const titleMatch = item.match(/<h2[^>]*class="entry-title"[^>]*>([\s\S]*?)<\/h2>/);
-        const title = titleMatch ? stripTags(titleMatch[1]) : `Episode ${number}`;
-
-        episodes.push({ href: hrefMatch[1], number: number, season: season, title: title });
-    }
-    return episodes;
 }
 
 async function extractEpisodes(url) {
-    console.log(`[Episodes] 📂 AnimeSalt — ${url}`);
-
     try {
-        const html = await asGet(url, `${AS_BASE}/`);
+        if(url.includes('movie')) {
+            const match = url.match(/movie\/([^\/]+)/);
 
-        // A movie has no list: it plays from its own page.
-        if (url.indexOf('/movies/') !== -1) {
-            return JSON.stringify([{ href: url, number: 1, season: 1, title: "Movie" }]);
-        }
+            if (!match) throw new Error("Invalid URL format");
 
-        // The season tabs carry the post id and the season number:
-        // data-post="1258" data-season="2".
-        const postMatch = html.match(/data-post="(\d+)"/);
-        const postId = postMatch ? postMatch[1] : null;
+            const movieId = match[1];
 
-        const seasons = [];
-        const seasonRe = /data-season="(\d+)"/g;
-        let m;
-        while ((m = seasonRe.exec(html)) !== null) {
-            const n = parseInt(m[1], 10);
-            if (seasons.indexOf(n) === -1) seasons.push(n);
-        }
-        if (seasons.length === 0) seasons.push(1);
-        seasons.sort((a, b) => a - b);
+            const movie = [
+                { href: `/movie/${movieId}`, number: 1, title: "Full Movie" }
+            ];
 
-        const all = [];
-        const seen = new Set();
+            console.log(movie);
+            return JSON.stringify(movie);
+        } else if(url.includes('tv')) {
+            const match = url.match(/tv\/([^\/]+)\/([^\/]+)\/([^\/]+)/);
 
-        // The season shown up front is already in the page.
-        for (const ep of parseEpisodeItems(html, seasons[0])) {
-            const key = `${ep.season}x${ep.number}`;
-            if (seen.has(key)) continue;
-            seen.add(key);
-            all.push(ep);
-        }
+            if (!match) throw new Error("Invalid URL format");
 
-        // The others are asked of the theme's AJAX endpoint.
-        for (const season of seasons) {
-            if (all.some(ep => ep.season === season)) continue;
-            if (!postId) continue;
+            const showId = match[1];
 
-            const body = `action=action_select_season&season=${season}&post=${postId}`;
-            const chunk = await asPost(`${AS_BASE}/wp-admin/admin-ajax.php`, url, body);
-            for (const ep of parseEpisodeItems(chunk, season)) {
-                const key = `${ep.season}x${ep.number}`;
-                if (seen.has(key)) continue;
-                seen.add(key);
-                all.push(ep);
+            const showResponseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
+            const showData = await showResponseText.json();
+
+            let allEpisodes = [];
+            for (const season of showData.seasons) {
+                const seasonNumber = season.season_number;
+
+                if(seasonNumber === 0) continue;
+
+                const seasonResponseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}/season/${seasonNumber}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
+                const seasonData = await seasonResponseText.json();
+
+                if (seasonData.episodes && seasonData.episodes.length) {
+                    const episodes = seasonData.episodes.map(episode => ({
+                        href: `/tv/${showId}/${seasonNumber}/${episode.episode_number}`,
+                        number: episode.episode_number,
+                        title: episode.name || ""
+                    }));
+                    allEpisodes = allEpisodes.concat(episodes);
+                }
             }
+
+            console.log(allEpisodes);
+            return JSON.stringify(allEpisodes);
+        } else {
+            throw new Error("Invalid URL format");
         }
-
-        all.sort((a, b) => (a.season - b.season) || (a.number - b.number));
-
-        console.log(`[Episodes] ✅ ${all.length} episode(s) across ${seasons.length} season(s)`);
-        return JSON.stringify(all);
     } catch (error) {
-        sendSupabaseLog("AnimeSalt", "ERROR", { media_url: url, error_message: String(error) });
+        console.log('Fetch error in extractEpisodes: ' + error);
         return JSON.stringify([]);
     }
 }
 
-// ==========================================
-// 🎬 PLAYBACK
-// ==========================================
+async function extractStreamUrl(ID) {
+  if (ID.includes('movie')) {
+    const parts = ID.split('/');
+    const tmdbID = parts[2];
 
-// The page's multi-language player encodes its list in base64:
-//   player.php?data=W3sibGFuZ3VhZ2UiOiJIaW5kaSIsImxpbmsiOiJodHRwczpcL1wv…
-// that is, [{"language":"Hindi","link":"https://short.icu/…"}, …].
-function pureAtob(input) {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
-    const str = String(input).replace(/[^A-Za-z0-9+/=]/g, '').replace(/=+$/, '');
-    let output = '';
-    let bc = 0, bs = 0, buffer;
-    for (let i = 0; i < str.length; i++) {
-        buffer = chars.indexOf(str.charAt(i));
-        if (buffer === -1) continue;
-        bs = bc % 4 ? bs * 64 + buffer : buffer;
-        if (bc++ % 4) output += String.fromCharCode(255 & (bs >> ((-2 * bc) & 6)));
-    }
-    return output;
+    const response = await fetchv2("https://enc-dec.app/api/enc-vidlink?text=" + tmdbID);
+    const data = await response.json();
+
+    console.log(data.result);
+    const responseTwo = await fetchv2(`https://vidlink.pro/api/b/movie/${data.result}?multiLang=0`);
+    const dataTwo = await responseTwo.json();
+    console.log('Data Two: ' + JSON.stringify(dataTwo));
+    const streamUrl = bestVidLinkStream(dataTwo.stream);
+    if (!streamUrl) return JSON.stringify({ streams: [], subtitles: "" });
+
+    const englishSubtitle = dataTwo.stream.captions.find(
+      sub => sub.language.toLowerCase().includes("english")
+    )?.url || null;
+
+    return JSON.stringify({
+      streams: ["Primary", streamUrl],
+      subtitles: englishSubtitle
+    });
+} else if (ID.includes('tv')) {
+    const parts = ID.split('/');
+    const tmdbID = parts[2];
+    const seasonNumber = parts[3];
+    const episodeNumber = parts[4];
+    console.log(`TMDB ID: ${tmdbID}, Season: ${seasonNumber}, Episode: ${episodeNumber}`);
+    const response = await fetchv2("https://enc-dec.app/api/enc-vidlink?text=" + tmdbID);
+    const data = await response.json();
+
+    console.log(data.result);
+    const responseTwo = await fetchv2(`https://vidlink.pro/api/b/tv/${data.result}/${seasonNumber}/${episodeNumber}?multiLang=0`);
+    const dataTwo = await responseTwo.json();
+    console.log('Data Two: ' + JSON.stringify(dataTwo));
+    const streamUrl = bestVidLinkStream(dataTwo.stream);
+    if (!streamUrl) return JSON.stringify({ streams: [], subtitles: "" });
+
+    const englishSubtitle = dataTwo.stream.captions.find(
+      sub => sub.language.toLowerCase().includes("english")
+    )?.url || null;
+
+    return JSON.stringify({
+      streams: ["Primary", streamUrl],
+      subtitles: englishSubtitle
+    });
+  }
 }
 
-function parseMultiLang(html) {
-    const match = html.match(/multi-lang-plyr\/player\.php\?data=([A-Za-z0-9+/=]+)/);
-    if (!match) return [];
+function bestVidLinkStream(stream) {
+  if (!stream) return null;
+  if (typeof stream.playlist === 'string' && stream.playlist) return stream.playlist;
+  const qualities = stream.qualities || {};
+  return Object.keys(qualities)
+    .sort((a, b) => Number(b) - Number(a))
+    .map(key => qualities[key] && qualities[key].url)
+    .find(url => typeof url === 'string' && /^https?:\/\//i.test(url)) || null;
+}
+
+async function soraFetch(url, options = { headers: {}, method: 'GET', body: null, encoding: 'utf-8' }) {
     try {
-        const list = JSON.parse(pureAtob(match[1]));
-        return Array.isArray(list) ? list : [];
-    } catch (e) { return []; }
-}
-
-// The iframe names the host and the token: https://as-cdnNN.top/video/<hash>
-function parseCdnEmbeds(html) {
-    const embeds = [];
-    const re = /https:\/\/([a-z0-9-]+\.top)\/video\/([a-f0-9]{16,64})/g;
-    let m;
-    while ((m = re.exec(html)) !== null) {
-        const entry = { host: m[1], hash: m[2] };
-        if (!embeds.some(e => e.hash === entry.hash)) embeds.push(entry);
-    }
-    return embeds;
-}
-
-async function resolveCdn(host, hash, referer) {
-    const url = `https://${host}/player/index.php?data=${encodeURIComponent(hash)}&do=getVideo`;
-    const body = `hash=${encodeURIComponent(hash)}&r=${encodeURIComponent(referer)}`;
-    const text = await asPost(url, `https://${host}/video/${hash}`, body);
-    if (!text) return null;
-    try { return JSON.parse(text); } catch (e) { return null; }
-}
-
-async function extractStreamUrl(url) {
-    const startTime = Date.now();
-    console.log(`[Player] 🎬 AnimeSalt — ${url}`);
-
-    const streams = [];
-    const failedLinks = [];
-
-    try {
-        const html = await asGet(url, `${AS_BASE}/`);
-
-        const embeds = parseCdnEmbeds(html);
-        console.log(`[Player] 🧩 ${embeds.length} CDN embed(s) detected`);
-
-        for (const embed of embeds) {
-            const data = await resolveCdn(embed.host, embed.hash, `${AS_BASE}/`);
-
-            if (!data) {
-                failedLinks.push({ server_name: embed.host, url: `https://${embed.host}/video/${embed.hash}`, reason: "getVideo returned no JSON" });
-                continue;
-            }
-
-            // A single stream (HLS) or a list of sources, depending on the title.
-            const candidates = [];
-            if (data.videoSource) candidates.push({ url: data.videoSource, label: data.hls ? 'HLS' : 'Direct' });
-            if (Array.isArray(data.videoSources)) {
-                for (const s of data.videoSources) {
-                    if (s && s.file) candidates.push({ url: s.file, label: s.label || s.type || 'Direct' });
-                }
-            }
-
-            if (candidates.length === 0) {
-                failedLinks.push({ server_name: embed.host, url: `https://${embed.host}/video/${embed.hash}`, reason: "No source in the response" });
-                continue;
-            }
-
-            for (const candidate of candidates) {
-                if (streams.some(s => s.streamUrl === candidate.url)) continue;
-                streams.push({
-                    title: `AnimeSalt ${embed.host} (${candidate.label})`,
-                    streamUrl: candidate.url,
-                    headers: { "Referer": `https://${embed.host}/`, "User-Agent": AS_UA }
-                });
-                console.log(`   -> ${embed.host} / ${candidate.label}`);
-            }
+        return await fetchv2(
+            url,
+            options.headers ?? {},
+            options.method ?? 'GET',
+            options.body ?? null,
+            true,
+            options.encoding ?? 'utf-8'
+        );
+    } catch(e) {
+        try {
+            return await fetch(url, options);
+        } catch(error) {
+            return null;
         }
-
-        // The multi-language tracks go through a URL shortener: they cannot be
-        // returned as they are, but they are reported rather than pretended
-        // out of existence.
-        const langs = parseMultiLang(html);
-        if (langs.length) {
-            console.log(`[Player] 🌐 ${langs.length} multi-language track(s) behind a shortener, unresolved: ${langs.map(l => l.language).join(', ')}`);
-            failedLinks.push({
-                server_name: "multi-lang-plyr",
-                url: langs.map(l => l.link).join(' '),
-                reason: `Links behind short.icu (${langs.map(l => l.language).join('/')})`
-            });
-        }
-
-        console.log(`-----------------------------------------------------`);
-        console.log(`[Player] 📊 Summary: ${streams.length} link(s).`);
-
-        sendSupabaseLog("AnimeSalt", "PLAYER", {
-            media_url: url,
-            season_number: "1",
-            ep_number: "1",
-            streams_found: streams.length,
-            subtitles_found: false,
-            allSubtitles_count: 0,
-            execution_time_ms: Date.now() - startTime,
-            servers: streams.map(s => ({ nom: s.title, lien: s.streamUrl }))
-        });
-
-        if (failedLinks.length > 0) {
-            sendSupabaseLog("AnimeSalt", "UNSUPPORTED_HOSTS", {
-                media_url: url, season_number: "1", ep_number: "1",
-                failed_count: failedLinks.length, failed_links: failedLinks
-            });
-        }
-
-        if (streams.length === 0) return JSON.stringify({ type: "none" });
-
-        return JSON.stringify({
-            type: "servers",
-            streams: streams,
-            subtitles: "",
-            subtitlesHeaders: {},
-            allSubtitles: []
-        });
-    } catch (error) {
-        sendSupabaseLog("AnimeSalt", "ERROR", { media_url: url, error_message: String(error) });
-        return JSON.stringify({ type: "none" });
     }
 }
