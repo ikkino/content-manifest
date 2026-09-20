@@ -133,11 +133,11 @@ async function extractEpisodes(url) {
     try {
         if(url.includes('movie')) {
             const match = url.match(/movie\/([^\/]+)/);
-
+            
             if (!match) throw new Error("Invalid URL format");
-
+            
             const movieId = match[1];
-
+            
             const movie = [
                 { href: `/movie/${movieId}`, number: 1, title: "Full Movie" }
             ];
@@ -146,23 +146,23 @@ async function extractEpisodes(url) {
             return JSON.stringify(movie);
         } else if(url.includes('tv')) {
             const match = url.match(/tv\/([^\/]+)\/([^\/]+)\/([^\/]+)/);
-
+            
             if (!match) throw new Error("Invalid URL format");
-
+            
             const showId = match[1];
-
+            
             const showResponseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
             const showData = await showResponseText.json();
-
+            
             let allEpisodes = [];
             for (const season of showData.seasons) {
                 const seasonNumber = season.season_number;
 
                 if(seasonNumber === 0) continue;
-
+                
                 const seasonResponseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}/season/${seasonNumber}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
                 const seasonData = await seasonResponseText.json();
-
+                
                 if (seasonData.episodes && seasonData.episodes.length) {
                     const episodes = seasonData.episodes.map(episode => ({
                         href: `/tv/${showId}/${seasonNumber}/${episode.episode_number}`,
@@ -172,7 +172,7 @@ async function extractEpisodes(url) {
                     allEpisodes = allEpisodes.concat(episodes);
                 }
             }
-
+            
             console.log(allEpisodes);
             return JSON.stringify(allEpisodes);
         } else {
@@ -181,12 +181,12 @@ async function extractEpisodes(url) {
     } catch (error) {
         console.log('Fetch error in extractEpisodes: ' + error);
         return JSON.stringify([]);
-    }
+    }    
 }
 
 async function extractStreamUrl(ID) {
   if (ID.includes('movie')) {
-    const parts = ID.split('/');
+    const parts = ID.split('/'); 
     const tmdbID = parts[2];
 
     const response = await fetchv2("https://enc-dec.app/api/enc-vidlink?text=" + tmdbID);
@@ -208,7 +208,7 @@ async function extractStreamUrl(ID) {
       subtitles: englishSubtitle
     });
 } else if (ID.includes('tv')) {
-    const parts = ID.split('/');
+    const parts = ID.split('/'); 
     const tmdbID = parts[2];
     const seasonNumber = parts[3];
     const episodeNumber = parts[4];
