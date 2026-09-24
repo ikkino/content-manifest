@@ -1,33 +1,28 @@
 {
-  "sourceName": "HydraHD",
-  "iconUrl": "https://hydrahd.ws/fav-192.png",
+  "sourceName": "Peachify",
+  "iconUrl": "https://peachify.top/favicon.ico",
   "author": {
-    "name": "xdfkenny",
-    "icon": "https://yt3.googleusercontent.com/NHr6Y6qhYIUeoyIBdgeEYArXI1_ebVcLAuf562jPB6WSFTunOwPVuWC90eAG1zmeD6_Wy9_0mTs=s160-c-k-c0x00ffffff-no-rj",
-    "url": "https://github.com/xdfkenny"
+    "name": "50/50",
+    "icon": "https://files.catbox.moe/741wp7.png"
   },
-  "description": "Módulo de HydraHD (hydrahd.ws) — películas y series en inglés (sub/dub) con calidad real variable por título, hasta 4K. Cada servidor se etiqueta con su resolución VERDADERA medida del manifiesto HLS y su idioma de audio con bandera (🇬🇧 inglés); los servidores multi-audio (Hydra2/VixSrc) generan una entrada adicional por idioma detectado (🇮🇹 italiano, etc.) que reproduce ese audio por defecto. Streams: servidores embebidos + resolvers keyless (VixSrc, MoviesAPI, xpass) + espejos VidSrc (hasta 3) y VidFast con servidores 4K; todo en paralelo con timeouts acotados y workers que nunca abortan el resultado. Subtítulos: lista completa de idiomas al instante (playlist + OpenSubtitles REST + v3 + Community); inglés se autoselecciona. Sin claves API.",
-  "version": "2.3.0",
+  "version": "1.0.1",
   "language": "English",
-  "streamType": "HLS/MP4",
-  "quality": "Up to 4K",
-  "baseUrl": "https://hydrahd.ws/",
-  "searchBaseUrl": "https://hydrahd.ws/index.php?menu=search&query=%s",
+  "languageType": [
+    "Native"
+  ],
+  "streamType": "HLS",
+  "quality": "1080p",
+  "baseUrl": "https://peachify.top/",
+  "searchBaseUrl": "https://peachify.top/",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/025/source.js",
-  "type": "movies/shows/anime",
-  "downloadSupport": true,
-  "combo": false,
+  "type": "shows/movies/anime",
   "asyncJS": true,
-  "streamAsyncJS": false,
   "softsub": true,
-  "supportsMojuru": false,
-  "supportsDartotsu": false,
+  "downloadSupport": false,
   "supportsSora": true,
-  "supportsShirox": true,
   "supportsLuna": true,
-  "supportsAnymex": false,
-  "supportsTsumi": false,
-  "supportsHiyoku": false,
+  "supportsTsumi": true,
+  "supportsHiyoku": true,
   "supportsEclipse": true,
-  "id": "jeawo"
+  "id": "mod_1741430395"
 }

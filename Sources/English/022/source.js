@@ -1,370 +1,328 @@
-// ==========================================
-// ⚙️ SORA MODULE — ANIKURA
-// ==========================================
-// anikura.club is a Next.js App Router site with its own internal anime ids
-// (One Piece is 1642 there, not AniList's 21 — the two must never be confused).
-// Its record carries ani_id and mal_id, but the playback endpoint is keyed by
-// the internal id, so everything hangs off that.
-//
-//   1. Search    GET /search?q=<text>
-//                -> <a class="poster-link" href="/anime/<id>/<slug>"> with the
-//                   title in the img alt and the poster behind
-//                   /api/media/image?u=<url-encoded original>
-//   2. Entry     GET /anime/<id>/<slug>
-//                -> description in <meta name="description">, and the episode
-//                   list rendered as "Episode N"
-//   3. Streams   GET /api/watch/streams?id=<id>&ep=<n>&lang=<sub|dub>
-//                   header x-anikura-player: 1
-//                -> {streams:[{id,label,language,kind,url}], audioRelease, language}
-//
-// Note on /browse: it takes a ?q= parameter that the server ignores — every
-// query, including a nonsense one, returns the same 47-record default payload.
-// Only /search?q= actually searches. Verified by counter-example rather than
-// assumed.
-//
-// The site has accounts and a membership (/api/auth/me, /api/membership/me),
-// and the player code handles a 401 with a "trial" flag. Measured, though:
-// /api/watch/streams answers 200 with real streams and no credentials at all.
-// If that ever changes, the module returns "none" rather than a broken link.
-//
-// Stream urls come both absolute (anikura-stream-edge.anikura.workers.dev) and
-// site-relative (/api/stream/proxy?url=…); the relative ones are prefixed.
-
-const AK_BASE = "https://www.anikura.club";
-
-const AK_UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36";
-
-const AK_LANGS = ["sub", "dub"];
-
-// ==========================================
-// 🗄️ SUPABASE TRACKER
-// ==========================================
-const SUPABASE_URL = "https://qyeisgowjisqbatrmqta.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_F68CBjFVPh71U0SdD9BQJg_UJgL9-Fj";
-
-async function sendSupabaseLog(moduleName, actionType, dataPayload) {
-    try {
-        const payload = { module: moduleName, action: actionType, data: dataPayload };
-        const headers = {
-            "Content-Type": "application/json", "apikey": SUPABASE_ANON_KEY,
-            "Authorization": `Bearer ${SUPABASE_ANON_KEY}`, "Prefer": "return=minimal"
-        };
-        if (typeof fetchv2 !== 'undefined') {
-            await fetchv2(`${SUPABASE_URL}/rest/v1/app_logs`, headers, "POST", JSON.stringify(payload));
-        } else {
-            await fetch(`${SUPABASE_URL}/rest/v1/app_logs`, { method: "POST", headers: headers, body: JSON.stringify(payload) });
-        }
-    } catch (e) {
-        console.log(`[Tracker] 🚨 Failed to send to Supabase: ${e.message}`);
-    }
-}
-
-// ==========================================
-// 🌐 NETWORK
-// ==========================================
-
-async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
-    // The host expects every request to carry a User-Agent; fill one in when
-    // the caller did not set one.
-    const headers = options.headers || {};
-    if (!headers["User-Agent"]) headers["User-Agent"] = AK_UA;
-    try {
-        if (typeof fetchv2 !== 'undefined') {
-            return await fetchv2(url, headers, options.method ?? 'GET', options.body ?? null);
-        } else {
-            return await fetch(url, { ...options, headers: headers });
-        }
-    } catch (e) {
-        try { return await fetch(url, { ...options, headers: headers }); } catch (error) { return null; }
-    }
-}
-
-async function readBody(response) {
-    if (!response) return "";
-    if (typeof response.text === 'function') return await response.text();
-    if (typeof response.data === 'string') return response.data;
-    return "";
-}
-
-async function akGet(path) {
-    const headers = {
-        "User-Agent": AK_UA,
-        "Accept": "text/html,application/xhtml+xml,*/*;q=0.8",
-        "Referer": `${AK_BASE}/`
-    };
-    return await readBody(await soraFetch(`${AK_BASE}${path}`, { method: 'GET', headers: headers }));
-}
-
-async function akGetJson(path) {
-    const headers = {
-        "User-Agent": AK_UA,
-        "Accept": "application/json",
-        "Referer": `${AK_BASE}/`,
-        // The player identifies itself with this header; without it the route
-        // is less predictable.
-        "x-anikura-player": "1"
-    };
-    const body = await readBody(await soraFetch(`${AK_BASE}${path}`, { method: 'GET', headers: headers }));
-    if (!body) return null;
-    try { return JSON.parse(body); } catch (e) { return null; }
-}
-
-function decodeEntities(text) {
-    if (!text) return "";
-    return String(text)
-        .replace(/&#x27;|&#039;|&#39;|&rsquo;/g, "'")
-        .replace(/&quot;|&#34;/g, '"')
-        .replace(/&amp;/g, '&')
-        .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&nbsp;/g, ' ')
-        .replace(/&#(\d+);/g, (m, code) => String.fromCharCode(parseInt(code, 10)))
-        .replace(/\s+/g, ' ')
-        .trim();
-}
-
-// Posters are served through a resizing proxy that carries the original url in
-// its `u` parameter; hand the original to Sora so it caches a stable address.
-function unwrapPoster(src) {
-    if (!src) return "";
-    const match = src.match(/\/api\/media\/image\?u=([^"&]+)/);
-    if (match) {
-        try { return decodeURIComponent(match[1]); } catch (e) { /* keep the proxy */ }
-    }
-    if (src.charAt(0) === '/') return `${AK_BASE}${src}`;
-    return src;
-}
-
-// ==========================================
-// 🔍 SEARCH
-// ==========================================
+// VidCore Media Source Module
 
 async function searchResults(keyword) {
-    console.log(`[Search] 🔍 Anikura — searching for "${keyword}"`);
     try {
-        const html = await akGet(`/search?q=${encodeURIComponent(keyword)}`);
+        let transformedResults = [];
 
-        const results = [];
-        const seen = new Set();
+        const keywordGroups = {
+            trending: ["!trending", "!hot", "!tr", "!!"],
+            topRatedMovie: ["!top-rated-movie", "!topmovie", "!tm", "??"],
+            topRatedTV: ["!top-rated-tv", "!toptv", "!tt", "::"],
+            popularMovie: ["!popular-movie", "!popmovie", "!pm", ";;"],
+            popularTV: ["!popular-tv", "!poptv", "!pt", "++"],
+        };
 
-        // Every result is one <a class="poster-link …> block.
-        const blocks = String(html).split(/<a class="poster-link/).slice(1);
-        for (const block of blocks) {
-            const chunk = block.slice(0, 2000);
+        const skipTitleFilter = Object.values(keywordGroups).flat();
+        const shouldFilter = !matchesKeyword(keyword, skipTitleFilter);
 
-            const hrefMatch = chunk.match(/href="(\/anime\/(\d+)\/[^"]+)"/);
-            if (!hrefMatch) continue;
-            const path = hrefMatch[1];
-            const id = hrefMatch[2];
-            if (seen.has(id)) continue;
-            seen.add(id);
+        const encodedKeyword = encodeURIComponent(keyword);
+        let baseUrlTemplate = null;
 
-            const altMatch = chunk.match(/alt="([^"]*)"/);
-            const title = altMatch ? decodeEntities(altMatch[1]) : `Anikura ${id}`;
-
-            const srcMatch = chunk.match(/\bsrc="([^"]*)"/);
-            const image = unwrapPoster(srcMatch ? srcMatch[1] : "");
-
-            results.push({ title: title, image: image, href: `anikura://${path}` });
+        if (matchesKeyword(keyword, keywordGroups.trending)) {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/trending/all/week?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+        } else if (matchesKeyword(keyword, keywordGroups.topRatedMovie)) {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/top_rated?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+        } else if (matchesKeyword(keyword, keywordGroups.topRatedTV)) {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/top_rated?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+        } else if (matchesKeyword(keyword, keywordGroups.popularMovie)) {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/popular?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+        } else if (matchesKeyword(keyword, keywordGroups.popularTV)) {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/popular?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+        } else {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/search/multi?api_key=9801b6b0548ad57581d111ea690c85c8&query=${encodedKeyword}&include_adult=false&page=${page}`)}&simple=true`;
         }
 
-        console.log(`[Search] ✅ ${results.length} result(s)`);
-        sendSupabaseLog("Anikura", "SEARCH", {
-            keyword: keyword,
-            results_count: results.length,
-            top_results: results.slice(0, 3).map(r => r.title)
-        });
-        return JSON.stringify(results);
+        let dataResults = [];
+
+        if (baseUrlTemplate) {
+            const pagePromises = Array.from({ length: 5 }, (_, i) =>
+                soraFetch(baseUrlTemplate(i + 1)).then(r => r ? r.json() : { results: [] })
+            );
+            const pages = await Promise.all(pagePromises);
+            dataResults = pages.flatMap(p => p.results || []);
+        }
+
+        if (dataResults.length > 0) {
+            transformedResults = transformedResults.concat(
+                dataResults
+                    .map(result => {
+                        if (result.media_type === "movie" || result.title) {
+                            return {
+                                title: result.title || result.name || result.original_title || result.original_name || "Untitled",
+                                image: result.poster_path ? `https://image.tmdb.org/t/p/w500${result.poster_path}` : "",
+                                href: `movie/${result.id}`,
+                            };
+                        } else if (result.media_type === "tv" || result.name) {
+                            return {
+                                title: result.name || result.title || result.original_name || result.original_title || "Untitled",
+                                image: result.poster_path ? `https://image.tmdb.org/t/p/w500${result.poster_path}` : "",
+                                href: `tv/${result.id}/1/1`,
+                            };
+                        }
+                    })
+                    .filter(Boolean)
+                    .filter(r => !shouldFilter || r.title.toLowerCase().includes(keyword.toLowerCase()))
+            );
+        }
+
+        return JSON.stringify(transformedResults);
     } catch (error) {
-        sendSupabaseLog("Anikura", "ERROR", { keyword: keyword, error_message: String(error) });
-        return JSON.stringify([]);
+        console.log("Fetch error in searchResults: " + error);
+        return JSON.stringify([{ title: "Error", image: "", href: "" }]);
     }
 }
 
-// ==========================================
-// 📖 DETAILS
-// ==========================================
-
-// href is `anikura:///anime/<id>/<slug>`; the play href is
-// `anikura-play://<id>/<episode>`.
-function parseHref(url) {
-    const rest = url.replace('anikura://', '');
-    const match = rest.match(/\/anime\/(\d+)\/(.*)$/);
-    if (match) return { id: match[1], path: rest };
-    return { id: rest.split('/')[0], path: rest };
+function matchesKeyword(keyword, commands) {
+    const lower = keyword.toLowerCase();
+    return commands.some(cmd => lower.startsWith(cmd.toLowerCase()));
 }
 
 async function extractDetails(url) {
-    const ref = parseHref(url);
-    console.log(`[Details] 📖 Anikura — ${ref.path}`);
-    sendSupabaseLog("Anikura", "DETAILS", { media_url: `${AK_BASE}${ref.path}` });
-
     try {
-        const html = await akGet(ref.path);
+        if (url.includes('movie')) {
+            const match = url.match(/movie\/([^\/]+)/);
+            if (!match) throw new Error("Invalid URL format");
 
-        const descMatch = html.match(/<meta[^>]+name="description"[^>]+content="([^"]*)"/)
-            || html.match(/<meta[^>]+property="og:description"[^>]+content="([^"]*)"/);
-        const description = descMatch ? decodeEntities(descMatch[1]) : "";
+            const movieId = match[1];
+            const responseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/${movieId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
+            const data = await responseText.json();
 
-        const aliasParts = [];
-        // The entry line reads "Studio: X" and "Source: Y", each value wrapped
-        // in its own span.
-        const studio = html.match(/Studio:<!-- -->\s*<span[^>]*>([^<]+)</);
-        if (studio) aliasParts.push(`Studio: ${decodeEntities(studio[1])}`);
-        const source = html.match(/Source:<!-- -->\s*<span[^>]*>([^<]+)</);
-        if (source) aliasParts.push(`Source: ${decodeEntities(source[1])}`);
+            const transformedResults = [{
+                description: data.overview || 'No description available',
+                aliases: `Duration: ${data.runtime ? data.runtime + " minutes" : 'Unknown'}`,
+                airdate: `Released: ${data.release_date ? data.release_date : 'Unknown'}`
+            }];
 
-        let airdate = "";
-        const year = html.match(/"year":(\d{4})/);
-        if (year) airdate = year[1];
-        const status = html.match(/"status":"([^"]{3,30})"/);
-        if (status) airdate = airdate ? `${airdate} · ${status[1]}` : status[1];
+            return JSON.stringify(transformedResults);
+        } else if (url.includes('tv')) {
+            const match = url.match(/tv\/([^\/]+)/);
+            if (!match) throw new Error("Invalid URL format");
 
-        return JSON.stringify([{
-            description: description || "No synopsis available.",
-            aliases: aliasParts.join(' | '),
-            airdate: airdate
-        }]);
+            const showId = match[1];
+            const responseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
+            const data = await responseText.json();
+
+            const transformedResults = [{
+                description: data.overview || 'No description available',
+                aliases: `Duration: ${data.episode_run_time && data.episode_run_time.length ? data.episode_run_time.join(', ') + " minutes" : 'Unknown'}`,
+                airdate: `Aired: ${data.first_air_date ? data.first_air_date : 'Unknown'}`
+            }];
+
+            return JSON.stringify(transformedResults);
+        } else {
+            throw new Error("Invalid URL format");
+        }
     } catch (error) {
-        sendSupabaseLog("Anikura", "ERROR", { media_url: url, error_message: String(error) });
-        return JSON.stringify([{ description: 'Loading error.', aliases: '', airdate: '' }]);
+        console.log('Details error: ' + error);
+        return JSON.stringify([{
+            description: 'Error loading description',
+            aliases: 'Duration: Unknown',
+            airdate: 'Aired/Released: Unknown'
+        }]);
     }
 }
 
-// ==========================================
-// 📂 EPISODES
-// ==========================================
-
 async function extractEpisodes(url) {
-    const ref = parseHref(url);
-    console.log(`[Episodes] 📂 Anikura — entry ${ref.id}`);
-
     try {
-        const html = await akGet(ref.path);
+        if (url.includes('movie')) {
+            const match = url.match(/movie\/([^\/]+)/);
+            if (!match) throw new Error("Invalid URL format");
+            const movieId = match[1];
 
-        // The entry page renders every episode as the literal text
-        // "Episode <n>". Collect the distinct numbers rather than trusting a
-        // single advertised count, which is absent on ongoing shows.
-        const numbers = new Set();
-        const re = /Episode (\d{1,4})\b/g;
-        let m;
-        while ((m = re.exec(html)) !== null) {
-            const n = parseInt(m[1], 10);
-            if (n > 0) numbers.add(n);
+            const movie = [
+                { href: `/movie/${movieId}`, number: 1, title: "Full Movie" }
+            ];
+            return JSON.stringify(movie);
+        } else if (url.includes('tv')) {
+            const match = url.match(/tv\/([^\/]+)\/([^\/]+)\/([^\/]+)/);
+            if (!match) throw new Error("Invalid URL format");
+            const showId = match[1];
+
+            const showResponseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
+            const showData = await showResponseText.json();
+
+            let allEpisodes = [];
+            for (const season of showData.seasons) {
+                const seasonNumber = season.season_number;
+                if (seasonNumber === 0) continue;
+
+                const seasonResponseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}/season/${seasonNumber}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
+                const seasonData = await seasonResponseText.json();
+
+                if (seasonData.episodes && seasonData.episodes.length) {
+                    const episodes = seasonData.episodes.map(episode => ({
+                        href: `/tv/${showId}/${seasonNumber}/${episode.episode_number}`,
+                        number: episode.episode_number,
+                        title: episode.name || ""
+                    }));
+                    allEpisodes = allEpisodes.concat(episodes);
+                }
+            }
+            return JSON.stringify(allEpisodes);
+        } else {
+            throw new Error("Invalid URL format");
         }
-
-        // Fall back on the declared count when the list did not render.
-        if (numbers.size === 0) {
-            const declared = html.match(/"episodes":"?(\d{1,4})"?/);
-            const total = declared ? parseInt(declared[1], 10) : 0;
-            for (let n = 1; n <= total; n++) numbers.add(n);
-        }
-        if (numbers.size === 0) numbers.add(1);
-
-        const episodes = Array.from(numbers).sort((a, b) => a - b).map(n => ({
-            href: `anikura-play://${ref.id}/${n}`,
-            number: n,
-            season: 1,
-            title: `Episode ${n}`
-        }));
-
-        console.log(`[Episodes] ✅ ${episodes.length} episode(s)`);
-        return JSON.stringify(episodes);
     } catch (error) {
-        sendSupabaseLog("Anikura", "ERROR", { media_url: url, error_message: String(error) });
+        console.log('Fetch error in extractEpisodes: ' + error);
         return JSON.stringify([]);
     }
 }
 
-// ==========================================
-// 🎬 PLAYBACK
-// ==========================================
-
-async function extractStreamUrl(url) {
-    const startTime = Date.now();
-    const parts = url.replace('anikura-play://', '').split('/');
-    const id = parts[0];
-    const epNumber = parts.length > 1 ? parts[1] : '1';
-    const mediaUrl = `${AK_BASE}/watch/${id}?ep=${epNumber}`;
-
-    console.log(`[Player] 🎬 Anikura — entry ${id}, episode ${epNumber}`);
-
-    const streams = [];
-    const failedLinks = [];
-
+async function extractStreamUrl(ID) {
     try {
-        for (const lang of AK_LANGS) {
-            const data = await akGetJson(`/api/watch/streams?id=${encodeURIComponent(id)}&ep=${encodeURIComponent(epNumber)}&lang=${lang}`);
+        let isMovie = ID.includes('movie');
+        let tmdbID, seasonNumber = "1", episodeNumber = "1";
+        let mediaType = "";
 
-            if (!data) {
-                failedLinks.push({ server_name: `anikura ${lang}`, url: mediaUrl, reason: "No JSON returned" });
-                continue;
-            }
-
-            // The player treats 401 as "unauthorized / trial"; the endpoint has
-            // answered anonymously so far, but say so plainly if that changes.
-            if (data.unauthorized === true) {
-                console.log(`[Player] 🔒 Anikura requires an account for ${lang}.`);
-                failedLinks.push({ server_name: `anikura ${lang}`, url: mediaUrl, reason: "Account or membership required" });
-                continue;
-            }
-
-            const list = Array.isArray(data.streams) ? data.streams : [];
-            if (list.length === 0) {
-                failedLinks.push({ server_name: `anikura ${lang}`, url: mediaUrl, reason: `No stream for this episode (${lang})` });
-                continue;
-            }
-
-            for (const stream of list) {
-                let streamUrl = stream.url || "";
-                if (!streamUrl) continue;
-                // Some entries are site-relative (/api/stream/proxy?url=…).
-                if (streamUrl.charAt(0) === '/') streamUrl = `${AK_BASE}${streamUrl}`;
-                if (streams.some(s => s.streamUrl === streamUrl)) continue;
-
-                const label = stream.label || stream.id || `Anikura ${lang}`;
-                streams.push({
-                    title: `Anikura ${label}`,
-                    streamUrl: streamUrl,
-                    headers: { "Referer": `${AK_BASE}/`, "User-Agent": AK_UA }
-                });
-                console.log(`   -> ${label} (${stream.kind || 'hls'})`);
-            }
+        if (isMovie) {
+            tmdbID = ID.replace('/movie/', '').replace('/', '');
+            mediaType = "movie";
+        } else if (ID.includes('tv')) {
+            const parts = ID.split('/');
+            tmdbID = parts[2];
+            seasonNumber = parts[3];
+            episodeNumber = parts[4];
+            mediaType = "tv";
+        } else {
+            return JSON.stringify({ streams: [] });
         }
 
-        console.log(`-----------------------------------------------------`);
-        console.log(`[Player] 📊 Summary: ${streams.length} link(s).`);
+        const targetPageUrl = mediaType === "movie"
+            ? `https://vidcore.net/movie/${tmdbID}/`
+            : `https://vidcore.net/tv/${tmdbID}/${seasonNumber}/${episodeNumber}/`;
 
-        sendSupabaseLog("Anikura", "PLAYER", {
-            media_url: mediaUrl,
-            season_number: "1",
-            ep_number: epNumber,
-            streams_found: streams.length,
-            subtitles_found: false,
-            allSubtitles_count: 0,
-            execution_time_ms: Date.now() - startTime,
-            servers: streams.map(s => ({ nom: s.title, lien: s.streamUrl }))
+        const response = await soraFetch(targetPageUrl);
+        if (!response) throw new Error("Failed to fetch vidcore page");
+        const html = await response.text();
+
+        const match = html.match(/\\"(?:en|token)\\":\\"(.*?)\\"/) || html.match(/"(?:en|token)":"(.*?)"/);
+        if (!match) throw new Error("Could not find payload text on vidcore page");
+        const text = match[1];
+
+        const encVidcoreUrl = `https://enc-dec.app/api/enc-vidcore?text=${encodeURIComponent(text)}`;
+        const encRes = await soraFetch(encVidcoreUrl);
+        if (!encRes) throw new Error("Failed to call enc-vidcore API");
+        const encJson = await encRes.json();
+        const parts = encJson.result;
+
+        const { servers, stream, token } = parts;
+
+        const headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
+            "Referer": "https://vidcore.net/",
+            "X-Requested-With": "XMLHttpRequest",
+            "X-CSRF-Token": token
+        };
+
+        const serversRes = await fetchv2(servers, headers, "POST", null);
+        const serversEncrypted = await serversRes.text();
+
+        const decRes = await fetchv2("https://enc-dec.app/api/dec-vidcore", { "Content-Type": "application/json" }, "POST", JSON.stringify({
+            text: serversEncrypted
+        }));
+        const decJson = await decRes.json();
+        const serversDecrypted = decJson.result || [];
+
+        let streamObjects = [];
+        let allSubtitles = [];
+
+        const serverPromises = serversDecrypted.map(async (server) => {
+            try {
+                const streamUrl = `${stream}/${server.data}`;
+                const streamRes = await fetchv2(streamUrl, headers, "POST", null);
+                const streamEncrypted = await streamRes.text();
+
+                const decStreamRes = await fetchv2("https://enc-dec.app/api/dec-vidcore", { "Content-Type": "application/json" }, "POST", JSON.stringify({
+                    text: streamEncrypted
+                }));
+                const decStreamJson = await decStreamRes.json();
+                const streamDecrypted = decStreamJson.result;
+
+                if (streamDecrypted && streamDecrypted.url) {
+                    return {
+                        name: server.name,
+                        url: streamDecrypted.url,
+                        tracks: streamDecrypted.tracks || []
+                    };
+                }
+            } catch (err) {
+                console.log(`Error fetching/decrypting stream for VidCore server ${server.name}: ` + err.message);
+            }
+            return null;
         });
 
-        if (failedLinks.length > 0) {
-            sendSupabaseLog("Anikura", "UNSUPPORTED_HOSTS", {
-                media_url: mediaUrl,
-                season_number: "1",
-                ep_number: epNumber,
-                failed_count: failedLinks.length,
-                failed_links: failedLinks
+        const results = await Promise.all(serverPromises);
+
+        results.forEach(res => {
+            if (!res) return;
+            streamObjects.push({
+                title: `[VidCore] ${res.name}`,
+                streamUrl: res.url,
+                headers: {
+                    "Referer": "https://vidcore.net/",
+                    "Origin": "https://vidcore.net"
+                }
+            });
+
+            res.tracks.forEach(track => {
+                if (track.file && !allSubtitles.some(existing => existing.url === track.file)) {
+                    allSubtitles.push({
+                        url: track.file,
+                        language: track.label || "English"
+                    });
+                }
+            });
+        });
+
+        if (streamObjects.length === 0) {
+            let fallbackUrl = "https://vidlink.pro/";
+            if (ID.includes('movie')) {
+                const mId = ID.replace('/movie/', '').replace('/', '');
+                fallbackUrl = `https://vidlink.pro/movie/${mId}`;
+            } else if (ID.includes('tv')) {
+                const parts = ID.split('/');
+                fallbackUrl = `https://vidlink.pro/tv/${parts[2]}/${parts[3]}/${parts[4]}`;
+            }
+            streamObjects.push({
+                title: "VidCore Backup",
+                streamUrl: fallbackUrl,
+                headers: { "Referer": "https://vidlink.pro/" }
             });
         }
 
-        if (streams.length === 0) return JSON.stringify({ type: "none" });
+        const englishSubtitle = allSubtitles.find(sub => sub.language.toLowerCase() === 'english');
+        let subtitleUrl = englishSubtitle ? englishSubtitle.url : "";
 
         return JSON.stringify({
-            type: "servers",
-            streams: streams,
-            subtitles: "",
-            subtitlesHeaders: {},
-            allSubtitles: []
+            streams: streamObjects,
+            subtitles: subtitleUrl
         });
-    } catch (error) {
-        sendSupabaseLog("Anikura", "ERROR", { media_url: mediaUrl, season_number: "1", error_message: String(error) });
-        return JSON.stringify({ type: "none" });
+    } catch (e) {
+        console.log("Error in extractStreamUrl: " + e.message);
+        let fallbackUrl = "https://vidlink.pro/";
+        if (ID.includes('movie')) {
+            const mId = ID.replace('/movie/', '').replace('/', '');
+            fallbackUrl = `https://vidlink.pro/movie/${mId}`;
+        } else if (ID.includes('tv')) {
+            const parts = ID.split('/');
+            fallbackUrl = `https://vidlink.pro/tv/${parts[2]}/${parts[3]}/${parts[4]}`;
+        }
+        return JSON.stringify({ streams: [{ title: "VidCore Backup", streamUrl: fallbackUrl, headers: { Referer: "https://vidlink.pro/" } }], subtitles: "" });
+    }
+}
+
+async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
+    const headers = options.headers || {};
+    if (!headers["User-Agent"]) {
+        headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
+    }
+    try {
+        return await fetchv2(url, headers, options.method || 'GET', options.body || null);
+    } catch (e) {
+        try {
+            return await fetch(url, options);
+        } catch (error) {
+            return null;
+        }
     }
 }
