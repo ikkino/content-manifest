@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-28T05:20:17.996Z",
+  "generatedAt": "2026-09-29T01:58:07.020Z",
   "mediaRequested": 5,
   "categories": {
     "trendingNow": {
@@ -24,21 +24,21 @@
   "routeCount": 481,
   "refreshedAnime": 0,
   "mergeExisting": true,
-  "unresolvedAnime": 39,
-  "rejectedAttempts": 39,
+  "unresolvedAnime": 42,
+  "rejectedAttempts": 42,
   "rejectedAttemptSummary": {
     "byReason": {
-      "search_no_usable_result": 19,
-      "media_probe_failed": 14,
+      "search_no_usable_result": 21,
+      "media_probe_failed": 15,
       "implausible_match": 5,
       "other": 1
     },
     "topModules": [
       {
         "sourceName": "AnimeLand",
-        "count": 13,
+        "count": 14,
         "reasons": {
-          "search_no_usable_result": 7,
+          "search_no_usable_result": 8,
           "implausible_match": 3,
           "media_probe_failed": 2,
           "other": 1
@@ -46,27 +46,27 @@
       },
       {
         "sourceName": "IPTV-org",
-        "count": 13,
+        "count": 14,
         "reasons": {
-          "search_no_usable_result": 12,
+          "search_no_usable_result": 13,
           "implausible_match": 1
         }
       },
       {
         "sourceName": "JustAnime",
-        "count": 13,
+        "count": 14,
         "reasons": {
-          "media_probe_failed": 12,
+          "media_probe_failed": 13,
           "implausible_match": 1
         }
       }
     ]
   },
   "mediaProbeBudget": 24,
-  "mediaProbesUsed": 14,
+  "mediaProbesUsed": 15,
   "hostHealth": {
     "successEvents": 0,
-    "failureEvents": 14,
+    "failureEvents": 15,
     "skippedByCooldown": 0,
     "coolingDownHosts": 2
   },
@@ -132,8 +132,8 @@
       ]
     },
     {
-      "aniListId": 210031,
-      "title": "You and I Are Polar Opposites Season 2",
+      "aniListId": 182205,
+      "title": "That Time I Got Reincarnated as a Slime Season 4",
       "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/001",
       "sourceName": "AnimeLand",
@@ -142,8 +142,8 @@
       ]
     },
     {
-      "aniListId": 210031,
-      "title": "You and I Are Polar Opposites Season 2",
+      "aniListId": 182205,
+      "title": "That Time I Got Reincarnated as a Slime Season 4",
       "moduleId": "BiECa",
       "catalogPath": "Sources/English/002",
       "sourceName": "IPTV-org",
@@ -152,8 +152,8 @@
       ]
     },
     {
-      "aniListId": 210031,
-      "title": "You and I Are Polar Opposites Season 2",
+      "aniListId": 182205,
+      "title": "That Time I Got Reincarnated as a Slime Season 4",
       "moduleId": "mangayomi_892345671",
       "catalogPath": "Sources/English/003",
       "sourceName": "JustAnime",
@@ -162,8 +162,8 @@
       ]
     },
     {
-      "aniListId": 182205,
-      "title": "That Time I Got Reincarnated as a Slime Season 4",
+      "aniListId": 197754,
+      "title": "LIAR GAME",
       "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/001",
       "sourceName": "AnimeLand",
@@ -172,8 +172,8 @@
       ]
     },
     {
-      "aniListId": 182205,
-      "title": "That Time I Got Reincarnated as a Slime Season 4",
+      "aniListId": 197754,
+      "title": "LIAR GAME",
       "moduleId": "BiECa",
       "catalogPath": "Sources/English/002",
       "sourceName": "IPTV-org",
@@ -182,8 +182,38 @@
       ]
     },
     {
-      "aniListId": 182205,
-      "title": "That Time I Got Reincarnated as a Slime Season 4",
+      "aniListId": 197754,
+      "title": "LIAR GAME",
+      "moduleId": "mangayomi_892345671",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "JustAnime",
+      "errors": [
+        "media probe failed: host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response"
+      ]
+    },
+    {
+      "aniListId": 210031,
+      "title": "You and I Are Polar Opposites Season 2",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 210031,
+      "title": "You and I Are Polar Opposites Season 2",
+      "moduleId": "BiECa",
+      "catalogPath": "Sources/English/002",
+      "sourceName": "IPTV-org",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 210031,
+      "title": "You and I Are Polar Opposites Season 2",
       "moduleId": "mangayomi_892345671",
       "catalogPath": "Sources/English/003",
       "sourceName": "JustAnime",
