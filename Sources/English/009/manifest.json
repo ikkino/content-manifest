@@ -1,24 +1,28 @@
 {
-  "sourceName": "Aniclipse",
-  "iconUrl": "https://aniclipse.com/logo/aniclipse-icon-192.png",
+  "sourceName": "VidFast",
+  "iconUrl": "https://files.catbox.moe/i6r78t.png",
   "author": {
-    "name": "MXFia19",
-    "icon": "https://i.pinimg.com/1200x/89/78/33/89783349d3270e4ab071db9a038db8ea.jpg",
-    "url": "https://github.com/MXFia19"
+    "name": "50/50",
+    "icon": "https://files.catbox.moe/741wp7.png"
   },
-  "version": "1.0.0",
+  "version": "1.2.4",
   "language": "English",
+  "languageType": [
+    "Native"
+  ],
   "streamType": "HLS",
   "quality": "1080p",
-  "baseUrl": "https://aniclipse.com/",
-  "searchBaseUrl": "https://aniclipse.com/",
+  "baseUrl": "https://vidfast.pro/",
+  "searchBaseUrl": "https://vidfast.pro/",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/009/source.js",
-  "type": "anime",
-  "downloadSupport": true,
+  "type": "shows/movies/anime",
   "asyncJS": true,
   "softsub": true,
+  "downloadSupport": false,
   "supportsSora": true,
   "supportsLuna": true,
-  "changelog": "first release: aniclipse catalogue and episodes (real titles, thumbnails, fillers), playback resolved through vidhawk's open chain",
-  "id": "j0y3E"
+  "supportsTsumi": true,
+  "supportsHiyoku": true,
+  "supportsEclipse": true,
+  "id": "B0b0R"
 }

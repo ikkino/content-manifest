@@ -1,11 +1,22 @@
 {
-  "id": "mangayomi_1742685193",
-  "sourceName": "AniPM",
+  "sourceName": "VidLink",
+  "iconUrl": "https://vidlink.pro/favicon.ico",
+  "author": {
+    "name": "Local Repair"
+  },
+  "version": "1.0.1",
   "language": "English",
-  "type": "anime",
-  "baseUrl": "https://ani.pm",
+  "streamType": "MP4",
+  "quality": "1080p",
+  "baseUrl": "https://vidlink.pro/",
+  "searchBaseUrl": "https://vidlink.pro/",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/011/source.js",
-  "sourceCodeLanguage": "mangayomi-js",
-  "sourceCodeUrl": "https://raw.githubusercontent.com/Mallyd11/mangayomi-anime-extensions/refs/heads/main/javascript/anime/src/en/anipm.js",
-  "version": "1.0.0"
+  "type": "anime",
+  "asyncJS": true,
+  "softsub": true,
+  "downloadSupport": false,
+  "supportsSora": true,
+  "supportsLuna": true,
+  "supportsShirox": true,
+  "id": "vidlink-local"
 }
