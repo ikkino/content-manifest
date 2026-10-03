@@ -1,37 +1,28 @@
 {
-  "sourceName": "AniDB",
-  "iconUrl": "https://anidb.app/images/fav-192.png",
-  "iconFallbackUrl": [
-    "https://raw.githubusercontent.com/xdfkenny/xdfkenny-sora-modules/main/anidb/icon.png",
-    "https://www.google.com/s2/favicons?sz=192&domain=anidb.net"
-  ],
+  "sourceName": "Peachify",
+  "iconUrl": "https://peachify.top/favicon.ico",
   "author": {
-    "name": "xdfkenny",
-    "icon": "https://yt3.googleusercontent.com/NHr6Y6qhYIUeoyIBdgeEYArXI1_ebVcLAuf562jPB6WSFTunOwPVuWC90eAG1zmeD6_Wy9_0mTs=s160-c-k-c0x00ffffff-no-rj",
-    "url": "https://github.com/xdfkenny"
+    "name": "50/50",
+    "icon": "https://files.catbox.moe/741wp7.png"
   },
-  "description": "Módulo de AniDB (anidb.app) — el mismo backend que usa ani-cli: búsqueda vía /browse, episodios del API público frontend y streams HLS multi-idioma (jpn/eng) desde los embeds JWPlayer (hls.anidb.app). Si anidb.app está caído/mantenimiento: catálogo completo vía AniList (sin auth), detalles vía classic anidb.net (Shirox impersonation) / AniList / espejo anidb.se, episodios numerados vía Jikan / HTML de MAL / recuento de AniList / espejo, y streams HLS reproducibles de todo el catálogo vía AniLibria (cache.libria.fun, sin Referer) con mp4 del espejo anidb.se como primera opción.",
-  "version": "1.6.0",
+  "version": "1.0.1",
   "language": "English",
-  "streamType": "HLS/MP4",
+  "languageType": [
+    "Native"
+  ],
+  "streamType": "HLS",
   "quality": "1080p",
-  "baseUrl": "https://anidb.app/",
-  "searchBaseUrl": "https://anidb.app/browse?q=%s",
+  "baseUrl": "https://peachify.top/",
+  "searchBaseUrl": "https://peachify.top/",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/020/source.js",
-  "type": "anime",
-  "downloadSupport": true,
-  "combo": false,
+  "type": "shows/movies/anime",
   "asyncJS": true,
-  "streamAsyncJS": false,
-  "softsub": false,
-  "supportsMojuru": false,
-  "supportsDartotsu": false,
+  "softsub": true,
+  "downloadSupport": false,
   "supportsSora": true,
   "supportsLuna": true,
-  "supportsAnymex": false,
-  "supportsTsumi": false,
-  "supportsHiyoku": false,
-  "supportsShirox": true,
+  "supportsTsumi": true,
+  "supportsHiyoku": true,
   "supportsEclipse": true,
-  "id": "jzBDQ"
+  "id": "mod_1741430395"
 }

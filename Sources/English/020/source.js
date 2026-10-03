@@ -1,1286 +1,338 @@
-const BASE_URL = 'https://anidb.app';
-const BROWSE_URL = `${BASE_URL}/browse?q=`;
-const SUGGEST_URL = `${BASE_URL}/search/suggestions?q=`;
-const EPISODES_API = `${BASE_URL}/api/frontend/anime/%s/episodes`;
-const LANGUAGES_API = `${BASE_URL}/api/frontend/episode/%s/languages`;
+// Sora module for Peachify using enc-dec.app API
 
-if (typeof console !== 'undefined') console.log('[AniDB] module script loaded v1.6.0 (AniList/Jikan/MAL-HTML episodes + AniLibria HLS streams)');
-
-/* Mirror: anidb.se — an anidb-named streaming mirror used as fallback while
- * anidb.app is under maintenance (503 on every page/API route). Search
- * results that come from the mirror keep the mirror's own URLs; when the
- * main site is up again its URLs keep working because every step that
- * fails on the main site re-maps the show onto the mirror. */
-const MIRROR_HOST = 'anidb.se';
-const MIRROR_URL = `https://${MIRROR_HOST}`;
-const MIRROR_SEARCH_URL = `${MIRROR_URL}/?s=`;
-
-/* MAIN FUNCTIONS */
-
-/**
- * Searches anidb.app for anime titles matching the given keyword. While the
- * main site is down (maintenance page / network failure) it chains to the
- * classic AniDB XML API (via Shirox's fetchv2 impersonation), then to the
- * anidb.se mirror search. Mirror results keep the mirror's own URLs; when
- * the main site is up again its URLs keep working because every step that
- * fails on the main site re-maps the show onto the mirror.
- * Returns a JSON string array of {title, image, href} objects.
- */
 async function searchResults(keyword) {
     try {
-        const query = (keyword || '').trim();
-        if (!query) return JSON.stringify([]);
+        let transformedResults = [];
 
-        // Main site first. Fallback is result-based, not exception-based:
-        // in-app fetchv2 may resolve a 503 response without throwing and
-        // without exposing .ok, so "main produced nothing" is the signal.
-        const main = await mainSearch(query);
-        if (main.length > 0) return JSON.stringify(main);
+        const keywordGroups = {
+            trending: ["!trending", "!hot", "!tr", "!!"],
+            topRatedMovie: ["!top-rated-movie", "!topmovie", "!tm", "??"],
+            topRatedTV: ["!top-rated-tv", "!toptv", "!tt", "::"],
+            popularMovie: ["!popular-movie", "!popmovie", "!pm", ";;"],
+            popularTV: ["!popular-tv", "!poptv", "!pt", "++"],
+        };
 
-        // AniList (public GraphQL, no auth) — full catalog with posters,
-        // results mapped onto classic anidb.net URLs (idMal = hime).
-        const al = await alSearchResults(query);
-        if (al.length > 0) return JSON.stringify(al);
+        const skipTitleFilter = Object.values(keywordGroups).flat();
+        const shouldFilter = !matchesKeyword(keyword, skipTitleFilter);
 
-        // Classic AniDB (anidb.net) XML API — covers the niche AniDB-only
-        // titles; only resolves with Shirox browser impersonation.
-        const classic = await classicSearch(query);
-        if (classic.length > 0) return JSON.stringify(classic);
+        const encodedKeyword = encodeURIComponent(keyword);
+        let baseUrlTemplate = null;
 
-        const mirror = parseMirrorSearch(await fetchText(`${MIRROR_SEARCH_URL}${encodeURIComponent(query)}`));
-        return JSON.stringify(mirror);
+        if (matchesKeyword(keyword, keywordGroups.trending)) {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/trending/all/week?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+        } else if (matchesKeyword(keyword, keywordGroups.topRatedMovie)) {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/top_rated?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+        } else if (matchesKeyword(keyword, keywordGroups.topRatedTV)) {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/top_rated?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+        } else if (matchesKeyword(keyword, keywordGroups.popularMovie)) {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/popular?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+        } else if (matchesKeyword(keyword, keywordGroups.popularTV)) {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/popular?api_key=9801b6b0548ad57581d111ea690c85c8&include_adult=false&page=${page}`)}&simple=true`;
+        } else {
+            baseUrlTemplate = (page) => `https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/search/multi?api_key=9801b6b0548ad57581d111ea690c85c8&query=${encodedKeyword}&include_adult=false&page=${page}`)}&simple=true`;
+        }
+
+        let dataResults = [];
+
+        if (baseUrlTemplate) {
+            const pagePromises = Array.from({ length: 5 }, (_, i) =>
+                soraFetch(baseUrlTemplate(i + 1)).then(r => r.json())
+            );
+            const pages = await Promise.all(pagePromises);
+            dataResults = pages.flatMap(p => p.results || []);
+        }
+
+        if (dataResults.length > 0) {
+            transformedResults = transformedResults.concat(
+                dataResults
+                    .map(result => {
+                        if (result.media_type === "movie" || result.title) {
+                            return {
+                                title: result.title || result.name || result.original_title || result.original_name || "Untitled",
+                                image: result.poster_path ? `https://image.tmdb.org/t/p/w500${result.poster_path}` : "",
+                                href: `movie/${result.id}`,
+                            };
+                        } else if (result.media_type === "tv" || result.name) {
+                            return {
+                                title: result.name || result.title || result.original_name || result.original_title || "Untitled",
+                                image: result.poster_path ? `https://image.tmdb.org/t/p/w500${result.poster_path}` : "",
+                                href: `tv/${result.id}/1/1`,
+                            };
+                        }
+                    })
+                    .filter(Boolean)
+                    .filter(result => result.title !== "Overflow")
+                    .filter(result => result.title !== "My Marriage Partner Is My Student, a Cocky Troublemaker")
+                    .filter(r => !shouldFilter || r.title.toLowerCase().includes(keyword.toLowerCase()))
+            );
+        }
+
+        console.log("Transformed Results: " + JSON.stringify(transformedResults));
+        return JSON.stringify(transformedResults);
     } catch (error) {
-        console.log('Search error: ' + error);
-        return JSON.stringify([]);
+        console.log("Fetch error in searchResults: " + error);
+        return JSON.stringify([{ title: "Error", image: "", href: "" }]);
     }
 }
 
-async function mainSearch(query) {
-    try {
-        const browseSrc = await fetchTextOrThrow(`${BROWSE_URL}${encodeURIComponent(query)}`);
-        const fromBrowse = parseBrowseCards(browseSrc);
-        if (fromBrowse.length > 0) return fromBrowse;
-        return parseBrowseCards(await fetchTextOrThrow(`${SUGGEST_URL}${encodeURIComponent(query)}`));
-    } catch (e) {
-        // main unreachable / maintenance / HTTP error: caller chains on
-        return [];
-    }
+function matchesKeyword(keyword, commands) {
+    const lower = keyword.toLowerCase();
+    return commands.some(cmd => lower.startsWith(cmd.toLowerCase()));
 }
 
-/* Classic AniDB (anidb.net) — the XML API behind ani-cli. anidb.app's
- * actual backend: same data, original site. Its host is Cloudflare-blocked
- * for datacenter IPs, so it only resolves with browser impersonation
- * (Shirox fetchv2 arg 5: { impersonate: 'chrome' }). On builds without
- * impersonation the classic fetches just 403 and the chain moves on. */
-const CLASSIC_BASE = 'https://anidb.net';
-var CLASSIC_CACHE = {};
-
-// AniList public GraphQL — no auth, no Cloudflare block. Its media IDs are
-// MAL IDs, which equal classic AniDB hime numbers, so it can cover the
-// full catalog even when anidb.net is blocked: search, posters, synopsis.
-const AL_GRAPHQL = 'https://graphql.anilist.co';
-
-function isClassicUrl(url) {
-    return /anidb\.(net|info)\//i.test(String(url || ''));
-}
-
-function classicAnimeUrl(hime) {
-    return `${CLASSIC_BASE}/anime.php?hime=${hime}`;
-}
-
-// Cached classic API fetch: the chain asks for the same show XML more than
-// once (details + episodes + stream) within one browsing session.
-async function classicFetchXml(path) {
-    const key = CLASSIC_BASE + path;
-    if (CLASSIC_CACHE[key]) return CLASSIC_CACHE[key];
-    const xml = await fetchText(key, 'chrome');
-    CLASSIC_CACHE[key] = xml;
-    return xml;
-}
-
-function isUsableClassicXml(xml) {
-    return !!xml && !/<html|<!DOCTYPE/i.test(xml.slice(0, 300));
-}
-
-async function classicSearch(query) {
-    try {
-        const xml = await fetchText(`${CLASSIC_BASE}/xml/v1/site/search/anime.php?s=${encodeURIComponent(query)}&limit=20`, 'chrome');
-        return parseClassicSearchXml(xml);
-    } catch (e) {
-        return [];
-    }
-}
-
-// Classic API responses are XML — parse with regex/indexOf only.
-// Each <anime> block: <hime>135</hime><titles><title lang="en">One Piece</title>...
-function parseClassicSearchXml(xml) {
-    const results = [];
-    if (!isUsableClassicXml(xml)) return results;
-
-    const seen = new Set();
-    const animeRe = /<anime[^>]*>[\s\S]*?<\/anime>/gi;
-    let block;
-    while ((block = animeRe.exec(xml)) !== null) {
-        const chunk = block[0];
-        const hime = extractFirst(chunk, /<hime>(\d+)<\/hime>/i);
-        // Prefer the English title, then the main title, then any title.
-        const title = extractFirst(chunk, /<title[^>]*lang="en"[^>]*>([\s\S]*?)<\/title>/i)
-            || extractFirst(chunk, /<title[^>]*lang="main"[^>]*>([\s\S]*?)<\/title>/i)
-            || extractFirst(chunk, /<title[^>]*>([\s\S]*?)<\/title>/i);
-        if (!hime || !title || seen.has(hime)) continue;
-        seen.add(hime);
-        results.push({
-            title: cleanText(title),
-            image: '',
-            href: classicAnimeUrl(hime)
-        });
-    }
-    return results;
-}
-
-async function classicEpisodes(hime) {
-    try {
-        const xml = await classicFetchXml(`/xml/v1/info/anime/episodes/${hime}`);
-        if (!isUsableClassicXml(xml)) return [];
-
-        const episodes = [];
-        const epRe = /<episode[^>]*>[\s\S]*?<\/episode>/gi;
-        let block;
-        while ((block = epRe.exec(xml)) !== null) {
-            const chunk = block[0];
-            const id = extractFirst(chunk, /<eid>(\d+)<\/eid>/i);
-            const epNumber = extractFirst(chunk, /<ep>(\d+)<\/ep>/i);
-            const episodeType = extractFirst(chunk, /<episode_type>([^<]*)<\/episode_type>/i);
-            // Main-season episodes only; specials/OVA come from other
-            // endpoints and would interleave badly.
-            if (!id || !epNumber || episodeType !== 'main_season') continue;
-            episodes.push({
-                href: `${CLASSIC_BASE}/episode.php?eid=${id}`,
-                number: parseInt(epNumber, 10)
-            });
-        }
-        episodes.sort((a, b) => a.number - b.number);
-        return episodes;
-    } catch (e) {
-        return [];
-    }
-}
-
-// Classic show details: real synopsis + release date + all titles, straight
-// from the same DB anidb.app fronts.
-async function classicDetails(hime) {
-    try {
-        const xml = await classicFetchXml(`/xml/v1/info/anime/${hime}`);
-        if (!isUsableClassicXml(xml)) return null;
-
-        const description = cleanText(extractFirst(xml, /<anidb_synopsis>([\s\S]*?)<\/anidb_synopsis>/i));
-        const airdate = extractFirst(xml, /<date>([\d-]+)<\/date>/i);
-
-        const titles = [];
-        const titleRe = /<title[^>]*>([\s\S]*?)<\/title>/gi;
-        let t;
-        while ((t = titleRe.exec(xml)) !== null) {
-            const x = cleanText(t[1]);
-            if (x) titles.push(x);
-        }
-
-        return {
-            description: description || 'No description available',
-            airdate: airdate || 'Unknown',
-            aliases: titles.length > 1 ? titles.join(', ') : (titles[0] || 'No alternative titles')
-        };
-    } catch (e) {
-        return null;
-    }
-}
-
-/* --- AniList (public, unauthenticated) --- */
-
-function alPost(query, variables) {
-    const body = JSON.stringify({ query: query, variables: variables || {} });
-    const headers = { 'Content-Type': 'application/json', 'Accept': 'application/json' };
-    return soraFetch(AL_GRAPHQL, { method: 'POST', headers: headers, body: body });
-}
-
-async function alSearchResults(query) {
-    try {
-        const gq = 'query($s:String!){ Page(perPage:10){ media(search:$s, type:ANIME, sort:SEARCH_MATCH, isAdult:false){ id title{romaji english} coverImage{large} } } }';
-        const res = await alPost(gq, { s: query });
-        if (!res) return [];
-        const data = await res.json();
-        const media = (data && data.data && data.data.Page && data.data.Page.media) || [];
-        const results = [];
-        for (let i = 0; i < media.length; i++) {
-            const m = media[i];
-            if (!m || !m.id) continue;
-            const title = cleanText(((m.title && (m.title.english || m.title.romaji)) || ''));
-            if (!title) continue;
-            // AniList media id == MAL id == classic AniDB hime.
-            results.push({
-                title: title,
-                image: (m.coverImage && m.coverImage.large) || '',
-                href: classicAnimeUrl(m.id)
-            });
-        }
-        return results;
-    } catch (e) {
-        return [];
-    }
-}
-
-// English display title for a hime: classic first (niche names), AniList
-// as the public fallback.
-async function himeTitle(hime) {
-    if (!hime) return '';
-    const xml = await classicFetchXml(`/xml/v1/info/anime/${hime}`);
-    if (isUsableClassicXml(xml)) {
-        const en = extractFirst(xml, /<title[^>]*lang="en"[^>]*>([\s\S]*?)<\/title>/i);
-        if (cleanText(en)) return cleanText(en);
-    }
-    try {
-        const gq = 'query($id:Int!){ Media(id:$id, type:ANIME){ title{romaji english} } }';
-        const res = await alPost(gq, { id: parseInt(hime, 10) });
-        if (res) {
-            const data = await res.json();
-            const t = data && data.data && data.data.Media && data.data.Media.title;
-            if (t) return cleanText(t.english || t.romaji || '');
-        }
-    } catch (e) { /* fall through */ }
-    return '';
-}
-
-async function alDetails(hime) {
-    try {
-        const gq = 'query($id:Int!){ Media(id:$id, type:ANIME){ title{romaji english native} description startDate{year month day} } }';
-        const res = await alPost(gq, { id: parseInt(hime, 10) });
-        if (!res) return null;
-        const data = await res.json();
-        const m = data && data.data && data.data.Media;
-        if (!m) return null;
-        const aliases = [];
-        if (m.title) {
-            [m.title.romaji, m.title.english, m.title.native].forEach(function (t) {
-                const x = cleanText(String(t || ''));
-                if (x && aliases.indexOf(x) === -1) aliases.push(x);
-            });
-        }
-        let airdate = 'Unknown';
-        if (m.startDate && m.startDate.year) {
-            airdate = String(m.startDate.year);
-            if (m.startDate.month) airdate += '-' + m.startDate.month;
-            if (m.startDate.day) airdate += '-' + m.startDate.day;
-        }
-        return {
-            description: cleanText(m.description || '') || 'No description available',
-            airdate: airdate,
-            aliases: aliases.length ? aliases.join(', ') : 'No alternative titles'
-        };
-    } catch (e) {
-        return null;
-    }
-}
-
-/* --- MAL HTML (public, no Cloudflare): numbered episode lists when the
- * Jikan proxy is down. The plain anime page embeds the episode table. --- */
-const MAL_BASE = 'https://myanimelist.net';
-
-function parseMalEpisodes(html) {
-    const out = [];
-    const seen = {};
-    if (!html) return out;
-    const re = /<tr class="ep-row[^"]*"[^>]*>[\s\S]*?<td class="ep-number">\s*(\d+(?:\.\d+)?)\s*<\/td>/g;
-    let m;
-    while ((m = re.exec(html)) !== null) {
-        const n = parseFloat(m[1]);
-        if (isNaN(n) || n <= 0 || seen[n]) continue;
-        seen[n] = 1;
-        out.push(n);
-    }
-    out.sort(function (a, b) { return a - b; });
-    return out;
-}
-
-async function malEpisodes(malId, titleHint) {
-    try {
-        const numbers = parseMalEpisodes(await fetchText(`${MAL_BASE}/anime/${malId}`));
-        if (!numbers.length) return [];
-
-        const title = cleanText(String(titleHint || await himeTitle(malId)));
-        const mirrorShow = await mirrorShowForHime(malId, title);
-        let byNum = {};
-        if (mirrorShow) {
-            parseMirrorEpisodes(await fetchText(mirrorShow), mirrorShowSlug(mirrorShow)).forEach(function (e) { byNum[e.number] = e; });
-        }
-        return numbers.map(function (n) {
-            return byNum[n]
-                ? { href: byNum[n].href, number: n }
-                : { href: `${CLASSIC_BASE}/episode.php?hime=${malId}&ep=${n}`, number: n };
-        });
-    } catch (e) {
-        return [];
-    }
-}
-
-// Mirror show URL for a hime: the mirror only exposes search, so we go
-// hime -> display title -> mirror search -> show card.
-async function mirrorShowForHime(hime, titleHint) {
-    if (!hime) return '';
-    let title = cleanText(String(titleHint || ''));
-    if (!title) title = await himeTitle(hime);
-    if (!title) return '';
-    const found = parseMirrorSearch(await fetchText(`${MIRROR_SEARCH_URL}${encodeURIComponent(title)}`));
-    return found.length ? found[0].href : '';
-}
-
-// AniList episode count for hime == MAL id: public, no auth, no Cloudflare.
-// Older shows may have episodes: null — that is not an error, just no data.
-async function alEpisodes(hime) {
-    try {
-        const gq = 'query($id:Int!){ Media(id:$id, type:ANIME){ episodes } }';
-        const res = await alPost(gq, { id: parseInt(hime, 10) });
-        if (!res) return [];
-        const data = await res.json();
-        const m = data && data.data && data.data.Media;
-        const n = m ? parseInt(m.episodes, 10) : NaN;
-        if (isNaN(n) || n <= 0 || n > 1500) return [];
-        const numbers = [];
-        for (let i = 1; i <= n; i++) numbers.push(i);
-
-        const title = cleanText(await himeTitle(hime));
-        const mirrorShow = await mirrorShowForHime(hime, title);
-        let byNum = {};
-        if (mirrorShow) {
-            parseMirrorEpisodes(await fetchText(mirrorShow), mirrorShowSlug(mirrorShow)).forEach(function (e) { byNum[e.number] = e; });
-        }
-        return numbers.map(function (i) {
-            return byNum[i]
-                ? { href: byNum[i].href, number: i }
-                : { href: `${CLASSIC_BASE}/episode.php?hime=${hime}&ep=${i}`, number: i };
-        });
-    } catch (e) {
-        return [];
-    }
-}
-
-/* --- Jikan (public MAL REST proxy): full numbered episode lists without
- * auth or Cloudflare. Episode numbers map onto playable mirror URLs. --- */
-const JIKAN_BASE = 'https://api.jikan.moe/v2';
-
-async function jikanEpisodes(malId) {
-    const numbers = [];
-    const titleRef = { t: '' };
-    try {
-        for (let page = 1; page <= 3; page++) {
-            const res = await soraFetch(`${JIKAN_BASE}/anime/${malId}/episodes?page=${page}&limit=100`);
-            if (!res) break;
-            const data = await res.json();
-            if (!data || !Array.isArray(data.data)) break;
-            if (!titleRef.t && data.data.anime && data.data.anime.title) titleRef.t = String(data.data.anime.title);
-            data.data.episodes.forEach(function (ep) {
-                const n = parseInt(ep.number, 10);
-                if (!isNaN(n) && n > 0) numbers.push(n);
-            });
-            if (data.data.episodes.length < 100) break;
-        }
-    } catch (e) {
-        return [];
-    }
-    if (!numbers.length) return [];
-    numbers.sort(function (a, b) { return a - b; });
-
-    const mirrorShow = await mirrorShowForHime(malId, titleRef.t);
-    let byNum = {};
-    if (mirrorShow) {
-        const html = await fetchText(mirrorShow);
-        parseMirrorEpisodes(html, mirrorShowSlug(mirrorShow)).forEach(function (e) { byNum[e.number] = e; });
-    }
-    return numbers.map(function (n) {
-        // Playable mirror episode when the mirror hosts it; otherwise the
-        // synthetic hime+ep URL (extractStreamUrl re-resolves it when the
-        // mirror adds the episode — the classic URL would have no player).
-        return byNum[n]
-            ? { href: byNum[n].href, number: n }
-            : { href: `${CLASSIC_BASE}/episode.php?hime=${malId}&ep=${n}`, number: n };
-    });
-}
-
-// Mirror stream for a classic episode URL: eid -> ep number + hime ->
-// mirror show page -> the matching mirror episode page -> its direct mp4.
-async function classicEpisodeStream(url) {
-    try {
-        const u = String(url || '');
-        const eid = extractFirst(u, /[?&]eid=(\d+)/i);
-        const hime = extractFirst(u, /[?&]hime=(\d+)/i);
-        const epNum = extractFirst(u, /[?&]ep=(\d+(?:\.\d+)?)/i);
-
-        let num = epNum ? parseInt(epNum, 10) : null;
-        if (!hime && eid) {
-            const xml = await classicFetchXml(`/xml/v1/info/episode/${eid}`);
-            if (isUsableClassicXml(xml)) {
-                num = parseInt(extractFirst(xml, /<ep>(\d+)<\/ep>/i), 10);
-            }
-        }
-        const showHime = hime || (eid ? extractFirst(await classicFetchXml(`/xml/v1/info/episode/${eid}`) || '', /<hime>(\d+)<\/hime>/i) : '');
-        if (!showHime || isNaN(num)) return null;
-
-        const mirrorShow = await mirrorShowForHime(showHime);
-        if (!mirrorShow) return null;
-        const html = await fetchText(mirrorShow);
-        const eps = parseMirrorEpisodes(html, mirrorShowSlug(mirrorShow));
-        const match = eps.find(function (e) { return e.number === num; });
-        if (!match) return null;
-        return parseMirrorStream(await fetchText(match.href));
-    } catch (e) {
-        return null;
-    }
-}
-
-function detailsFallback() {
-    return {
-        description: 'No description available',
-        airdate: 'Unknown',
-        aliases: 'No alternative titles'
-    };
-}
-
-/* --- Anilibria (public REST, no auth): playable HLS for the full catalog.
- * The 1Anime network's stream backend (flixcloud tokens + WASM obfuscation)
- * is unworkable in-app, but Anilibria serves plain m3u8s on
- * cache.libria.fun that answer 200 without a Referer — verified for
- * One Piece / Frieren / Golden Kamuy. Search is by title, matched by
- * MAL id (when it equals hime) or exact English title. Episode hrefs are
- * anilibria.top watch-page URLs that extractStreamUrl re-resolves. --- */
-const LIBRIA_API = 'https://anilibria.top/api/v1';
-const LIBRIA_BASE = 'https://anilibria.top';
-const LIBRIA_RELEASE = `${LIBRIA_BASE}/releases/`;
-const LIBRIA_CACHE = {};
-
-function libriaHeaders() {
-    return {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-        'Accept': 'application/json',
-        'Referer': LIBRIA_BASE + '/'
-    };
-}
-
-function isLibriaUrl(url) {
-    return String(url || '').indexOf(LIBRIA_RELEASE) !== -1 ||
-        String(url || '').indexOf(LIBRIA_BASE + '/anime/releases/') !== -1;
-}
-
-function libriaReleaseId(url) {
-    return extractFirst(String(url || ''), /anilibria\.top\/(?:releases\/|api\/v1\/anime\/releases\/)(\d+)/i);
-}
-
-async function libriaRelease(libId) {
-    if (LIBRIA_CACHE[libId]) return LIBRIA_CACHE[libId];
-    try {
-        const res = await soraFetch(`${LIBRIA_API}/anime/releases/${libId}`, { headers: libriaHeaders() });
-        if (!res) return null;
-        const rel = await res.json();
-        if (!rel || !rel.id) return null;
-        LIBRIA_CACHE[libId] = rel;
-        return rel;
-    } catch (e) {
-        return null;
-    }
-}
-
-// Find the Anilibria release for a hime: search by display title, prefer an
-// exact MAL-id hit, then an exact English-title hit, then the first result.
-function normTitle(s) {
-    // Lowercase, drop apostrophes/quotes, strip ASCII punctuation, collapse
-    // whitespace. Kept to conservative char classes: Unicode property
-    // escapes (\p{L}) are not available in every JSCore/QuickJS build.
-    return String(s || '')
-        .toLowerCase()
-        .replace(/[\u2019'`’‘]/g, '')
-        .replace(/[^a-z0-9\u00c0-\uffff\s]+/g, ' ')
-        .replace(/\s+/g, ' ')
-        .trim();
-}
-
-// Candidate scoring against a display title. AniList ids are MAL ids but
-// AniLibria's `mal.id` field is populated with Shikimori ids for many
-// releases, so only title evidence is trusted — an id match is allowed to
-// break ties, never to pick a release on its own.
-function scoreLibriaRelease(r, q) {
-    const en = normTitle(r.name && (r.name.english || r.name.main));
-    if (!en) return 0;
-    if (en === q) return 1;
-    if (en.indexOf(q) !== -1 || q.indexOf(en) !== -1) return 0.7;
-    const qt = q.split(' ').filter(function (t) { return t.length > 2; });
-    if (!qt.length) return 0;
-    const hit = qt.filter(function (t) { return en.indexOf(t) !== -1; }).length;
-    return hit / qt.length;
-}
-
-async function libriaReleaseForHime(hime, titleHint, minScore) {
-    if (!hime) return null;
-    const need = minScore || 0.7;
-    let title = cleanText(String(titleHint || ''));
-    if (!title) title = await himeTitle(hime);
-    if (!title) return null;
-    try {
-        // Anilibria's English titles are romaji-flavored ("Sousou no
-        // Frieren") while the app's titles are AniList English, so score
-        // against every available title flavor, not just the hint.
-        const candidates = [title];
-        const al = await alTitles(hime);
-        [al.romaji, al.english, al.native].forEach(function (t) {
-            const x = cleanText(t);
-            if (x && candidates.indexOf(x) === -1) candidates.push(x);
-        });
-
-        const res = await soraFetch(`${LIBRIA_API}/app/search/releases?query=${encodeURIComponent(candidates[0])}`, { headers: libriaHeaders() });
-        if (!res) return null;
-        let list = await res.json();
-        // The search is fuzzy but single-query: when the hint flavor
-        // matches nothing, the romaji flavor often still finds the release.
-        if (!Array.isArray(list) || !list.length) {
-            const alt = candidates[1] || candidates[0];
-            const res2 = await soraFetch(`${LIBRIA_API}/app/search/releases?query=${encodeURIComponent(alt)}`, { headers: libriaHeaders() });
-            if (res2) {
-                const list2 = await res2.json();
-                if (Array.isArray(list2) && list2.length) list = list2;
-            }
-        }
-        if (!Array.isArray(list) || !list.length) return null;
-
-        let pick = null;
-        let best = 0;
-        let bestExact = false;
-        for (let i = 0; i < list.length; i++) {
-            let s = 0;
-            let exact = false;
-            for (let c = 0; c < candidates.length; c++) {
-                const cs = scoreLibriaRelease(list[i], normTitle(candidates[c]));
-                if (cs > s) { s = cs; exact = cs === 1; }
-            }
-            if (s > best || (s === best && s > 0 && exact && !bestExact)) {
-                best = s;
-                bestExact = exact;
-                pick = list[i];
-            }
-        }
-        // No confident title hit: the search results may be a different
-        // release (e.g. Shippuuden for "Naruto"), which would serve the
-        // wrong episodes. Stay honest instead.
-        if (!pick || best < need) return null;
-        return libriaRelease(pick.id);
-    } catch (e) {
-        return null;
-    }
-}
-
-// All AniList title flavors for a hime (romaji/english/native), used to
-// score Anilibria releases.
-async function alTitles(hime) {
-    const out = { romaji: '', english: '', native: '' };
-    if (!hime) return out;
-    try {
-        const gq = 'query($id:Int!){ Media(id:$id, type:ANIME){ title{romaji english native} } }';
-        const res = await alPost(gq, { id: parseInt(hime, 10) });
-        if (res) {
-            const data = await res.json();
-            const t = data && data.data && data.data.Media && data.data.Media.title;
-            if (t) {
-                out.romaji = String(t.romaji || '');
-                out.english = String(t.english || '');
-                out.native = String(t.native || '');
-            }
-        }
-    } catch (e) { /* fall through */ }
-    return out;
-}
-
-async function libriaEpisodes(hime, titleHint) {
-    const rel = await libriaReleaseForHime(hime, titleHint);
-    if (!rel || !Array.isArray(rel.episodes) || !rel.episodes.length) return [];
-    const libId = rel.id;
-    return rel.episodes
-        .filter(function (e) { return (e.hls_720 || e.hls_480) && e.id; })
-        .map(function (e) {
-            const n = parseInt(e.ordinal, 10);
-            return { href: `${LIBRIA_RELEASE}${libId}/${e.id}`, number: isNaN(n) ? 0 : n };
-        })
-        .filter(function (e) { return e.number > 0; })
-        .sort(function (a, b) { return a.number - b.number; });
-}
-
-// Anilibria watch-page URL: /releases/<libId>/<episodeUuid> (uuid optional
-// for show-level URLs) -> the release's playable hls for that episode.
-async function libriaEpisodeStream(url) {
-    try {
-        const u = String(url || '');
-        const m = u.match(/anilibria\.top\/releases\/(\d+)\/?([0-9a-fA-F-]{36})?/i);
-        if (!m) return null;
-        const rel = await libriaRelease(m[1]);
-        if (!rel) return null;
-        let ep;
-        if (m[2]) {
-            ep = (rel.episodes || []).find(function (e) { return e.id === m[2]; });
-        } else {
-            ep = (rel.episodes || []).filter(function (e) { return e.hls_720 || e.hls_480; })[0];
-        }
-        if (!ep) return null;
-        const hls = ep.hls_720 || ep.hls_480;
-        if (!hls) return null;
-        return {
-            title: ep.hls_720 ? 'AniLibria (720p)' : 'AniLibria (480p)',
-            streamUrl: hls,
-            headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36', 'Referer': LIBRIA_BASE + '/' }
-        };
-    } catch (e) {
-        return null;
-    }
-}
-
-// hime + episode number -> Anilibria hls, for the classic placeholder
-// episode URLs that the mirror can't cover. When the URL names a number,
-// only that episode (ordinal == ep) may be served — falling back to a
-// different episode would play the wrong content for a partial title match.
-async function libriaStreamForHimeEp(hime, epNumber) {
-    try {
-        const title = await himeTitle(hime);
-        const rel = await libriaReleaseForHime(hime, title);
-        if (!rel || !Array.isArray(rel.episodes)) return null;
-        const n = parseInt(epNumber, 10);
-        let ep;
-        if (!isNaN(n)) {
-            ep = (rel.episodes || []).find(function (e) {
-                return parseInt(e.ordinal, 10) === n && (e.hls_720 || e.hls_480);
-            });
-        } else {
-            ep = (rel.episodes || []).filter(function (e) { return e.hls_720 || e.hls_480; })[0];
-        }
-        if (!ep) return null;
-        const hls = ep.hls_720 || ep.hls_480;
-        if (!hls) return null;
-        return {
-            title: ep.hls_720 ? 'AniLibria (720p)' : 'AniLibria (480p)',
-            streamUrl: hls,
-            headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36', 'Referer': LIBRIA_BASE + '/' }
-        };
-    } catch (e) {
-        return null;
-    }
-}
-
-/**
- * Fetches the anime watch page and extracts description, airdate and alternative titles.
- * @param {string} url - The anidb.app anime page URL (or an anidb.se mirror URL).
- * @returns {string} JSON array with a single {description, airdate, aliases} object.
- */
 async function extractDetails(url) {
     try {
-        if (isMirrorUrl(url)) {
-            const mirrorDetails = parseMirrorDetails(await fetchText(String(url)));
-            return JSON.stringify([mirrorDetails || detailsFallback()]);
-        }
-        if (isClassicUrl(url)) {
-            const hime = extractFirst(String(url), /[?&]hime=(\d+)/i);
-            // Classic AniDB details are preferred (AniDB-native synopsis);
-            // when the CF block denies it, AniList covers it publicly.
-            const classic = hime ? await classicDetails(hime) : null;
-            const al = classic ? null : await alDetails(hime);
-            const mirror = parseMirrorDetails(await fetchText(await mirrorShowForHime(hime)));
-            return JSON.stringify([classic || al || mirror || detailsFallback()]);
-        }
-        try {
-            const html = await fetchTextOrThrow(String(url));
-            if (/under maintenance/i.test(html)) throw new Error('main site maintenance page');
-            return JSON.stringify([parseMainDetails(html)]);
-        } catch (mainError) {
-            // main site unreachable / maintenance: classic API first,
-            // AniList second, mirror title-only last.
-            const hime = parseAnimeId(url) || extractFirst(String(url || ''), /[?&]hime=(\d+)/i);
-            const classic = hime ? await classicDetails(hime) : null;
-            const al = (classic || !hime) ? null : await alDetails(hime);
-            const mirrorDetails = parseMirrorDetails(await fetchText(resolveMirrorUrl(url)));
-            return JSON.stringify([classic || al || mirrorDetails || detailsFallback()]);
+        if (url.includes('movie')) {
+            const match = url.match(/movie\/([^\/]+)/);
+            if (!match) throw new Error("Invalid URL format");
+
+            const movieId = match[1];
+            const responseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/movie/${movieId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
+            const data = await responseText.json();
+
+            const transformedResults = [{
+                description: data.overview || 'No description available',
+                aliases: `Duration: ${data.runtime ? data.runtime + " minutes" : 'Unknown'}`,
+                airdate: `Released: ${data.release_date ? data.release_date : 'Unknown'}`
+            }];
+
+            return JSON.stringify(transformedResults);
+        } else if (url.includes('tv')) {
+            const match = url.match(/tv\/([^\/]+)/);
+            if (!match) throw new Error("Invalid URL format");
+
+            const showId = match[1];
+            const responseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
+            const data = await responseText.json();
+
+            const transformedResults = [{
+                description: data.overview || 'No description available',
+                aliases: `Duration: ${data.episode_run_time && data.episode_run_time.length ? data.episode_run_time.join(', ') + " minutes" : 'Unknown'}`,
+                airdate: `Aired: ${data.first_air_date ? data.first_air_date : 'Unknown'}`
+            }];
+
+            console.log(JSON.stringify(transformedResults));
+            return JSON.stringify(transformedResults);
+        } else {
+            throw new Error("Invalid URL format");
         }
     } catch (error) {
         console.log('Details error: ' + error);
-        return JSON.stringify([detailsFallback()]);
+        return JSON.stringify([{
+            description: 'Error loading description',
+            aliases: 'Duration: Unknown',
+            airdate: 'Aired/Released: Unknown'
+        }]);
     }
 }
 
-/**
- * Extracts the list of episodes for an anime using the public JSON API.
- * The anime numeric ID is read from the tail of the passed URL. While the
- * main API is down it falls back to the anidb.se mirror, whose show pages
- * list the episodes it has (recent uploads only).
- * @param {string} url - The anime page URL, e.g. https://anidb.app/anime/one-piece-135
- *   or the mirror counterpart https://anidb.se/anime/one-piece/.
- * @returns {string} JSON string array of {href, number} objects.
- */
 async function extractEpisodes(url) {
     try {
-        if (isMirrorUrl(url)) {
-            const html = await fetchText(String(url));
-            const mirror = parseMirrorEpisodes(html, mirrorShowSlug(url));
-            if (mirror.length > 0) return JSON.stringify(mirror);
-            return JSON.stringify([]);
-        }
+        if (url.includes('movie')) {
+            const match = url.match(/movie\/([^\/]+)/);
+            if (!match) throw new Error("Invalid URL format");
 
-        // Result-based fallback: in-app fetchv2 may resolve a 503 API
-        // response without throwing, so "main produced no episodes" is the
-        // signal to chain onto the classic XML API, then the mirror.
-        const main = await mainEpisodes(url);
-        if (main.length > 0) return JSON.stringify(main);
+            const movieId = match[1];
+            const movie = [
+                { href: `/movie/${movieId}`, number: 1, title: "Full Movie" }
+            ];
 
-        const hime = parseAnimeId(url) || extractFirst(String(url || ''), /[?&]hime=(\d+)/i);
-        if (hime) {
-            // Numbered episode lists, public tiers in order:
-            // Jikan (full catalog) -> MAL HTML -> AniList count ->
-            // classic XML (Shirox impersonation only).
-            const eps = [];
-            const jikan = await jikanEpisodes(hime);
-            if (jikan.length) eps.push.apply(eps, jikan);
-            if (!eps.length) {
-                const mal = await malEpisodes(hime);
-                if (mal.length) eps.push.apply(eps, mal);
+            console.log(movie);
+            return JSON.stringify(movie);
+        } else if (url.includes('tv')) {
+            const match = url.match(/tv\/([^\/]+)\/([^\/]+)\/([^\/]+)/);
+            if (!match) throw new Error("Invalid URL format");
+
+            const showId = match[1];
+
+            const showResponseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
+            const showData = await showResponseText.json();
+
+            let allEpisodes = [];
+            for (const season of showData.seasons) {
+                const seasonNumber = season.season_number;
+                if (seasonNumber === 0) continue;
+
+                const seasonResponseText = await soraFetch(`https://post-eosin.vercel.app/api/proxy?url=${encodeURIComponent(`https://api.themoviedb.org/3/tv/${showId}/season/${seasonNumber}?api_key=ad301b7cc82ffe19273e55e4d4206885`)}&simple=true`);
+                const seasonData = await seasonResponseText.json();
+
+                if (seasonData.episodes && seasonData.episodes.length) {
+                    const episodes = seasonData.episodes.map(episode => ({
+                        href: `/tv/${showId}/${seasonNumber}/${episode.episode_number}`,
+                        number: episode.episode_number,
+                        title: episode.name || ""
+                    }));
+                    allEpisodes = allEpisodes.concat(episodes);
+                }
             }
-            if (!eps.length) {
-                const al = await alEpisodes(hime);
-                if (al.length) eps.push.apply(eps, al);
-            }
-            if (!eps.length) {
-                // Playable HLS for the full catalog (Anilibria): watch-page
-                // URLs that extractStreamUrl re-resolves to m3u8.
-                const libria = await libriaEpisodes(hime);
-                if (libria.length) eps.push.apply(eps, libria);
-            }
-            if (eps.length) return JSON.stringify(eps);
 
-            const classicEps = await classicEpisodes(hime);
-            if (classicEps.length > 0) return JSON.stringify(classicEps);
+            console.log(allEpisodes);
+            return JSON.stringify(allEpisodes);
+        } else {
+            throw new Error("Invalid URL format");
         }
-
-        // Classic hime URLs have no mirror-slug to derive from; resolve the
-        // mirror show through hime -> title -> mirror search instead.
-        let mirrorUrl = resolveMirrorUrl(url);
-        if (!mirrorUrl && hime) mirrorUrl = await mirrorShowForHime(hime);
-        if (mirrorUrl) {
-            const html = await fetchText(mirrorUrl);
-            const mirror = parseMirrorEpisodes(html, mirrorShowSlug(mirrorUrl));
-            return JSON.stringify(mirror);
-        }
-        return JSON.stringify([]);
     } catch (error) {
-        console.log('Episodes error: ' + error);
+        console.log('Fetch error in extractEpisodes: ' + error);
         return JSON.stringify([]);
     }
 }
 
-async function mainEpisodes(url) {
-    try {
-        const animeId = parseAnimeId(url);
-        if (!animeId) return [];
-        const response = await soraFetch(EPISODES_API.replace('%s', animeId));
-        if (!response) return [];
-        const data = await response.json();
-        return parseMainEpisodes(data, BASE_URL);
-    } catch (e) {
-        return [];
-    }
+function getQualityWeight(title) {
+    if (title.includes("2160p") || title.includes("4K")) return 2160;
+    if (title.includes("1080p")) return 1080;
+    if (title.includes("720p")) return 720;
+    if (title.includes("480p")) return 480;
+    if (title.includes("360p")) return 360;
+    if (title.includes("Auto")) return 1;
+    return 0;
 }
 
-/**
- * Resolves an anime episode to its playable stream. Main site: JWPlayer
- * embeds exposing a "file" master playlist. Mirror fallback: the anidb.se
- * episode page's uvp-1 player exposing a direct mp4/hls source.
- * @param {string} url - The episode href emitted by extractEpisodes.
- * @returns {string} JSON object {streams:[{title, streamUrl, headers}], subtitle}.
- */
-async function extractStreamUrl(url) {
-    const fallback = JSON.stringify({ streams: [], subtitle: '' });
+async function extractStreamUrl(ID) {
     try {
-        if (isMirrorUrl(url)) {
-            const mirror = parseMirrorStream(await fetchText(String(url)));
-            return JSON.stringify({ streams: mirror ? [mirror] : [], subtitle: '' });
+        let isMovie = ID.includes('movie');
+        let tmdbID, seasonNumber = "1", episodeNumber = "1";
+        let mediaType = "";
+
+        const parts = ID.split('/').filter(Boolean);
+        if (isMovie) {
+            tmdbID = parts[parts.length - 1];
+            mediaType = "movie";
+        } else if (ID.includes('tv')) {
+            tmdbID = parts[1];
+            seasonNumber = parts[2];
+            episodeNumber = parts[3];
+            mediaType = "tv";
+        } else {
+            return JSON.stringify({ streams: [] });
         }
-        if (isLibriaUrl(url)) {
-            const libria = await libriaEpisodeStream(url);
-            return JSON.stringify({ streams: libria ? [libria] : [], subtitle: '' });
-        }
-        if (isClassicUrl(url)) {
-            const classic = await classicEpisodeStream(url);
-            // Mirror has no mp4 for this show/episode: playable HLS via
-            // Anilibria instead (the classic placeholder URL is its trigger).
-            const libria = classic
-                ? null
-                : await libriaStreamForHimeEp(
-                    extractFirst(String(url), /[?&]hime=(\d+)/i),
-                    extractFirst(String(url), /[?&]ep=(\d+(?:\.\d+)?)/i)
-                );
-            const stream = classic || libria;
-            return JSON.stringify({ streams: stream ? [stream] : [], subtitle: '' });
-        }
-        // While the main site is down, the app's episode URLs came from the
-        // mirror's extractEpisodes and are already anidb.se URLs (handled
-        // above). A raw anidb.app/episode/<id> URL has no mirror
-        // counterpart, so main only.
-        const main = await resolveMainStream(String(url));
-        return JSON.stringify({ streams: main || [], subtitle: '' });
-    } catch (error) {
-        console.log('Stream error: ' + error);
-        return fallback;
-    }
-}
 
-async function resolveMainStream(url) {
-    const episodeMatch = String(url || '').match(/\/episode\/(\d+)/);
-    if (!episodeMatch) return null;
+        const servers = [
+            {"label": "Wolf", "path": "air", "api": "https://usa.eat-peach.sbs"},
+            {"label": "Spider", "path": "holly", "api": "https://usa.eat-peach.sbs"},
+            {"label": "Iron", "path": "moviebox", "api": "https://uwu.eat-peach.sbs"},
+            {"label": "Multi", "path": "multi", "api": "https://usa.eat-peach.sbs"},
+            {"label": "Dark", "path": "net", "api": "https://uwu.eat-peach.sbs"},
+        ];
 
-    const epId = episodeMatch[1];
-    const response = await soraFetch(LANGUAGES_API.replace('%s', epId));
-    if (!response) return null;
-    const data = await response.json();
+        const requestHeaders = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
+            "Origin": "https://peachify.top",
+            "Referer": "https://peachify.top/"
+        };
 
-    const rawLangs = (data && (Array.isArray(data.languages) ? data.languages : Array.isArray(data.data) ? data.data : Array.isArray(data.streams) ? data.streams : [])) || [];
-    if (!Array.isArray(rawLangs) || rawLangs.length === 0) return null;
+        let streamObjects = [];
+        let allSubtitles = [];
 
-    const languages = rawLangs
-        .map((lang) => ({
-            code: (lang.code || lang.language || '').toLowerCase(),
-            name: lang.name || lang.label,
-            embed_url: lang.embed_url || lang.url || lang.file
-        }))
-        .filter((l) => l.code && l.embed_url);
+        const serverPromises = servers.map(async (server) => {
+            try {
+                const url = mediaType === "movie"
+                    ? `${server.api}/${server.path}/movie/${tmdbID}`
+                    : `${server.api}/${server.path}/tv/${tmdbID}/${seasonNumber}/${episodeNumber}`;
 
-    const streams = [];
-    const seenLang = new Set();
+                const response = await soraFetch(url, { headers: requestHeaders });
+                if (!response) return null;
+                const jsonRes = await response.json();
+                if (!jsonRes || !jsonRes.data) return null;
 
-    // Resolve each language embed to its master playlist.
-    // Prefer SUB (jpn) first, then DUB (eng), keeping every language as a
-    // selectable stream in Sora's server picker.
-    const preferred = languages.slice().sort((a, b) => {
-        const ord = { jpn: 0, eng: 1, 'es': 2, 'pt-br': 3 };
-        return (ord[a.code] ?? 9) - (ord[b.code] ?? 9);
-    });
+                const dec_peachify = "https://enc-dec.app/api/dec-peachify";
+                const decResponse = await fetchv2(dec_peachify, { "Content-Type": "application/json" }, "POST", JSON.stringify({ text: jsonRes.data }));
+                const decData = await decResponse.json();
 
-    const resolved = await Promise.all(preferred.map(async (lang) => {
-        try {
-            const master = await resolveEmbedMaster(lang.embed_url);
-            if (!master) return null;
-            return {
-                title: prettifyLangLabel(lang),
-                streamUrl: master,
-                headers: makeStreamHeaders(),
-                language: lang.code
-            };
-        } catch (e) {
-            console.log('Embed resolve error: ' + (lang.code || lang.name) + ' -> ' + e);
+                if (decData && decData.status === 200 && decData.result) {
+                    return {
+                        serverLabel: server.label,
+                        sources: decData.result.sources || [],
+                        subtitles: decData.result.subtitles || []
+                    };
+                }
+            } catch (err) {
+                console.log(`Error processing Peachify server ${server.label}: ${err.message}`);
+            }
             return null;
-        }
-    }));
+        });
 
-    resolved.forEach((s) => {
-        if (!s || !s.streamUrl) return;
-        const key = s.language || s.streamUrl;
-        if (seenLang.has(key)) return;
-        seenLang.add(key);
-        streams.push(s);
-    });
+        const results = await Promise.all(serverPromises);
 
-    return streams.length ? streams : null;
-}
+        results.forEach(res => {
+            if (!res) return;
+            const { serverLabel, sources, subtitles } = res;
 
-/* MIRROR HELPERS (anidb.se) */
+            sources.forEach(src => {
+                if (src.url && !streamObjects.some(existing => existing.streamUrl === src.url)) {
+                    streamObjects.push({
+                        title: `[Peachify - ${serverLabel}] ${src.dub || 'HLS'}`,
+                        streamUrl: src.url,
+                        headers: {
+                            "Origin": "https://peachify.top",
+                            "Referer": "https://peachify.top/",
+                            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36",
+                            ...(src.headers || {})
+                        }
+                    });
+                }
+            });
 
-function isMirrorUrl(url) {
-    return String(url || '').includes(MIRROR_HOST);
-}
+            subtitles.forEach(sub => {
+                if (sub.url && !allSubtitles.some(existing => existing.url === sub.url)) {
+                    allSubtitles.push(sub);
+                }
+            });
+        });
 
-// Map a main-site show URL onto its anidb.se mirror URL. Main anime URLs are
-// /anime/<slug>[-<id>]; the mirror drops the numeric id:
-// https://anidb.app/anime/one-piece-135 -> https://anidb.se/anime/one-piece/
-// Mirror URLs pass through unchanged; anything else yields ''.
-function resolveMirrorUrl(url) {
-    const u = String(url || '');
-    if (u.includes(MIRROR_HOST)) return u;
-    const m = u.match(/anidb\.app\/anime\/([a-z0-9-]+?)(?:-\d+)?\/?(?:[?#].*)?$/i);
-    if (!m) return '';
-    return `${MIRROR_URL}/anime/${m[1].replace(/-\d+$/, '')}/`;
-}
+        streamObjects.sort((a, b) => {
+            const weightA = getQualityWeight(a.title);
+            const weightB = getQualityWeight(b.title);
+            return weightB - weightA;
+        });
 
-// The show slug a mirror episode/show URL belongs to ("one-piece" from
-// .../anime/one-piece/ or .../one-piece-episode-1180-english-subbed/).
-function mirrorShowSlug(url) {
-    const s = String(url || '').replace(/\/+$/, '');
-    const m = s.match(/anidb\.se\/(?:anime\/)?([a-z0-9-]+)$/i);
-    if (m) {
-        const ep = m[1].match(/^(.+)-episode-\d+-.*/i);
-        return ep ? ep[1] : m[1];
-    }
-    const main = s.match(/anidb\.app\/anime\/([a-z0-9-]+?)(?:-\d+)?\/?(?:[?#].*)?$/i);
-    if (main) return main[1].replace(/-\d+$/, '');
-    return '';
-}
-
-function parseMirrorSearch(html) {
-    const results = [];
-    const seen = new Set();
-    if (!html) return results;
-
-    // Result cards live in the main content; the sidebar carries unrelated
-    // recent-episode/show cards, so stop parsing at the sidebar.
-    const sideIdx = html.indexOf('id="sidebar"');
-    const main = sideIdx > 0 ? html.slice(0, sideIdx) : html;
-
-    const re = /<a[^>]*href="(https:\/\/anidb\.se\/(?:anime\/)?[a-z0-9-]+\/?)"[^>]*title="([^"]*)"[^>]*>([\s\S]*?)<\/a>/gi;
-    let cardMatch;
-    while ((cardMatch = re.exec(main)) !== null) {
-        const rawHref = cardMatch[1];
-        const showHref = /^https:\/\/anidb\.se\/anime\//i.test(rawHref) ? rawHref.replace(/\/?$/, '/') : '';
-        if (!showHref || seen.has(showHref)) continue;
-        seen.add(showHref);
-
-        const title = cleanText(cardMatch[2] || '').replace(/-\d+$/, '') || mirrorTitleFromHref(showHref);
-
-        // Thumbnails are lazy-loaded: the real URL lives in data-src, the
-        // src attribute is a base64 SVG placeholder.
-        const imgTag = cardMatch[3].match(/<img[^>]*>/i);
-        let image = '';
-        if (imgTag) {
-            image = extractFirst(imgTag[0], /data-src="(https?:\/\/[^"]+)"/i)
-                || extractFirst(imgTag[0], /src="(https?:\/\/[^"']+)"/i);
-        }
-        image = decodeHtml(image || '').trim();
-        if (!/^https?:/i.test(image) || /data:image/i.test(image)) image = '';
-
-        results.push({ title, image, href: showHref });
-    }
-
-    return results;
-}
-
-// Mirror show pages: the h1 holds the title; the mirror carries no
-// synopsis or metadata, so details are best-effort.
-function parseMirrorDetails(html) {
-    if (!html) return null;
-    const h1 = extractFirst(html, /<h1[^>]*>([\s\S]*?)<\/h1>/i);
-    const title = cleanText(h1.replace(/<\/?span[^>]*>/g, '') || h1);
-    if (!title) return null;
-    return {
-        description: 'No description available',
-        airdate: 'Unknown',
-        aliases: title
-    };
-}
-
-// Mirror episode list: episode links following the <slug>-episode-<n>-...
-// pattern of the given show (the number is embedded in the URL, so the href
-// shape is the filter — the mirror shows a mix of a teaser card and a full
-// episode list depending on the page variant). The mirror only lists its
-// available episodes (recent uploads), not a full season — acceptable
-// fallback data.
-function parseMirrorEpisodes(html, slug) {
-    const results = [];
-    const seen = new Set();
-    if (!html || !slug) return results;
-
-    const slugEsc = slug.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const epHrefRe = new RegExp('^https://anidb\\.se/' + slugEsc + '-episode-(\\d+)-[^/]*$', 'i');
-
-    const re = /<a[^>]*href="(https:\/\/anidb\.se\/[a-z0-9-]+-episode-\d+[^/"]*)\/?"/gi;
-    let link;
-    while ((link = re.exec(html)) !== null) {
-        const href = link[1];
-        const epMatch = href.replace(/\/+$/, '').match(epHrefRe);
-        if (!epMatch) continue;
-        const number = parseInt(epMatch[1], 10);
-        if (isNaN(number) || seen.has(href)) continue;
-        seen.add(href);
-        results.push({ href: href + '/', number: number });
-    }
-
-    results.sort((a, b) => b.number - a.number);
-    return results;
-}
-
-// Mirror stream: the uvp-1 player on the episode page exposes its source in
-// data-src (data-type distinguishes mp4 from hls).
-function parseMirrorStream(html) {
-    if (!html) return null;
-    const videoTag = html.match(/<video[^>]*class="[^"]*uvp[^"]*"[^>]*>/i) || html.match(/<video[^>]*>/i);
-    if (!videoTag) return null;
-    const src = extractFirst(videoTag[0], /data-src="(https?:\/\/[^"]+)"/i);
-    if (!src) return null;
-    return {
-        title: 'English (mirror)',
-        streamUrl: decodeHtml(src),
-        headers: makeMirrorHeaders()
-    };
-}
-
-function mirrorTitleFromHref(href) {
-    const m = String(href || '').match(/\/anime\/([^/]+)\/?$/i);
-    if (!m) return 'Unknown Anime';
-    return m[1].replace(/-\d+$/, '').replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
-}
-
-function makeMirrorHeaders() {
-    return {
-        "Referer": MIRROR_URL + '/',
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
-    };
-}
-
-/* HELPERS */
-
-// Resolve an anidb.app/embed/<token> page to its HLS master playlist URL.
-async function resolveEmbedMaster(embedUrl) {
-    if (!embedUrl) return null;
-
-    // If the embed URL already points at media (m3u8), return as-is.
-    if (/\.m3u8/i.test(embedUrl)) return embedUrl;
-
-    const response = await soraFetch(embedUrl);
-    if (!response) return null;
-    const html = await response.text();
-
-    const master = extractFirst(html, /sources\s*:\s*\[\s*\{\s*file\s*:\s*['"]([^'"]+\.m3u8[^'"]*)['"]/i)
-        || extractFirst(html, /file\s*:\s*['"](https?:\/\/[^'"]+\.m3u8[^'']*)['"]/i)
-        || extractFirst(html, /'(https?:\/\/[^']+\.m3u8(?:[^']*))'/i)
-        || extractFirst(html, /["']file["']\s*:\s*["']([^"']+\.m3u8[^"']*)["']/i)
-        || extractFirst(html, /playlist\s*:\s*['"]([^'"]+\.m3u8[^"']*)['"]/i)
-        || extractFirst(html, /(https?:\/\/[^\s"'<>]+\.m3u8[^\s"'<>]*)/i);
-
-    return master ? decodeHtml(master) : null;
-}
-
-// Parse the main-site episodes JSON payload (API shape varies between builds).
-function parseMainEpisodes(data, baseUrl) {
-    const rawEpisodes = (data && (Array.isArray(data.episodes) ? data.episodes : Array.isArray(data.data) ? data.data : Array.isArray(data.list) ? data.list : [])) || [];
-    if (!Array.isArray(rawEpisodes)) return [];
-
-    return rawEpisodes
-        .map((ep, index) => {
-            const number = ep.number !== undefined ? parseInt(ep.number, 10) : index + 1;
-            const epId = ep.id || ep.episode_id || ep.episodeId;
-            if (isNaN(number) || !epId) return null;
-            return {
-                href: `${baseUrl}/episode/${epId}`,
-                number: number
-            };
-        })
-        .filter(Boolean);
-}
-
-function prettifyLangLabel(lang) {
-    const map = {
-        jpn: 'Japanese (SUB)',
-        eng: 'English (DUB)',
-        'ch-s': 'Chinese (SUB)',
-        'pt-br': 'Portuguese (SUB)',
-        'es': 'Spanish (SUB)'
-    };
-    if (map[lang.code]) return map[lang.code];
-    if (lang.name) return lang.name;
-    return (lang.code || 'Unknown').toUpperCase();
-}
-
-function parseBrowseCards(html) {
-    const results = [];
-    const seen = new Set();
-
-    // Multiple resilient regex patterns to support DOM/class changes.
-    const regexes = [
-        /<a[^>]*href="(https?:\/\/anidb\.app\/anime\/[^"]+)"[^>]*class="[^"]*anime-card[^"]*"[^>]*title="([^"]*)"[\s\S]*?<img[^>]*src="([^"]+)"[\s\S]*?<\/a>/gi,
-        /<a[^>]*href="(https?:\/\/anidb\.app\/anime\/[^"]+)"[^>]*title="([^"]*)"[\s\S]*?<img[^>]*src="([^"]+)"[\s\S]*?<\/a>/gi,
-        /<a[^>]*href="(https?:\/\/anidb\.app\/anime\/[^"]+)"[\s\S]*?<img[^>]*src="([^"]+)"[^>]*alt="([^"]*)"[\s\S]*?<\/a>/gi,
-        /<a[^>]*href="(https?:\/\/anidb\.app\/anime\/[^"]+)"[\s\S]*?<\/a>/gi
-    ];
-
-    for (const rx of regexes) {
-        let cardMatch;
-        while ((cardMatch = rx.exec(html)) !== null) {
-            const href = cardMatch[1];
-            let title = cleanText(cardMatch[2] || cardMatch[3] || '');
-            let image = decodeHtml(cardMatch[3] || cardMatch[2] || '').trim();
-
-            // Handle the image/title capture swap in some patterns.
-            if (image && !image.startsWith('http') && title && title.startsWith('http')) {
-                const temp = title;
-                title = image;
-                image = temp;
-            }
-
-            if (!title) {
-                const slugMatch = href.match(/\/([^/]+)$/);
-                title = slugMatch ? slugMatch[1].replace(/-\d+$/, '').replace(/-/g, ' ') : 'Unknown Anime';
-            }
-
-            if (!href || seen.has(href)) continue;
-            seen.add(href);
-            results.push({
-                title: cleanText(title),
-                image: image.startsWith('http') ? image : '',
-                href
+        if (streamObjects.length === 0) {
+            const fallbackUrl = mediaType === "movie"
+                ? `https://vidlink.pro/movie/${tmdbID}`
+                : `https://vidlink.pro/tv/${tmdbID}/${seasonNumber}/${episodeNumber}`;
+            streamObjects.push({
+                title: "Peachify Backup",
+                streamUrl: fallbackUrl,
+                headers: { "Referer": "https://vidlink.pro/" }
             });
         }
-        if (results.length > 0) break;
+
+        const englishSubtitle = allSubtitles.find(sub => (sub.language || sub.lang || sub.label || '').toLowerCase() === 'english');
+        let subtitleUrl = englishSubtitle ? englishSubtitle.url : "";
+
+        if (subtitleUrl) {
+            subtitleUrl = `https://passthrough-worker.simplepostrequest.workers.dev/?url=${encodeURIComponent(subtitleUrl)}&type=vtt&referer=https%3A%2F%2Fpeachify.top%2F`;
+        }
+
+        return JSON.stringify({
+            streams: streamObjects,
+            subtitles: subtitleUrl
+        });
+    } catch (error) {
+        console.log('Fetch error in extractStreamUrl: ' + error);
+        let fallbackUrl = "https://vidlink.pro/";
+        if (ID.includes('movie')) {
+            const mId = ID.replace('/movie/', '').replace('/', '');
+            fallbackUrl = `https://vidlink.pro/movie/${mId}`;
+        } else if (ID.includes('tv')) {
+            const parts = ID.split('/');
+            fallbackUrl = `https://vidlink.pro/tv/${parts[2]}/${parts[3]}/${parts[4]}`;
+        }
+        return JSON.stringify({ streams: [{ title: "Peachify Backup", streamUrl: fallbackUrl, headers: { Referer: "https://vidlink.pro/" } }], subtitles: "" });
     }
-
-    return results;
 }
 
-// anidb.app anime URLs are /anime/<slug>-<numericId>. Return the numeric id.
-function parseAnimeId(url) {
-    const m = String(url || '').match(/\/anime\/[^/]+-(\d+)\/?$/i);
-    if (m && m[1]) return m[1];
-    const fallback = String(url || '').match(/-(\d+)\/?$/);
-    return fallback ? fallback[1] : '';
-}
-
-// Helper to grab the <dd> value following a <dt> with the given label
-// inside the "Details" <dl> block, with fallback patterns.
-function extractDt(html, label) {
-    const re = new RegExp(`<dt[^>]*>[^<]*${label}[^<]*<\\/dt>\\s*<dd[^>]*>([\\s\\S]*?)<\\/dd>`, 'i');
-    const m = (html || '').match(re);
-    if (m && m[1]) return cleanText(m[1]);
-
-    const altRe = new RegExp(`(?:<dt[^>]*>|<span[^>]*>)\\s*${label}\\s*(?:<\\/dt>|<\\/span>)\\s*(?:<dd[^>]*>|<span[^>]*>)([\\s\\S]*?)(?:<\\/dd>|<\\/span>)`, 'i');
-    const altM = (html || '').match(altRe);
-    if (altM && altM[1]) return cleanText(altM[1]);
-
-    return '';
-}
-
-function extractFirst(text, regex) {
-    const match = (text || '').match(regex);
-    return match ? match[1] : '';
-}
-
-function decodeHtml(text) {
-    return String(text || '')
-        .replace(/&#039;/g, "'")
-        .replace(/&apos;/g, "'")
-        .replace(/&amp;/g, '&')
-        .replace(/&#038;/g, '&')
-        .replace(/&quot;/g, '"')
-        .replace(/&lt;/g, '<')
-        .replace(/&gt;/g, '>');
-}
-
-function cleanText(text) {
-    return decodeHtml(String(text || ''))
-        .replace(/<br\s*\/?>/gi, '\n')
-        .replace(/<\/?[^>]+(>|$)/g, '')
-        .replace(/\s+\n/g, '\n')
-        .replace(/\n\s+/g, '\n')
-        .replace(/[ \t]+/g, ' ')
-        .trim();
-}
-
-// Stream headers that match the anidb.app playback origin.
-function makeStreamHeaders() {
-    return {
-        "Referer": BASE_URL + '/',
-        "Origin": BASE_URL,
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
-    };
-}
-
-// Parse details from a main-site show page.
-function parseMainDetails(html) {
-    const description = extractFirst(html, /<meta[^>]*property="og:description"[^>]*content="([^"]+)"/i)
-        || extractFirst(html, /<meta[^>]*name="description"[^>]*content="([^"]+)"/i)
-        || extractFirst(html, /<p\s+class="[^"]*(?:leading-relaxed|description|plot|summary)[^"]*"[^>]*>([\s\S]*?)<\/p>/i)
-        || extractFirst(html, /<div\s+class="[^"]*(?:description|plot|summary|synopsis)[^"]*">([\s\S]*?)<\/div>/i)
-        || 'No description available';
-
-    const airdate = extractDt(html, 'Aired')
-        || extractDt(html, 'Season')
-        || extractDt(html, 'Released')
-        || extractFirst(html, /<div class="text-sm"><dt[^>]*name="(?:Year|Airdate|Date)"[^>]*>([^<]+)<\/dt>/i)
-        || 'Unknown';
-
-    const aliases = extractDt(html, 'Synonyms')
-        || extractDt(html, 'Alternative')
-        || extractDt(html, 'Titles')
-        || 'No alternative titles';
-
-    return {
-        description: cleanText(description),
-        airdate: cleanText(airdate),
-        aliases: cleanText(aliases)
-    };
-}
-
-async function soraFetch(url, options) {
-    const opts = options || {};
-    const mergedHeaders = mergeHeaders(url, opts);
-    const method = opts.method || 'GET';
-    const body = typeof opts.body === 'undefined' ? null : opts.body;
-
+async function soraFetch(url, options = { headers: {}, method: 'GET', body: null }) {
+    const headers = options.headers || {};
+    if (!headers["User-Agent"]) {
+        headers["User-Agent"] = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
+    }
     try {
-        // Shirox's fetchv2 accepts a 5th arg ({ impersonate: 'chrome', ... })
-        // that dresses the request up as a real browser — useful against
-        // datacenter-IP blocks; older Sora/Luna builds ignore it.
-        return await fetchv2(url, mergedHeaders, method, body, opts.impersonate ? { impersonate: opts.impersonate } : undefined);
+        return await fetchv2(url, headers, options.method || 'GET', options.body || null);
     } catch (e) {
         try {
-            const text = await fetch(url, {
-                method: method,
-                headers: mergedHeaders,
-                body: body
-            });
-            return {
-                text: async () => text,
-                json: async () => JSON.parse(text)
-            };
+            return await fetch(url, options);
         } catch (error) {
-            console.log('soraFetch error: ' + error);
             return null;
         }
     }
-}
-
-// Fetch URL text; throws on non-2xx so callers can chain to the mirror.
-// (fetchv2 may reject on network failure but still resolve on 4xx/5xx,
-// hence the explicit status check.)
-async function fetchTextOrThrow(url, impersonate) {
-    const response = await soraFetch(url, impersonate ? { impersonate: impersonate } : undefined);
-    if (!response) throw new Error('no response: ' + url);
-    if (response.ok !== undefined && response.ok === false) {
-        const status = response.status || 0;
-        if (status >= 400) throw new Error('http ' + status + ': ' + url);
-    }
-    return await response.text();
-}
-
-async function fetchText(url, impersonate) {
-    if (!url) return '';
-    const response = await soraFetch(url, impersonate ? { impersonate: impersonate } : undefined);
-    if (!response) return '';
-    return await response.text();
-}
-
-function mergeHeaders(url, opts) {
-    const base = opts.headers || {};
-    const defaults = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
-    };
-
-    const host = String(url || '').replace(/^https?:\/\//, '').split('/')[0] || '';
-    if (/anidb\.app|hls\.anidb\.app/i.test(host)) {
-        defaults['Accept'] = '*/*';
-        defaults['Accept-Language'] = 'en-US,en;q=0.9';
-        defaults['Referer'] = BASE_URL + '/';
-        defaults['Origin'] = BASE_URL;
-    }
-    if (host === MIRROR_HOST || host.endsWith('.' + MIRROR_HOST)) {
-        defaults['Referer'] = MIRROR_URL + '/';
-        defaults['Accept'] = 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8';
-    }
-
-    const out = {};
-    let k;
-    for (k in defaults) if (Object.prototype.hasOwnProperty.call(defaults, k)) out[k] = defaults[k];
-    for (k in base) if (Object.prototype.hasOwnProperty.call(base, k)) out[k] = base[k];
-    return out;
 }
