@@ -1,1265 +1,1232 @@
-const BASE_URL = 'https://allmanga.to';
-const API_URLS = [
-    'https://api.mkissa.net/api',
-    'https://api.allanime.day/api'
-];
-const API_URL = API_URLS[0];
-const CLOCK_BASE = 'https://allanime.day';
+const BASE_URL = 'https://anidb.app';
+const BROWSE_URL = `${BASE_URL}/browse?q=`;
+const SUGGEST_URL = `${BASE_URL}/search/suggestions?q=`;
+const EPISODES_API = `${BASE_URL}/api/frontend/anime/%s/episodes`;
+const LANGUAGES_API = `${BASE_URL}/api/frontend/episode/%s/languages`;
 
-const KEYGEN_URLS = [
-    'https://raw.githubusercontent.com/sdaqo/anipy-cli/refs/heads/key-gen/scripts/keygen/keygen.json',
-    'https://raw.githubusercontent.com/sdaqo/anipy-cli/key-gen/scripts/keygen/keygen.json'
-];
+if (typeof console !== 'undefined') console.log('[AniDB] module script loaded v1.6.0 (AniList/Jikan/MAL-HTML episodes + AniLibria HLS streams)');
 
-const EPISODE_QUERY = 'query($showId: String!$translationType: VaildTranslationTypeEnumType!$episodeString: String!) {episode(showId: $showId translationType: $translationType episodeString: $episodeString) {episodeString uploadDate sourceUrls thumbnail notes show{_id name englishName nativeName slugTime thumbnail tbObj {u sm md ts} lastEpisodeInfo lastEpisodeDate type season score airedStart availableEpisodes episodeDuration episodeCount lastUpdateEnd characterCount description broadcastInterval banner characters availableEpisodesDetail nameOnlyString characters isAdult relatedShows relatedMangas altNames disqusIds}pageStatus{_id notes pageId showId views likesCount commentCount dislikesCount boostsCount reviewCount userScoreCount userScoreTotalValue userScoreAverValue viewers{firstViewers{viewCount lastWatchedDate user{_id username displayName createdAt picture reputation roleLevel followerCount followingCount hideMe brief}}recViewers{viewCount lastWatchedDate user{_id username displayName createdAt picture reputation roleLevel followerCount followingCount hideMe brief}}}}episodeInfo{notes thumbnails tbObj {u sm md ts} vidInforssub uploadDates vidInforsdub vidInforsraw description}versionFix}}';
-
-const SOURCE_PRIORITY = ['Default', 'Yt-mp4', 'S-Mp4', 'Ak', 'Uv-mp4', 'Luf-Mp4', 'Mp4'];
-
-// Known-good keygen snapshot (build 175, epoch 2960, lane k7) — captured live
-// on 2026-09-25 via mkissa.to bootstrap (k7 partB 9+ufk02f8FnAItXm62MzUviGiqFuTB16tFgly1URwr0=).
-// Key = partB XOR mask(175); mask blocks/consts extracted from the mkissa.to
-// crypto chunk BEkTyDAE.js (build 175, verified 2026-09-25: boot token
-// reproduces the app's live capture; k7 bootstrap partB -> key 64642f3d...).
-// Boot token algorithm (two-stage HMAC, build 175):
-//   f    = HMAC(mask, AA_BOOT_PREFIX + build_id)
-//   boot = hex(HMAC(f, buildId|group|host|epoch|lane))   // "|" -joined
-// Note: content lanes are routed per persisted query — chapterPages runs on
-// k9, episode on k7, music on k2 (the app's cp() lane router). This module
-// only calls episode, so the fallback lane is k7.
-const FALLBACK_KEYGEN = {
-    build_id: '175',
-    epoch: 2960,
-    lane: 'k7',
-    key: '64642f3d5c51401e26207d3649a6753fb4264069563b547270cb98cb051bd04a',
-    static_key: 'Xot36i3lK3:v1'
-};
-
-/* Self-bootstrap inputs (extracted from the mkissa.to crypto chunk, build 175).
-   The client derives its own AES key without any secret server round-trip:
-     embed[i]   = concat(base64decode(mask blocks))          [32 bytes]
-     salt[i]    = (buildId.charCodeAt(i % len) || 0)
-                  ^ ((i * AA_SALT_MUL + AA_SALT_ADD) & 255)
-     linear[i]  = ((i >> 3) * AA_FRAG_MUL + (i % 8) * AA_FRAG_ADD) & 255
-     mask[i]    = embed[i] ^ salt[i] ^ linear[i]
-     hmacKey    = HMAC-SHA256(mask, AA_BOOT_PREFIX + buildId)
-     bootTok    = hex(HMAC-SHA256(hmacKey, `${buildId}|${group}|${host}|${epoch}|${lane}`))
-     GET {AA_BOOTSTRAP_URL}?buildId=<id>&k=<lane>  (x-build-id / x-aa-boot headers)
-     key        = first32(base64decode(partB)) XOR mask
-   Epochs are 7-day (floor(now/604800000)); during the first day of an epoch the
-   previous one is still accepted. group is "mkissa" for the public hosts, and
-   the boot message uses the FULL host (with TLD), not the stripped first segment. */
-const AA_MASK_BLOCKS = ['jfTMXeWz1KY=', 'sSiL9IX1c1k=', 'jjOcW/T0DYU=', 'vRF6mguezW8='];
-const AA_SALT_MUL = 34;
-const AA_SALT_ADD = 47;
-const AA_FRAG_MUL = 93;
-const AA_FRAG_ADD = 29;
-const AA_BOOT_PREFIX = 'X8S061oCq:';
-const AA_WEEK_MS = 604800000;
-const AA_DAY_MS = 86400000;
-const AA_BOOTSTRAP_URL = 'https://api.mkissa.net/client-crypto/v1/bootstrap';
-const AA_BOOT_HOST = 'mkissa.to';
-const AA_BOOT_GROUP = 'mkissa';
-
-const CDN_BASES = [
-    'https://allmanga.to',
-    'https://mkissa.to'
-];
-
-let aaKeyCache = { keys: null, ts: 0 };
-
-if (typeof console !== 'undefined') console.log('allmanga module v1.11.0 (build 175 keygen, k7 episode lane)');
-
-const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36';
-
-const API_HEADERS = {
-    'Origin': BASE_URL,
-    'Referer': BASE_URL + '/',
-    'Content-Type': 'application/json',
-    'Accept': 'application/json, text/plain, */*',
-    'User-Agent': UA
-};
-
-const STREAM_HEADERS = {
-    'Referer': 'https://allanimenews.com/',
-    'Origin': 'https://allanimenews.com',
-    'User-Agent': UA
-};
+/* Mirror: anidb.se — an anidb-named streaming mirror used as fallback while
+ * anidb.app is under maintenance (503 on every page/API route). Search
+ * results that come from the mirror keep the mirror's own URLs; when the
+ * main site is up again its URLs keep working because every step that
+ * fails on the main site re-maps the show onto the mirror. */
+const MIRROR_HOST = 'anidb.se';
+const MIRROR_URL = `https://${MIRROR_HOST}`;
+const MIRROR_SEARCH_URL = `${MIRROR_URL}/?s=`;
 
 /* MAIN FUNCTIONS */
 
-// The Sora app's JavaScriptCore exposes NO setTimeout/setInterval, so any
-// use of it crashes in-app ("Can't find variable: setTimeout"). timerSafe()
-// returns a promise that resolves after ms when timers exist, else resolves
-// immediately — keeping the module functional in BOTH environments.
-function timerSafe(ms) {
-    if (typeof setTimeout === 'function') {
-        return new Promise(function(resolve) { setTimeout(resolve, ms || 0); });
-    }
-    return Promise.resolve();
-}
-
-// Race the given promise against a fallback after timeoutMs. In-app there
-// are no timers, so the timeout branch NEVER settles — only the fetch can
-// win, and the app's own overall timeout bounds the wait.
-async function timedFallback(promise, timeoutMs, fallback) {
-    if (typeof setTimeout !== 'function') {
-        try { return await promise; } catch (e) { return fallback; }
-    }
-    return Promise.race([
-        Promise.resolve(promise).catch(function() { return fallback; }),
-        timerSafe(timeoutMs).then(function() { return fallback; })
-    ]);
-}
-
+/**
+ * Searches anidb.app for anime titles matching the given keyword. While the
+ * main site is down (maintenance page / network failure) it chains to the
+ * classic AniDB XML API (via Shirox's fetchv2 impersonation), then to the
+ * anidb.se mirror search. Mirror results keep the mirror's own URLs; when
+ * the main site is up again its URLs keep working because every step that
+ * fails on the main site re-maps the show onto the mirror.
+ * Returns a JSON string array of {title, image, href} objects.
+ */
 async function searchResults(keyword) {
     try {
-        const query = String(keyword || '').trim();
+        const query = (keyword || '').trim();
         if (!query) return JSON.stringify([]);
 
-        const data = await gql(`{shows(search:{sortBy:Trending,query:${JSON.stringify(query)}},limit:26,page:1){edges{_id name englishName nativeName thumbnail}}}`);
-        const shows = (((data || {}).shows || {}).edges) || [];
+        // Main site first. Fallback is result-based, not exception-based:
+        // in-app fetchv2 may resolve a 503 response without throwing and
+        // without exposing .ok, so "main produced nothing" is the signal.
+        const main = await mainSearch(query);
+        if (main.length > 0) return JSON.stringify(main);
 
-        const results = [];
-        const seen = new Set();
-        shows.forEach(show => {
-            const href = `${BASE_URL}/anime/${show._id}`;
-            const title = cleanText(show.englishName || show.name || '');
-            if (!title || !show._id || seen.has(href)) return;
-            seen.add(href);
-            results.push({ title, image: show.thumbnail || '', href });
-        });
+        // AniList (public GraphQL, no auth) — full catalog with posters,
+        // results mapped onto classic anidb.net URLs (idMal = hime).
+        const al = await alSearchResults(query);
+        if (al.length > 0) return JSON.stringify(al);
 
-        return JSON.stringify(results);
+        // Classic AniDB (anidb.net) XML API — covers the niche AniDB-only
+        // titles; only resolves with Shirox browser impersonation.
+        const classic = await classicSearch(query);
+        if (classic.length > 0) return JSON.stringify(classic);
+
+        const mirror = parseMirrorSearch(await fetchText(`${MIRROR_SEARCH_URL}${encodeURIComponent(query)}`));
+        return JSON.stringify(mirror);
     } catch (error) {
         console.log('Search error: ' + error);
         return JSON.stringify([]);
     }
 }
 
-async function extractDetails(url) {
+async function mainSearch(query) {
     try {
-        const showId = extractShowId(url);
-        if (!showId) return JSON.stringify([]);
-
-        const data = await gql(`{show(_id:${JSON.stringify(showId)}){description englishName name altNames season airedStart}}`);
-        const show = (data || {}).show;
-        if (!show) return JSON.stringify([]);
-
-        const aliases = (show.altNames || [])
-            .filter(name => name && cleanText(name))
-            .map(name => cleanText(name))
-            .join(' | ') || cleanText(show.englishName || show.name || 'Unknown');
-        const airdate = (show.season && show.season.year) ? String(show.season.year) : cleanText(show.airedStart || 'Unknown');
-
-        return JSON.stringify([{
-            description: cleanText(show.description || 'No description available'),
-            aliases,
-            airdate
-        }]);
-    } catch (error) {
-        console.log('Details error: ' + error);
-        return JSON.stringify([{
-            description: 'Error loading description',
-            aliases: 'Unknown',
-            airdate: 'Unknown'
-        }]);
+        const browseSrc = await fetchTextOrThrow(`${BROWSE_URL}${encodeURIComponent(query)}`);
+        const fromBrowse = parseBrowseCards(browseSrc);
+        if (fromBrowse.length > 0) return fromBrowse;
+        return parseBrowseCards(await fetchTextOrThrow(`${SUGGEST_URL}${encodeURIComponent(query)}`));
+    } catch (e) {
+        // main unreachable / maintenance / HTTP error: caller chains on
+        return [];
     }
 }
 
+/* Classic AniDB (anidb.net) — the XML API behind ani-cli. anidb.app's
+ * actual backend: same data, original site. Its host is Cloudflare-blocked
+ * for datacenter IPs, so it only resolves with browser impersonation
+ * (Shirox fetchv2 arg 5: { impersonate: 'chrome' }). On builds without
+ * impersonation the classic fetches just 403 and the chain moves on. */
+const CLASSIC_BASE = 'https://anidb.net';
+var CLASSIC_CACHE = {};
+
+// AniList public GraphQL — no auth, no Cloudflare block. Its media IDs are
+// MAL IDs, which equal classic AniDB hime numbers, so it can cover the
+// full catalog even when anidb.net is blocked: search, posters, synopsis.
+const AL_GRAPHQL = 'https://graphql.anilist.co';
+
+function isClassicUrl(url) {
+    return /anidb\.(net|info)\//i.test(String(url || ''));
+}
+
+function classicAnimeUrl(hime) {
+    return `${CLASSIC_BASE}/anime.php?hime=${hime}`;
+}
+
+// Cached classic API fetch: the chain asks for the same show XML more than
+// once (details + episodes + stream) within one browsing session.
+async function classicFetchXml(path) {
+    const key = CLASSIC_BASE + path;
+    if (CLASSIC_CACHE[key]) return CLASSIC_CACHE[key];
+    const xml = await fetchText(key, 'chrome');
+    CLASSIC_CACHE[key] = xml;
+    return xml;
+}
+
+function isUsableClassicXml(xml) {
+    return !!xml && !/<html|<!DOCTYPE/i.test(xml.slice(0, 300));
+}
+
+async function classicSearch(query) {
+    try {
+        const xml = await fetchText(`${CLASSIC_BASE}/xml/v1/site/search/anime.php?s=${encodeURIComponent(query)}&limit=20`, 'chrome');
+        return parseClassicSearchXml(xml);
+    } catch (e) {
+        return [];
+    }
+}
+
+// Classic API responses are XML — parse with regex/indexOf only.
+// Each <anime> block: <hime>135</hime><titles><title lang="en">One Piece</title>...
+function parseClassicSearchXml(xml) {
+    const results = [];
+    if (!isUsableClassicXml(xml)) return results;
+
+    const seen = new Set();
+    const animeRe = /<anime[^>]*>[\s\S]*?<\/anime>/gi;
+    let block;
+    while ((block = animeRe.exec(xml)) !== null) {
+        const chunk = block[0];
+        const hime = extractFirst(chunk, /<hime>(\d+)<\/hime>/i);
+        // Prefer the English title, then the main title, then any title.
+        const title = extractFirst(chunk, /<title[^>]*lang="en"[^>]*>([\s\S]*?)<\/title>/i)
+            || extractFirst(chunk, /<title[^>]*lang="main"[^>]*>([\s\S]*?)<\/title>/i)
+            || extractFirst(chunk, /<title[^>]*>([\s\S]*?)<\/title>/i);
+        if (!hime || !title || seen.has(hime)) continue;
+        seen.add(hime);
+        results.push({
+            title: cleanText(title),
+            image: '',
+            href: classicAnimeUrl(hime)
+        });
+    }
+    return results;
+}
+
+async function classicEpisodes(hime) {
+    try {
+        const xml = await classicFetchXml(`/xml/v1/info/anime/episodes/${hime}`);
+        if (!isUsableClassicXml(xml)) return [];
+
+        const episodes = [];
+        const epRe = /<episode[^>]*>[\s\S]*?<\/episode>/gi;
+        let block;
+        while ((block = epRe.exec(xml)) !== null) {
+            const chunk = block[0];
+            const id = extractFirst(chunk, /<eid>(\d+)<\/eid>/i);
+            const epNumber = extractFirst(chunk, /<ep>(\d+)<\/ep>/i);
+            const episodeType = extractFirst(chunk, /<episode_type>([^<]*)<\/episode_type>/i);
+            // Main-season episodes only; specials/OVA come from other
+            // endpoints and would interleave badly.
+            if (!id || !epNumber || episodeType !== 'main_season') continue;
+            episodes.push({
+                href: `${CLASSIC_BASE}/episode.php?eid=${id}`,
+                number: parseInt(epNumber, 10)
+            });
+        }
+        episodes.sort((a, b) => a.number - b.number);
+        return episodes;
+    } catch (e) {
+        return [];
+    }
+}
+
+// Classic show details: real synopsis + release date + all titles, straight
+// from the same DB anidb.app fronts.
+async function classicDetails(hime) {
+    try {
+        const xml = await classicFetchXml(`/xml/v1/info/anime/${hime}`);
+        if (!isUsableClassicXml(xml)) return null;
+
+        const description = cleanText(extractFirst(xml, /<anidb_synopsis>([\s\S]*?)<\/anidb_synopsis>/i));
+        const airdate = extractFirst(xml, /<date>([\d-]+)<\/date>/i);
+
+        const titles = [];
+        const titleRe = /<title[^>]*>([\s\S]*?)<\/title>/gi;
+        let t;
+        while ((t = titleRe.exec(xml)) !== null) {
+            const x = cleanText(t[1]);
+            if (x) titles.push(x);
+        }
+
+        return {
+            description: description || 'No description available',
+            airdate: airdate || 'Unknown',
+            aliases: titles.length > 1 ? titles.join(', ') : (titles[0] || 'No alternative titles')
+        };
+    } catch (e) {
+        return null;
+    }
+}
+
+/* --- AniList (public, unauthenticated) --- */
+
+function alPost(query, variables) {
+    const body = JSON.stringify({ query: query, variables: variables || {} });
+    const headers = { 'Content-Type': 'application/json', 'Accept': 'application/json' };
+    return soraFetch(AL_GRAPHQL, { method: 'POST', headers: headers, body: body });
+}
+
+async function alSearchResults(query) {
+    try {
+        const gq = 'query($s:String!){ Page(perPage:10){ media(search:$s, type:ANIME, sort:SEARCH_MATCH, isAdult:false){ id title{romaji english} coverImage{large} } } }';
+        const res = await alPost(gq, { s: query });
+        if (!res) return [];
+        const data = await res.json();
+        const media = (data && data.data && data.data.Page && data.data.Page.media) || [];
+        const results = [];
+        for (let i = 0; i < media.length; i++) {
+            const m = media[i];
+            if (!m || !m.id) continue;
+            const title = cleanText(((m.title && (m.title.english || m.title.romaji)) || ''));
+            if (!title) continue;
+            // AniList media id == MAL id == classic AniDB hime.
+            results.push({
+                title: title,
+                image: (m.coverImage && m.coverImage.large) || '',
+                href: classicAnimeUrl(m.id)
+            });
+        }
+        return results;
+    } catch (e) {
+        return [];
+    }
+}
+
+// English display title for a hime: classic first (niche names), AniList
+// as the public fallback.
+async function himeTitle(hime) {
+    if (!hime) return '';
+    const xml = await classicFetchXml(`/xml/v1/info/anime/${hime}`);
+    if (isUsableClassicXml(xml)) {
+        const en = extractFirst(xml, /<title[^>]*lang="en"[^>]*>([\s\S]*?)<\/title>/i);
+        if (cleanText(en)) return cleanText(en);
+    }
+    try {
+        const gq = 'query($id:Int!){ Media(id:$id, type:ANIME){ title{romaji english} } }';
+        const res = await alPost(gq, { id: parseInt(hime, 10) });
+        if (res) {
+            const data = await res.json();
+            const t = data && data.data && data.data.Media && data.data.Media.title;
+            if (t) return cleanText(t.english || t.romaji || '');
+        }
+    } catch (e) { /* fall through */ }
+    return '';
+}
+
+async function alDetails(hime) {
+    try {
+        const gq = 'query($id:Int!){ Media(id:$id, type:ANIME){ title{romaji english native} description startDate{year month day} } }';
+        const res = await alPost(gq, { id: parseInt(hime, 10) });
+        if (!res) return null;
+        const data = await res.json();
+        const m = data && data.data && data.data.Media;
+        if (!m) return null;
+        const aliases = [];
+        if (m.title) {
+            [m.title.romaji, m.title.english, m.title.native].forEach(function (t) {
+                const x = cleanText(String(t || ''));
+                if (x && aliases.indexOf(x) === -1) aliases.push(x);
+            });
+        }
+        let airdate = 'Unknown';
+        if (m.startDate && m.startDate.year) {
+            airdate = String(m.startDate.year);
+            if (m.startDate.month) airdate += '-' + m.startDate.month;
+            if (m.startDate.day) airdate += '-' + m.startDate.day;
+        }
+        return {
+            description: cleanText(m.description || '') || 'No description available',
+            airdate: airdate,
+            aliases: aliases.length ? aliases.join(', ') : 'No alternative titles'
+        };
+    } catch (e) {
+        return null;
+    }
+}
+
+/* --- MAL HTML (public, no Cloudflare): numbered episode lists when the
+ * Jikan proxy is down. The plain anime page embeds the episode table. --- */
+const MAL_BASE = 'https://myanimelist.net';
+
+function parseMalEpisodes(html) {
+    const out = [];
+    const seen = {};
+    if (!html) return out;
+    const re = /<tr class="ep-row[^"]*"[^>]*>[\s\S]*?<td class="ep-number">\s*(\d+(?:\.\d+)?)\s*<\/td>/g;
+    let m;
+    while ((m = re.exec(html)) !== null) {
+        const n = parseFloat(m[1]);
+        if (isNaN(n) || n <= 0 || seen[n]) continue;
+        seen[n] = 1;
+        out.push(n);
+    }
+    out.sort(function (a, b) { return a - b; });
+    return out;
+}
+
+async function malEpisodes(malId, titleHint) {
+    try {
+        const numbers = parseMalEpisodes(await fetchText(`${MAL_BASE}/anime/${malId}`));
+        if (!numbers.length) return [];
+
+        const title = cleanText(String(titleHint || await himeTitle(malId)));
+        const mirrorShow = await mirrorShowForHime(malId, title);
+        let byNum = {};
+        if (mirrorShow) {
+            parseMirrorEpisodes(await fetchText(mirrorShow), mirrorShowSlug(mirrorShow)).forEach(function (e) { byNum[e.number] = e; });
+        }
+        return numbers.map(function (n) {
+            return byNum[n]
+                ? { href: byNum[n].href, number: n }
+                : { href: `${CLASSIC_BASE}/episode.php?hime=${malId}&ep=${n}`, number: n };
+        });
+    } catch (e) {
+        return [];
+    }
+}
+
+// Mirror show URL for a hime: the mirror only exposes search, so we go
+// hime -> display title -> mirror search -> show card.
+async function mirrorShowForHime(hime, titleHint) {
+    if (!hime) return '';
+    let title = cleanText(String(titleHint || ''));
+    if (!title) title = await himeTitle(hime);
+    if (!title) return '';
+    const found = parseMirrorSearch(await fetchText(`${MIRROR_SEARCH_URL}${encodeURIComponent(title)}`));
+    return found.length ? found[0].href : '';
+}
+
+// AniList episode count for hime == MAL id: public, no auth, no Cloudflare.
+// Older shows may have episodes: null — that is not an error, just no data.
+async function alEpisodes(hime) {
+    try {
+        const gq = 'query($id:Int!){ Media(id:$id, type:ANIME){ episodes } }';
+        const res = await alPost(gq, { id: parseInt(hime, 10) });
+        if (!res) return [];
+        const data = await res.json();
+        const m = data && data.data && data.data.Media;
+        const n = m ? parseInt(m.episodes, 10) : NaN;
+        if (isNaN(n) || n <= 0 || n > 1500) return [];
+        const numbers = [];
+        for (let i = 1; i <= n; i++) numbers.push(i);
+
+        const title = cleanText(await himeTitle(hime));
+        const mirrorShow = await mirrorShowForHime(hime, title);
+        let byNum = {};
+        if (mirrorShow) {
+            parseMirrorEpisodes(await fetchText(mirrorShow), mirrorShowSlug(mirrorShow)).forEach(function (e) { byNum[e.number] = e; });
+        }
+        return numbers.map(function (i) {
+            return byNum[i]
+                ? { href: byNum[i].href, number: i }
+                : { href: `${CLASSIC_BASE}/episode.php?hime=${hime}&ep=${i}`, number: i };
+        });
+    } catch (e) {
+        return [];
+    }
+}
+
+/* --- Jikan (public MAL REST proxy): full numbered episode lists without
+ * auth or Cloudflare. Episode numbers map onto playable mirror URLs. --- */
+const JIKAN_BASE = 'https://api.jikan.moe/v2';
+
+async function jikanEpisodes(malId) {
+    const numbers = [];
+    const titleRef = { t: '' };
+    try {
+        for (let page = 1; page <= 3; page++) {
+            const res = await soraFetch(`${JIKAN_BASE}/anime/${malId}/episodes?page=${page}&limit=100`);
+            if (!res) break;
+            const data = await res.json();
+            if (!data || !Array.isArray(data.data)) break;
+            if (!titleRef.t && data.data.anime && data.data.anime.title) titleRef.t = String(data.data.anime.title);
+            data.data.episodes.forEach(function (ep) {
+                const n = parseInt(ep.number, 10);
+                if (!isNaN(n) && n > 0) numbers.push(n);
+            });
+            if (data.data.episodes.length < 100) break;
+        }
+    } catch (e) {
+        return [];
+    }
+    if (!numbers.length) return [];
+    numbers.sort(function (a, b) { return a - b; });
+
+    const mirrorShow = await mirrorShowForHime(malId, titleRef.t);
+    let byNum = {};
+    if (mirrorShow) {
+        const html = await fetchText(mirrorShow);
+        parseMirrorEpisodes(html, mirrorShowSlug(mirrorShow)).forEach(function (e) { byNum[e.number] = e; });
+    }
+    return numbers.map(function (n) {
+        // Playable mirror episode when the mirror hosts it; otherwise the
+        // synthetic hime+ep URL (extractStreamUrl re-resolves it when the
+        // mirror adds the episode — the classic URL would have no player).
+        return byNum[n]
+            ? { href: byNum[n].href, number: n }
+            : { href: `${CLASSIC_BASE}/episode.php?hime=${malId}&ep=${n}`, number: n };
+    });
+}
+
+// Mirror stream for a classic episode URL: eid -> ep number + hime ->
+// mirror show page -> the matching mirror episode page -> its direct mp4.
+async function classicEpisodeStream(url) {
+    try {
+        const u = String(url || '');
+        const eid = extractFirst(u, /[?&]eid=(\d+)/i);
+        const hime = extractFirst(u, /[?&]hime=(\d+)/i);
+        const epNum = extractFirst(u, /[?&]ep=(\d+(?:\.\d+)?)/i);
+
+        let num = epNum ? parseInt(epNum, 10) : null;
+        if (!hime && eid) {
+            const xml = await classicFetchXml(`/xml/v1/info/episode/${eid}`);
+            if (isUsableClassicXml(xml)) {
+                num = parseInt(extractFirst(xml, /<ep>(\d+)<\/ep>/i), 10);
+            }
+        }
+        const showHime = hime || (eid ? extractFirst(await classicFetchXml(`/xml/v1/info/episode/${eid}`) || '', /<hime>(\d+)<\/hime>/i) : '');
+        if (!showHime || isNaN(num)) return null;
+
+        const mirrorShow = await mirrorShowForHime(showHime);
+        if (!mirrorShow) return null;
+        const html = await fetchText(mirrorShow);
+        const eps = parseMirrorEpisodes(html, mirrorShowSlug(mirrorShow));
+        const match = eps.find(function (e) { return e.number === num; });
+        if (!match) return null;
+        return parseMirrorStream(await fetchText(match.href));
+    } catch (e) {
+        return null;
+    }
+}
+
+function detailsFallback() {
+    return {
+        description: 'No description available',
+        airdate: 'Unknown',
+        aliases: 'No alternative titles'
+    };
+}
+
+/* --- Anilibria (public REST, no auth): playable HLS for the full catalog.
+ * The 1Anime network's stream backend (flixcloud tokens + WASM obfuscation)
+ * is unworkable in-app, but Anilibria serves plain m3u8s on
+ * cache.libria.fun that answer 200 without a Referer — verified for
+ * One Piece / Frieren / Golden Kamuy. Search is by title, matched by
+ * MAL id (when it equals hime) or exact English title. Episode hrefs are
+ * anilibria.top watch-page URLs that extractStreamUrl re-resolves. --- */
+const LIBRIA_API = 'https://anilibria.top/api/v1';
+const LIBRIA_BASE = 'https://anilibria.top';
+const LIBRIA_RELEASE = `${LIBRIA_BASE}/releases/`;
+const LIBRIA_CACHE = {};
+
+function libriaHeaders() {
+    return {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+        'Accept': 'application/json',
+        'Referer': LIBRIA_BASE + '/'
+    };
+}
+
+function isLibriaUrl(url) {
+    return String(url || '').indexOf(LIBRIA_RELEASE) !== -1 ||
+        String(url || '').indexOf(LIBRIA_BASE + '/anime/releases/') !== -1;
+}
+
+function libriaReleaseId(url) {
+    return extractFirst(String(url || ''), /anilibria\.top\/(?:releases\/|api\/v1\/anime\/releases\/)(\d+)/i);
+}
+
+async function libriaRelease(libId) {
+    if (LIBRIA_CACHE[libId]) return LIBRIA_CACHE[libId];
+    try {
+        const res = await soraFetch(`${LIBRIA_API}/anime/releases/${libId}`, { headers: libriaHeaders() });
+        if (!res) return null;
+        const rel = await res.json();
+        if (!rel || !rel.id) return null;
+        LIBRIA_CACHE[libId] = rel;
+        return rel;
+    } catch (e) {
+        return null;
+    }
+}
+
+// Find the Anilibria release for a hime: search by display title, prefer an
+// exact MAL-id hit, then an exact English-title hit, then the first result.
+function normTitle(s) {
+    // Lowercase, drop apostrophes/quotes, strip ASCII punctuation, collapse
+    // whitespace. Kept to conservative char classes: Unicode property
+    // escapes (\p{L}) are not available in every JSCore/QuickJS build.
+    return String(s || '')
+        .toLowerCase()
+        .replace(/[\u2019'`’‘]/g, '')
+        .replace(/[^a-z0-9\u00c0-\uffff\s]+/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
+// Candidate scoring against a display title. AniList ids are MAL ids but
+// AniLibria's `mal.id` field is populated with Shikimori ids for many
+// releases, so only title evidence is trusted — an id match is allowed to
+// break ties, never to pick a release on its own.
+function scoreLibriaRelease(r, q) {
+    const en = normTitle(r.name && (r.name.english || r.name.main));
+    if (!en) return 0;
+    if (en === q) return 1;
+    if (en.indexOf(q) !== -1 || q.indexOf(en) !== -1) return 0.7;
+    const qt = q.split(' ').filter(function (t) { return t.length > 2; });
+    if (!qt.length) return 0;
+    const hit = qt.filter(function (t) { return en.indexOf(t) !== -1; }).length;
+    return hit / qt.length;
+}
+
+async function libriaReleaseForHime(hime, titleHint, minScore) {
+    if (!hime) return null;
+    const need = minScore || 0.7;
+    let title = cleanText(String(titleHint || ''));
+    if (!title) title = await himeTitle(hime);
+    if (!title) return null;
+    try {
+        // Anilibria's English titles are romaji-flavored ("Sousou no
+        // Frieren") while the app's titles are AniList English, so score
+        // against every available title flavor, not just the hint.
+        const candidates = [title];
+        const al = await alTitles(hime);
+        [al.romaji, al.english, al.native].forEach(function (t) {
+            const x = cleanText(t);
+            if (x && candidates.indexOf(x) === -1) candidates.push(x);
+        });
+
+        const res = await soraFetch(`${LIBRIA_API}/app/search/releases?query=${encodeURIComponent(candidates[0])}`, { headers: libriaHeaders() });
+        if (!res) return null;
+        let list = await res.json();
+        // The search is fuzzy but single-query: when the hint flavor
+        // matches nothing, the romaji flavor often still finds the release.
+        if (!Array.isArray(list) || !list.length) {
+            const alt = candidates[1] || candidates[0];
+            const res2 = await soraFetch(`${LIBRIA_API}/app/search/releases?query=${encodeURIComponent(alt)}`, { headers: libriaHeaders() });
+            if (res2) {
+                const list2 = await res2.json();
+                if (Array.isArray(list2) && list2.length) list = list2;
+            }
+        }
+        if (!Array.isArray(list) || !list.length) return null;
+
+        let pick = null;
+        let best = 0;
+        let bestExact = false;
+        for (let i = 0; i < list.length; i++) {
+            let s = 0;
+            let exact = false;
+            for (let c = 0; c < candidates.length; c++) {
+                const cs = scoreLibriaRelease(list[i], normTitle(candidates[c]));
+                if (cs > s) { s = cs; exact = cs === 1; }
+            }
+            if (s > best || (s === best && s > 0 && exact && !bestExact)) {
+                best = s;
+                bestExact = exact;
+                pick = list[i];
+            }
+        }
+        // No confident title hit: the search results may be a different
+        // release (e.g. Shippuuden for "Naruto"), which would serve the
+        // wrong episodes. Stay honest instead.
+        if (!pick || best < need) return null;
+        return libriaRelease(pick.id);
+    } catch (e) {
+        return null;
+    }
+}
+
+// All AniList title flavors for a hime (romaji/english/native), used to
+// score Anilibria releases.
+async function alTitles(hime) {
+    const out = { romaji: '', english: '', native: '' };
+    if (!hime) return out;
+    try {
+        const gq = 'query($id:Int!){ Media(id:$id, type:ANIME){ title{romaji english native} } }';
+        const res = await alPost(gq, { id: parseInt(hime, 10) });
+        if (res) {
+            const data = await res.json();
+            const t = data && data.data && data.data.Media && data.data.Media.title;
+            if (t) {
+                out.romaji = String(t.romaji || '');
+                out.english = String(t.english || '');
+                out.native = String(t.native || '');
+            }
+        }
+    } catch (e) { /* fall through */ }
+    return out;
+}
+
+async function libriaEpisodes(hime, titleHint) {
+    const rel = await libriaReleaseForHime(hime, titleHint);
+    if (!rel || !Array.isArray(rel.episodes) || !rel.episodes.length) return [];
+    const libId = rel.id;
+    return rel.episodes
+        .filter(function (e) { return (e.hls_720 || e.hls_480) && e.id; })
+        .map(function (e) {
+            const n = parseInt(e.ordinal, 10);
+            return { href: `${LIBRIA_RELEASE}${libId}/${e.id}`, number: isNaN(n) ? 0 : n };
+        })
+        .filter(function (e) { return e.number > 0; })
+        .sort(function (a, b) { return a.number - b.number; });
+}
+
+// Anilibria watch-page URL: /releases/<libId>/<episodeUuid> (uuid optional
+// for show-level URLs) -> the release's playable hls for that episode.
+async function libriaEpisodeStream(url) {
+    try {
+        const u = String(url || '');
+        const m = u.match(/anilibria\.top\/releases\/(\d+)\/?([0-9a-fA-F-]{36})?/i);
+        if (!m) return null;
+        const rel = await libriaRelease(m[1]);
+        if (!rel) return null;
+        let ep;
+        if (m[2]) {
+            ep = (rel.episodes || []).find(function (e) { return e.id === m[2]; });
+        } else {
+            ep = (rel.episodes || []).filter(function (e) { return e.hls_720 || e.hls_480; })[0];
+        }
+        if (!ep) return null;
+        const hls = ep.hls_720 || ep.hls_480;
+        if (!hls) return null;
+        return {
+            title: ep.hls_720 ? 'AniLibria (720p)' : 'AniLibria (480p)',
+            streamUrl: hls,
+            headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36', 'Referer': LIBRIA_BASE + '/' }
+        };
+    } catch (e) {
+        return null;
+    }
+}
+
+// hime + episode number -> Anilibria hls, for the classic placeholder
+// episode URLs that the mirror can't cover. When the URL names a number,
+// only that episode (ordinal == ep) may be served — falling back to a
+// different episode would play the wrong content for a partial title match.
+async function libriaStreamForHimeEp(hime, epNumber) {
+    try {
+        const title = await himeTitle(hime);
+        const rel = await libriaReleaseForHime(hime, title);
+        if (!rel || !Array.isArray(rel.episodes)) return null;
+        const n = parseInt(epNumber, 10);
+        let ep;
+        if (!isNaN(n)) {
+            ep = (rel.episodes || []).find(function (e) {
+                return parseInt(e.ordinal, 10) === n && (e.hls_720 || e.hls_480);
+            });
+        } else {
+            ep = (rel.episodes || []).filter(function (e) { return e.hls_720 || e.hls_480; })[0];
+        }
+        if (!ep) return null;
+        const hls = ep.hls_720 || ep.hls_480;
+        if (!hls) return null;
+        return {
+            title: ep.hls_720 ? 'AniLibria (720p)' : 'AniLibria (480p)',
+            streamUrl: hls,
+            headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36', 'Referer': LIBRIA_BASE + '/' }
+        };
+    } catch (e) {
+        return null;
+    }
+}
+
+/**
+ * Fetches the anime watch page and extracts description, airdate and alternative titles.
+ * @param {string} url - The anidb.app anime page URL (or an anidb.se mirror URL).
+ * @returns {string} JSON array with a single {description, airdate, aliases} object.
+ */
+async function extractDetails(url) {
+    try {
+        if (isMirrorUrl(url)) {
+            const mirrorDetails = parseMirrorDetails(await fetchText(String(url)));
+            return JSON.stringify([mirrorDetails || detailsFallback()]);
+        }
+        if (isClassicUrl(url)) {
+            const hime = extractFirst(String(url), /[?&]hime=(\d+)/i);
+            // Classic AniDB details are preferred (AniDB-native synopsis);
+            // when the CF block denies it, AniList covers it publicly.
+            const classic = hime ? await classicDetails(hime) : null;
+            const al = classic ? null : await alDetails(hime);
+            const mirror = parseMirrorDetails(await fetchText(await mirrorShowForHime(hime)));
+            return JSON.stringify([classic || al || mirror || detailsFallback()]);
+        }
+        try {
+            const html = await fetchTextOrThrow(String(url));
+            if (/under maintenance/i.test(html)) throw new Error('main site maintenance page');
+            return JSON.stringify([parseMainDetails(html)]);
+        } catch (mainError) {
+            // main site unreachable / maintenance: classic API first,
+            // AniList second, mirror title-only last.
+            const hime = parseAnimeId(url) || extractFirst(String(url || ''), /[?&]hime=(\d+)/i);
+            const classic = hime ? await classicDetails(hime) : null;
+            const al = (classic || !hime) ? null : await alDetails(hime);
+            const mirrorDetails = parseMirrorDetails(await fetchText(resolveMirrorUrl(url)));
+            return JSON.stringify([classic || al || mirrorDetails || detailsFallback()]);
+        }
+    } catch (error) {
+        console.log('Details error: ' + error);
+        return JSON.stringify([detailsFallback()]);
+    }
+}
+
+/**
+ * Extracts the list of episodes for an anime using the public JSON API.
+ * The anime numeric ID is read from the tail of the passed URL. While the
+ * main API is down it falls back to the anidb.se mirror, whose show pages
+ * list the episodes it has (recent uploads only).
+ * @param {string} url - The anime page URL, e.g. https://anidb.app/anime/one-piece-135
+ *   or the mirror counterpart https://anidb.se/anime/one-piece/.
+ * @returns {string} JSON string array of {href, number} objects.
+ */
 async function extractEpisodes(url) {
     try {
-        const showId = extractShowId(url);
-        if (!showId) return JSON.stringify([]);
+        if (isMirrorUrl(url)) {
+            const html = await fetchText(String(url));
+            const mirror = parseMirrorEpisodes(html, mirrorShowSlug(url));
+            if (mirror.length > 0) return JSON.stringify(mirror);
+            return JSON.stringify([]);
+        }
 
-        const data = await gql(`{episodeInfos(showId:${JSON.stringify(showId)},episodeNumStart:0,episodeNumEnd:999999){episodeIdNum}}`);
-        const eps = (((data || {}).episodeInfos) || []);
+        // Result-based fallback: in-app fetchv2 may resolve a 503 API
+        // response without throwing, so "main produced no episodes" is the
+        // signal to chain onto the classic XML API, then the mirror.
+        const main = await mainEpisodes(url);
+        if (main.length > 0) return JSON.stringify(main);
 
-        const episodes = eps
-            .filter(ep => ep.episodeIdNum !== undefined && ep.episodeIdNum !== null)
-            .map(ep => ({
-                href: `${BASE_URL}/anime/${showId}/p-${ep.episodeIdNum}`,
-                number: ep.episodeIdNum
-            }))
-            .sort((a, b) => a.number - b.number);
+        const hime = parseAnimeId(url) || extractFirst(String(url || ''), /[?&]hime=(\d+)/i);
+        if (hime) {
+            // Numbered episode lists, public tiers in order:
+            // Jikan (full catalog) -> MAL HTML -> AniList count ->
+            // classic XML (Shirox impersonation only).
+            const eps = [];
+            const jikan = await jikanEpisodes(hime);
+            if (jikan.length) eps.push.apply(eps, jikan);
+            if (!eps.length) {
+                const mal = await malEpisodes(hime);
+                if (mal.length) eps.push.apply(eps, mal);
+            }
+            if (!eps.length) {
+                const al = await alEpisodes(hime);
+                if (al.length) eps.push.apply(eps, al);
+            }
+            if (!eps.length) {
+                // Playable HLS for the full catalog (Anilibria): watch-page
+                // URLs that extractStreamUrl re-resolves to m3u8.
+                const libria = await libriaEpisodes(hime);
+                if (libria.length) eps.push.apply(eps, libria);
+            }
+            if (eps.length) return JSON.stringify(eps);
 
-        return JSON.stringify(episodes);
+            const classicEps = await classicEpisodes(hime);
+            if (classicEps.length > 0) return JSON.stringify(classicEps);
+        }
+
+        // Classic hime URLs have no mirror-slug to derive from; resolve the
+        // mirror show through hime -> title -> mirror search instead.
+        let mirrorUrl = resolveMirrorUrl(url);
+        if (!mirrorUrl && hime) mirrorUrl = await mirrorShowForHime(hime);
+        if (mirrorUrl) {
+            const html = await fetchText(mirrorUrl);
+            const mirror = parseMirrorEpisodes(html, mirrorShowSlug(mirrorUrl));
+            return JSON.stringify(mirror);
+        }
+        return JSON.stringify([]);
     } catch (error) {
         console.log('Episodes error: ' + error);
         return JSON.stringify([]);
     }
 }
 
-async function extractStreamUrl(url) {
+async function mainEpisodes(url) {
     try {
-        const parsed = parseEpisodeUrl(url);
-        if (!parsed) return JSON.stringify({ streams: [], subtitle: '' });
+        const animeId = parseAnimeId(url);
+        if (!animeId) return [];
+        const response = await soraFetch(EPISODES_API.replace('%s', animeId));
+        if (!response) return [];
+        const data = await response.json();
+        return parseMainEpisodes(data, BASE_URL);
+    } catch (e) {
+        return [];
+    }
+}
 
-        const cacheKey = String(url);
-        const cached = aaStreamCacheGet(cacheKey);
-        if (cached) return cached;
-
-        const { showId, episode } = parsed;
-        // The API's episodeString is 1-based; episodeIdNum in the URL is
-        // 0-based, and episode "0" has no sources. Clamp to >= 1.
-        const apiEpisode = String(Math.max(1, Number(episode)));
-        const keys = aaGetKeys();
-
-        // Query sub first, then dub sequentially to avoid parallel
-        // requests hitting the API rate limiter simultaneously. Add a small
-        // delay between them to reduce NEED_CAPTCHA / Too many requests.
-        const subResult = await aaResolveTranslation(keys, showId, apiEpisode, 'sub');
-        await timerSafe(1200);
-        const dubResult = await aaResolveTranslation(keys, showId, apiEpisode, 'dub');
-        const jobs = [subResult, dubResult];
-
-        const streams = [];
-        let subtitle = '';
-        jobs.forEach(result => {
-            if (!result || !result.streams || !result.streams.length) return;
-            streams.push(...result.streams);
-            if (!subtitle && result.subtitle) subtitle = result.subtitle;
-        });
-
-        let out;
-        if (streams.length === 0) {
-            out = await aaLegacyStreams(showId, apiEpisode);
-        } else {
-            out = JSON.stringify({ streams, subtitle });
+/**
+ * Resolves an anime episode to its playable stream. Main site: JWPlayer
+ * embeds exposing a "file" master playlist. Mirror fallback: the anidb.se
+ * episode page's uvp-1 player exposing a direct mp4/hls source.
+ * @param {string} url - The episode href emitted by extractEpisodes.
+ * @returns {string} JSON object {streams:[{title, streamUrl, headers}], subtitle}.
+ */
+async function extractStreamUrl(url) {
+    const fallback = JSON.stringify({ streams: [], subtitle: '' });
+    try {
+        if (isMirrorUrl(url)) {
+            const mirror = parseMirrorStream(await fetchText(String(url)));
+            return JSON.stringify({ streams: mirror ? [mirror] : [], subtitle: '' });
         }
-        aaStreamCacheSet(cacheKey, out);
-        return out;
+        if (isLibriaUrl(url)) {
+            const libria = await libriaEpisodeStream(url);
+            return JSON.stringify({ streams: libria ? [libria] : [], subtitle: '' });
+        }
+        if (isClassicUrl(url)) {
+            const classic = await classicEpisodeStream(url);
+            // Mirror has no mp4 for this show/episode: playable HLS via
+            // Anilibria instead (the classic placeholder URL is its trigger).
+            const libria = classic
+                ? null
+                : await libriaStreamForHimeEp(
+                    extractFirst(String(url), /[?&]hime=(\d+)/i),
+                    extractFirst(String(url), /[?&]ep=(\d+(?:\.\d+)?)/i)
+                );
+            const stream = classic || libria;
+            return JSON.stringify({ streams: stream ? [stream] : [], subtitle: '' });
+        }
+        // While the main site is down, the app's episode URLs came from the
+        // mirror's extractEpisodes and are already anidb.se URLs (handled
+        // above). A raw anidb.app/episode/<id> URL has no mirror
+        // counterpart, so main only.
+        const main = await resolveMainStream(String(url));
+        return JSON.stringify({ streams: main || [], subtitle: '' });
     } catch (error) {
         console.log('Stream error: ' + error);
-        return JSON.stringify({ streams: [], subtitle: '' });
+        return fallback;
     }
 }
 
-/* ALLANIME STREAM FLOW */
+async function resolveMainStream(url) {
+    const episodeMatch = String(url || '').match(/\/episode\/(\d+)/);
+    if (!episodeMatch) return null;
 
-let aaStreamCache = {};
+    const epId = episodeMatch[1];
+    const response = await soraFetch(LANGUAGES_API.replace('%s', epId));
+    if (!response) return null;
+    const data = await response.json();
 
-function aaStreamCacheGet(key) {
-    const hit = aaStreamCache[key];
-    if (hit && Date.now() - hit.ts < 300000) return hit.value;
-    return null;
-}
+    const rawLangs = (data && (Array.isArray(data.languages) ? data.languages : Array.isArray(data.data) ? data.data : Array.isArray(data.streams) ? data.streams : [])) || [];
+    if (!Array.isArray(rawLangs) || rawLangs.length === 0) return null;
 
-function aaStreamCacheSet(key, value) {
-    const keys = Object.keys(aaStreamCache);
-    if (keys.length > 50) aaStreamCache = {};
-    aaStreamCache[key] = { value, ts: Date.now() };
-}
+    const languages = rawLangs
+        .map((lang) => ({
+            code: (lang.code || lang.language || '').toLowerCase(),
+            name: lang.name || lang.label,
+            embed_url: lang.embed_url || lang.url || lang.file
+        }))
+        .filter((l) => l.code && l.embed_url);
 
-// Fast path: return cached keys or the bundled fallback without any network
-// request. aaLiveKeys() replaces them when the API says the token is stale.
-function aaGetKeys() {
-    const now = Date.now();
-    if (aaKeyCache.keys && now - aaKeyCache.ts < 90000) return aaKeyCache.keys;
-    return {
-        build_id: FALLBACK_KEYGEN.build_id,
-        epoch: String(FALLBACK_KEYGEN.epoch),
-        lane: FALLBACK_KEYGEN.lane,
-        key: FALLBACK_KEYGEN.key,
-        static_key: FALLBACK_KEYGEN.static_key
-    };
-}
+    const streams = [];
+    const seenLang = new Set();
 
-/* ---- live self-bootstrap (build 175 scheme) ------------------------------ */
-
-// Pure-JS HMAC-SHA256 over the module's existing aaSha256 (RFC 2104).
-function aaHmacSha256(key, msg) {
-    let k = key;
-    if (k.length > 64) k = aaSha256(k);
-    const ipad = new Uint8Array(64);
-    const opad = new Uint8Array(64);
-    for (let i = 0; i < 64; i++) {
-        const kb = i < k.length ? k[i] : 0;
-        ipad[i] = kb ^ 0x36;
-        opad[i] = kb ^ 0x5c;
-    }
-    const inner = aaSha256(aaConcat(ipad, msg));
-    return aaSha256(aaConcat(opad, inner));
-}
-
-function aaConcat(a, b) {
-    const out = new Uint8Array(a.length + b.length);
-    out.set(a, 0);
-    out.set(b, a.length);
-    return out;
-}
-
-// Deterministic client mask for a given build id (see block comment above).
-function aaBuildMask(buildId) {
-    const embed = new Uint8Array(32);
-    let off = 0;
-    for (let b = 0; b < AA_MASK_BLOCKS.length; b++) {
-        const blk = aaUnb64(AA_MASK_BLOCKS[b]);
-        for (let i = 0; i < blk.length && off + i < 32; i++) embed[off + i] = blk[i];
-        off += blk.length;
-    }
-    const mask = new Uint8Array(32);
-    for (let i = 0; i < 32; i++) {
-        const cc = buildId.charCodeAt(i % buildId.length) || 0;
-        const salt = cc ^ ((i * AA_SALT_MUL + AA_SALT_ADD) & 255);
-        const linear = (((i >> 3) * AA_FRAG_MUL) + ((i % 8) * AA_FRAG_ADD)) & 255;
-        mask[i] = embed[i] ^ salt ^ linear;
-    }
-    return mask;
-}
-
-async function aaBootstrapOnce(url, bootTok) {
-    const resp = await soraFetch(url, {
-        headers: {
-            'x-build-id': String(FALLBACK_KEYGEN.build_id),
-            'x-aa-boot': bootTok,
-            'Referer': 'https://' + AA_BOOT_HOST + '/',
-            'Origin': 'https://' + AA_BOOT_HOST,
-            'Accept': 'application/json, text/plain, */*',
-            'User-Agent': UA
-        }
+    // Resolve each language embed to its master playlist.
+    // Prefer SUB (jpn) first, then DUB (eng), keeping every language as a
+    // selectable stream in Sora's server picker.
+    const preferred = languages.slice().sort((a, b) => {
+        const ord = { jpn: 0, eng: 1, 'es': 2, 'pt-br': 3 };
+        return (ord[a.code] ?? 9) - (ord[b.code] ?? 9);
     });
-    if (!resp || !resp.ok) {
-        console.log('bootstrap http ' + (resp ? resp.status : 'no-response'));
-        return null;
-    }
-    const j = await resp.json();
-    if (!j || !j.partB) { console.log('bootstrap empty partB response'); return null; }
-    return j;
-}
 
-async function aaBootstrapFor(lane, epoch) {
-    try {
-        const mask = aaBuildMask(String(FALLBACK_KEYGEN.build_id));
-        const hmacKey = aaHmacSha256(mask, aaAscii(AA_BOOT_PREFIX + FALLBACK_KEYGEN.build_id));
-        // mkissa build 175: message is buildId|group|host|epoch|lane joined by "|"
-        // (verified live 2026-09-25: "175|mkissa|mkissa.to|2960|k7" reproduces the
-        // app's x-aa-boot token). Builds 166/141 used group:lane:epoch:host:buildId
-        // with ":" — tried second when the new format gets rejected.
-        const msgNew = [FALLBACK_KEYGEN.build_id, AA_BOOT_GROUP, AA_BOOT_HOST, String(epoch), lane].join('|');
-        const msgOld = AA_BOOT_GROUP + ':' + lane + ':' + epoch + ':' + AA_BOOT_HOST + ':' + FALLBACK_KEYGEN.build_id;
-        const url = AA_BOOTSTRAP_URL + '?buildId=' + encodeURIComponent(FALLBACK_KEYGEN.build_id) +
-            '&k=' + encodeURIComponent(lane);
-        let j = await aaBootstrapOnce(url, aaHex(aaHmacSha256(hmacKey, aaAscii(msgNew))));
-        if (!j) {
-            j = await aaBootstrapOnce(url, aaHex(aaHmacSha256(hmacKey, aaAscii(msgOld))));
-        }
-        if (!j) return null;
-        const raw = aaUnb64(j.partB);
-        if (!raw || raw.length < 32) { console.log('bootstrap short partB'); return null; }
-        const key = new Uint8Array(32);
-        for (let i = 0; i < 32; i++) key[i] = raw[i] ^ mask[i % mask.length];
-        return {
-            build_id: String(FALLBACK_KEYGEN.build_id),
-            epoch: String(j.epoch !== undefined ? j.epoch : epoch),
-            lane: (j.k && String(j.k)) || lane,
-            key: aaHex(key),
-            static_key: FALLBACK_KEYGEN.static_key
-        };
-    } catch (error) {
-        console.log('bootstrap error: ' + error);
-        return null;
-    }
-}
-
-// Refresh keys when the API rejects our aaReq token: self-bootstrap first
-// (current epoch, then previous), remote keygen repo as last resort.
-async function aaFetchRemoteKeys(lane) {
-    const now = Date.now();
-    if (aaKeyCache.keys && now - aaKeyCache.ts < 90000) return aaKeyCache.keys;
-
-    const curEpoch = Math.floor(now / AA_WEEK_MS);
-    const prevEpoch = (now - curEpoch * AA_WEEK_MS < AA_DAY_MS && curEpoch > 0) ? curEpoch - 1 : curEpoch;
-    const useLane = lane || FALLBACK_KEYGEN.lane;
-    for (const ep of [curEpoch, prevEpoch]) {
-        const keys = await aaBootstrapFor(useLane, ep);
-        if (keys) {
-            console.log('self-bootstrap ok: epoch ' + keys.epoch + ', lane ' + keys.lane);
-            aaKeyCache.keys = keys;
-            aaKeyCache.ts = Date.now();
-            return keys;
-        }
-    }
-    console.log('self-bootstrap failed; trying remote keygen repo');
-    for (let i = 0; i < KEYGEN_URLS.length; i++) {
+    const resolved = await Promise.all(preferred.map(async (lang) => {
         try {
-            const resp = await soraFetch(KEYGEN_URLS[i], {
-                headers: { 'User-Agent': UA, 'Accept': 'application/json' }
-            });
-            if (resp) {
-                const json = await resp.json();
-                // Guard: the third-party keygen repo lags behind the live site.
-                const remoteBuild = Number(json && json.build_id);
-                const fallbackBuild = Number(FALLBACK_KEYGEN.build_id);
-                if (json && json.build_id && json.key && json.epoch !== undefined && json.lane && remoteBuild >= fallbackBuild) {
-                    const keys = {
-                        build_id: String(json.build_id),
-                        epoch: String(json.epoch),
-                        lane: String(json.lane),
-                        key: String(json.key),
-                        static_key: String(json.static_key || FALLBACK_KEYGEN.static_key)
-                    };
-                    aaKeyCache.keys = keys;
-                    aaKeyCache.ts = Date.now();
-                    return keys;
-                }
-                console.log('Remote keygen stale (build ' + (json && json.build_id) + ' < ' + fallbackBuild + '); keeping fallback');
-            }
-        } catch (error) {
-            console.log('Keygen fetch error: ' + error);
-        }
-    }
-    return null;
-}
-
-function aaSealToken(keys, qh, ts, legacyIv) {
-    const payload = '{"v":1,"ts":' + ts + ',"epoch":' + keys.epoch + ',"buildId":"' + keys.build_id + '","qh":"' + qh + '","k":"' + keys.lane + '"}';
-    // mkissa build 175: IV = SHA256(epoch:buildId:qh:ts:lane)[0:12] (verified against
-    // the app's ET() chunk 2026-09-25). Earlier builds: 141 used SHA256(epoch:qh:ts)
-    // (anipy style). Pass true for the legacy composition.
-    const ivBase = legacyIv
-        ? keys.epoch + ':' + qh + ':' + ts
-        : keys.epoch + ':' + keys.build_id + ':' + qh + ':' + ts + ':' + keys.lane;
-    const iv = aaSha256(aaAscii(ivBase)).slice(0, 12);
-    const sealed = aaGcmSeal(aaHexToBytes(keys.key), iv, aaAscii(payload));
-    const blob = new Uint8Array(1 + 12 + sealed.out.length + 16);
-    blob[0] = 1;
-    blob.set(iv, 1);
-    blob.set(sealed.out, 13);
-    blob.set(sealed.tag, 13 + sealed.out.length);
-    return aaB64(blob);
-}
-
-function aaBuildToken(keys, qh, ts, legacyIv) {
-    return aaSealToken(keys, qh, ts, legacyIv);
-}
-
-async function aaEpisodeQuery(keys, showId, tt, episode) {
-    const ts = Math.floor(Date.now() / 300000) * 300000;
-    const qh = aaHex(aaSha256(aaAscii(EPISODE_QUERY)));
-    const variables = { showId, translationType: tt, episodeString: String(episode) };
-    const extensions = {
-        persistedQuery: { version: 1, sha256Hash: qh },
-        aaReq: aaBuildToken(keys, qh, ts),
-        k: keys.lane
-    };
-    console.log('Episode query -> ' + API_URLS.length + ' host(s), episode ' + episode + ', type ' + tt + ', qh ' + qh.slice(0, 8));
-    let rateLimited = false;
-    for (let i = 0; i < API_URLS.length; i++) {
-        const host = API_URLS[i];
-        let json = await aaSendEpisodeRequest(host, 'GET', null, variables, extensions, keys);
-        let errMsg = (json && json.errors && json.errors[0] && json.errors[0].message) || '';
-        if (json && !json.data && errMsg.indexOf('PersistedQueryNotFound') === 0) {
-            console.log('PersistedQueryNotFound on ' + host + '; registering via POST');
-            json = await aaSendEpisodeRequest(host, 'POST', EPISODE_QUERY, variables, extensions, keys);
-            errMsg = (json && json.errors && json.errors[0] && json.errors[0].message) || '';
-        }
-        if (!json || typeof json !== 'object') continue;
-        const hasTbp = !!(json.data && json.data.tobeparsed);
-        const dataKeys = (json.data && typeof json.data === 'object') ? Object.keys(json.data).join(',') : 'none';
-        console.log('Episode response from ' + host + ': tbp=' + hasTbp + ' err=' + (errMsg || '-').slice(0, 80) + ' data=' + dataKeys);
-        if (errMsg.indexOf('Too many requests') === 0) {
-            rateLimited = true;
-            const m = errMsg.match(/(\d+)\s*seconds/);
-            const waitSec = m ? parseInt(m[1], 10) : 2;
-            console.log('Episode rate limited on ' + host + '; waiting ' + waitSec + 's then retrying');
-            await timerSafe(waitSec * 1000 + 500);
-            // Retry same host once
-            let retryJson = await aaSendEpisodeRequest(host, 'GET', null, variables, extensions, keys);
-            let retryErr = (retryJson && retryJson.errors && retryJson.errors[0] && retryJson.errors[0].message) || '';
-            if (retryJson && retryJson.data && retryJson.data.tobeparsed) return retryJson;
-            if (retryErr.indexOf('AA_CRYPTO') === 0) return retryJson;
-            // If retry still rate limited, try next host
-            if (retryErr.indexOf('Too many requests') === 0 || retryErr.indexOf('NEED_CAPTCHA') === 0) {
-                console.log('Retry still rate limited on ' + host + '; trying next host');
-                continue;
-            }
-            if (retryJson && retryJson.data && retryJson.data.episode) return retryJson;
-            continue;
-        }
-        if (errMsg.indexOf('NEED_CAPTCHA') === 0) {
-            rateLimited = true;
-            // The key/IV composition may be one revision behind the live site:
-            // retry with the legacy epoch:qh:ts IV before moving to next host.
-            const legacyExt = {
-                persistedQuery: { version: 1, sha256Hash: qh },
-                aaReq: aaBuildToken(keys, qh, ts, true),
-                k: keys.lane
+            const master = await resolveEmbedMaster(lang.embed_url);
+            if (!master) return null;
+            return {
+                title: prettifyLangLabel(lang),
+                streamUrl: master,
+                headers: makeStreamHeaders(),
+                language: lang.code
             };
-            let legacyJson = await aaSendEpisodeRequest(host, 'GET', null, variables, legacyExt, keys);
-            let legacyErr = (legacyJson && legacyJson.errors && legacyJson.errors[0] && legacyJson.errors[0].message) || '';
-            if (legacyJson && (legacyJson.data && (legacyJson.data.tobeparsed || legacyJson.data.episode))) return legacyJson;
-            if (legacyErr.indexOf('NEED_CAPTCHA') !== 0 && legacyErr.indexOf('Too many') !== 0 && !legacyErr) {
-                console.log('Episode legacy-IV response on ' + host + ': ' + legacyErr.slice(0, 80));
-                return legacyJson;
-            }
-            console.log('Episode NEED_CAPTCHA on ' + host + ' (both IVs); trying next host');
-            continue;
+        } catch (e) {
+            console.log('Embed resolve error: ' + (lang.code || lang.name) + ' -> ' + e);
+            return null;
         }
-        if (errMsg.indexOf('AA_CRYPTO') === 0) {
-            // Let the caller handle crypto refresh
-            return json;
-        }
-        if (hasTbp || (json.data && json.data.episode)) return json;
-        // No tobeparsed and no episode — try next host
-        continue;
-    }
-    if (rateLimited) {
-        console.log('All episode hosts rate limited');
-    }
-    return null;
-}
+    }));
 
-async function aaSendEpisodeRequest(host, method, query, variables, extensions, keys) {
-    const headers = aaEpisodeHeaders(keys, host);
-    const url = host + '?variables=' + encodeURIComponent(JSON.stringify(variables)) + '&extensions=' + encodeURIComponent(JSON.stringify(extensions));
-    let resp = null;
-    try {
-        if (method === 'POST') {
-            resp = await soraFetch(url, {
-                method: 'POST',
-                headers: headers,
-                body: JSON.stringify({ query: query, variables: variables, extensions: extensions })
-            });
-        } else {
-            resp = await soraFetch(url, {
-                method: 'GET',
-                headers: headers
-            });
-        }
-    } catch (err) {
-        console.log('Episode ' + method + ' to ' + host + ' threw: ' + err);
-        return null;
-    }
-    if (!resp) {
-        console.log('Episode ' + method + ' to ' + host + ' failed: no response');
-        return null;
-    }
-    try {
-        const text = await resp.text();
-        if (typeof text === 'string' && text.length && text[0] !== '{') {
-            console.log('Episode ' + method + ' to ' + host + ' raw: ' + String(text).slice(0, 90));
-        }
-        return JSON.parse(text);
-    } catch (errText) {
-        console.log('Episode ' + method + ' to ' + host + ' parse error: ' + errText);
-        return null;
-    }
-}
-
-function aaEpisodeHeaders(keys, host) {
-    const isMkissa = host && host.indexOf('mkissa.net') !== -1;
-    const origin = isMkissa ? 'https://mkissa.to' : 'https://allmanga.to';
-    return {
-        'Content-Type': 'application/json',
-        'Referer': origin + '/',
-        'Origin': origin,
-        'x-build-id': keys.build_id,
-        'Accept': 'application/json, text/plain, */*',
-        'User-Agent': UA
-    };
-}
-
-async function aaResolveTranslation(keys, showId, episode, tt) {
-    let json = await aaEpisodeQuery(keys, showId, tt, episode);
-    if (aaIsCryptoStale(json)) {
-        const fresh = await aaFetchRemoteKeys(keys.lane);
-        if (fresh) {
-            console.log('aaReq stale for ' + tt + '; refreshed keygen, retrying');
-            keys = fresh;
-            json = await aaEpisodeQuery(keys, showId, tt, episode);
-        }
-    }
-    let parsed = aaParseEpisodeResponse(json, keys);
-    if (!parsed && json && json.data && json.data.tobeparsed) {
-        // Response present but decryption failed — the epoch probably rotated
-        // mid-session. Re-bootstrap and retry once (mirrors the site's rk()).
-        console.log('tobeparsed decrypt failed for ' + tt + '; re-bootstrapping');
-        const fresh = await aaFetchRemoteKeys(keys.lane);
-        if (fresh) {
-            keys = fresh;
-            json = await aaEpisodeQuery(keys, showId, tt, episode);
-            parsed = aaParseEpisodeResponse(json, keys);
-        }
-    }
-    if (!parsed) {
-        console.log('No sources for ' + tt + ' (encrypted episode query failed)');
-        return { streams: [], subtitle: '' };
-    }
-    console.log('Decrypted sources for ' + tt);
-    return aaResolveSources(parsed, tt);
-}
-
-function aaIsCryptoStale(json) {
-    const msg = (json && json.errors && json.errors[0] && json.errors[0].message) || '';
-    return msg.indexOf('AA_CRYPTO_STALE') === 0 || msg.indexOf('AA_CRYPTO_MISSING') === 0 || msg.indexOf('AA_CRYPTO_EXPIRED') === 0;
-}
-
-function aaParseEpisodeResponse(json, keys) {
-    if (!json || !json.data || !json.data.tobeparsed) return null;
-    const msg = (json.errors && json.errors[0] && json.errors[0].message) || '';
-    if (msg) console.log('Episode query warning: ' + msg.slice(0, 80));
-    return aaDecrypt(keys, json.data.tobeparsed);
-}
-
-function aaDecrypt(keys, tobeparsed) {
-    const raw = aaUnb64(tobeparsed);
-    if (!raw || raw.length < 30) return null;
-    const iv = raw.slice(1, 13);
-    const ct = raw.slice(13, raw.length - 16);
-    const tag = raw.slice(raw.length - 16);
-    const attempts = [aaHexToBytes(keys.key), aaAscii(keys.static_key)];
-    for (let i = 0; i < attempts.length; i++) {
-        const plain = aaGcmOpen(attempts[i], iv, ct, tag);
-        if (plain) {
-            try {
-                return JSON.parse(aaUtf8ToStr(plain));
-            } catch (error) {
-                return null;
-            }
-        }
-    }
-    return null;
-}
-
-async function aaResolveSources(parsed, tt) {
-    const sources = (parsed.episode && parsed.episode.sourceUrls) || [];
-    const cdn = [];
-    const iframes = [];
-    sources.forEach(s => {
-        if (!s || !s.sourceName || typeof s.sourceUrl !== 'string') return;
-        if (s.sourceUrl.indexOf('--') === 0) {
-            cdn.push(s);
-        } else if (/^https?:\/\//i.test(s.sourceUrl)) {
-            iframes.push(s);
-        }
+    resolved.forEach((s) => {
+        if (!s || !s.streamUrl) return;
+        const key = s.language || s.streamUrl;
+        if (seenLang.has(key)) return;
+        seenLang.add(key);
+        streams.push(s);
     });
 
-    const orderedCdn = aaOrderByPreference(cdn, SOURCE_PRIORITY);
-    const orderedIframes = aaOrderByPreference(iframes, ['Mp4', 'Ok', 'S-Mp4', 'Luf-Mp4', 'Uv-mp4', 'Default', 'Ak', 'Yt-mp4']).slice(0, 4);
-
-    // Clock endpoints can hang; collect all with timeout and prefer a result that has subtitles.
-    const clockResults = await Promise.all(orderedCdn.map(src =>
-        timedFallback(aaFetchClockSource(src, tt), 8000, { streams: [], subtitle: '' })
-    ));
-    // Prefer a clock result with both streams and subtitles, else any with streams
-    let bestClock = clockResults.find(r => r.streams.length && r.subtitle) || clockResults.find(r => r.streams.length);
-    if (bestClock) {
-        // If we have a clock result with subs, return it immediately (don't wait for iframes)
-        if (bestClock.subtitle) return bestClock;
-        // Otherwise keep it as candidate but also race iframes
-    }
-    const iframeResults = await Promise.all(orderedIframes.map(src =>
-        timedFallback(
-            resolveIframeSource(src.sourceUrl, src.sourceName, tt)
-                .then(r => ({ streams: (r && r.streamUrl) ? [r] : [], subtitle: (r && r.subtitle) || '' }))
-                .catch(error => {
-                    console.log('Iframe source ' + (src.sourceName || '?') + ' error: ' + error);
-                    return { streams: [], subtitle: '' };
-                }),
-            8000, { streams: [], subtitle: '' }
-        )
-    ));
-    let bestIframe = iframeResults.find(r => r.streams.length && r.subtitle) || iframeResults.find(r => r.streams.length);
-    // Return the best with subs, else the first with streams, else empty
-    if (bestClock && bestClock.streams.length && bestClock.subtitle) return bestClock;
-    if (bestIframe && bestIframe.streams.length && bestIframe.subtitle) return bestIframe;
-    if (bestClock && bestClock.streams.length) return bestClock;
-    if (bestIframe && bestIframe.streams.length) return bestIframe;
-    return { streams: [], subtitle: '' };
+    return streams.length ? streams : null;
 }
 
-function aaOrderByPreference(items, priority) {
-    const ordered = [];
-    priority.forEach(name => {
-        items.filter(s => s.sourceName === name).forEach(h => ordered.push(h));
-    });
-    items.forEach(s => {
-        if (priority.indexOf(s.sourceName) < 0) ordered.push(s);
-    });
-    return ordered;
+/* MIRROR HELPERS (anidb.se) */
+
+function isMirrorUrl(url) {
+    return String(url || '').includes(MIRROR_HOST);
 }
 
-// Resolves with the first task result that contains streams; resolves with an
-// empty result once every task settled without streams.
-function aaRaceSuccess(tasks) {
-    return new Promise(resolve => {
-        if (!tasks.length) {
-            resolve({ streams: [], subtitle: '' });
-            return;
-        }
-        let pending = tasks.length;
-        let done = false;
-        tasks.forEach(p => {
-            Promise.resolve(p).then(r => {
-                if (done) return;
-                if (r && r.streams && r.streams.length) {
-                    done = true;
-                    resolve(r);
-                } else if (--pending === 0) {
-                    done = true;
-                    resolve({ streams: [], subtitle: '' });
-                }
-            }).catch(() => {
-                if (done) return;
-                if (--pending === 0) {
-                    done = true;
-                    resolve({ streams: [], subtitle: '' });
-                }
-            });
-        });
-    });
+// Map a main-site show URL onto its anidb.se mirror URL. Main anime URLs are
+// /anime/<slug>[-<id>]; the mirror drops the numeric id:
+// https://anidb.app/anime/one-piece-135 -> https://anidb.se/anime/one-piece/
+// Mirror URLs pass through unchanged; anything else yields ''.
+function resolveMirrorUrl(url) {
+    const u = String(url || '');
+    if (u.includes(MIRROR_HOST)) return u;
+    const m = u.match(/anidb\.app\/anime\/([a-z0-9-]+?)(?:-\d+)?\/?(?:[?#].*)?$/i);
+    if (!m) return '';
+    return `${MIRROR_URL}/anime/${m[1].replace(/-\d+$/, '')}/`;
 }
 
-async function aaFetchClockSource(src, tt) {
-    const out = { streams: [], subtitle: '' };
-    try {
-        const clockUrl = CLOCK_BASE + aaXor56(src.sourceUrl.slice(2)).replace('clock', 'clock.json');
-        const resp = await soraFetch(clockUrl, {
-            headers: { 'Referer': CLOCK_BASE + '/', 'User-Agent': UA }
-        });
-        if (!resp) {
-            console.log('Clock source ' + (src.sourceName || '?') + ': no response');
-            return out;
-        }
-        const json = await resp.json();
-        const links = (json && json.links) || [];
-        if (!links.length) {
-            console.log('Clock source ' + (src.sourceName || '?') + ': no links');
-            return out;
-        }
-
-        links.forEach(l => {
-            if (!l || !l.link) return;
-            const res = l.resolution || (l.hls ? 'HLS' : 'MP4');
-            out.streams.push({
-                title: tt.toUpperCase() + ' ' + (src.sourceName || 'Source') + (res ? ' ' + res : ''),
-                streamUrl: l.link,
-                headers: {
-                    'Referer': (l.headers && l.headers.Referer) || CLOCK_BASE + '/',
-                    'User-Agent': UA
-                }
-            });
-            if (!out.subtitle && l.subtitles && l.subtitles[0] && l.subtitles[0].src) {
-                out.subtitle = l.subtitles[0].src;
-            }
-        });
-    } catch (error) {
-        console.log('Clock source ' + (src.sourceName || '?') + ' error: ' + error);
+// The show slug a mirror episode/show URL belongs to ("one-piece" from
+// .../anime/one-piece/ or .../one-piece-episode-1180-english-subbed/).
+function mirrorShowSlug(url) {
+    const s = String(url || '').replace(/\/+$/, '');
+    const m = s.match(/anidb\.se\/(?:anime\/)?([a-z0-9-]+)$/i);
+    if (m) {
+        const ep = m[1].match(/^(.+)-episode-\d+-.*/i);
+        return ep ? ep[1] : m[1];
     }
-    return out;
-}
-
-async function resolveIframeSource(embedUrl, sourceName, tt) {
-    const direct = extractDirectMediaUrl(embedUrl);
-    if (direct) {
-        return {
-            title: tt.toUpperCase() + ' ' + (sourceName || 'Source'),
-            streamUrl: direct,
-            headers: { 'Referer': embedUrl, 'User-Agent': UA }
-        };
-    }
-
-    if (/mp4upload\.com/i.test(embedUrl)) {
-        return await resolveMp4Upload(embedUrl, sourceName, tt);
-    }
-
-    if (/ok\.ru\/videoembed\//i.test(embedUrl)) {
-        return await resolveOkRu(embedUrl, sourceName, tt);
-    }
-
-    return await resolveGenericIframe(embedUrl, sourceName, tt);
-}
-
-async function resolveOkRu(embedUrl, sourceName, tt) {
-    const resp = await soraFetch(embedUrl, {
-        headers: { 'Referer': 'https://allmanga.to/', 'User-Agent': UA }
-    });
-    if (!resp) return null;
-    const html = await resp.text();
-    const optsMatch = html.match(/data-options="([\s\S]*?)"/);
-    if (!optsMatch) return null;
-    let opts = null;
-    try {
-        opts = JSON.parse(optsMatch[1].replace(/&quot;/g, '"'));
-    } catch (e) {
-        return null;
-    }
-    const flashvars = opts && opts.flashvars;
-    if (!flashvars || !flashvars.metadata) return null;
-    let meta = null;
-    try {
-        meta = JSON.parse(flashvars.metadata);
-    } catch (e) {
-        return null;
-    }
-    const movie = meta && meta.movie;
-    if (!movie) return null;
-    let url = movie.ondemandHls || '';
-    if (!url && movie.videos && movie.videos.length && movie.videos[0].url) {
-        url = movie.videos[0].url;
-    }
-    if (!url || !/^https?:\/\//i.test(url)) return null;
-    return {
-        title: tt.toUpperCase() + ' ' + (sourceName || 'Ok'),
-        streamUrl: url,
-        headers: { 'Referer': embedUrl, 'User-Agent': UA }
-    };
-}
-
-async function resolveMp4Upload(embedUrl, sourceName, tt) {
-    const resp = await soraFetch(embedUrl, {
-        headers: { 'Referer': 'https://allmanga.to/', 'User-Agent': UA }
-    });
-    if (!resp) return null;
-    const html = await resp.text();
-    let m = html.match(/src\s*:\s*["'](https?:\/\/[^"']+\.mp4[^"']*)["']/i)
-        || html.match(/["']?file["']?\s*[:=]\s*["'](https?:\/\/[^"']+\.mp4[^"']*)["']/i)
-        || html.match(/(https?:\/\/[^\s"'<>]+\.mp4[^\s"'<>]*)/i);
-    if (!m) return null;
-    return {
-        title: tt.toUpperCase() + ' ' + (sourceName || 'Mp4Upload'),
-        streamUrl: m[1],
-        headers: { 'Referer': embedUrl, 'Origin': 'https://www.mp4upload.com', 'User-Agent': UA }
-    };
-}
-
-async function resolveGenericIframe(embedUrl, sourceName, tt) {
-    const resp = await soraFetch(embedUrl, {
-        headers: { 'Referer': 'https://allmanga.to/', 'User-Agent': UA }
-    });
-    if (!resp) return null;
-    const html = await resp.text();
-
-    let m = html.match(/["']?file["']?\s*[:=]\s*["'](https?:\/\/[^"']+\.(?:m3u8|mp4)[^"']*)["']/i)
-        || html.match(/sources\s*:\s*\[\s*\{[^}]*file\s*:\s*["'](https?:\/\/[^"']+\.(?:m3u8|mp4)[^"']*)["']/i)
-        || html.match(/(https?:\/\/[^\s"'<>]+\.(?:m3u8|mp4)[^\s"'<>]*)/i);
-
-    if (!m) {
-        const packed = html.match(/<script[^>]*>\s*(eval\(function\(p,a,c,k,e,d[\s\S]*?)<\/script>/i);
-        if (packed) {
-            try {
-                const unpacked = unpack(packed[1]);
-                m = unpacked.match(/["']?file["']?\s*[:=]\s*["'](https?:\/\/[^"']+\.(?:m3u8|mp4)[^"']*)["']/i)
-                    || unpacked.match(/(https?:\/\/[^\s"'<>]+\.(?:m3u8|mp4)[^\s"'<>]*)/i);
-            } catch (e) {
-                // ignore unpack errors
-            }
-        }
-    }
-
-    if (!m) return null;
-    const mediaUrl = m[1];
-    if (!isValidMediaUrl(mediaUrl)) return null;
-    return {
-        title: tt.toUpperCase() + ' ' + (sourceName || 'Source'),
-        streamUrl: mediaUrl,
-        headers: { 'Referer': embedUrl, 'User-Agent': UA }
-    };
-}
-
-function isValidMediaUrl(url) {
-    if (!url || typeof url !== 'string') return false;
-    if (!/^https?:\/\//i.test(url)) return false;
-    if (/[\s"'<>]/.test(url)) return false;
-    if (/&quot;|&amp;lt;|%22/i.test(url)) return false;
-    return /\.(m3u8|mp4)(\?|#|$)/i.test(url);
-}
-
-function extractDirectMediaUrl(url) {
-    if (/\.(?:m3u8|mp4)(?:[?#][^\s"'<>]*)?$/i.test(url)) return url;
+    const main = s.match(/anidb\.app\/anime\/([a-z0-9-]+?)(?:-\d+)?\/?(?:[?#].*)?$/i);
+    if (main) return main[1].replace(/-\d+$/, '');
     return '';
 }
 
-async function aaLegacyStreams(showId, episode) {
-    try {
-        const data = await gql(`{episodeInfos(showId:${JSON.stringify(showId)},episodeNumStart:${episode},episodeNumEnd:${episode}){episodeIdNum vidInforssub vidInforsdub vidInforsraw}}`);
-        const eps = (((data || {}).episodeInfos) || []);
-        const ep = eps.find(e => String(e.episodeIdNum) === String(episode)) || eps[0];
-        if (!ep) return JSON.stringify({ streams: [], subtitle: '' });
+function parseMirrorSearch(html) {
+    const results = [];
+    const seen = new Set();
+    if (!html) return results;
 
-        // The vidPath fallback (e.g. /data2/media9/.../sub/1.mp4) now returns HTML Error Page
-        // (verified 2026-08-28 for One Piece and Bocchi) — do not return dead CDN URLs.
-        // Only return the legacy streams if the API is not rate-limited with NEED_CAPTCHA.
-        // If we reach here via NEED_CAPTCHA, the caller should have already returned 0 streams.
-        // For now, return 0 to avoid the app's JSON/HLS parser hitting HTML.
-        console.log('Legacy streams: vidPath fallback is dead (returns HTML), returning 0 to avoid JSON/HLS errors');
-        return JSON.stringify({ streams: [], subtitle: '' });
-    } catch (error) {
-        console.log('Legacy stream error: ' + error);
-        return JSON.stringify({ streams: [], subtitle: '' });
-    }
-}
+    // Result cards live in the main content; the sidebar carries unrelated
+    // recent-episode/show cards, so stop parsing at the sidebar.
+    const sideIdx = html.indexOf('id="sidebar"');
+    const main = sideIdx > 0 ? html.slice(0, sideIdx) : html;
 
-/* PURE-JS CRYPTO (SHA-256 + AES-256-GCM) FOR SORA'S JAVASCRIPCORE SANDBOX */
+    const re = /<a[^>]*href="(https:\/\/anidb\.se\/(?:anime\/)?[a-z0-9-]+\/?)"[^>]*title="([^"]*)"[^>]*>([\s\S]*?)<\/a>/gi;
+    let cardMatch;
+    while ((cardMatch = re.exec(main)) !== null) {
+        const rawHref = cardMatch[1];
+        const showHref = /^https:\/\/anidb\.se\/anime\//i.test(rawHref) ? rawHref.replace(/\/?$/, '/') : '';
+        if (!showHref || seen.has(showHref)) continue;
+        seen.add(showHref);
 
-const aaSbox = [
-0x63,0x7c,0x77,0x7b,0xf2,0x6b,0x6f,0xc5,0x30,0x01,0x67,0x2b,0xfe,0xd7,0xab,0x76,
-0xca,0x82,0xc9,0x7d,0xfa,0x59,0x47,0xf0,0xad,0xd4,0xa2,0xaf,0x9c,0xa4,0x72,0xc0,
-0xb7,0xfd,0x93,0x26,0x36,0x3f,0xf7,0xcc,0x34,0xa5,0xe5,0xf1,0x71,0xd8,0x31,0x15,
-0x04,0xc7,0x23,0xc3,0x18,0x96,0x05,0x9a,0x07,0x12,0x80,0xe2,0xeb,0x27,0xb2,0x75,
-0x09,0x83,0x2c,0x1a,0x1b,0x6e,0x5a,0xa0,0x52,0x3b,0xd6,0xb3,0x29,0xe3,0x2f,0x84,
-0x53,0xd1,0x00,0xed,0x20,0xfc,0xb1,0x5b,0x6a,0xcb,0xbe,0x39,0x4a,0x4c,0x58,0xcf,
-0xd0,0xef,0xaa,0xfb,0x43,0x4d,0x33,0x85,0x45,0xf9,0x02,0x7f,0x50,0x3c,0x9f,0xa8,
-0x51,0xa3,0x40,0x8f,0x92,0x9d,0x38,0xf5,0xbc,0xb6,0xda,0x21,0x10,0xff,0xf3,0xd2,
-0xcd,0x0c,0x13,0xec,0x5f,0x97,0x44,0x17,0xc4,0xa7,0x7e,0x3d,0x64,0x5d,0x19,0x73,
-0x60,0x81,0x4f,0xdc,0x22,0x2a,0x90,0x88,0x46,0xee,0xb8,0x14,0xde,0x5e,0x0b,0xdb,
-0xe0,0x32,0x3a,0x0a,0x49,0x06,0x24,0x5c,0xc2,0xd3,0xac,0x62,0x91,0x95,0xe4,0x79,
-0xe7,0xc8,0x37,0x6d,0x8d,0xd5,0x4e,0xa9,0x6c,0x56,0xf4,0xea,0x65,0x7a,0xae,0x08,
-0xba,0x78,0x25,0x2e,0x1c,0xa6,0xb4,0xc6,0xe8,0xdd,0x74,0x1f,0x4b,0xbd,0x8b,0x8a,
-0x70,0x3e,0xb5,0x66,0x48,0x03,0xf6,0x0e,0x61,0x35,0x57,0xb9,0x86,0xc1,0x1d,0x9e,
-0xe1,0xf8,0x98,0x11,0x69,0xd9,0x8e,0x94,0x9b,0x1e,0x87,0xe9,0xce,0x55,0x28,0xdf,
-0x8c,0xa1,0x89,0x0d,0xbf,0xe6,0x42,0x68,0x41,0x99,0x2d,0x0f,0xb0,0x54,0xbb,0x16
-];
+        const title = cleanText(cardMatch[2] || '').replace(/-\d+$/, '') || mirrorTitleFromHref(showHref);
 
-const aaRcon = [0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36];
-
-function aaKeyExpansion(key) {
-    const Nk = key.length / 4;
-    const Nr = Nk + 6;
-    const w = new Uint32Array(4 * (Nr + 1));
-    for (let i = 0; i < Nk; i++) {
-        w[i] = (key[4 * i] << 24) | (key[4 * i + 1] << 16) | (key[4 * i + 2] << 8) | key[4 * i + 3];
-    }
-    for (let i = Nk; i < 4 * (Nr + 1); i++) {
-        let temp = w[i - 1];
-        if (i % Nk === 0) {
-            temp = ((temp << 8) | (temp >>> 24)) >>> 0;
-            const b0 = (temp >>> 24) & 0xff, b1 = (temp >>> 16) & 0xff, b2 = (temp >>> 8) & 0xff, b3 = temp & 0xff;
-            temp = ((aaSbox[b0] << 24) | (aaSbox[b1] << 16) | (aaSbox[b2] << 8) | aaSbox[b3]) ^ (aaRcon[(i / Nk) - 1] << 24);
-        } else if (Nk > 6 && i % Nk === 4) {
-            const b0 = (temp >>> 24) & 0xff, b1 = (temp >>> 16) & 0xff, b2 = (temp >>> 8) & 0xff, b3 = temp & 0xff;
-            temp = (aaSbox[b0] << 24) | (aaSbox[b1] << 16) | (aaSbox[b2] << 8) | aaSbox[b3];
+        // Thumbnails are lazy-loaded: the real URL lives in data-src, the
+        // src attribute is a base64 SVG placeholder.
+        const imgTag = cardMatch[3].match(/<img[^>]*>/i);
+        let image = '';
+        if (imgTag) {
+            image = extractFirst(imgTag[0], /data-src="(https?:\/\/[^"]+)"/i)
+                || extractFirst(imgTag[0], /src="(https?:\/\/[^"']+)"/i);
         }
-        w[i] = (w[i - Nk] ^ temp) >>> 0;
+        image = decodeHtml(image || '').trim();
+        if (!/^https?:/i.test(image) || /data:image/i.test(image)) image = '';
+
+        results.push({ title, image, href: showHref });
     }
-    const rk = new Uint8Array(4 * (Nr + 1) * 4);
-    for (let i = 0; i < w.length; i++) {
-        rk[4 * i] = (w[i] >>> 24) & 0xff;
-        rk[4 * i + 1] = (w[i] >>> 16) & 0xff;
-        rk[4 * i + 2] = (w[i] >>> 8) & 0xff;
-        rk[4 * i + 3] = w[i] & 0xff;
-    }
-    return rk;
+
+    return results;
 }
 
-function aaEncryptBlock(key, block) {
-    const Nr = key.length / 16 - 1;
-    const s = block.slice();
-    for (let i = 0; i < 16; i++) s[i] ^= key[i];
-    for (let round = 1; round < Nr; round++) {
-        for (let i = 0; i < 16; i++) s[i] = aaSbox[s[i]];
-        const t = s.slice();
-        s[0] = t[0]; s[4] = t[4]; s[8] = t[8]; s[12] = t[12];
-        s[1] = t[5]; s[5] = t[9]; s[9] = t[13]; s[13] = t[1];
-        s[2] = t[10]; s[6] = t[14]; s[10] = t[2]; s[14] = t[6];
-        s[3] = t[15]; s[7] = t[3]; s[11] = t[7]; s[15] = t[11];
-        aaMixColumns(s);
-        for (let i = 0; i < 16; i++) s[i] ^= key[round * 16 + i];
-    }
-    for (let i = 0; i < 16; i++) s[i] = aaSbox[s[i]];
-    const t = s.slice();
-    s[0] = t[0]; s[4] = t[4]; s[8] = t[8]; s[12] = t[12];
-    s[1] = t[5]; s[5] = t[9]; s[9] = t[13]; s[13] = t[1];
-    s[2] = t[10]; s[6] = t[14]; s[10] = t[2]; s[14] = t[6];
-    s[3] = t[15]; s[7] = t[3]; s[11] = t[7]; s[15] = t[11];
-    for (let i = 0; i < 16; i++) s[i] ^= key[Nr * 16 + i];
-    return s;
+// Mirror show pages: the h1 holds the title; the mirror carries no
+// synopsis or metadata, so details are best-effort.
+function parseMirrorDetails(html) {
+    if (!html) return null;
+    const h1 = extractFirst(html, /<h1[^>]*>([\s\S]*?)<\/h1>/i);
+    const title = cleanText(h1.replace(/<\/?span[^>]*>/g, '') || h1);
+    if (!title) return null;
+    return {
+        description: 'No description available',
+        airdate: 'Unknown',
+        aliases: title
+    };
 }
 
-function aaGmul(a, b) {
-    let p = 0;
-    for (let i = 0; i < 8; i++) {
-        if (b & 1) p ^= a;
-        const hi = a & 0x80;
-        a = (a << 1) & 0xff;
-        if (hi) a ^= 0x1b;
-        b >>= 1;
+// Mirror episode list: episode links following the <slug>-episode-<n>-...
+// pattern of the given show (the number is embedded in the URL, so the href
+// shape is the filter — the mirror shows a mix of a teaser card and a full
+// episode list depending on the page variant). The mirror only lists its
+// available episodes (recent uploads), not a full season — acceptable
+// fallback data.
+function parseMirrorEpisodes(html, slug) {
+    const results = [];
+    const seen = new Set();
+    if (!html || !slug) return results;
+
+    const slugEsc = slug.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const epHrefRe = new RegExp('^https://anidb\\.se/' + slugEsc + '-episode-(\\d+)-[^/]*$', 'i');
+
+    const re = /<a[^>]*href="(https:\/\/anidb\.se\/[a-z0-9-]+-episode-\d+[^/"]*)\/?"/gi;
+    let link;
+    while ((link = re.exec(html)) !== null) {
+        const href = link[1];
+        const epMatch = href.replace(/\/+$/, '').match(epHrefRe);
+        if (!epMatch) continue;
+        const number = parseInt(epMatch[1], 10);
+        if (isNaN(number) || seen.has(href)) continue;
+        seen.add(href);
+        results.push({ href: href + '/', number: number });
     }
-    return p;
+
+    results.sort((a, b) => b.number - a.number);
+    return results;
 }
 
-function aaMixColumns(s) {
-    for (let c = 0; c < 4; c++) {
-        const i = c * 4;
-        const a0 = s[i], a1 = s[i + 1], a2 = s[i + 2], a3 = s[i + 3];
-        s[i] = aaGmul(a0, 2) ^ aaGmul(a1, 3) ^ a2 ^ a3;
-        s[i + 1] = a0 ^ aaGmul(a1, 2) ^ aaGmul(a2, 3) ^ a3;
-        s[i + 2] = a0 ^ a1 ^ aaGmul(a2, 2) ^ aaGmul(a3, 3);
-        s[i + 3] = aaGmul(a0, 3) ^ a1 ^ a2 ^ aaGmul(a3, 2);
-    }
+// Mirror stream: the uvp-1 player on the episode page exposes its source in
+// data-src (data-type distinguishes mp4 from hls).
+function parseMirrorStream(html) {
+    if (!html) return null;
+    const videoTag = html.match(/<video[^>]*class="[^"]*uvp[^"]*"[^>]*>/i) || html.match(/<video[^>]*>/i);
+    if (!videoTag) return null;
+    const src = extractFirst(videoTag[0], /data-src="(https?:\/\/[^"]+)"/i);
+    if (!src) return null;
+    return {
+        title: 'English (mirror)',
+        streamUrl: decodeHtml(src),
+        headers: makeMirrorHeaders()
+    };
 }
 
-function aaGfMul128(x, y) {
-    const z = new Uint8Array(16);
-    const v = y.slice();
-    const R = [0xe1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    for (let i = 0; i < 128; i++) {
-        if (x[i >> 3] & (0x80 >> (i & 7))) {
-            for (let j = 0; j < 16; j++) z[j] ^= v[j];
-        }
-        const lsb = v[15] & 1;
-        for (let j = 15; j > 0; j--) v[j] = ((v[j] >>> 1) | ((v[j - 1] & 1) << 7)) & 0xff;
-        v[0] = (v[0] >>> 1);
-        if (lsb) for (let j = 0; j < 16; j++) v[j] ^= R[j];
-    }
-    for (let j = 0; j < 16; j++) x[j] = z[j];
+function mirrorTitleFromHref(href) {
+    const m = String(href || '').match(/\/anime\/([^/]+)\/?$/i);
+    if (!m) return 'Unknown Anime';
+    return m[1].replace(/-\d+$/, '').replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-function aaGhash(H, data) {
-    const y = new Uint8Array(16);
-    for (let i = 0; i < data.length; i += 16) {
-        for (let j = 0; j < 16; j++) y[j] ^= (i + j < data.length) ? data[i + j] : 0;
-        aaGfMul128(y, H);
-    }
-    return y;
-}
-
-function aaInc32(block) {
-    let t = (block[15] + 1) & 0xff;
-    block[15] = t;
-    if (t === 0) {
-        t = (block[14] + 1) & 0xff; block[14] = t;
-        if (t === 0) {
-            t = (block[13] + 1) & 0xff; block[13] = t;
-            if (t === 0) { block[12] = (block[12] + 1) & 0xff; }
-        }
-    }
-    return block;
-}
-
-function aaGcmSeal(key, iv, plaintext) {
-    const rk = aaKeyExpansion(key);
-    const H = aaEncryptBlock(rk, new Uint8Array(16));
-    const J0 = new Uint8Array(16);
-    J0.set(iv.slice(0, 12));
-    J0[15] = 1;
-    const counter = J0.slice();
-    aaInc32(counter);
-    const out = new Uint8Array(plaintext.length);
-    for (let i = 0; i < plaintext.length; i += 16) {
-        const ks = aaEncryptBlock(rk, counter);
-        aaInc32(counter);
-        for (let j = 0; j < 16 && i + j < plaintext.length; j++) out[i + j] = plaintext[i + j] ^ ks[j];
-    }
-    const padded = Math.ceil(out.length / 16) * 16;
-    const full = new Uint8Array(padded + 16);
-    full.set(out);
-    const dv = new DataView(full.buffer);
-    dv.setUint32(full.length - 4, out.length * 8, false);
-    const S = aaGhash(H, full);
-    const EKJ0 = aaEncryptBlock(rk, J0);
-    const tag = new Uint8Array(16);
-    for (let i = 0; i < 16; i++) tag[i] = S[i] ^ EKJ0[i];
-    return { out, tag };
-}
-
-function aaGcmOpen(key, iv, ciphertext, tag) {
-    const rk = aaKeyExpansion(key);
-    const H = aaEncryptBlock(rk, new Uint8Array(16));
-    const J0 = new Uint8Array(16);
-    J0.set(iv.slice(0, 12));
-    J0[15] = 1;
-    const counter = J0.slice();
-    aaInc32(counter);
-    const out = new Uint8Array(ciphertext.length);
-    for (let i = 0; i < ciphertext.length; i += 16) {
-        const ks = aaEncryptBlock(rk, counter);
-        aaInc32(counter);
-        for (let j = 0; j < 16 && i + j < ciphertext.length; j++) out[i + j] = ciphertext[i + j] ^ ks[j];
-    }
-    const padded = Math.ceil(ciphertext.length / 16) * 16;
-    const full = new Uint8Array(padded + 16);
-    full.set(ciphertext);
-    const dv = new DataView(full.buffer);
-    dv.setUint32(full.length - 4, ciphertext.length * 8, false);
-    const S = aaGhash(H, full);
-    const EKJ0 = aaEncryptBlock(rk, J0);
-    for (let i = 0; i < 16; i++) {
-        if ((S[i] ^ EKJ0[i]) !== tag[i]) return null;
-    }
-    return out;
-}
-
-const aaK256 = [
-0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,
-0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,
-0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,
-0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,
-0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,
-0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,
-0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,
-0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2
-];
-
-function aaRotr(x, n) { return (x >>> n) | (x << (32 - n)); }
-
-function aaSha256(bytes) {
-    const H0 = [0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19];
-    const l = bytes.length;
-    const m = new Uint8Array((((l + 8) >> 6) + 1) << 6);
-    m.set(bytes);
-    m[l] = 0x80;
-    const dv = new DataView(m.buffer);
-    dv.setUint32(m.length - 8, 0, false);
-    dv.setUint32(m.length - 4, l * 8, false);
-    const w = new Int32Array(64);
-    const H = H0.slice();
-    for (let i = 0; i < m.length; i += 64) {
-        for (let t = 0; t < 16; t++) w[t] = dv.getInt32(i + t * 4, false);
-        for (let t = 16; t < 64; t++) {
-            const s0 = aaRotr(w[t - 15], 7) ^ aaRotr(w[t - 15], 18) ^ (w[t - 15] >>> 3);
-            const s1 = aaRotr(w[t - 2], 17) ^ aaRotr(w[t - 2], 19) ^ (w[t - 2] >>> 10);
-            w[t] = (w[t - 16] + s0 + w[t - 7] + s1) | 0;
-        }
-        let a = H[0], b = H[1], c = H[2], d = H[3], e = H[4], f = H[5], g = H[6], h = H[7];
-        for (let t = 0; t < 64; t++) {
-            const S1 = aaRotr(e, 6) ^ aaRotr(e, 11) ^ aaRotr(e, 25);
-            const ch = (e & f) ^ (~e & g);
-            const t1 = (h + S1 + ch + aaK256[t] + w[t]) | 0;
-            const S0 = aaRotr(a, 2) ^ aaRotr(a, 13) ^ aaRotr(a, 22);
-            const maj = (a & b) ^ (a & c) ^ (b & c);
-            const t2 = (S0 + maj) | 0;
-            h = g; g = f; f = e; e = (d + t1) | 0; d = c; c = b; b = a; a = (t1 + t2) | 0;
-        }
-        H[0] = (H[0] + a) | 0; H[1] = (H[1] + b) | 0; H[2] = (H[2] + c) | 0; H[3] = (H[3] + d) | 0;
-        H[4] = (H[4] + e) | 0; H[5] = (H[5] + f) | 0; H[6] = (H[6] + g) | 0; H[7] = (H[7] + h) | 0;
-    }
-    const out = new Uint8Array(32);
-    for (let i = 0; i < 8; i++) {
-        out[i * 4] = (H[i] >>> 24) & 0xff;
-        out[i * 4 + 1] = (H[i] >>> 16) & 0xff;
-        out[i * 4 + 2] = (H[i] >>> 8) & 0xff;
-        out[i * 4 + 3] = H[i] & 0xff;
-    }
-    return out;
-}
-
-/* BYTE / STRING HELPERS */
-
-function aaAscii(str) {
-    const s = String(str);
-    const out = new Uint8Array(s.length);
-    for (let i = 0; i < s.length; i++) out[i] = s.charCodeAt(i) & 0xff;
-    return out;
-}
-
-const AA_B64_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
-
-function aaB64(bytes) {
-    // Pure-JS base64: Sora's btoa() UTF-8-mangles bytes >= 0x80, corrupting tokens.
-    let out = '';
-    for (let i = 0; i < bytes.length; i += 3) {
-        const b0 = bytes[i];
-        const b1 = (i + 1 < bytes.length) ? bytes[i + 1] : 0;
-        const b2 = (i + 2 < bytes.length) ? bytes[i + 2] : 0;
-        out += AA_B64_CHARS[b0 >> 2];
-        out += AA_B64_CHARS[((b0 & 3) << 4) | (b1 >> 4)];
-        out += (i + 1 < bytes.length) ? AA_B64_CHARS[((b1 & 15) << 2) | (b2 >> 6)] : '=';
-        out += (i + 2 < bytes.length) ? AA_B64_CHARS[b2 & 63] : '=';
-    }
-    return out;
-}
-
-function aaUnb64(str) {
-    // Pure-JS base64 decode: avoids atob() binary-string issues in JavaScriptCore.
-    const s = String(str).replace(/=+$/, '');
-    const out = [];
-    let buf = 0, bits = 0;
-    for (let i = 0; i < s.length; i++) {
-        const v = AA_B64_CHARS.indexOf(s[i]);
-        if (v < 0) continue;
-        buf = (buf << 6) | v;
-        bits += 6;
-        if (bits >= 8) {
-            bits -= 8;
-            out.push((buf >>> bits) & 0xff);
-            buf = buf & ((1 << bits) - 1);
-        }
-    }
-    return new Uint8Array(out);
-}
-
-function aaHexToBytes(hex) {
-    const h = String(hex || '');
-    const out = new Uint8Array(Math.floor(h.length / 2));
-    for (let i = 0; i < out.length; i++) out[i] = parseInt(h.substr(i * 2, 2), 16);
-    return out;
-}
-
-function aaHex(bytes) {
-    let out = '';
-    for (let i = 0; i < bytes.length; i++) out += ('0' + bytes[i].toString(16)).slice(-2);
-    return out;
-}
-
-function aaUtf8ToStr(bytes) {
-    let out = '';
-    for (let i = 0; i < bytes.length; i++) {
-        const b = bytes[i];
-        if (b < 0x80) {
-            out += String.fromCharCode(b);
-        } else if ((b & 0xe0) === 0xc0 && i + 1 < bytes.length) {
-            out += String.fromCharCode(((b & 0x1f) << 6) | (bytes[i + 1] & 0x3f));
-            i += 1;
-        } else if ((b & 0xf0) === 0xe0 && i + 2 < bytes.length) {
-            out += String.fromCharCode(((b & 0x0f) << 12) | ((bytes[i + 1] & 0x3f) << 6) | (bytes[i + 2] & 0x3f));
-            i += 2;
-        } else if ((b & 0xf8) === 0xf0 && i + 3 < bytes.length) {
-            const cp = ((b & 0x07) << 18) | ((bytes[i + 1] & 0x3f) << 12) | ((bytes[i + 2] & 0x3f) << 6) | (bytes[i + 3] & 0x3f);
-            if (cp > 0xffff) {
-                const v = cp - 0x10000;
-                out += String.fromCharCode(0xd800 + (v >> 10), 0xdc00 + (v & 0x3ff));
-            } else {
-                out += String.fromCharCode(cp);
-            }
-            i += 3;
-        }
-    }
-    return out;
-}
-
-function aaXor56(hex) {
-    const s = String(hex || '');
-    let out = '';
-    for (let i = 0; i + 1 < s.length; i += 2) {
-        out += String.fromCharCode(parseInt(s.substr(i, 2), 16) ^ 56);
-    }
-    return out;
+function makeMirrorHeaders() {
+    return {
+        "Referer": MIRROR_URL + '/',
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+    };
 }
 
 /* HELPERS */
 
-async function gql(query) {
-    for (let i = 0; i < API_URLS.length; i++) {
-        const response = await soraFetch(API_URLS[i], {
-            method: 'POST',
-            headers: API_HEADERS,
-            body: JSON.stringify({ query })
-        });
-        if (!response) continue;
-        try {
-            const json = await response.json();
-            if (json && json.data) return json.data;
-        } catch (error) {
-            continue;
+// Resolve an anidb.app/embed/<token> page to its HLS master playlist URL.
+async function resolveEmbedMaster(embedUrl) {
+    if (!embedUrl) return null;
+
+    // If the embed URL already points at media (m3u8), return as-is.
+    if (/\.m3u8/i.test(embedUrl)) return embedUrl;
+
+    const response = await soraFetch(embedUrl);
+    if (!response) return null;
+    const html = await response.text();
+
+    const master = extractFirst(html, /sources\s*:\s*\[\s*\{\s*file\s*:\s*['"]([^'"]+\.m3u8[^'"]*)['"]/i)
+        || extractFirst(html, /file\s*:\s*['"](https?:\/\/[^'"]+\.m3u8[^'']*)['"]/i)
+        || extractFirst(html, /'(https?:\/\/[^']+\.m3u8(?:[^']*))'/i)
+        || extractFirst(html, /["']file["']\s*:\s*["']([^"']+\.m3u8[^"']*)["']/i)
+        || extractFirst(html, /playlist\s*:\s*['"]([^'"]+\.m3u8[^"']*)['"]/i)
+        || extractFirst(html, /(https?:\/\/[^\s"'<>]+\.m3u8[^\s"'<>]*)/i);
+
+    return master ? decodeHtml(master) : null;
+}
+
+// Parse the main-site episodes JSON payload (API shape varies between builds).
+function parseMainEpisodes(data, baseUrl) {
+    const rawEpisodes = (data && (Array.isArray(data.episodes) ? data.episodes : Array.isArray(data.data) ? data.data : Array.isArray(data.list) ? data.list : [])) || [];
+    if (!Array.isArray(rawEpisodes)) return [];
+
+    return rawEpisodes
+        .map((ep, index) => {
+            const number = ep.number !== undefined ? parseInt(ep.number, 10) : index + 1;
+            const epId = ep.id || ep.episode_id || ep.episodeId;
+            if (isNaN(number) || !epId) return null;
+            return {
+                href: `${baseUrl}/episode/${epId}`,
+                number: number
+            };
+        })
+        .filter(Boolean);
+}
+
+function prettifyLangLabel(lang) {
+    const map = {
+        jpn: 'Japanese (SUB)',
+        eng: 'English (DUB)',
+        'ch-s': 'Chinese (SUB)',
+        'pt-br': 'Portuguese (SUB)',
+        'es': 'Spanish (SUB)'
+    };
+    if (map[lang.code]) return map[lang.code];
+    if (lang.name) return lang.name;
+    return (lang.code || 'Unknown').toUpperCase();
+}
+
+function parseBrowseCards(html) {
+    const results = [];
+    const seen = new Set();
+
+    // Multiple resilient regex patterns to support DOM/class changes.
+    const regexes = [
+        /<a[^>]*href="(https?:\/\/anidb\.app\/anime\/[^"]+)"[^>]*class="[^"]*anime-card[^"]*"[^>]*title="([^"]*)"[\s\S]*?<img[^>]*src="([^"]+)"[\s\S]*?<\/a>/gi,
+        /<a[^>]*href="(https?:\/\/anidb\.app\/anime\/[^"]+)"[^>]*title="([^"]*)"[\s\S]*?<img[^>]*src="([^"]+)"[\s\S]*?<\/a>/gi,
+        /<a[^>]*href="(https?:\/\/anidb\.app\/anime\/[^"]+)"[\s\S]*?<img[^>]*src="([^"]+)"[^>]*alt="([^"]*)"[\s\S]*?<\/a>/gi,
+        /<a[^>]*href="(https?:\/\/anidb\.app\/anime\/[^"]+)"[\s\S]*?<\/a>/gi
+    ];
+
+    for (const rx of regexes) {
+        let cardMatch;
+        while ((cardMatch = rx.exec(html)) !== null) {
+            const href = cardMatch[1];
+            let title = cleanText(cardMatch[2] || cardMatch[3] || '');
+            let image = decodeHtml(cardMatch[3] || cardMatch[2] || '').trim();
+
+            // Handle the image/title capture swap in some patterns.
+            if (image && !image.startsWith('http') && title && title.startsWith('http')) {
+                const temp = title;
+                title = image;
+                image = temp;
+            }
+
+            if (!title) {
+                const slugMatch = href.match(/\/([^/]+)$/);
+                title = slugMatch ? slugMatch[1].replace(/-\d+$/, '').replace(/-/g, ' ') : 'Unknown Anime';
+            }
+
+            if (!href || seen.has(href)) continue;
+            seen.add(href);
+            results.push({
+                title: cleanText(title),
+                image: image.startsWith('http') ? image : '',
+                href
+            });
         }
+        if (results.length > 0) break;
     }
-    return null;
+
+    return results;
+}
+
+// anidb.app anime URLs are /anime/<slug>-<numericId>. Return the numeric id.
+function parseAnimeId(url) {
+    const m = String(url || '').match(/\/anime\/[^/]+-(\d+)\/?$/i);
+    if (m && m[1]) return m[1];
+    const fallback = String(url || '').match(/-(\d+)\/?$/);
+    return fallback ? fallback[1] : '';
+}
+
+// Helper to grab the <dd> value following a <dt> with the given label
+// inside the "Details" <dl> block, with fallback patterns.
+function extractDt(html, label) {
+    const re = new RegExp(`<dt[^>]*>[^<]*${label}[^<]*<\\/dt>\\s*<dd[^>]*>([\\s\\S]*?)<\\/dd>`, 'i');
+    const m = (html || '').match(re);
+    if (m && m[1]) return cleanText(m[1]);
+
+    const altRe = new RegExp(`(?:<dt[^>]*>|<span[^>]*>)\\s*${label}\\s*(?:<\\/dt>|<\\/span>)\\s*(?:<dd[^>]*>|<span[^>]*>)([\\s\\S]*?)(?:<\\/dd>|<\\/span>)`, 'i');
+    const altM = (html || '').match(altRe);
+    if (altM && altM[1]) return cleanText(altM[1]);
+
+    return '';
+}
+
+function extractFirst(text, regex) {
+    const match = (text || '').match(regex);
+    return match ? match[1] : '';
+}
+
+function decodeHtml(text) {
+    return String(text || '')
+        .replace(/&#039;/g, "'")
+        .replace(/&apos;/g, "'")
+        .replace(/&amp;/g, '&')
+        .replace(/&#038;/g, '&')
+        .replace(/&quot;/g, '"')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>');
+}
+
+function cleanText(text) {
+    return decodeHtml(String(text || ''))
+        .replace(/<br\s*\/?>/gi, '\n')
+        .replace(/<\/?[^>]+(>|$)/g, '')
+        .replace(/\s+\n/g, '\n')
+        .replace(/\n\s+/g, '\n')
+        .replace(/[ \t]+/g, ' ')
+        .trim();
+}
+
+// Stream headers that match the anidb.app playback origin.
+function makeStreamHeaders() {
+    return {
+        "Referer": BASE_URL + '/',
+        "Origin": BASE_URL,
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+    };
+}
+
+// Parse details from a main-site show page.
+function parseMainDetails(html) {
+    const description = extractFirst(html, /<meta[^>]*property="og:description"[^>]*content="([^"]+)"/i)
+        || extractFirst(html, /<meta[^>]*name="description"[^>]*content="([^"]+)"/i)
+        || extractFirst(html, /<p\s+class="[^"]*(?:leading-relaxed|description|plot|summary)[^"]*"[^>]*>([\s\S]*?)<\/p>/i)
+        || extractFirst(html, /<div\s+class="[^"]*(?:description|plot|summary|synopsis)[^"]*">([\s\S]*?)<\/div>/i)
+        || 'No description available';
+
+    const airdate = extractDt(html, 'Aired')
+        || extractDt(html, 'Season')
+        || extractDt(html, 'Released')
+        || extractFirst(html, /<div class="text-sm"><dt[^>]*name="(?:Year|Airdate|Date)"[^>]*>([^<]+)<\/dt>/i)
+        || 'Unknown';
+
+    const aliases = extractDt(html, 'Synonyms')
+        || extractDt(html, 'Alternative')
+        || extractDt(html, 'Titles')
+        || 'No alternative titles';
+
+    return {
+        description: cleanText(description),
+        airdate: cleanText(airdate),
+        aliases: cleanText(aliases)
+    };
 }
 
 async function soraFetch(url, options) {
     const opts = options || {};
+    const mergedHeaders = mergeHeaders(url, opts);
     const method = opts.method || 'GET';
-    const headers = opts.headers || {};
     const body = typeof opts.body === 'undefined' ? null : opts.body;
 
     try {
-        return await fetchv2(url, headers, method, body);
+        // Shirox's fetchv2 accepts a 5th arg ({ impersonate: 'chrome', ... })
+        // that dresses the request up as a real browser — useful against
+        // datacenter-IP blocks; older Sora/Luna builds ignore it.
+        return await fetchv2(url, mergedHeaders, method, body, opts.impersonate ? { impersonate: opts.impersonate } : undefined);
     } catch (e) {
         try {
             const text = await fetch(url, {
                 method: method,
-                headers: headers,
+                headers: mergedHeaders,
                 body: body
             });
             return {
@@ -1273,119 +1240,47 @@ async function soraFetch(url, options) {
     }
 }
 
-/* P.A.C.K.E.R. UNPACKER (needed for some iframe embed pages) */
-class Unbaser {
-    constructor(base) {
-        this.ALPHABET = {
-            62: "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ",
-            95: "' !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~'",
-        };
-        this.dictionary = {};
-        this.base = base;
-        if (36 < base && base < 62) {
-            this.ALPHABET[base] = this.ALPHABET[base] || this.ALPHABET[62].substr(0, base);
-        }
-        if (2 <= base && base <= 36) {
-            this.unbase = (value) => parseInt(value, base);
-        } else {
-            try {
-                [...this.ALPHABET[base]].forEach((cipher, index) => {
-                    this.dictionary[cipher] = index;
-                });
-            } catch (er) {
-                throw Error("Unsupported base encoding.");
-            }
-            this.unbase = this._dictunbaser;
-        }
+// Fetch URL text; throws on non-2xx so callers can chain to the mirror.
+// (fetchv2 may reject on network failure but still resolve on 4xx/5xx,
+// hence the explicit status check.)
+async function fetchTextOrThrow(url, impersonate) {
+    const response = await soraFetch(url, impersonate ? { impersonate: impersonate } : undefined);
+    if (!response) throw new Error('no response: ' + url);
+    if (response.ok !== undefined && response.ok === false) {
+        const status = response.status || 0;
+        if (status >= 400) throw new Error('http ' + status + ': ' + url);
     }
-    _dictunbaser(value) {
-        let ret = 0;
-        [...value].reverse().forEach((cipher, index) => {
-            ret = ret + ((Math.pow(this.base, index)) * this.dictionary[cipher]);
-        });
-        return ret;
-    }
+    return await response.text();
 }
 
-function unpack(source) {
-    let { payload, symtab, radix, count } = _filterargs(source);
-    if (count != symtab.length) {
-        throw Error("Malformed p.a.c.k.e.r. symtab.");
-    }
-    let unbase;
-    try {
-        unbase = new Unbaser(radix);
-    } catch (e) {
-        throw Error("Unknown p.a.c.k.e.r. encoding.");
-    }
-    function lookup(match) {
-        const word = match;
-        let word2;
-        if (radix == 1) {
-            word2 = symtab[parseInt(word)];
-        } else {
-            word2 = symtab[unbase.unbase(word)];
-        }
-        return word2 || word;
-    }
-    source = payload.replace(/\b\w+\b/g, lookup);
-    return _replacestrings(source);
-    function _filterargs(source) {
-        const juicers = [
-            /}\('(.*)', *(\d+|\[\]), *(\d+), *'(.*)'\.split\('\|'\), *(\d+), *(.*)\)\)/,
-            /}\('(.*)', *(\d+|\[\]), *(\d+), *'(.*)'\.split\('\|'\)/,
-        ];
-        for (const juicer of juicers) {
-            const args = juicer.exec(source);
-            if (args) {
-                try {
-                    return {
-                        payload: args[1],
-                        symtab: args[4].split("|"),
-                        radix: parseInt(args[2]),
-                        count: parseInt(args[3]),
-                    };
-                } catch (ValueError) {
-                    throw Error("Corrupted p.a.c.k.e.r. data.");
-                }
-            }
-        }
-        throw Error("Could not make sense of p.a.c.k.e.r data (unexpected code structure)");
-    }
-    function _replacestrings(source) {
-        return source;
-    }
+async function fetchText(url, impersonate) {
+    if (!url) return '';
+    const response = await soraFetch(url, impersonate ? { impersonate: impersonate } : undefined);
+    if (!response) return '';
+    return await response.text();
 }
 
-function extractShowId(url) {
-    const match = String(url || '').match(/\/anime\/([^\/?#]+)/);
-    return match ? match[1] : '';
-}
+function mergeHeaders(url, opts) {
+    const base = opts.headers || {};
+    const defaults = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
+    };
 
-function parseEpisodeUrl(url) {
-    const match = String(url || '').match(/\/anime\/([^\/?#]+)\/p-([^\/?#]+)/);
-    return match ? { showId: match[1], episode: match[2] } : null;
-}
+    const host = String(url || '').replace(/^https?:\/\//, '').split('/')[0] || '';
+    if (/anidb\.app|hls\.anidb\.app/i.test(host)) {
+        defaults['Accept'] = '*/*';
+        defaults['Accept-Language'] = 'en-US,en;q=0.9';
+        defaults['Referer'] = BASE_URL + '/';
+        defaults['Origin'] = BASE_URL;
+    }
+    if (host === MIRROR_HOST || host.endsWith('.' + MIRROR_HOST)) {
+        defaults['Referer'] = MIRROR_URL + '/';
+        defaults['Accept'] = 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8';
+    }
 
-function cdnUrl(path) {
-    if (!path) return '';
-    var p = String(path).trim();
-    if (/^https?:\/\//i.test(p)) return p;
-    return CDN_BASES[0] + '/' + p.replace(/^\/+/, '');
-}
-
-function cleanText(text) {
-    return String(text || '')
-        .replace(/<br\s*\/?>/gi, '\n')
-        .replace(/<\/?[^>]+(>|$)/g, '')
-        .replace(/&amp;/g, '&')
-        .replace(/&#0?39;/g, "'")
-        .replace(/&quot;/g, '"')
-        .replace(/&lt;/g, '<')
-        .replace(/&gt;/g, '>')
-        .replace(/&nbsp;/g, ' ')
-        .replace(/[ \t]+/g, ' ')
-        .replace(/\s+\n/g, '\n')
-        .replace(/\n\s+/g, '\n')
-        .trim();
+    const out = {};
+    let k;
+    for (k in defaults) if (Object.prototype.hasOwnProperty.call(defaults, k)) out[k] = defaults[k];
+    for (k in base) if (Object.prototype.hasOwnProperty.call(base, k)) out[k] = base[k];
+    return out;
 }
