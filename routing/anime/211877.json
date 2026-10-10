@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-10T08:35:34.889Z",
+  "generatedAt": "2026-10-10T11:15:57.815Z",
   "sourceCatalogRef": "config",
   "route": {
     "aniListId": 211877,
@@ -11,8 +11,32 @@
     ],
     "routes": [
       {
-        "moduleId": "animesogo-local",
+        "moduleId": "jzppd",
         "catalogPath": "Sources/English/008",
+        "sourceName": "AllManga",
+        "language": "English",
+        "searchResultHref": "https://allmanga.to/bangumi/s5HXCJZizGRbZeRgd",
+        "episodeRoutes": [
+          {
+            "episode": 1,
+            "href": "https://allmanga.to/bangumi/s5HXCJZizGRbZeRgd/p-1"
+          }
+        ],
+        "availableEpisodes": 1,
+        "verifiedEpisode": 1,
+        "searchMs": 212,
+        "episodesMs": 270,
+        "streamMs": 269,
+        "verificationMs": 541,
+        "firstEpisodeVerified": 1,
+        "firstEpisodeEpisodesMs": 279,
+        "firstEpisodeStreamMs": 284,
+        "firstEpisodeVerificationMs": 566,
+        "verifiedAt": "2026-10-10T11:15:57.815Z"
+      },
+      {
+        "moduleId": "animesogo-local",
+        "catalogPath": "Sources/English/007",
         "sourceName": "AnimeSogo",
         "language": "English",
         "searchResultHref": "{\"path\":\"/watch/my-girlfriend-s-friend-nqwnq\",\"title\":\"My Girlfriend S Friend\"}",
@@ -25,38 +49,14 @@
         "availableEpisodes": 1,
         "verifiedEpisode": 1,
         "searchMs": 358,
-        "episodesMs": 453,
-        "streamMs": 248,
-        "verificationMs": 713,
+        "episodesMs": 667,
+        "streamMs": 421,
+        "verificationMs": 1095,
         "firstEpisodeVerified": 1,
-        "firstEpisodeEpisodesMs": 347,
-        "firstEpisodeStreamMs": 244,
-        "firstEpisodeVerificationMs": 592,
-        "verifiedAt": "2026-10-09T11:53:03.484Z"
-      },
-      {
-        "moduleId": "jCtAp",
-        "catalogPath": "Sources/English/012",
-        "sourceName": "123Anime",
-        "language": "English",
-        "searchResultHref": "https://123animes.ru/anime/kanojo-no-tomodachi",
-        "episodeRoutes": [
-          {
-            "episode": 1,
-            "href": "kanojo-no-tomodachi/1/vidstreaming.io"
-          }
-        ],
-        "availableEpisodes": 1,
-        "verifiedEpisode": 1,
-        "searchMs": 359,
-        "episodesMs": 583,
-        "streamMs": 277,
-        "verificationMs": 866,
-        "firstEpisodeVerified": 1,
-        "firstEpisodeEpisodesMs": 476,
-        "firstEpisodeStreamMs": 276,
-        "firstEpisodeVerificationMs": 756,
-        "verifiedAt": "2026-10-09T11:53:03.484Z"
+        "firstEpisodeEpisodesMs": 536,
+        "firstEpisodeStreamMs": 366,
+        "firstEpisodeVerificationMs": 903,
+        "verifiedAt": "2026-10-10T11:15:57.815Z"
       }
     ]
   }

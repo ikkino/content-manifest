@@ -1,22 +1,73 @@
 {
-  "generatedAt": "2026-10-09T11:46:29.714Z",
-  "currentCatalogModules": 35,
+  "generatedAt": "2026-10-10T11:04:32.753Z",
+  "currentCatalogModules": 32,
   "upstreamDiscovered": 3,
   "extraModules": 8,
   "extraModulesDir": "/tmp/sora-daily/extra-modules",
-  "candidates": 45,
-  "groups": 39,
-  "exported": 32,
-  "rejectedGroups": 7,
-  "previousRemoved": 3,
+  "candidates": 42,
+  "groups": 36,
+  "exported": 30,
+  "rejectedGroups": 4,
+  "previousRemoved": 2,
   "finalValidationRounds": [
     {
       "files": 32,
+      "errors": [
+        "/tmp/sora-daily/catalog/Sources/English/007/manifest.json: final retest failed: search: searchResults timed out"
+      ],
+      "failures": [
+        {
+          "manifestPath": "/tmp/sora-daily/catalog/Sources/English/007/manifest.json",
+          "catalogPath": "Sources/English/007",
+          "error": "final retest failed: search: searchResults timed out",
+          "status": "needs_fix",
+          "failureKind": "module_runtime_failure",
+          "errors": [
+            "search: searchResults timed out"
+          ]
+        }
+      ]
+    },
+    {
+      "files": 31,
+      "errors": [
+        "/tmp/sora-daily/catalog/Sources/English/018/manifest.json: final retest failed: details: extractDetails timed out; details: extractDetails timed out"
+      ],
+      "failures": [
+        {
+          "manifestPath": "/tmp/sora-daily/catalog/Sources/English/018/manifest.json",
+          "catalogPath": "Sources/English/018",
+          "error": "final retest failed: details: extractDetails timed out; details: extractDetails timed out",
+          "status": "needs_fix",
+          "failureKind": "details_failed",
+          "errors": [
+            "details: extractDetails timed out",
+            "details: extractDetails timed out",
+            "details: extractDetails timed out"
+          ]
+        }
+      ]
+    },
+    {
+      "files": 30,
       "errors": [],
       "failures": []
     }
   ],
-  "finalValidationRejected": [],
+  "finalValidationRejected": [
+    {
+      "sourceName": "JustAnime",
+      "language": "English",
+      "catalogPath": "Sources/English/007",
+      "reason": "final retest failed: search: searchResults timed out"
+    },
+    {
+      "sourceName": "AniDB",
+      "language": "English",
+      "catalogPath": "Sources/English/018",
+      "reason": "final retest failed: details: extractDetails timed out; details: extractDetails timed out"
+    }
+  ],
   "output": {
     "sourcesDir": "/tmp/sora-daily/catalog/Sources",
     "statusOut": "/tmp/sora-daily/catalog/module-status.json"
@@ -35,7 +86,7 @@
       "origin": "current",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Arabic/001/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Arabic/001/source.js",
-      "durationMs": 967
+      "durationMs": 1301
     },
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Arabic/002/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Arabic/002/source.js:mod_1387465543:initial",
@@ -50,7 +101,7 @@
       "origin": "current",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Arabic/002/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Arabic/002/source.js",
-      "durationMs": 2604
+      "durationMs": 3808
     },
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Arabic/003/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Arabic/003/source.js:mod_1399949944:initial",
@@ -65,7 +116,7 @@
       "origin": "current",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Arabic/003/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Arabic/003/source.js",
-      "durationMs": 3115
+      "durationMs": 4320
     },
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/001/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/001/source.js:mod_1798967734:initial",
@@ -80,10 +131,10 @@
       "origin": "current",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/001/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/001/source.js",
-      "durationMs": 142
+      "durationMs": 149
     },
     {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/002/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/002/source.js:mod_291415925:initial",
+      "winnerKey": "mangayomi:https://raw.githubusercontent.com/Mallyd11/mangayomi-anime-extensions/refs/heads/main/javascript/anime/src/en/animeheaven.js:https://raw.githubusercontent.com/Mallyd11/mangayomi-anime-extensions/refs/heads/main/javascript/anime/src/en/animeheaven.js:mangayomi_1744325818:initial",
       "catalogPath": "Sources/English/002",
       "manifestPath": "/tmp/sora-daily/catalog/Sources/English/002/manifest.json",
       "language": "English",
@@ -91,11 +142,11 @@
       "folder": "002",
       "sourceName": "AnimeHeaven",
       "id": "mangayomi_1744325818",
-      "registry": "content-manifest",
-      "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/002/manifest.json",
+      "registry": "mangayomi",
+      "origin": "mangayomi",
+      "manifestUrl": "https://raw.githubusercontent.com/Mallyd11/mangayomi-anime-extensions/refs/heads/main/javascript/anime/src/en/animeheaven.js",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/002/source.js",
-      "durationMs": 281
+      "durationMs": 432
     },
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/003/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/003/source.js:mod_1216135884:initial",
@@ -110,25 +161,25 @@
       "origin": "current",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/003/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/003/source.js",
-      "durationMs": 502
+      "durationMs": 882
     },
     {
-      "winnerKey": "mangayomi:https://raw.githubusercontent.com/Mallyd11/mangayomi-anime-extensions/refs/heads/main/javascript/anime/src/en/justanime.js:https://raw.githubusercontent.com/Mallyd11/mangayomi-anime-extensions/refs/heads/main/javascript/anime/src/en/justanime.js:mangayomi_892345671:initial",
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/006/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/006/source.js:mod_1443824015:initial",
       "catalogPath": "Sources/English/004",
       "manifestPath": "/tmp/sora-daily/catalog/Sources/English/004/manifest.json",
       "language": "English",
       "rank": 4,
       "folder": "004",
-      "sourceName": "JustAnime",
-      "id": "mangayomi_892345671",
-      "registry": "mangayomi",
-      "origin": "mangayomi",
-      "manifestUrl": "https://raw.githubusercontent.com/Mallyd11/mangayomi-anime-extensions/refs/heads/main/javascript/anime/src/en/justanime.js",
+      "sourceName": "OneTouch TV",
+      "id": "BmnXo",
+      "registry": "content-manifest",
+      "origin": "current",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/006/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/004/source.js",
-      "durationMs": 537
+      "durationMs": 1232
     },
     {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/004/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/004/source.js:mod_1571279603:initial",
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/005/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/005/source.js:mod_63727794:initial",
       "catalogPath": "Sources/English/005",
       "manifestPath": "/tmp/sora-daily/catalog/Sources/English/005/manifest.json",
       "language": "English",
@@ -138,72 +189,72 @@
       "id": "jg3nm",
       "registry": "content-manifest",
       "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/004/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/005/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/005/source.js",
-      "durationMs": 749
+      "durationMs": 1276
     },
     {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/005/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/005/source.js:mod_63727794:initial",
+      "winnerKey": "mangayomi:source.js:source.js:animekai-unoriginal-local:initial",
       "catalogPath": "Sources/English/006",
       "manifestPath": "/tmp/sora-daily/catalog/Sources/English/006/manifest.json",
       "language": "English",
       "rank": 6,
       "folder": "006",
-      "sourceName": "OneTouch TV",
-      "id": "BmnXo",
-      "registry": "content-manifest",
-      "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/005/manifest.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/006/source.js",
-      "durationMs": 812
-    },
-    {
-      "winnerKey": "mangayomi:source.js:source.js:animekai-unoriginal-local:initial",
-      "catalogPath": "Sources/English/007",
-      "manifestPath": "/tmp/sora-daily/catalog/Sources/English/007/manifest.json",
-      "language": "English",
-      "rank": 7,
-      "folder": "007",
       "sourceName": "AnimeKai (Unoriginal)",
       "id": "animekai-unoriginal-local",
       "registry": "mangayomi",
       "origin": "mangayomi",
       "manifestUrl": "source.js",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/007/source.js",
-      "durationMs": 852
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/006/source.js",
+      "durationMs": 1348
     },
     {
-      "winnerKey": "mangayomi:source.js:source.js:animesogo-local:initial",
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/008/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/008/source.js:mod_163960337:initial",
+      "catalogPath": "Sources/English/007",
+      "manifestPath": "/tmp/sora-daily/catalog/Sources/English/007/manifest.json",
+      "language": "English",
+      "rank": 7,
+      "folder": "007",
+      "sourceName": "AnimeSogo",
+      "id": "animesogo-local",
+      "registry": "content-manifest",
+      "origin": "current",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/008/manifest.json",
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/007/source.js",
+      "durationMs": 1761
+    },
+    {
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/013/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/013/source.js:mod_705601707:initial",
       "catalogPath": "Sources/English/008",
       "manifestPath": "/tmp/sora-daily/catalog/Sources/English/008/manifest.json",
       "language": "English",
       "rank": 8,
       "folder": "008",
-      "sourceName": "AnimeSogo",
-      "id": "animesogo-local",
-      "registry": "mangayomi",
-      "origin": "mangayomi",
-      "manifestUrl": "source.js",
+      "sourceName": "AllManga",
+      "id": "jzppd",
+      "registry": "content-manifest",
+      "origin": "current",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/013/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/008/source.js",
-      "durationMs": 864
+      "durationMs": 2597
     },
     {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/010/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/010/source.js:mod_477913576:initial",
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/012/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/012/source.js:mod_801950102:initial",
       "catalogPath": "Sources/English/009",
       "manifestPath": "/tmp/sora-daily/catalog/Sources/English/009/manifest.json",
       "language": "English",
       "rank": 9,
       "folder": "009",
-      "sourceName": "IMDb",
-      "id": "mod_336052763",
+      "sourceName": "123Anime",
+      "id": "jCtAp",
       "registry": "content-manifest",
       "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/010/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/012/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/009/source.js",
-      "durationMs": 1323
+      "durationMs": 3209
     },
     {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/008/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/008/source.js:mod_163960337:initial",
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/010/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/010/source.js:mod_477913576:initial",
       "catalogPath": "Sources/English/010",
       "manifestPath": "/tmp/sora-daily/catalog/Sources/English/010/manifest.json",
       "language": "English",
@@ -213,9 +264,9 @@
       "id": "B0b0R",
       "registry": "content-manifest",
       "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/008/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/010/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/010/source.js",
-      "durationMs": 1336
+      "durationMs": 3783
     },
     {
       "winnerKey": "mangayomi:source.js:source.js:vidlink-local:initial",
@@ -230,82 +281,82 @@
       "origin": "mangayomi",
       "manifestUrl": "source.js",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/011/source.js",
-      "durationMs": 1223
+      "durationMs": 3664
     },
     {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/012/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/012/source.js:mod_801950102:initial",
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/009/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/009/source.js:mod_1671512146:initial",
       "catalogPath": "Sources/English/012",
       "manifestPath": "/tmp/sora-daily/catalog/Sources/English/012/manifest.json",
       "language": "English",
       "rank": 12,
       "folder": "012",
-      "sourceName": "123Anime",
-      "id": "jCtAp",
+      "sourceName": "IMDb",
+      "id": "mod_336052763",
       "registry": "content-manifest",
       "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/012/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/009/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/012/source.js",
-      "durationMs": 1380
+      "durationMs": 4374
     },
     {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/013/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/013/source.js:mod_705601707:initial",
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/014/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/014/source.js:mod_2081813780:initial",
       "catalogPath": "Sources/English/013",
       "manifestPath": "/tmp/sora-daily/catalog/Sources/English/013/manifest.json",
       "language": "English",
       "rank": 13,
       "folder": "013",
-      "sourceName": "AllManga",
-      "id": "jzppd",
-      "registry": "content-manifest",
-      "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/013/manifest.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/013/source.js",
-      "durationMs": 1670
-    },
-    {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/014/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/014/source.js:mod_2081813780:initial",
-      "catalogPath": "Sources/English/014",
-      "manifestPath": "/tmp/sora-daily/catalog/Sources/English/014/manifest.json",
-      "language": "English",
-      "rank": 14,
-      "folder": "014",
       "sourceName": "VidCore",
       "id": "mod_697391865",
       "registry": "content-manifest",
       "origin": "current",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/014/manifest.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/014/source.js",
-      "durationMs": 1915
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/013/source.js",
+      "durationMs": 4976
     },
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/016/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/016/source.js:mod_933289838:initial",
+      "catalogPath": "Sources/English/014",
+      "manifestPath": "/tmp/sora-daily/catalog/Sources/English/014/manifest.json",
+      "language": "English",
+      "rank": 14,
+      "folder": "014",
+      "sourceName": "AniWorld (ENG SUB)",
+      "id": "jZdQ",
+      "registry": "content-manifest",
+      "origin": "current",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/016/manifest.json",
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/014/source.js",
+      "durationMs": 6498
+    },
+    {
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/017/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/017/source.js:mod_1854125649:initial",
       "catalogPath": "Sources/English/015",
       "manifestPath": "/tmp/sora-daily/catalog/Sources/English/015/manifest.json",
       "language": "English",
       "rank": 15,
       "folder": "015",
-      "sourceName": "Aniwave",
-      "id": "zc8g",
+      "sourceName": "AnimeLand",
+      "id": "mod_942337115",
       "registry": "content-manifest",
       "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/016/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/017/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/015/source.js",
-      "durationMs": 2107
+      "durationMs": 6465
     },
     {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/017/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/017/source.js:mod_1854125649:initial",
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/015/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/015/source.js:mod_574261971:initial",
       "catalogPath": "Sources/English/016",
       "manifestPath": "/tmp/sora-daily/catalog/Sources/English/016/manifest.json",
       "language": "English",
       "rank": 16,
       "folder": "016",
-      "sourceName": "AniWorld (ENG SUB)",
-      "id": "jZdQ",
+      "sourceName": "Aniwave",
+      "id": "zc8g",
       "registry": "content-manifest",
       "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/017/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/015/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/016/source.js",
-      "durationMs": 4383
+      "durationMs": 9303
     },
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/018/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/018/source.js:mod_346573840:initial",
@@ -314,43 +365,13 @@
       "language": "English",
       "rank": 17,
       "folder": "017",
-      "sourceName": "AnimeLand",
-      "id": "mod_942337115",
-      "registry": "content-manifest",
-      "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/018/manifest.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/017/source.js",
-      "durationMs": 5471
-    },
-    {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/019/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/019/source.js:mod_1160977969:initial",
-      "catalogPath": "Sources/English/018",
-      "manifestPath": "/tmp/sora-daily/catalog/Sources/English/018/manifest.json",
-      "language": "English",
-      "rank": 18,
-      "folder": "018",
       "sourceName": "Peachify",
       "id": "mod_1741430395",
       "registry": "content-manifest",
       "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/019/manifest.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/018/source.js",
-      "durationMs": 14809
-    },
-    {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/020/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/020/source.js:mod_32620601:initial",
-      "catalogPath": "Sources/English/019",
-      "manifestPath": "/tmp/sora-daily/catalog/Sources/English/019/manifest.json",
-      "language": "English",
-      "rank": 19,
-      "folder": "019",
-      "sourceName": "AniDB",
-      "id": "jzBDQ",
-      "registry": "content-manifest",
-      "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/020/manifest.json",
-      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/019/source.js",
-      "durationMs": 18775
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/018/manifest.json",
+      "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/017/source.js",
+      "durationMs": 16147
     },
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/001/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/001/source.js:mod_749386356:initial",
@@ -365,10 +386,10 @@
       "origin": "current",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/001/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/001/source.js",
-      "durationMs": 2970
+      "durationMs": 5154
     },
     {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/003/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/003/source.js:mod_530477322:initial",
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/002/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/002/source.js:mod_2038029131:initial",
       "catalogPath": "Sources/French/002",
       "manifestPath": "/tmp/sora-daily/catalog/Sources/French/002/manifest.json",
       "language": "French",
@@ -378,12 +399,12 @@
       "id": "j5jy1",
       "registry": "content-manifest",
       "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/003/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/002/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/002/source.js",
-      "durationMs": 5686
+      "durationMs": 6627
     },
     {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/002/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/002/source.js:mod_2038029131:initial",
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/003/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/003/source.js:mod_530477322:initial",
       "catalogPath": "Sources/French/003",
       "manifestPath": "/tmp/sora-daily/catalog/Sources/French/003/manifest.json",
       "language": "French",
@@ -393,12 +414,12 @@
       "id": "jbZ7D",
       "registry": "content-manifest",
       "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/002/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/003/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/French/003/source.js",
-      "durationMs": 8243
+      "durationMs": 14516
     },
     {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/003/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/003/source.js:mod_490047518:initial",
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/001/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/001/source.js:mod_789816160:initial",
       "catalogPath": "Sources/German/001",
       "manifestPath": "/tmp/sora-daily/catalog/Sources/German/001/manifest.json",
       "language": "German",
@@ -408,12 +429,12 @@
       "id": "LmuM",
       "registry": "content-manifest",
       "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/003/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/001/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/001/source.js",
-      "durationMs": 4377
+      "durationMs": 6193
     },
     {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/004/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/004/source.js:mod_1017504291:initial",
+      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/002/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/002/source.js:mod_1997599327:initial",
       "catalogPath": "Sources/German/002",
       "manifestPath": "/tmp/sora-daily/catalog/Sources/German/002/manifest.json",
       "language": "German",
@@ -423,9 +444,9 @@
       "id": "LFud",
       "registry": "content-manifest",
       "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/004/manifest.json",
+      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/002/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/002/source.js",
-      "durationMs": 4368
+      "durationMs": 6485
     },
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Multi/001/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Multi/001/source.js:mod_1314519251:initial",
@@ -440,10 +461,10 @@
       "origin": "current",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Multi/001/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Multi/001/source.js",
-      "durationMs": 80
+      "durationMs": 106
     },
     {
-      "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Multi/002/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Multi/002/source.js:mod_1472896236:initial",
+      "winnerKey": "mangayomi:https://raw.githubusercontent.com/Swakshan/mangayomi-swak-extensions/refs/heads/main/javascript/anime/src/all/anibd.app.js:https://raw.githubusercontent.com/Swakshan/mangayomi-swak-extensions/refs/heads/main/javascript/anime/src/all/anibd.app.js:mangayomi_829457287:initial",
       "catalogPath": "Sources/Multi/002",
       "manifestPath": "/tmp/sora-daily/catalog/Sources/Multi/002/manifest.json",
       "language": "Multi",
@@ -451,11 +472,11 @@
       "folder": "002",
       "sourceName": "Anibd.App",
       "id": "mangayomi_829457287",
-      "registry": "content-manifest",
-      "origin": "current",
-      "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Multi/002/manifest.json",
+      "registry": "mangayomi",
+      "origin": "mangayomi",
+      "manifestUrl": "https://raw.githubusercontent.com/Swakshan/mangayomi-swak-extensions/refs/heads/main/javascript/anime/src/all/anibd.app.js",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Multi/002/source.js",
-      "durationMs": 817
+      "durationMs": 1065
     },
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Russian/001/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Russian/001/source.js:mod_539148115:initial",
@@ -470,7 +491,7 @@
       "origin": "current",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Russian/001/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Russian/001/source.js",
-      "durationMs": 8208
+      "durationMs": 9373
     },
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/001/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/001/source.js:mod_391061454:initial",
@@ -485,7 +506,7 @@
       "origin": "current",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/001/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/001/source.js",
-      "durationMs": 1757
+      "durationMs": 1568
     },
     {
       "winnerKey": "current:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/002/manifest.json:https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/002/source.js:mod_1898613263:initial",
@@ -500,298 +521,10 @@
       "origin": "current",
       "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/002/manifest.json",
       "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/Spanish/002/source.js",
-      "durationMs": 2001
+      "durationMs": 2986
     }
   ],
   "rejected": [
-    {
-      "key": "anikuro:english",
-      "sourceName": "Anikuro",
-      "language": "English",
-      "candidates": [
-        {
-          "id": "mod_574261971",
-          "sourceName": "Anikuro",
-          "language": "English",
-          "registry": "content-manifest",
-          "origin": "current",
-          "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/015/manifest.json",
-          "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/015/source.js",
-          "repair": null,
-          "label": "initial",
-          "status": "needs_fix",
-          "failureKind": "candidate_budget_exceeded",
-          "durationMs": 120000,
-          "errors": [
-            "Anikuro candidate test exceeded 120000ms"
-          ],
-          "attempts": [
-            {
-              "name": "url_health",
-              "status": "skipped_dead_or_empty",
-              "health": {
-                "base": {
-                  "url": "https://anikuro.ru/",
-                  "status": 522,
-                  "ok": false,
-                  "contentType": "text/html; charset=UTF-8",
-                  "bytes": 7212,
-                  "hasData": false,
-                  "reason": "http_522"
-                },
-                "endpoints": [
-                  {
-                    "url": "https://graphql.anilist.co/",
-                    "status": 404,
-                    "ok": false,
-                    "contentType": "application/json",
-                    "bytes": 117,
-                    "hasData": false,
-                    "reason": "http_404"
-                  },
-                  {
-                    "url": "https://anikuro.ru/api/getsources/?id=${anilistId}&lol=${provider}&ep=${episodeNumber}",
-                    "status": 522,
-                    "ok": false,
-                    "contentType": "text/html; charset=UTF-8",
-                    "bytes": 7212,
-                    "hasData": false,
-                    "reason": "http_522"
-                  }
-                ]
-              }
-            }
-          ],
-          "health": {
-            "base": {
-              "url": "https://anikuro.ru/",
-              "status": 522,
-              "ok": false,
-              "contentType": "text/html; charset=UTF-8",
-              "bytes": 7212,
-              "hasData": false,
-              "reason": "http_522"
-            },
-            "endpoints": [
-              {
-                "url": "https://graphql.anilist.co/",
-                "status": 404,
-                "ok": false,
-                "contentType": "application/json",
-                "bytes": 117,
-                "hasData": false,
-                "reason": "http_404"
-              },
-              {
-                "url": "https://anikuro.ru/api/getsources/?id=${anilistId}&lol=${provider}&ep=${episodeNumber}",
-                "status": 522,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 7212,
-                "hasData": false,
-                "reason": "http_522"
-              }
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "key": "fireanimedub:german",
-      "sourceName": "FireAnime DUB",
-      "language": "German",
-      "candidates": [
-        {
-          "id": "mod_1997599327",
-          "sourceName": "FireAnime DUB",
-          "language": "German",
-          "registry": "content-manifest",
-          "origin": "current",
-          "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/002/manifest.json",
-          "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/002/source.js",
-          "repair": null,
-          "label": "initial",
-          "status": "needs_fix",
-          "failureKind": "module_runtime_failure",
-          "durationMs": 60077,
-          "errors": [
-            "search: searchResults timed out"
-          ],
-          "attempts": [
-            {
-              "name": "url_health",
-              "status": "skipped_dead_or_empty",
-              "health": {
-                "base": {
-                  "url": "https://fireani.me/",
-                  "ok": false,
-                  "hasData": false,
-                  "reason": "fetch failed"
-                },
-                "endpoints": [
-                  {
-                    "url": "https://fireani.me/api.v1.AnimeSearchService/SearchAnimes",
-                    "ok": false,
-                    "hasData": false,
-                    "reason": "fetch failed"
-                  },
-                  {
-                    "url": "https://fireani.me/img/posters/${anime.poster}",
-                    "ok": false,
-                    "hasData": false,
-                    "reason": "fetch failed"
-                  },
-                  {
-                    "url": "https://fireani.me/api.v1.anime.AnimeService/GetAnime",
-                    "ok": false,
-                    "hasData": false,
-                    "reason": "fetch failed"
-                  },
-                  {
-                    "url": "https://fireani.me/api.v1.anime.AnimeService/GetEpisode",
-                    "ok": false,
-                    "hasData": false,
-                    "reason": "fetch failed"
-                  }
-                ]
-              }
-            }
-          ],
-          "health": {
-            "base": {
-              "url": "https://fireani.me/",
-              "ok": false,
-              "hasData": false,
-              "reason": "fetch failed"
-            },
-            "endpoints": [
-              {
-                "url": "https://fireani.me/api.v1.AnimeSearchService/SearchAnimes",
-                "ok": false,
-                "hasData": false,
-                "reason": "fetch failed"
-              },
-              {
-                "url": "https://fireani.me/img/posters/${anime.poster}",
-                "ok": false,
-                "hasData": false,
-                "reason": "fetch failed"
-              },
-              {
-                "url": "https://fireani.me/api.v1.anime.AnimeService/GetAnime",
-                "ok": false,
-                "hasData": false,
-                "reason": "fetch failed"
-              },
-              {
-                "url": "https://fireani.me/api.v1.anime.AnimeService/GetEpisode",
-                "ok": false,
-                "hasData": false,
-                "reason": "fetch failed"
-              }
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "key": "fireanimesub:german",
-      "sourceName": "FireAnime SUB",
-      "language": "German",
-      "candidates": [
-        {
-          "id": "mod_789816160",
-          "sourceName": "FireAnime SUB",
-          "language": "German",
-          "registry": "content-manifest",
-          "origin": "current",
-          "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/001/manifest.json",
-          "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/001/source.js",
-          "repair": null,
-          "label": "initial",
-          "status": "needs_fix",
-          "failureKind": "module_runtime_failure",
-          "durationMs": 60085,
-          "errors": [
-            "search: searchResults timed out"
-          ],
-          "attempts": [
-            {
-              "name": "url_health",
-              "status": "skipped_dead_or_empty",
-              "health": {
-                "base": {
-                  "url": "https://fireani.me/",
-                  "ok": false,
-                  "hasData": false,
-                  "reason": "fetch failed"
-                },
-                "endpoints": [
-                  {
-                    "url": "https://fireani.me/api.v1.AnimeSearchService/SearchAnimes",
-                    "ok": false,
-                    "hasData": false,
-                    "reason": "fetch failed"
-                  },
-                  {
-                    "url": "https://fireani.me/img/posters/${anime.poster}",
-                    "ok": false,
-                    "hasData": false,
-                    "reason": "fetch failed"
-                  },
-                  {
-                    "url": "https://fireani.me/api.v1.anime.AnimeService/GetAnime",
-                    "ok": false,
-                    "hasData": false,
-                    "reason": "fetch failed"
-                  },
-                  {
-                    "url": "https://fireani.me/api.v1.anime.AnimeService/GetEpisode",
-                    "ok": false,
-                    "hasData": false,
-                    "reason": "fetch failed"
-                  }
-                ]
-              }
-            }
-          ],
-          "health": {
-            "base": {
-              "url": "https://fireani.me/",
-              "ok": false,
-              "hasData": false,
-              "reason": "fetch failed"
-            },
-            "endpoints": [
-              {
-                "url": "https://fireani.me/api.v1.AnimeSearchService/SearchAnimes",
-                "ok": false,
-                "hasData": false,
-                "reason": "fetch failed"
-              },
-              {
-                "url": "https://fireani.me/img/posters/${anime.poster}",
-                "ok": false,
-                "hasData": false,
-                "reason": "fetch failed"
-              },
-              {
-                "url": "https://fireani.me/api.v1.anime.AnimeService/GetAnime",
-                "ok": false,
-                "hasData": false,
-                "reason": "fetch failed"
-              },
-              {
-                "url": "https://fireani.me/api.v1.anime.AnimeService/GetEpisode",
-                "ok": false,
-                "hasData": false,
-                "reason": "fetch failed"
-              }
-            ]
-          }
-        }
-      ]
-    },
     {
       "key": "anikotozangetsu:english",
       "sourceName": "AniKoto (Zangetsu)",
@@ -809,7 +542,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 131,
+          "durationMs": 147,
           "errors": [
             "search: search returned an unusable result"
           ],
@@ -861,7 +594,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 260,
+          "durationMs": 272,
           "errors": [
             "search: search returned an unusable result"
           ],
@@ -927,7 +660,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 439,
+          "durationMs": 585,
           "errors": [
             "search: search returned an unusable result"
           ],
@@ -997,7 +730,7 @@
           "label": "initial",
           "status": "needs_fix",
           "failureKind": "module_runtime_failure",
-          "durationMs": 58,
+          "durationMs": 91,
           "errors": [
             "search: Anikage HTTP 403"
           ],
@@ -1037,293 +770,72 @@
   ],
   "removals": [
     {
-      "sourceName": "Anikuro",
-      "id": "mod_574261971",
+      "sourceName": "AniDB",
+      "id": "mod_1160977969",
       "language": "English",
       "confirmed": true,
       "reason": [
         {
-          "id": "mod_574261971",
-          "sourceName": "Anikuro",
+          "id": "mod_1160977969",
+          "sourceName": "AniDB",
           "language": "English",
           "registry": "content-manifest",
           "origin": "current",
-          "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/015/manifest.json",
-          "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/015/source.js",
+          "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/019/manifest.json",
+          "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/019/source.js",
           "repair": null,
           "label": "initial",
-          "status": "needs_fix",
-          "failureKind": "candidate_budget_exceeded",
-          "durationMs": 120000,
-          "errors": [
-            "Anikuro candidate test exceeded 120000ms"
-          ],
-          "attempts": [
-            {
-              "name": "url_health",
-              "status": "skipped_dead_or_empty",
-              "health": {
-                "base": {
-                  "url": "https://anikuro.ru/",
-                  "status": 522,
-                  "ok": false,
-                  "contentType": "text/html; charset=UTF-8",
-                  "bytes": 7212,
-                  "hasData": false,
-                  "reason": "http_522"
-                },
-                "endpoints": [
-                  {
-                    "url": "https://graphql.anilist.co/",
-                    "status": 404,
-                    "ok": false,
-                    "contentType": "application/json",
-                    "bytes": 117,
-                    "hasData": false,
-                    "reason": "http_404"
-                  },
-                  {
-                    "url": "https://anikuro.ru/api/getsources/?id=${anilistId}&lol=${provider}&ep=${episodeNumber}",
-                    "status": 522,
-                    "ok": false,
-                    "contentType": "text/html; charset=UTF-8",
-                    "bytes": 7212,
-                    "hasData": false,
-                    "reason": "http_522"
-                  }
-                ]
-              }
-            }
-          ],
-          "health": {
-            "base": {
-              "url": "https://anikuro.ru/",
-              "status": 522,
-              "ok": false,
-              "contentType": "text/html; charset=UTF-8",
-              "bytes": 7212,
-              "hasData": false,
-              "reason": "http_522"
-            },
-            "endpoints": [
-              {
-                "url": "https://graphql.anilist.co/",
-                "status": 404,
-                "ok": false,
-                "contentType": "application/json",
-                "bytes": 117,
-                "hasData": false,
-                "reason": "http_404"
-              },
-              {
-                "url": "https://anikuro.ru/api/getsources/?id=${anilistId}&lol=${provider}&ep=${episodeNumber}",
-                "status": 522,
-                "ok": false,
-                "contentType": "text/html; charset=UTF-8",
-                "bytes": 7212,
-                "hasData": false,
-                "reason": "http_522"
-              }
-            ]
-          }
+          "status": "working",
+          "durationMs": 24502,
+          "errors": [],
+          "attempts": []
         }
       ]
     },
     {
-      "sourceName": "FireAnime DUB",
-      "id": "mod_1997599327",
-      "language": "German",
+      "sourceName": "JustAnime",
+      "id": "mod_1571279603",
+      "language": "English",
       "confirmed": true,
       "reason": [
         {
-          "id": "mod_1997599327",
-          "sourceName": "FireAnime DUB",
-          "language": "German",
+          "id": "mod_1571279603",
+          "sourceName": "JustAnime",
+          "language": "English",
           "registry": "content-manifest",
           "origin": "current",
-          "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/002/manifest.json",
-          "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/002/source.js",
+          "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/004/manifest.json",
+          "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/004/source.js",
           "repair": null,
           "label": "initial",
-          "status": "needs_fix",
-          "failureKind": "module_runtime_failure",
-          "durationMs": 60077,
-          "errors": [
-            "search: searchResults timed out"
-          ],
+          "status": "working",
+          "durationMs": 13956,
+          "errors": [],
           "attempts": [
             {
-              "name": "url_health",
-              "status": "skipped_dead_or_empty",
-              "health": {
-                "base": {
-                  "url": "https://fireani.me/",
-                  "ok": false,
-                  "hasData": false,
-                  "reason": "fetch failed"
-                },
-                "endpoints": [
-                  {
-                    "url": "https://fireani.me/api.v1.AnimeSearchService/SearchAnimes",
-                    "ok": false,
-                    "hasData": false,
-                    "reason": "fetch failed"
-                  },
-                  {
-                    "url": "https://fireani.me/img/posters/${anime.poster}",
-                    "ok": false,
-                    "hasData": false,
-                    "reason": "fetch failed"
-                  },
-                  {
-                    "url": "https://fireani.me/api.v1.anime.AnimeService/GetAnime",
-                    "ok": false,
-                    "hasData": false,
-                    "reason": "fetch failed"
-                  },
-                  {
-                    "url": "https://fireani.me/api.v1.anime.AnimeService/GetEpisode",
-                    "ok": false,
-                    "hasData": false,
-                    "reason": "fetch failed"
-                  }
-                ]
-              }
+              "name": "confirm_2",
+              "status": "needs_fix",
+              "failureKind": "module_runtime_failure",
+              "errors": [
+                "search: searchResults timed out"
+              ]
             }
-          ],
-          "health": {
-            "base": {
-              "url": "https://fireani.me/",
-              "ok": false,
-              "hasData": false,
-              "reason": "fetch failed"
-            },
-            "endpoints": [
-              {
-                "url": "https://fireani.me/api.v1.AnimeSearchService/SearchAnimes",
-                "ok": false,
-                "hasData": false,
-                "reason": "fetch failed"
-              },
-              {
-                "url": "https://fireani.me/img/posters/${anime.poster}",
-                "ok": false,
-                "hasData": false,
-                "reason": "fetch failed"
-              },
-              {
-                "url": "https://fireani.me/api.v1.anime.AnimeService/GetAnime",
-                "ok": false,
-                "hasData": false,
-                "reason": "fetch failed"
-              },
-              {
-                "url": "https://fireani.me/api.v1.anime.AnimeService/GetEpisode",
-                "ok": false,
-                "hasData": false,
-                "reason": "fetch failed"
-              }
-            ]
-          }
-        }
-      ]
-    },
-    {
-      "sourceName": "FireAnime SUB",
-      "id": "mod_789816160",
-      "language": "German",
-      "confirmed": true,
-      "reason": [
+          ]
+        },
         {
-          "id": "mod_789816160",
-          "sourceName": "FireAnime SUB",
-          "language": "German",
-          "registry": "content-manifest",
-          "origin": "current",
-          "manifestUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/001/manifest.json",
-          "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/German/001/source.js",
+          "id": "mangayomi_892345671",
+          "sourceName": "JustAnime",
+          "language": "English",
+          "registry": "mangayomi",
+          "origin": "mangayomi",
+          "manifestUrl": "https://raw.githubusercontent.com/Mallyd11/mangayomi-anime-extensions/refs/heads/main/javascript/anime/src/en/justanime.js",
+          "scriptUrl": "https://raw.githubusercontent.com/Mallyd11/mangayomi-anime-extensions/refs/heads/main/javascript/anime/src/en/justanime.js",
           "repair": null,
           "label": "initial",
-          "status": "needs_fix",
-          "failureKind": "module_runtime_failure",
-          "durationMs": 60085,
-          "errors": [
-            "search: searchResults timed out"
-          ],
-          "attempts": [
-            {
-              "name": "url_health",
-              "status": "skipped_dead_or_empty",
-              "health": {
-                "base": {
-                  "url": "https://fireani.me/",
-                  "ok": false,
-                  "hasData": false,
-                  "reason": "fetch failed"
-                },
-                "endpoints": [
-                  {
-                    "url": "https://fireani.me/api.v1.AnimeSearchService/SearchAnimes",
-                    "ok": false,
-                    "hasData": false,
-                    "reason": "fetch failed"
-                  },
-                  {
-                    "url": "https://fireani.me/img/posters/${anime.poster}",
-                    "ok": false,
-                    "hasData": false,
-                    "reason": "fetch failed"
-                  },
-                  {
-                    "url": "https://fireani.me/api.v1.anime.AnimeService/GetAnime",
-                    "ok": false,
-                    "hasData": false,
-                    "reason": "fetch failed"
-                  },
-                  {
-                    "url": "https://fireani.me/api.v1.anime.AnimeService/GetEpisode",
-                    "ok": false,
-                    "hasData": false,
-                    "reason": "fetch failed"
-                  }
-                ]
-              }
-            }
-          ],
-          "health": {
-            "base": {
-              "url": "https://fireani.me/",
-              "ok": false,
-              "hasData": false,
-              "reason": "fetch failed"
-            },
-            "endpoints": [
-              {
-                "url": "https://fireani.me/api.v1.AnimeSearchService/SearchAnimes",
-                "ok": false,
-                "hasData": false,
-                "reason": "fetch failed"
-              },
-              {
-                "url": "https://fireani.me/img/posters/${anime.poster}",
-                "ok": false,
-                "hasData": false,
-                "reason": "fetch failed"
-              },
-              {
-                "url": "https://fireani.me/api.v1.anime.AnimeService/GetAnime",
-                "ok": false,
-                "hasData": false,
-                "reason": "fetch failed"
-              },
-              {
-                "url": "https://fireani.me/api.v1.anime.AnimeService/GetEpisode",
-                "ok": false,
-                "hasData": false,
-                "reason": "fetch failed"
-              }
-            ]
-          }
+          "status": "working",
+          "durationMs": 1560,
+          "errors": [],
+          "attempts": []
         }
       ]
     }
