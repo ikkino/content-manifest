@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-14T07:43:41.759Z",
+  "generatedAt": "2026-10-14T10:05:12.822Z",
   "sourceCatalogRef": "config",
   "route": {
     "aniListId": 187316,
@@ -10,6 +10,62 @@
       "Suikoden: The Anime"
     ],
     "routes": [
+      {
+        "moduleId": "jCtAp",
+        "catalogPath": "Sources/English/009",
+        "sourceName": "123Anime",
+        "language": "English",
+        "searchResultHref": "https://123animes.ru/anime/gensou-suikoden",
+        "episodeRoutes": [
+          {
+            "episode": 1,
+            "href": "gensou-suikoden/1/vidstreaming.io"
+          },
+          {
+            "episode": 2,
+            "href": "gensou-suikoden/2/vidstreaming.io"
+          }
+        ],
+        "availableEpisodes": 2,
+        "verifiedEpisode": 2,
+        "searchMs": 484,
+        "episodesMs": 414,
+        "streamMs": 363,
+        "verificationMs": 778,
+        "firstEpisodeVerified": 1,
+        "firstEpisodeEpisodesMs": 471,
+        "firstEpisodeStreamMs": 317,
+        "firstEpisodeVerificationMs": 789,
+        "verifiedAt": "2026-10-14T10:05:12.822Z"
+      },
+      {
+        "moduleId": "animesogo-local",
+        "catalogPath": "Sources/English/007",
+        "sourceName": "AnimeSogo",
+        "language": "English",
+        "searchResultHref": "{\"path\":\"/watch/suikoden-the-anime-5qwej\",\"title\":\"Suikoden The Anime\"}",
+        "episodeRoutes": [
+          {
+            "episode": 1,
+            "href": "{\"path\":\"/watch/suikoden-the-anime-5qwej\",\"title\":\"Suikoden The Anime\",\"id\":\"9029\",\"number\":1,\"ids\":\"Z2JWTWkxMXA2aW0raWZhU01aVlZNcUIrcUo2azVUOUpsWGhqVTVkZEg1ZXVHWFZ1WWF2aTgwZnIvdExtN053MjhEc1VjbmtWYjFpUTROWDc1emtCdU1jdDNCVzZ1cXhrVEVUa3Urc1g4MTNGN29rTmpLaXYzblRuZzMydnBDSkdkQW8wdGpMb09iOStGaXpoeTUyVjVnPT0\"}"
+          },
+          {
+            "episode": 2,
+            "href": "{\"path\":\"/watch/suikoden-the-anime-5qwej\",\"title\":\"Suikoden The Anime\",\"id\":\"9029\",\"number\":2,\"ids\":\"OVhWOTV4ajZ5OGUveDQzcldiaGRtTFFkRWlSLzZSSW9LMVM1OXZmUDI1bFJab0hpalV4RHVFem5MeHNuWWM4UE5PTlgvbGxBbXBDZkhobU44dW82SjB6NzVtYnpYUEFDSC82T3ZTOU5OTEwvbWtGa0Z4MmZTL1BYemxZV2thWVhtVGlqUkpvL0UvcWZBWTBrS1dBMzhRPT0\"}"
+          }
+        ],
+        "availableEpisodes": 2,
+        "verifiedEpisode": 2,
+        "searchMs": 341,
+        "episodesMs": 436,
+        "streamMs": 336,
+        "verificationMs": 776,
+        "firstEpisodeVerified": 1,
+        "firstEpisodeEpisodesMs": 522,
+        "firstEpisodeStreamMs": 338,
+        "firstEpisodeVerificationMs": 861,
+        "verifiedAt": "2026-10-14T10:05:12.822Z"
+      },
       {
         "moduleId": "animekai-unoriginal-local",
         "catalogPath": "Sources/English/008",
@@ -29,42 +85,14 @@
         "availableEpisodes": 2,
         "verifiedEpisode": 2,
         "searchMs": 470,
-        "episodesMs": 493,
-        "streamMs": 280,
-        "verificationMs": 775,
+        "episodesMs": 506,
+        "streamMs": 313,
+        "verificationMs": 820,
         "firstEpisodeVerified": 1,
-        "firstEpisodeEpisodesMs": 417,
-        "firstEpisodeStreamMs": 327,
-        "firstEpisodeVerificationMs": 746,
-        "verifiedAt": "2026-10-13T17:37:58.380Z"
-      },
-      {
-        "moduleId": "animesogo-local",
-        "catalogPath": "Sources/English/006",
-        "sourceName": "AnimeSogo",
-        "language": "English",
-        "searchResultHref": "{\"path\":\"/watch/suikoden-the-anime-5qwej\",\"title\":\"Suikoden The Anime\"}",
-        "episodeRoutes": [
-          {
-            "episode": 1,
-            "href": "{\"path\":\"/watch/suikoden-the-anime-5qwej\",\"title\":\"Suikoden The Anime\",\"id\":\"9029\",\"number\":1,\"ids\":\"Z2JWTWkxMXA2aW0raWZhU01aVlZNcUIrcUo2azVUOUpsWGhqVTVkZEg1ZXVHWFZ1WWF2aTgwZnIvdExtN053MjhEc1VjbmtWYjFpUTROWDc1emtCdU1jdDNCVzZ1cXhrVEVUa3Urc1g4MTNGN29rTmpLaXYzblRuZzMydnBDSkdkQW8wdGpMb09iOStGaXpoeTUyVjVnPT0\"}"
-          },
-          {
-            "episode": 2,
-            "href": "{\"path\":\"/watch/suikoden-the-anime-5qwej\",\"title\":\"Suikoden The Anime\",\"id\":\"9029\",\"number\":2,\"ids\":\"OVhWOTV4ajZ5OGUveDQzcldiaGRtTFFkRWlSLzZSSW9LMVM1OXZmUDI1bFJab0hpalV4RHVFem5MeHNuWWM4UE5PTlgvbGxBbXBDZkhobU44dW82SjB6NzVtYnpYUEFDSC82T3ZTOU5OTEwvbWtGa0Z4MmZTL1BYemxZV2thWVhtVGlqUkpvL0UvcWZBWTBrS1dBMzhRPT0\"}"
-          }
-        ],
-        "availableEpisodes": 2,
-        "verifiedEpisode": 2,
-        "searchMs": 341,
-        "episodesMs": 489,
-        "streamMs": 254,
-        "verificationMs": 746,
-        "firstEpisodeVerified": 1,
-        "firstEpisodeEpisodesMs": 565,
-        "firstEpisodeStreamMs": 301,
-        "firstEpisodeVerificationMs": 873,
-        "verifiedAt": "2026-10-13T17:37:58.380Z"
+        "firstEpisodeEpisodesMs": 536,
+        "firstEpisodeStreamMs": 315,
+        "firstEpisodeVerificationMs": 855,
+        "verifiedAt": "2026-10-14T10:05:12.822Z"
       }
     ]
   }
