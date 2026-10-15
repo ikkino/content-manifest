@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-15T07:31:22.212Z",
+  "generatedAt": "2026-10-15T09:47:56.879Z",
   "sourceCatalogRef": "config",
   "route": {
     "aniListId": 205909,
@@ -11,8 +11,32 @@
     ],
     "routes": [
       {
+        "moduleId": "jzppd",
+        "catalogPath": "Sources/English/010",
+        "sourceName": "AllManga",
+        "language": "English",
+        "searchResultHref": "https://allmanga.to/bangumi/6a70dae812639b50fe59dc58",
+        "episodeRoutes": [
+          {
+            "episode": 1,
+            "href": "https://allmanga.to/bangumi/6a70dae812639b50fe59dc58/p-1"
+          }
+        ],
+        "availableEpisodes": 1,
+        "verifiedEpisode": 1,
+        "searchMs": 284,
+        "episodesMs": 282,
+        "streamMs": 296,
+        "verificationMs": 581,
+        "firstEpisodeVerified": 1,
+        "firstEpisodeEpisodesMs": 338,
+        "firstEpisodeStreamMs": 423,
+        "firstEpisodeVerificationMs": 764,
+        "verifiedAt": "2026-10-15T09:47:56.879Z"
+      },
+      {
         "moduleId": "jCtAp",
-        "catalogPath": "Sources/English/009",
+        "catalogPath": "Sources/English/008",
         "sourceName": "123Anime",
         "language": "English",
         "searchResultHref": "https://123animes.ru/anime/hotaru-no-yomeiri",
@@ -25,14 +49,38 @@
         "availableEpisodes": 1,
         "verifiedEpisode": 1,
         "searchMs": 456,
-        "episodesMs": 518,
-        "streamMs": 323,
-        "verificationMs": 843,
+        "episodesMs": 601,
+        "streamMs": 371,
+        "verificationMs": 978,
         "firstEpisodeVerified": 1,
-        "firstEpisodeEpisodesMs": 448,
-        "firstEpisodeStreamMs": 330,
-        "firstEpisodeVerificationMs": 780,
-        "verifiedAt": "2026-10-15T07:31:22.212Z"
+        "firstEpisodeEpisodesMs": 507,
+        "firstEpisodeStreamMs": 347,
+        "firstEpisodeVerificationMs": 856,
+        "verifiedAt": "2026-10-15T09:47:56.879Z"
+      },
+      {
+        "moduleId": "animekai-unoriginal-local",
+        "catalogPath": "Sources/English/009",
+        "sourceName": "AnimeKai (Unoriginal)",
+        "language": "English",
+        "searchResultHref": "{\"path\":\"/watch/firefly-wedding-ezfhi\",\"title\":\"Firefly Wedding\"}",
+        "episodeRoutes": [
+          {
+            "episode": 1,
+            "href": "{\"path\":\"/watch/firefly-wedding-ezfhi\",\"title\":\"Firefly Wedding\",\"id\":\"9010\",\"number\":1,\"ids\":\"LysraVl1TEc5ZGpUMXpscDRJNEZaRzNXM2tuSWphL3lUMEpNb1pQbEJnbE5oWU9ZQXpLMCtsVytEVlNmbnB3aXpaV3ZVdWI2d1hkSklsblJYb3k4a3k4UWN3S1ZmUmc5bUJ1YS8wL0dpVEF2YnBDNERtaFcvTElBUWEwS2V4alFEd3B4TEJkbjdZd2VkcjRtZUx6NXJBPT0\"}"
+          }
+        ],
+        "availableEpisodes": 1,
+        "verifiedEpisode": 1,
+        "searchMs": 428,
+        "episodesMs": 708,
+        "streamMs": 401,
+        "verificationMs": 1114,
+        "firstEpisodeVerified": 1,
+        "firstEpisodeEpisodesMs": 710,
+        "firstEpisodeStreamMs": 367,
+        "firstEpisodeVerificationMs": 1081,
+        "verifiedAt": "2026-10-15T09:47:56.879Z"
       },
       {
         "moduleId": "animesogo-local",
@@ -49,38 +97,14 @@
         "availableEpisodes": 1,
         "verifiedEpisode": 1,
         "searchMs": 301,
-        "episodesMs": 611,
-        "streamMs": 377,
-        "verificationMs": 993,
+        "episodesMs": 669,
+        "streamMs": 380,
+        "verificationMs": 1051,
         "firstEpisodeVerified": 1,
-        "firstEpisodeEpisodesMs": 556,
-        "firstEpisodeStreamMs": 389,
-        "firstEpisodeVerificationMs": 951,
-        "verifiedAt": "2026-10-15T07:31:22.212Z"
-      },
-      {
-        "moduleId": "animekai-unoriginal-local",
-        "catalogPath": "Sources/English/008",
-        "sourceName": "AnimeKai (Unoriginal)",
-        "language": "English",
-        "searchResultHref": "{\"path\":\"/watch/firefly-wedding-ezfhi\",\"title\":\"Firefly Wedding\"}",
-        "episodeRoutes": [
-          {
-            "episode": 1,
-            "href": "{\"path\":\"/watch/firefly-wedding-ezfhi\",\"title\":\"Firefly Wedding\",\"id\":\"9010\",\"number\":1,\"ids\":\"LysraVl1TEc5ZGpUMXpscDRJNEZaRzNXM2tuSWphL3lUMEpNb1pQbEJnbE5oWU9ZQXpLMCtsVytEVlNmbnB3aXpaV3ZVdWI2d1hkSklsblJYb3k4a3k4UWN3S1ZmUmc5bUJ1YS8wL0dpVEF2YnBDNERtaFcvTElBUWEwS2V4alFEd3B4TEJkbjdZd2VkcjRtZUx6NXJBPT0\"}"
-          }
-        ],
-        "availableEpisodes": 1,
-        "verifiedEpisode": 1,
-        "searchMs": 428,
-        "episodesMs": 706,
-        "streamMs": 396,
-        "verificationMs": 1104,
-        "firstEpisodeVerified": 1,
-        "firstEpisodeEpisodesMs": 661,
-        "firstEpisodeStreamMs": 397,
-        "firstEpisodeVerificationMs": 1060,
-        "verifiedAt": "2026-10-15T07:31:22.212Z"
+        "firstEpisodeEpisodesMs": 711,
+        "firstEpisodeStreamMs": 432,
+        "firstEpisodeVerificationMs": 1145,
+        "verifiedAt": "2026-10-15T09:47:56.879Z"
       }
     ]
   }
