@@ -1,24 +1,31 @@
 {
-  "sourceName": "Aniclipse",
-  "iconUrl": "https://aniclipse.com/logo/aniclipse-icon-192.png",
+  "sourceName": "AllManga",
+  "iconUrl": "https://allmanga.to/pics/avatar-w.png",
   "author": {
-    "name": "MXFia19",
-    "icon": "https://i.pinimg.com/1200x/89/78/33/89783349d3270e4ab071db9a038db8ea.jpg",
-    "url": "https://github.com/MXFia19"
+    "name": "xdfkenny",
+    "icon": "https://yt3.googleusercontent.com/NHr6Y6qhYIUeoyIBdgeEYArXI1_ebVcLAuf562jPB6WSFTunOwPVuWC90eAG1zmeD6_Wy9_0mTs=s160-c-k-c0x00ffffff-no-rj",
+    "url": "https://github.com/xdfkenny"
   },
-  "version": "1.0.0",
+  "description": "Módulo de AllManga (allmanga.to) — anime en inglés (sub/dub) vía el flow oficial AllAnime (aaReq + tobeparsed + clock). Auto-bootstrap de claves aaReq cuando rotan (build 136, epochs semanales), con fallback a keygen remoto y fuentes iframe (mp4upload/ok.ru) para mantener el flujo de video.",
+  "version": "1.9.0",
   "language": "English",
-  "streamType": "HLS",
+  "streamType": "HLS/MP4",
   "quality": "1080p",
-  "baseUrl": "https://aniclipse.com/",
-  "searchBaseUrl": "https://aniclipse.com/",
+  "baseUrl": "https://allmanga.to/",
+  "searchBaseUrl": "https://allmanga.to/search-anime?keyword=%s",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/011/source.js",
   "type": "anime",
   "downloadSupport": true,
+  "combo": false,
   "asyncJS": true,
-  "softsub": true,
+  "streamAsyncJS": false,
+  "softsub": false,
+  "supportsMojuru": true,
+  "supportsDartotsu": true,
   "supportsSora": true,
   "supportsLuna": true,
-  "changelog": "first release: aniclipse catalogue and episodes (real titles, thumbnails, fillers), playback resolved through vidhawk's open chain",
-  "id": "j0y3E"
+  "supportsAnymex": true,
+  "supportsTsumi": true,
+  "supportsHiyoku": true,
+  "id": "jzppd"
 }

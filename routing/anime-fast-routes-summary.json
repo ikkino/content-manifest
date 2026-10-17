@@ -1,16 +1,16 @@
 {
-  "generatedAt": "2026-10-17T07:47:23.503Z",
+  "generatedAt": "2026-10-17T09:14:22.435Z",
   "mediaRequested": 60,
   "categories": {
     "trendingNow": {
       "requested": 60,
-      "mediaChecked": 96,
-      "animeWithRoutes": 94
+      "mediaChecked": 100,
+      "animeWithRoutes": 100
     },
     "popularThisSeason": {
       "requested": 60,
       "mediaChecked": 93,
-      "animeWithRoutes": 91
+      "animeWithRoutes": 93
     },
     "popularAllTime": {
       "requested": 60,
@@ -20,19 +20,57 @@
   },
   "mediaChecked": 114,
   "modulesChecked": 18,
-  "animeWithRoutes": 171,
-  "routeCount": 701,
+  "animeWithRoutes": 174,
+  "routeCount": 729,
   "failures": [
+    {
+      "aniListId": 195516,
+      "title": "The Apothecary Diaries Season 3",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/009",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 195516,
+      "title": "The Apothecary Diaries Season 3",
+      "moduleId": "jwnFI",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "XPass",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
     {
       "aniListId": 205909,
       "title": "Firefly Wedding",
-      "moduleId": "mangayomi_892345671",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "JustAnime",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/009",
+      "sourceName": "AnimeLand",
       "errors": [
-        "episode inventory mismatch: available=12 expected=2",
-        "episode inventory mismatch: available=12 expected=2",
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 205909,
+      "title": "Firefly Wedding",
+      "moduleId": "jwnFI",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "XPass",
+      "errors": [
         "episode inventory mismatch: available=12 expected=2"
+      ]
+    },
+    {
+      "aniListId": 195516,
+      "title": "The Apothecary Diaries Season 3",
+      "moduleId": "BiECa",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "IPTV-org",
+      "errors": [
+        "search: searchResults returned an unusable result"
       ]
     },
     {
@@ -48,8 +86,40 @@
     {
       "aniListId": 195516,
       "title": "The Apothecary Diaries Season 3",
+      "moduleId": "jg3nm",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "Airflix",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 205909,
+      "title": "Firefly Wedding",
+      "moduleId": "jg3nm",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "Airflix",
+      "errors": [
+        "episode inventory mismatch: available=12 expected=2"
+      ]
+    },
+    {
+      "aniListId": 205909,
+      "title": "Firefly Wedding",
       "moduleId": "mangayomi_892345671",
-      "catalogPath": "Sources/English/002",
+      "catalogPath": "Sources/English/004",
+      "sourceName": "JustAnime",
+      "errors": [
+        "episode inventory mismatch: available=12 expected=2",
+        "episode inventory mismatch: available=12 expected=2",
+        "episode inventory mismatch: available=12 expected=2"
+      ]
+    },
+    {
+      "aniListId": 195516,
+      "title": "The Apothecary Diaries Season 3",
+      "moduleId": "mangayomi_892345671",
+      "catalogPath": "Sources/English/004",
       "sourceName": "JustAnime",
       "errors": [
         "episode inventory mismatch: available=12 expected=3",
@@ -58,93 +128,11 @@
       ]
     },
     {
-      "aniListId": 195516,
-      "title": "The Apothecary Diaries Season 3",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
       "aniListId": 205909,
       "title": "Firefly Wedding",
       "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/004",
+      "catalogPath": "Sources/English/008",
       "sourceName": "OneTouch TV",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 205909,
-      "title": "Firefly Wedding",
-      "moduleId": "jg3nm",
-      "catalogPath": "Sources/English/007",
-      "sourceName": "Airflix",
-      "errors": [
-        "episode inventory mismatch: available=12 expected=2"
-      ]
-    },
-    {
-      "aniListId": 205909,
-      "title": "Firefly Wedding",
-      "moduleId": "mangayomi_1742685193",
-      "catalogPath": "Sources/English/009",
-      "sourceName": "AniPM",
-      "errors": [
-        "episodes: ani.pm API HTTP 404 for /anime/series/ae1e48d96a63c4772d95d4839ec9558f~968534e79d0be222176cdd59b018ace10bd11a57b9b887b0bd2c4524b4286c70",
-        "episodes: ani.pm API HTTP 404 for /anime/series/ae1e48d96a63c4772d95d4839ec9558f~968534e79d0be222176cdd59b018ace10bd11a57b9b887b0bd2c4524b4286c70",
-        "episodes: ani.pm API HTTP 404 for /anime/series/ae1e48d96a63c4772d95d4839ec9558f~968534e79d0be222176cdd59b018ace10bd11a57b9b887b0bd2c4524b4286c70"
-      ]
-    },
-    {
-      "aniListId": 205909,
-      "title": "Firefly Wedding",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/022",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 195516,
-      "title": "The Apothecary Diaries Season 3",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/022",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 205909,
-      "title": "Firefly Wedding",
-      "moduleId": "jwnFI",
-      "catalogPath": "Sources/English/008",
-      "sourceName": "XPass",
-      "errors": [
-        "episode inventory mismatch: available=12 expected=2"
-      ]
-    },
-    {
-      "aniListId": 195516,
-      "title": "The Apothecary Diaries Season 3",
-      "moduleId": "jg3nm",
-      "catalogPath": "Sources/English/007",
-      "sourceName": "Airflix",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 195516,
-      "title": "The Apothecary Diaries Season 3",
-      "moduleId": "jwnFI",
-      "catalogPath": "Sources/English/008",
-      "sourceName": "XPass",
       "errors": [
         "search: searchResults returned an unusable result"
       ]
@@ -153,24 +141,12 @@
       "aniListId": 195516,
       "title": "The Apothecary Diaries Season 3",
       "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/004",
+      "catalogPath": "Sources/English/008",
       "sourceName": "OneTouch TV",
       "errors": [
-        "episode inventory mismatch: available=1 expected=3",
+        "episode inventory mismatch: available=22 expected=3",
         "episode inventory mismatch: available=22 expected=3",
         "episode inventory mismatch: available=14 expected=3"
-      ]
-    },
-    {
-      "aniListId": 210482,
-      "title": "STEEL BALL RUN JoJo's Bizarre Adventure 2nd - 3rd STAGE",
-      "moduleId": "mangayomi_892345671",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "JustAnime",
-      "errors": [
-        "episode inventory mismatch: available=11 expected=4",
-        "episode inventory mismatch: available=11 expected=4",
-        "episode inventory mismatch: available=11 expected=4"
       ]
     },
     {
@@ -186,8 +162,54 @@
     {
       "aniListId": 210482,
       "title": "STEEL BALL RUN JoJo's Bizarre Adventure 2nd - 3rd STAGE",
-      "moduleId": "animesogo-local",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/009",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 210482,
+      "title": "STEEL BALL RUN JoJo's Bizarre Adventure 2nd - 3rd STAGE",
+      "moduleId": "jwnFI",
       "catalogPath": "Sources/English/003",
+      "sourceName": "XPass",
+      "errors": [
+        "episodes: extractEpisodes returned an unusable result",
+        "episodes: extractEpisodes returned an unusable result",
+        "episodes: extractEpisodes returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 210482,
+      "title": "STEEL BALL RUN JoJo's Bizarre Adventure 2nd - 3rd STAGE",
+      "moduleId": "jg3nm",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "Airflix",
+      "errors": [
+        "episodes: extractEpisodes returned an unusable result",
+        "episodes: extractEpisodes returned an unusable result",
+        "episodes: extractEpisodes returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 210482,
+      "title": "STEEL BALL RUN JoJo's Bizarre Adventure 2nd - 3rd STAGE",
+      "moduleId": "mangayomi_892345671",
+      "catalogPath": "Sources/English/004",
+      "sourceName": "JustAnime",
+      "errors": [
+        "episode inventory mismatch: available=11 expected=4",
+        "episode inventory mismatch: available=11 expected=4",
+        "episode inventory mismatch: available=11 expected=4"
+      ]
+    },
+    {
+      "aniListId": 210482,
+      "title": "STEEL BALL RUN JoJo's Bizarre Adventure 2nd - 3rd STAGE",
+      "moduleId": "animesogo-local",
+      "catalogPath": "Sources/English/006",
       "sourceName": "AnimeSogo",
       "errors": [
         "No matching route found"
@@ -196,33 +218,11 @@
     {
       "aniListId": 210482,
       "title": "STEEL BALL RUN JoJo's Bizarre Adventure 2nd - 3rd STAGE",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 210482,
-      "title": "STEEL BALL RUN JoJo's Bizarre Adventure 2nd - 3rd STAGE",
       "moduleId": "animekai-unoriginal-local",
-      "catalogPath": "Sources/English/005",
+      "catalogPath": "Sources/English/007",
       "sourceName": "AnimeKai (Unoriginal)",
       "errors": [
         "No matching route found"
-      ]
-    },
-    {
-      "aniListId": 210482,
-      "title": "STEEL BALL RUN JoJo's Bizarre Adventure 2nd - 3rd STAGE",
-      "moduleId": "jg3nm",
-      "catalogPath": "Sources/English/007",
-      "sourceName": "Airflix",
-      "errors": [
-        "episodes: extractEpisodes returned an unusable result",
-        "episodes: extractEpisodes returned an unusable result",
-        "episodes: extractEpisodes returned an unusable result"
       ]
     },
     {
@@ -240,35 +240,23 @@
     {
       "aniListId": 210482,
       "title": "STEEL BALL RUN JoJo's Bizarre Adventure 2nd - 3rd STAGE",
-      "moduleId": "mangayomi_1742685193",
-      "catalogPath": "Sources/English/009",
-      "sourceName": "AniPM",
-      "errors": [
-        "episodes: ani.pm API HTTP 404 for /anime/series/3d112e7f12ee3c47ed5549204111b69b~7072af2a287e748c5def57a7b9d9b341ed1e3bbc4124149d6ca316e91f13be72",
-        "episodes: ani.pm API HTTP 404 for /anime/series/3d112e7f12ee3c47ed5549204111b69b~7072af2a287e748c5def57a7b9d9b341ed1e3bbc4124149d6ca316e91f13be72",
-        "episodes: ani.pm API HTTP 404 for /anime/series/3d112e7f12ee3c47ed5549204111b69b~7072af2a287e748c5def57a7b9d9b341ed1e3bbc4124149d6ca316e91f13be72"
-      ]
-    },
-    {
-      "aniListId": 210482,
-      "title": "STEEL BALL RUN JoJo's Bizarre Adventure 2nd - 3rd STAGE",
-      "moduleId": "jwnFI",
+      "moduleId": "BmnXo",
       "catalogPath": "Sources/English/008",
-      "sourceName": "XPass",
-      "errors": [
-        "episodes: extractEpisodes returned an unusable result",
-        "episodes: extractEpisodes returned an unusable result",
-        "episodes: extractEpisodes returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 210482,
-      "title": "STEEL BALL RUN JoJo's Bizarre Adventure 2nd - 3rd STAGE",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/022",
-      "sourceName": "AnimeLand",
+      "sourceName": "OneTouch TV",
       "errors": [
         "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 21,
+      "title": "ONE PIECE",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/009",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "episode inventory mismatch: available=900 expected=1180",
+        "episode inventory mismatch: available=1 expected=1180",
+        "episode inventory mismatch: available=1 expected=1180"
       ]
     },
     {
@@ -282,6 +270,160 @@
       ]
     },
     {
+      "aniListId": 21,
+      "title": "ONE PIECE",
+      "moduleId": "jg3nm",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "Airflix",
+      "errors": [
+        "stored route too slow: 2697ms > 2200ms"
+      ]
+    },
+    {
+      "aniListId": 180136,
+      "title": "The Exiled Heavy Knight Knows How to Game the System",
+      "moduleId": "jzppd",
+      "catalogPath": "Sources/English/019",
+      "sourceName": "AllAnime",
+      "errors": [
+        "episodes: extractEpisodes returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 180136,
+      "title": "The Exiled Heavy Knight Knows How to Game the System",
+      "moduleId": "BiECa",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "IPTV-org",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 180136,
+      "title": "The Exiled Heavy Knight Knows How to Game the System",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/009",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 180136,
+      "title": "The Exiled Heavy Knight Knows How to Game the System",
+      "moduleId": "jwnFI",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "XPass",
+      "errors": [
+        "episode inventory mismatch: available=26 expected=16"
+      ]
+    },
+    {
+      "aniListId": 180136,
+      "title": "The Exiled Heavy Knight Knows How to Game the System",
+      "moduleId": "jg3nm",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "Airflix",
+      "errors": [
+        "episode inventory mismatch: available=26 expected=16"
+      ]
+    },
+    {
+      "aniListId": 180136,
+      "title": "The Exiled Heavy Knight Knows How to Game the System",
+      "moduleId": "mangayomi_892345671",
+      "catalogPath": "Sources/English/004",
+      "sourceName": "JustAnime",
+      "errors": [
+        "episode inventory mismatch: available=26 expected=16",
+        "episode inventory mismatch: available=26 expected=16",
+        "episode inventory mismatch: available=26 expected=16"
+      ]
+    },
+    {
+      "aniListId": 21,
+      "title": "ONE PIECE",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/008",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "probe process hard timeout after 16000ms"
+      ]
+    },
+    {
+      "aniListId": 178083,
+      "title": "Tokyo Revengers: War of the Three Titans Arc",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/009",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 180136,
+      "title": "The Exiled Heavy Knight Knows How to Game the System",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/008",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 178083,
+      "title": "Tokyo Revengers: War of the Three Titans Arc",
+      "moduleId": "BiECa",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "IPTV-org",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 178083,
+      "title": "Tokyo Revengers: War of the Three Titans Arc",
+      "moduleId": "jwnFI",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "XPass",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 178083,
+      "title": "Tokyo Revengers: War of the Three Titans Arc",
+      "moduleId": "jg3nm",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "Airflix",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 178083,
+      "title": "Tokyo Revengers: War of the Three Titans Arc",
+      "moduleId": "mangayomi_892345671",
+      "catalogPath": "Sources/English/004",
+      "sourceName": "JustAnime",
+      "errors": [
+        "episode inventory mismatch: available=13 expected=3",
+        "episode inventory mismatch: available=13 expected=3",
+        "episode inventory mismatch: available=13 expected=3"
+      ]
+    },
+    {
+      "aniListId": 178083,
+      "title": "Tokyo Revengers: War of the Three Titans Arc",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/008",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
       "aniListId": 97940,
       "title": "Black Clover",
       "moduleId": "BiECa",
@@ -292,10 +434,20 @@
       ]
     },
     {
+      "aniListId": 178083,
+      "title": "Tokyo Revengers: War of the Three Titans Arc",
+      "moduleId": "jCtAp",
+      "catalogPath": "Sources/English/010",
+      "sourceName": "123Anime",
+      "errors": [
+        "No matching route found"
+      ]
+    },
+    {
       "aniListId": 97940,
       "title": "Black Clover",
       "moduleId": "jg3nm",
-      "catalogPath": "Sources/English/007",
+      "catalogPath": "Sources/English/005",
       "sourceName": "Airflix",
       "errors": [
         "stream: extractStreamUrl returned an unusable result",
@@ -307,166 +459,18 @@
       "aniListId": 97940,
       "title": "Black Clover",
       "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/004",
+      "catalogPath": "Sources/English/008",
       "sourceName": "OneTouch TV",
       "errors": [
         "No matching route found"
       ]
     },
     {
-      "aniListId": 178083,
-      "title": "Tokyo Revengers: War of the Three Titans Arc",
-      "moduleId": "mangayomi_892345671",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "JustAnime",
-      "errors": [
-        "episode inventory mismatch: available=13 expected=3",
-        "episode inventory mismatch: available=13 expected=3",
-        "episode inventory mismatch: available=13 expected=3"
-      ]
-    },
-    {
-      "aniListId": 178083,
-      "title": "Tokyo Revengers: War of the Three Titans Arc",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 21,
-      "title": "ONE PIECE",
+      "aniListId": 213805,
+      "title": "The Ramparts of Ice Season 2",
       "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/022",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "episode inventory mismatch: available=900 expected=1180",
-        "episode inventory mismatch: available=1 expected=1180",
-        "episode inventory mismatch: available=1 expected=1180"
-      ]
-    },
-    {
-      "aniListId": 21,
-      "title": "ONE PIECE",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "probe process hard timeout after 16000ms"
-      ]
-    },
-    {
-      "aniListId": 178083,
-      "title": "Tokyo Revengers: War of the Three Titans Arc",
-      "moduleId": "jg3nm",
-      "catalogPath": "Sources/English/007",
-      "sourceName": "Airflix",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 180136,
-      "title": "The Exiled Heavy Knight Knows How to Game the System",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 178083,
-      "title": "Tokyo Revengers: War of the Three Titans Arc",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/022",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 178083,
-      "title": "Tokyo Revengers: War of the Three Titans Arc",
-      "moduleId": "jwnFI",
-      "catalogPath": "Sources/English/008",
-      "sourceName": "XPass",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 178083,
-      "title": "Tokyo Revengers: War of the Three Titans Arc",
-      "moduleId": "mangayomi_1742685193",
       "catalogPath": "Sources/English/009",
-      "sourceName": "AniPM",
-      "errors": [
-        "episodes: ani.pm API HTTP 404 for /anime/series/5792604a3cceab917c39bbb5d835715e~f94f6c73466be78249f51c27af07155e5ae51928ade2c9573ba66d926d22a27f",
-        "episodes: ani.pm API HTTP 404 for /anime/series/5792604a3cceab917c39bbb5d835715e~f94f6c73466be78249f51c27af07155e5ae51928ade2c9573ba66d926d22a27f",
-        "episodes: ani.pm API HTTP 404 for /anime/series/5792604a3cceab917c39bbb5d835715e~f94f6c73466be78249f51c27af07155e5ae51928ade2c9573ba66d926d22a27f"
-      ]
-    },
-    {
-      "aniListId": 180136,
-      "title": "The Exiled Heavy Knight Knows How to Game the System",
-      "moduleId": "mangayomi_892345671",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "JustAnime",
-      "errors": [
-        "episode inventory mismatch: available=26 expected=16",
-        "episode inventory mismatch: available=26 expected=16",
-        "episode inventory mismatch: available=26 expected=16"
-      ]
-    },
-    {
-      "aniListId": 178083,
-      "title": "Tokyo Revengers: War of the Three Titans Arc",
-      "moduleId": "jCtAp",
-      "catalogPath": "Sources/English/010",
-      "sourceName": "123Anime",
-      "errors": [
-        "No matching route found"
-      ]
-    },
-    {
-      "aniListId": 180136,
-      "title": "The Exiled Heavy Knight Knows How to Game the System",
-      "moduleId": "jg3nm",
-      "catalogPath": "Sources/English/007",
-      "sourceName": "Airflix",
-      "errors": [
-        "episode inventory mismatch: available=26 expected=16"
-      ]
-    },
-    {
-      "aniListId": 180136,
-      "title": "The Exiled Heavy Knight Knows How to Game the System",
-      "moduleId": "jwnFI",
-      "catalogPath": "Sources/English/008",
-      "sourceName": "XPass",
-      "errors": [
-        "episode inventory mismatch: available=26 expected=16"
-      ]
-    },
-    {
-      "aniListId": 180136,
-      "title": "The Exiled Heavy Knight Knows How to Game the System",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/022",
       "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 178083,
-      "title": "Tokyo Revengers: War of the Three Titans Arc",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "OneTouch TV",
       "errors": [
         "search: searchResults returned an unusable result"
       ]
@@ -482,11 +486,31 @@
       ]
     },
     {
-      "aniListId": 180136,
-      "title": "The Exiled Heavy Knight Knows How to Game the System",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "OneTouch TV",
+      "aniListId": 213805,
+      "title": "The Ramparts of Ice Season 2",
+      "moduleId": "jg3nm",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "Airflix",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 213805,
+      "title": "The Ramparts of Ice Season 2",
+      "moduleId": "jwnFI",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "XPass",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 186742,
+      "title": "A Certain Dark Item",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/009",
+      "sourceName": "AnimeLand",
       "errors": [
         "search: searchResults returned an unusable result"
       ]
@@ -504,50 +528,8 @@
     {
       "aniListId": 213805,
       "title": "The Ramparts of Ice Season 2",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/022",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 213805,
-      "title": "The Ramparts of Ice Season 2",
-      "moduleId": "jg3nm",
-      "catalogPath": "Sources/English/007",
-      "sourceName": "Airflix",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 213805,
-      "title": "The Ramparts of Ice Season 2",
-      "moduleId": "jwnFI",
-      "catalogPath": "Sources/English/008",
-      "sourceName": "XPass",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 213805,
-      "title": "The Ramparts of Ice Season 2",
-      "moduleId": "mangayomi_1742685193",
-      "catalogPath": "Sources/English/009",
-      "sourceName": "AniPM",
-      "errors": [
-        "episodes: ani.pm API HTTP 404 for /anime/series/c50961f0ed611c83e0167f89e408ac96~ef7e0cb6b36da6d0e0825e5598e7fdc5039268a48eed4e52cc08a263ae278127",
-        "episodes: ani.pm API HTTP 404 for /anime/series/c50961f0ed611c83e0167f89e408ac96~ef7e0cb6b36da6d0e0825e5598e7fdc5039268a48eed4e52cc08a263ae278127",
-        "episodes: ani.pm API HTTP 404 for /anime/series/c50961f0ed611c83e0167f89e408ac96~ef7e0cb6b36da6d0e0825e5598e7fdc5039268a48eed4e52cc08a263ae278127"
-      ]
-    },
-    {
-      "aniListId": 213805,
-      "title": "The Ramparts of Ice Season 2",
       "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/004",
+      "catalogPath": "Sources/English/008",
       "sourceName": "OneTouch TV",
       "errors": [
         "episode inventory mismatch: available=42 expected=3",
@@ -558,48 +540,8 @@
     {
       "aniListId": 186742,
       "title": "A Certain Dark Item",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 186742,
-      "title": "A Certain Dark Item",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/022",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 186742,
-      "title": "A Certain Dark Item",
-      "moduleId": "jg3nm",
-      "catalogPath": "Sources/English/007",
-      "sourceName": "Airflix",
-      "errors": [
-        "episode inventory mismatch: available=11 expected=2"
-      ]
-    },
-    {
-      "aniListId": 269,
-      "title": "Bleach",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 186742,
-      "title": "A Certain Dark Item",
       "moduleId": "jwnFI",
-      "catalogPath": "Sources/English/008",
+      "catalogPath": "Sources/English/003",
       "sourceName": "XPass",
       "errors": [
         "episode inventory mismatch: available=11 expected=2"
@@ -608,35 +550,51 @@
     {
       "aniListId": 186742,
       "title": "A Certain Dark Item",
-      "moduleId": "mangayomi_1742685193",
-      "catalogPath": "Sources/English/009",
-      "sourceName": "AniPM",
-      "errors": [
-        "episodes: ani.pm API HTTP 404 for /anime/series/da384c8af0bf75d77074f9877a8ffd27~7c6cbf4b5685497099e458323e077ccd74adadc2f0fbb01550be773780451433",
-        "episodes: ani.pm API HTTP 404 for /anime/series/da384c8af0bf75d77074f9877a8ffd27~7c6cbf4b5685497099e458323e077ccd74adadc2f0fbb01550be773780451433",
-        "episodes: ani.pm API HTTP 404 for /anime/series/da384c8af0bf75d77074f9877a8ffd27~7c6cbf4b5685497099e458323e077ccd74adadc2f0fbb01550be773780451433"
-      ]
-    },
-    {
-      "aniListId": 269,
-      "title": "Bleach",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/022",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "stored route too slow: 3459ms > 2200ms"
-      ]
-    },
-    {
-      "aniListId": 269,
-      "title": "Bleach",
       "moduleId": "jg3nm",
-      "catalogPath": "Sources/English/007",
+      "catalogPath": "Sources/English/005",
       "sourceName": "Airflix",
       "errors": [
-        "stream: extractStreamUrl returned an unusable result",
-        "stream: extractStreamUrl returned an unusable result",
-        "episode inventory mismatch: available=1 expected=366"
+        "episode inventory mismatch: available=11 expected=2"
+      ]
+    },
+    {
+      "aniListId": 186742,
+      "title": "A Certain Dark Item",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/008",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 269,
+      "title": "Bleach",
+      "moduleId": "BiECa",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "IPTV-org",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 204650,
+      "title": "TOUGEN ANKI: Nikko Kegon Falls Arc",
+      "moduleId": "jwnFI",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "XPass",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 204650,
+      "title": "TOUGEN ANKI: Nikko Kegon Falls Arc",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/009",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
       ]
     },
     {
@@ -652,8 +610,40 @@
     {
       "aniListId": 204650,
       "title": "TOUGEN ANKI: Nikko Kegon Falls Arc",
+      "moduleId": "jg3nm",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "Airflix",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 269,
+      "title": "Bleach",
+      "moduleId": "jg3nm",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "Airflix",
+      "errors": [
+        "stream: extractStreamUrl returned an unusable result",
+        "stream: extractStreamUrl returned an unusable result",
+        "episode inventory mismatch: available=1 expected=366"
+      ]
+    },
+    {
+      "aniListId": 269,
+      "title": "Bleach",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/008",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "episode inventory mismatch: available=1 expected=366"
+      ]
+    },
+    {
+      "aniListId": 204650,
+      "title": "TOUGEN ANKI: Nikko Kegon Falls Arc",
       "moduleId": "mangayomi_892345671",
-      "catalogPath": "Sources/English/002",
+      "catalogPath": "Sources/English/004",
       "sourceName": "JustAnime",
       "errors": [
         "episode inventory mismatch: available=12 expected=3",
@@ -664,28 +654,18 @@
     {
       "aniListId": 269,
       "title": "Bleach",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "OneTouch TV",
+      "moduleId": "jzppd",
+      "catalogPath": "Sources/English/011",
+      "sourceName": "AllManga",
       "errors": [
-        "episode inventory mismatch: available=1 expected=366"
-      ]
-    },
-    {
-      "aniListId": 204650,
-      "title": "TOUGEN ANKI: Nikko Kegon Falls Arc",
-      "moduleId": "jg3nm",
-      "catalogPath": "Sources/English/007",
-      "sourceName": "Airflix",
-      "errors": [
-        "search: searchResults returned an unusable result"
+        "No matching route found"
       ]
     },
     {
       "aniListId": 204650,
       "title": "TOUGEN ANKI: Nikko Kegon Falls Arc",
       "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/004",
+      "catalogPath": "Sources/English/008",
       "sourceName": "OneTouch TV",
       "errors": [
         "episode inventory mismatch: available=1 expected=3",
@@ -694,133 +674,11 @@
       ]
     },
     {
-      "aniListId": 204650,
-      "title": "TOUGEN ANKI: Nikko Kegon Falls Arc",
+      "aniListId": 207329,
+      "title": "The Laid-Off Cheat-Granting Mage Enjoys a Second Lease on Life",
       "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/022",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 204650,
-      "title": "TOUGEN ANKI: Nikko Kegon Falls Arc",
-      "moduleId": "jwnFI",
-      "catalogPath": "Sources/English/008",
-      "sourceName": "XPass",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 182205,
-      "title": "That Time I Got Reincarnated as a Slime Season 4",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 204650,
-      "title": "TOUGEN ANKI: Nikko Kegon Falls Arc",
-      "moduleId": "mangayomi_1742685193",
       "catalogPath": "Sources/English/009",
-      "sourceName": "AniPM",
-      "errors": [
-        "episodes: ani.pm API HTTP 404 for /anime/series/fb09ee22324d99c9756d6ef92fff3054~c1f64b3f89433b69818a6a09a7daf429c564302684a00d1f121ed1aa10141461",
-        "episodes: ani.pm API HTTP 404 for /anime/series/fb09ee22324d99c9756d6ef92fff3054~c1f64b3f89433b69818a6a09a7daf429c564302684a00d1f121ed1aa10141461",
-        "episodes: ani.pm API HTTP 404 for /anime/series/fb09ee22324d99c9756d6ef92fff3054~c1f64b3f89433b69818a6a09a7daf429c564302684a00d1f121ed1aa10141461"
-      ]
-    },
-    {
-      "aniListId": 182205,
-      "title": "That Time I Got Reincarnated as a Slime Season 4",
-      "moduleId": "jg3nm",
-      "catalogPath": "Sources/English/007",
-      "sourceName": "Airflix",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 189046,
-      "title": "Re:ZERO -Starting Life in Another World- Season 4",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 182205,
-      "title": "That Time I Got Reincarnated as a Slime Season 4",
-      "moduleId": "jwnFI",
-      "catalogPath": "Sources/English/008",
-      "sourceName": "XPass",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 189046,
-      "title": "Re:ZERO -Starting Life in Another World- Season 4",
-      "moduleId": "jg3nm",
-      "catalogPath": "Sources/English/007",
-      "sourceName": "Airflix",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 189046,
-      "title": "Re:ZERO -Starting Life in Another World- Season 4",
-      "moduleId": "jwnFI",
-      "catalogPath": "Sources/English/008",
-      "sourceName": "XPass",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 182205,
-      "title": "That Time I Got Reincarnated as a Slime Season 4",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/022",
       "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 189046,
-      "title": "Re:ZERO -Starting Life in Another World- Season 4",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/022",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 182205,
-      "title": "That Time I Got Reincarnated as a Slime Season 4",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "probe process hard timeout after 16000ms"
-      ]
-    },
-    {
-      "aniListId": 189046,
-      "title": "Re:ZERO -Starting Life in Another World- Season 4",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "OneTouch TV",
       "errors": [
         "search: searchResults returned an unusable result"
       ]
@@ -836,81 +694,10 @@
       ]
     },
     {
-      "aniListId": 178789,
-      "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 178789,
-      "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
-      "moduleId": "j0y3E",
-      "catalogPath": "Sources/English/011",
-      "sourceName": "Aniclipse",
-      "errors": [
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out"
-      ]
-    },
-    {
-      "aniListId": 207329,
-      "title": "The Laid-Off Cheat-Granting Mage Enjoys a Second Lease on Life",
-      "moduleId": "jg3nm",
-      "catalogPath": "Sources/English/007",
-      "sourceName": "Airflix",
-      "errors": [
-        "episode inventory mismatch: available=12 expected=2"
-      ]
-    },
-    {
-      "aniListId": 178789,
-      "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
-      "moduleId": "jg3nm",
-      "catalogPath": "Sources/English/007",
-      "sourceName": "Airflix",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 178789,
-      "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/022",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 178789,
-      "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
-      "moduleId": "jwnFI",
-      "catalogPath": "Sources/English/008",
-      "sourceName": "XPass",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 207329,
-      "title": "The Laid-Off Cheat-Granting Mage Enjoys a Second Lease on Life",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/022",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
       "aniListId": 207329,
       "title": "The Laid-Off Cheat-Granting Mage Enjoys a Second Lease on Life",
       "moduleId": "jwnFI",
-      "catalogPath": "Sources/English/008",
+      "catalogPath": "Sources/English/003",
       "sourceName": "XPass",
       "errors": [
         "episode inventory mismatch: available=12 expected=2"
@@ -919,20 +706,130 @@
     {
       "aniListId": 207329,
       "title": "The Laid-Off Cheat-Granting Mage Enjoys a Second Lease on Life",
-      "moduleId": "mangayomi_1742685193",
-      "catalogPath": "Sources/English/009",
-      "sourceName": "AniPM",
+      "moduleId": "jg3nm",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "Airflix",
       "errors": [
-        "episodes: ani.pm API HTTP 404 for /anime/series/ee2c92b223319aede899149fc90987e0~fae9127fe46a2f8bbc3a944803f12511488e7147e3a3a529534e3e7cb4e898c4",
-        "episodes: ani.pm API HTTP 404 for /anime/series/ee2c92b223319aede899149fc90987e0~fae9127fe46a2f8bbc3a944803f12511488e7147e3a3a529534e3e7cb4e898c4",
-        "episodes: ani.pm API HTTP 404 for /anime/series/ee2c92b223319aede899149fc90987e0~fae9127fe46a2f8bbc3a944803f12511488e7147e3a3a529534e3e7cb4e898c4"
+        "episode inventory mismatch: available=12 expected=2"
+      ]
+    },
+    {
+      "aniListId": 178789,
+      "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
+      "moduleId": "jwnFI",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "XPass",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 178789,
+      "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/009",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 178789,
+      "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
+      "moduleId": "BiECa",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "IPTV-org",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 178789,
+      "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
+      "moduleId": "jg3nm",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "Airflix",
+      "errors": [
+        "search: searchResults returned an unusable result"
       ]
     },
     {
       "aniListId": 207329,
       "title": "The Laid-Off Cheat-Granting Mage Enjoys a Second Lease on Life",
       "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/004",
+      "catalogPath": "Sources/English/008",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 178789,
+      "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
+      "moduleId": "jCtAp",
+      "catalogPath": "Sources/English/010",
+      "sourceName": "123Anime",
+      "errors": [
+        "episode inventory mismatch: available=13 expected=14",
+        "episode inventory mismatch: available=13 expected=14",
+        "episode inventory mismatch: available=13 expected=14"
+      ]
+    },
+    {
+      "aniListId": 189046,
+      "title": "Re:ZERO -Starting Life in Another World- Season 4",
+      "moduleId": "jzppd",
+      "catalogPath": "Sources/English/019",
+      "sourceName": "AllAnime",
+      "errors": [
+        "episodes: extractEpisodes returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 189046,
+      "title": "Re:ZERO -Starting Life in Another World- Season 4",
+      "moduleId": "BiECa",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "IPTV-org",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 189046,
+      "title": "Re:ZERO -Starting Life in Another World- Season 4",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/009",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 189046,
+      "title": "Re:ZERO -Starting Life in Another World- Season 4",
+      "moduleId": "jwnFI",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "XPass",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 189046,
+      "title": "Re:ZERO -Starting Life in Another World- Season 4",
+      "moduleId": "jg3nm",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "Airflix",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 189046,
+      "title": "Re:ZERO -Starting Life in Another World- Season 4",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/008",
       "sourceName": "OneTouch TV",
       "errors": [
         "search: searchResults returned an unusable result"
@@ -942,7 +839,7 @@
       "aniListId": 178789,
       "title": "Mushoku Tensei: Jobless Reincarnation Season 3",
       "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/004",
+      "catalogPath": "Sources/English/008",
       "sourceName": "OneTouch TV",
       "errors": [
         "episode inventory mismatch: available=1 expected=14",
@@ -951,28 +848,18 @@
       ]
     },
     {
-      "aniListId": 1735,
-      "title": "Naruto: Shippuden",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "episode inventory mismatch: available=1 expected=500"
-      ]
-    },
-    {
-      "aniListId": 210031,
-      "title": "You and I Are Polar Opposites Season 2",
+      "aniListId": 212888,
+      "title": "Overgeared",
       "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/022",
+      "catalogPath": "Sources/English/009",
       "sourceName": "AnimeLand",
       "errors": [
         "search: searchResults returned an unusable result"
       ]
     },
     {
-      "aniListId": 210031,
-      "title": "You and I Are Polar Opposites Season 2",
+      "aniListId": 182205,
+      "title": "That Time I Got Reincarnated as a Slime Season 4",
       "moduleId": "BiECa",
       "catalogPath": "Sources/English/001",
       "sourceName": "IPTV-org",
@@ -981,46 +868,156 @@
       ]
     },
     {
-      "aniListId": 210031,
-      "title": "You and I Are Polar Opposites Season 2",
-      "moduleId": "jg3nm",
-      "catalogPath": "Sources/English/007",
-      "sourceName": "Airflix",
+      "aniListId": 182205,
+      "title": "That Time I Got Reincarnated as a Slime Season 4",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/009",
+      "sourceName": "AnimeLand",
       "errors": [
         "search: searchResults returned an unusable result"
       ]
     },
     {
-      "aniListId": 210031,
-      "title": "You and I Are Polar Opposites Season 2",
+      "aniListId": 212888,
+      "title": "Overgeared",
+      "moduleId": "BiECa",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "IPTV-org",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 212888,
+      "title": "Overgeared",
       "moduleId": "jwnFI",
-      "catalogPath": "Sources/English/008",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "XPass",
+      "errors": [
+        "episode inventory mismatch: available=12 expected=3"
+      ]
+    },
+    {
+      "aniListId": 212888,
+      "title": "Overgeared",
+      "moduleId": "jg3nm",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "Airflix",
+      "errors": [
+        "episode inventory mismatch: available=12 expected=3"
+      ]
+    },
+    {
+      "aniListId": 182205,
+      "title": "That Time I Got Reincarnated as a Slime Season 4",
+      "moduleId": "jwnFI",
+      "catalogPath": "Sources/English/003",
       "sourceName": "XPass",
       "errors": [
         "search: searchResults returned an unusable result"
       ]
     },
     {
-      "aniListId": 1735,
-      "title": "Naruto: Shippuden",
+      "aniListId": 182205,
+      "title": "That Time I Got Reincarnated as a Slime Season 4",
       "moduleId": "jg3nm",
-      "catalogPath": "Sources/English/007",
+      "catalogPath": "Sources/English/005",
       "sourceName": "Airflix",
       "errors": [
-        "episode inventory mismatch: available=1 expected=500",
-        "episode inventory mismatch: available=1 expected=500",
-        "episode inventory mismatch: available=1 expected=500"
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 212888,
+      "title": "Overgeared",
+      "moduleId": "mangayomi_892345671",
+      "catalogPath": "Sources/English/004",
+      "sourceName": "JustAnime",
+      "errors": [
+        "episode inventory mismatch: available=12 expected=3",
+        "episode inventory mismatch: available=12 expected=3",
+        "episode inventory mismatch: available=12 expected=3"
+      ]
+    },
+    {
+      "aniListId": 212888,
+      "title": "Overgeared",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/008",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 159042,
+      "title": "Reincarnated as a Sword Season 2",
+      "moduleId": "BiECa",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "IPTV-org",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 159042,
+      "title": "Reincarnated as a Sword Season 2",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/009",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 159042,
+      "title": "Reincarnated as a Sword Season 2",
+      "moduleId": "jwnFI",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "XPass",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 159042,
+      "title": "Reincarnated as a Sword Season 2",
+      "moduleId": "jg3nm",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "Airflix",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 159042,
+      "title": "Reincarnated as a Sword Season 2",
+      "moduleId": "mangayomi_892345671",
+      "catalogPath": "Sources/English/004",
+      "sourceName": "JustAnime",
+      "errors": [
+        "episode inventory mismatch: available=12 expected=3",
+        "episode inventory mismatch: available=12 expected=3",
+        "episode inventory mismatch: available=12 expected=3"
+      ]
+    },
+    {
+      "aniListId": 182205,
+      "title": "That Time I Got Reincarnated as a Slime Season 4",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/008",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "probe process hard timeout after 16000ms"
       ]
     },
     {
       "aniListId": 1735,
       "title": "Naruto: Shippuden",
-      "moduleId": "jwnFI",
-      "catalogPath": "Sources/English/008",
-      "sourceName": "XPass",
+      "moduleId": "BiECa",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "IPTV-org",
       "errors": [
-        "episode inventory mismatch: available=1 expected=500",
-        "episode inventory mismatch: available=1 expected=500",
         "episode inventory mismatch: available=1 expected=500"
       ]
     },
@@ -1028,7 +1025,7 @@
       "aniListId": 1735,
       "title": "Naruto: Shippuden",
       "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/022",
+      "catalogPath": "Sources/English/009",
       "sourceName": "AnimeLand",
       "errors": [
         "stream: extractStreamUrl returned an unusable result"
@@ -1037,154 +1034,42 @@
     {
       "aniListId": 1735,
       "title": "Naruto: Shippuden",
+      "moduleId": "jwnFI",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "XPass",
+      "errors": [
+        "episode inventory mismatch: available=1 expected=500",
+        "episode inventory mismatch: available=1 expected=500",
+        "episode inventory mismatch: available=1 expected=500"
+      ]
+    },
+    {
+      "aniListId": 1735,
+      "title": "Naruto: Shippuden",
+      "moduleId": "jg3nm",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "Airflix",
+      "errors": [
+        "episode inventory mismatch: available=1 expected=500",
+        "episode inventory mismatch: available=1 expected=500",
+        "episode inventory mismatch: available=1 expected=500"
+      ]
+    },
+    {
+      "aniListId": 159042,
+      "title": "Reincarnated as a Sword Season 2",
       "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/004",
+      "catalogPath": "Sources/English/008",
       "sourceName": "OneTouch TV",
       "errors": [
         "probe process hard timeout after 16000ms"
       ]
     },
     {
-      "aniListId": 210031,
-      "title": "You and I Are Polar Opposites Season 2",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "episodes: extractEpisodes timed out"
-      ]
-    },
-    {
-      "aniListId": 159042,
-      "title": "Reincarnated as a Sword Season 2",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 159042,
-      "title": "Reincarnated as a Sword Season 2",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "episodes: extractEpisodes timed out"
-      ]
-    },
-    {
-      "aniListId": 212888,
-      "title": "Overgeared",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 212888,
-      "title": "Overgeared",
-      "moduleId": "mangayomi_892345671",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "JustAnime",
-      "errors": [
-        "episode inventory mismatch: available=12 expected=3",
-        "episode inventory mismatch: available=12 expected=3",
-        "episode inventory mismatch: available=12 expected=3"
-      ]
-    },
-    {
-      "aniListId": 159042,
-      "title": "Reincarnated as a Sword Season 2",
-      "moduleId": "jg3nm",
-      "catalogPath": "Sources/English/007",
-      "sourceName": "Airflix",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 159042,
-      "title": "Reincarnated as a Sword Season 2",
-      "moduleId": "mangayomi_892345671",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "JustAnime",
-      "errors": [
-        "episode inventory mismatch: available=12 expected=3",
-        "episode inventory mismatch: available=12 expected=3",
-        "episode inventory mismatch: available=12 expected=3"
-      ]
-    },
-    {
-      "aniListId": 159042,
-      "title": "Reincarnated as a Sword Season 2",
-      "moduleId": "jwnFI",
-      "catalogPath": "Sources/English/008",
-      "sourceName": "XPass",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 212888,
-      "title": "Overgeared",
-      "moduleId": "jg3nm",
-      "catalogPath": "Sources/English/007",
-      "sourceName": "Airflix",
-      "errors": [
-        "episode inventory mismatch: available=12 expected=3"
-      ]
-    },
-    {
-      "aniListId": 212888,
-      "title": "Overgeared",
-      "moduleId": "jwnFI",
-      "catalogPath": "Sources/English/008",
-      "sourceName": "XPass",
-      "errors": [
-        "episode inventory mismatch: available=12 expected=3"
-      ]
-    },
-    {
-      "aniListId": 212888,
-      "title": "Overgeared",
-      "moduleId": "mangayomi_1742685193",
+      "aniListId": 11061,
+      "title": "Hunter x Hunter (2011)",
+      "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/009",
-      "sourceName": "AniPM",
-      "errors": [
-        "episodes: ani.pm API HTTP 404 for /anime/series/835e79e544288fb7b699d329dbed2b58~4623ea0aa23f74b45b69166bfbf6011ea6547f8c9e3b6727de58080efa7e6550",
-        "episodes: ani.pm API HTTP 404 for /anime/series/835e79e544288fb7b699d329dbed2b58~4623ea0aa23f74b45b69166bfbf6011ea6547f8c9e3b6727de58080efa7e6550",
-        "episodes: ani.pm API HTTP 404 for /anime/series/835e79e544288fb7b699d329dbed2b58~4623ea0aa23f74b45b69166bfbf6011ea6547f8c9e3b6727de58080efa7e6550"
-      ]
-    },
-    {
-      "aniListId": 212888,
-      "title": "Overgeared",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/022",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 212888,
-      "title": "Overgeared",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 159042,
-      "title": "Reincarnated as a Sword Season 2",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/022",
       "sourceName": "AnimeLand",
       "errors": [
         "search: searchResults returned an unusable result"
@@ -1201,20 +1086,42 @@
       ]
     },
     {
-      "aniListId": 161645,
-      "title": "The Apothecary Diaries",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "IPTV-org",
+      "aniListId": 11061,
+      "title": "Hunter x Hunter (2011)",
+      "moduleId": "jwnFI",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "XPass",
       "errors": [
         "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 11061,
+      "title": "Hunter x Hunter (2011)",
+      "moduleId": "jg3nm",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "Airflix",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 11061,
+      "title": "Hunter x Hunter (2011)",
+      "moduleId": "jCtAp",
+      "catalogPath": "Sources/English/010",
+      "sourceName": "123Anime",
+      "errors": [
+        "episode inventory mismatch: available=6 expected=148",
+        "episode inventory mismatch: available=12 expected=148",
+        "episode inventory mismatch: available=12 expected=148"
       ]
     },
     {
       "aniListId": 11061,
       "title": "Hunter x Hunter (2011)",
       "moduleId": "mangayomi_892345671",
-      "catalogPath": "Sources/English/002",
+      "catalogPath": "Sources/English/004",
       "sourceName": "JustAnime",
       "errors": [
         "stream: extractStreamUrl returned an unusable result",
@@ -1223,90 +1130,23 @@
       ]
     },
     {
-      "aniListId": 11061,
-      "title": "Hunter x Hunter (2011)",
-      "moduleId": "j0ksa",
-      "catalogPath": "Sources/English/012",
-      "sourceName": "VidHawk",
-      "errors": [
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out"
-      ]
-    },
-    {
-      "aniListId": 11061,
-      "title": "Hunter x Hunter (2011)",
-      "moduleId": "jg3nm",
-      "catalogPath": "Sources/English/007",
-      "sourceName": "Airflix",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 161645,
-      "title": "The Apothecary Diaries",
-      "moduleId": "jg3nm",
-      "catalogPath": "Sources/English/007",
-      "sourceName": "Airflix",
-      "errors": [
-        "episode inventory mismatch: available=60 expected=24",
-        "episode inventory mismatch: available=1 expected=24",
-        "episode inventory mismatch: available=1 expected=24"
-      ]
-    },
-    {
-      "aniListId": 11061,
-      "title": "Hunter x Hunter (2011)",
-      "moduleId": "jwnFI",
-      "catalogPath": "Sources/English/008",
-      "sourceName": "XPass",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 161645,
-      "title": "The Apothecary Diaries",
-      "moduleId": "jwnFI",
-      "catalogPath": "Sources/English/008",
-      "sourceName": "XPass",
-      "errors": [
-        "episode inventory mismatch: available=60 expected=24",
-        "episode inventory mismatch: available=1 expected=24",
-        "episode inventory mismatch: available=1 expected=24"
-      ]
-    },
-    {
-      "aniListId": 11061,
-      "title": "Hunter x Hunter (2011)",
-      "moduleId": "mangayomi_1742685193",
-      "catalogPath": "Sources/English/009",
-      "sourceName": "AniPM",
-      "errors": [
-        "episode inventory mismatch: available=24 expected=148",
-        "episode inventory mismatch: available=13 expected=148",
-        "episodes: ani.pm API HTTP 404 for /anime/series/929a22b3828e31f87aed0123e13678aa~b1abb8312d076063f10fe6670a0bd82d7ae1d1b4f3f1710851893e2597679572"
-      ]
-    },
-    {
-      "aniListId": 11061,
-      "title": "Hunter x Hunter (2011)",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/022",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 161645,
-      "title": "The Apothecary Diaries",
+      "aniListId": 1735,
+      "title": "Naruto: Shippuden",
       "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/004",
+      "catalogPath": "Sources/English/008",
       "sourceName": "OneTouch TV",
       "errors": [
         "probe process hard timeout after 16000ms"
+      ]
+    },
+    {
+      "aniListId": 195604,
+      "title": "Black Clover Season 2",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/009",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
       ]
     },
     {
@@ -1320,18 +1160,38 @@
       ]
     },
     {
+      "aniListId": 195604,
+      "title": "Black Clover Season 2",
+      "moduleId": "jg3nm",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "Airflix",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 195604,
+      "title": "Black Clover Season 2",
+      "moduleId": "jwnFI",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "XPass",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
       "aniListId": 11061,
       "title": "Hunter x Hunter (2011)",
       "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/004",
+      "catalogPath": "Sources/English/008",
       "sourceName": "OneTouch TV",
       "errors": [
         "probe process hard timeout after 16000ms"
       ]
     },
     {
-      "aniListId": 212503,
-      "title": "The Iceblade Sorcerer Shall Rule the World II",
+      "aniListId": 203490,
+      "title": "Please Excuse My Younger Brothers",
       "moduleId": "BiECa",
       "catalogPath": "Sources/English/001",
       "sourceName": "IPTV-org",
@@ -1340,94 +1200,482 @@
       ]
     },
     {
-      "aniListId": 195604,
-      "title": "Black Clover Season 2",
+      "aniListId": 203490,
+      "title": "Please Excuse My Younger Brothers",
       "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/022",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 195604,
-      "title": "Black Clover Season 2",
-      "moduleId": "jg3nm",
-      "catalogPath": "Sources/English/007",
-      "sourceName": "Airflix",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 195604,
-      "title": "Black Clover Season 2",
-      "moduleId": "jwnFI",
-      "catalogPath": "Sources/English/008",
-      "sourceName": "XPass",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 212503,
-      "title": "The Iceblade Sorcerer Shall Rule the World II",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/022",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 212503,
-      "title": "The Iceblade Sorcerer Shall Rule the World II",
-      "moduleId": "jg3nm",
-      "catalogPath": "Sources/English/007",
-      "sourceName": "Airflix",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 212503,
-      "title": "The Iceblade Sorcerer Shall Rule the World II",
-      "moduleId": "jwnFI",
-      "catalogPath": "Sources/English/008",
-      "sourceName": "XPass",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 212503,
-      "title": "The Iceblade Sorcerer Shall Rule the World II",
-      "moduleId": "mangayomi_1742685193",
       "catalogPath": "Sources/English/009",
-      "sourceName": "AniPM",
+      "sourceName": "AnimeLand",
       "errors": [
-        "episodes: ani.pm API HTTP 404 for /anime/series/b27eeccf268d52a00be5b06aa28c0c67~b600f5bb2812f822fbd4209b1b2e4f3edec893867dab1fc2816838aeab784c8d",
-        "episodes: ani.pm API HTTP 404 for /anime/series/b27eeccf268d52a00be5b06aa28c0c67~b600f5bb2812f822fbd4209b1b2e4f3edec893867dab1fc2816838aeab784c8d",
-        "episodes: ani.pm API HTTP 404 for /anime/series/b27eeccf268d52a00be5b06aa28c0c67~b600f5bb2812f822fbd4209b1b2e4f3edec893867dab1fc2816838aeab784c8d"
+        "search: searchResults returned an unusable result"
       ]
     },
     {
-      "aniListId": 212503,
-      "title": "The Iceblade Sorcerer Shall Rule the World II",
-      "moduleId": "BmnXo",
+      "aniListId": 203490,
+      "title": "Please Excuse My Younger Brothers",
+      "moduleId": "jwnFI",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "XPass",
+      "errors": [
+        "episode inventory mismatch: available=24 expected=15",
+        "episode inventory mismatch: available=1 expected=15"
+      ]
+    },
+    {
+      "aniListId": 203490,
+      "title": "Please Excuse My Younger Brothers",
+      "moduleId": "jg3nm",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "Airflix",
+      "errors": [
+        "episode inventory mismatch: available=24 expected=15",
+        "episode inventory mismatch: available=1 expected=15"
+      ]
+    },
+    {
+      "aniListId": 203490,
+      "title": "Please Excuse My Younger Brothers",
+      "moduleId": "mangayomi_892345671",
       "catalogPath": "Sources/English/004",
+      "sourceName": "JustAnime",
+      "errors": [
+        "episode inventory mismatch: available=24 expected=15",
+        "episode inventory mismatch: available=24 expected=15",
+        "episode inventory mismatch: available=24 expected=15"
+      ]
+    },
+    {
+      "aniListId": 195604,
+      "title": "Black Clover Season 2",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/008",
       "sourceName": "OneTouch TV",
       "errors": [
+        "episode inventory mismatch: available=12 expected=2",
         "episode inventory mismatch: available=1 expected=2",
+        "episode inventory mismatch: available=16 expected=2"
+      ]
+    },
+    {
+      "aniListId": 203490,
+      "title": "Please Excuse My Younger Brothers",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/008",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 191656,
+      "title": "Even the Student Council Has Its Holes!",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/009",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 191656,
+      "title": "Even the Student Council Has Its Holes!",
+      "moduleId": "jwnFI",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "XPass",
+      "errors": [
+        "episode inventory mismatch: available=12 expected=2"
+      ]
+    },
+    {
+      "aniListId": 191656,
+      "title": "Even the Student Council Has Its Holes!",
+      "moduleId": "BiECa",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "IPTV-org",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 191656,
+      "title": "Even the Student Council Has Its Holes!",
+      "moduleId": "jg3nm",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "Airflix",
+      "errors": [
+        "episode inventory mismatch: available=12 expected=2"
+      ]
+    },
+    {
+      "aniListId": 191656,
+      "title": "Even the Student Council Has Its Holes!",
+      "moduleId": "animesogo-local",
+      "catalogPath": "Sources/English/006",
+      "sourceName": "AnimeSogo",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 161645,
+      "title": "The Apothecary Diaries",
+      "moduleId": "BiECa",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "IPTV-org",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 191656,
+      "title": "Even the Student Council Has Its Holes!",
+      "moduleId": "mangayomi_892345671",
+      "catalogPath": "Sources/English/004",
+      "sourceName": "JustAnime",
+      "errors": [
         "episode inventory mismatch: available=1 expected=2",
+        "episode inventory mismatch: available=12 expected=2",
         "episode inventory mismatch: available=1 expected=2"
+      ]
+    },
+    {
+      "aniListId": 191656,
+      "title": "Even the Student Council Has Its Holes!",
+      "moduleId": "animekai-unoriginal-local",
+      "catalogPath": "Sources/English/007",
+      "sourceName": "AnimeKai (Unoriginal)",
+      "errors": [
+        "No matching route found"
+      ]
+    },
+    {
+      "aniListId": 161645,
+      "title": "The Apothecary Diaries",
+      "moduleId": "jwnFI",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "XPass",
+      "errors": [
+        "episode inventory mismatch: available=60 expected=24",
+        "episode inventory mismatch: available=1 expected=24",
+        "episode inventory mismatch: available=1 expected=24"
+      ]
+    },
+    {
+      "aniListId": 161645,
+      "title": "The Apothecary Diaries",
+      "moduleId": "jg3nm",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "Airflix",
+      "errors": [
+        "episode inventory mismatch: available=60 expected=24",
+        "episode inventory mismatch: available=1 expected=24",
+        "episode inventory mismatch: available=1 expected=24"
+      ]
+    },
+    {
+      "aniListId": 191656,
+      "title": "Even the Student Council Has Its Holes!",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/008",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 191656,
+      "title": "Even the Student Council Has Its Holes!",
+      "moduleId": "jCtAp",
+      "catalogPath": "Sources/English/010",
+      "sourceName": "123Anime",
+      "errors": [
+        "No matching route found"
+      ]
+    },
+    {
+      "aniListId": 212503,
+      "title": "The Iceblade Sorcerer Shall Rule the World II",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/009",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 212503,
+      "title": "The Iceblade Sorcerer Shall Rule the World II",
+      "moduleId": "BiECa",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "IPTV-org",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 212503,
+      "title": "The Iceblade Sorcerer Shall Rule the World II",
+      "moduleId": "jwnFI",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "XPass",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 212503,
+      "title": "The Iceblade Sorcerer Shall Rule the World II",
+      "moduleId": "jg3nm",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "Airflix",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 161645,
+      "title": "The Apothecary Diaries",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/008",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "probe process hard timeout after 16000ms"
+      ]
+    },
+    {
+      "aniListId": 176301,
+      "title": "The Apothecary Diaries Season 2",
+      "moduleId": "BiECa",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "IPTV-org",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 176301,
+      "title": "The Apothecary Diaries Season 2",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/009",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 176301,
+      "title": "The Apothecary Diaries Season 2",
+      "moduleId": "jwnFI",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "XPass",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 176301,
+      "title": "The Apothecary Diaries Season 2",
+      "moduleId": "jg3nm",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "Airflix",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 212503,
+      "title": "The Iceblade Sorcerer Shall Rule the World II",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/008",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "probe process hard timeout after 16000ms"
+      ]
+    },
+    {
+      "aniListId": 195600,
+      "title": "Daemons of the Shadow Realm",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/009",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 195600,
+      "title": "Daemons of the Shadow Realm",
+      "moduleId": "BiECa",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "IPTV-org",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 176301,
+      "title": "The Apothecary Diaries Season 2",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/008",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "episodes: extractEpisodes timed out"
+      ]
+    },
+    {
+      "aniListId": 211778,
+      "title": "The World's Strongest Witch",
+      "moduleId": "BiECa",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "IPTV-org",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 211778,
+      "title": "The World's Strongest Witch",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/009",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 211778,
+      "title": "The World's Strongest Witch",
+      "moduleId": "jwnFI",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "XPass",
+      "errors": [
+        "episode inventory mismatch: available=12 expected=2"
+      ]
+    },
+    {
+      "aniListId": 211778,
+      "title": "The World's Strongest Witch",
+      "moduleId": "jg3nm",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "Airflix",
+      "errors": [
+        "episode inventory mismatch: available=12 expected=2"
+      ]
+    },
+    {
+      "aniListId": 211778,
+      "title": "The World's Strongest Witch",
+      "moduleId": "jCtAp",
+      "catalogPath": "Sources/English/010",
+      "sourceName": "123Anime",
+      "errors": [
+        "No matching route found"
+      ]
+    },
+    {
+      "aniListId": 195600,
+      "title": "Daemons of the Shadow Realm",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/008",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 211778,
+      "title": "The World's Strongest Witch",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/008",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 206401,
+      "title": "FX Fighter Kurumi-chan",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/009",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 206401,
+      "title": "FX Fighter Kurumi-chan",
+      "moduleId": "jwnFI",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "XPass",
+      "errors": [
+        "episode inventory mismatch: available=12 expected=3"
+      ]
+    },
+    {
+      "aniListId": 196187,
+      "title": "Smoking Behind the Supermarket with You",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/009",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 206401,
+      "title": "FX Fighter Kurumi-chan",
+      "moduleId": "BiECa",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "IPTV-org",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 196187,
+      "title": "Smoking Behind the Supermarket with You",
+      "moduleId": "BiECa",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "IPTV-org",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 206401,
+      "title": "FX Fighter Kurumi-chan",
+      "moduleId": "jg3nm",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "Airflix",
+      "errors": [
+        "episode inventory mismatch: available=12 expected=3"
+      ]
+    },
+    {
+      "aniListId": 206401,
+      "title": "FX Fighter Kurumi-chan",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/008",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 196187,
+      "title": "Smoking Behind the Supermarket with You",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/008",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "search: searchResults returned an unusable result"
       ]
     },
     {
       "aniListId": 206401,
       "title": "FX Fighter Kurumi-chan",
       "moduleId": "mangayomi_892345671",
-      "catalogPath": "Sources/English/002",
+      "catalogPath": "Sources/English/004",
       "sourceName": "JustAnime",
       "errors": [
         "episode inventory mismatch: available=12 expected=3",
@@ -1436,8 +1684,18 @@
       ]
     },
     {
-      "aniListId": 206401,
-      "title": "FX Fighter Kurumi-chan",
+      "aniListId": 164702,
+      "title": "As a Reincarnated Aristocrat, I'll Use My Appraisal Skill to Rise in the World",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/009",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 164702,
+      "title": "As a Reincarnated Aristocrat, I'll Use My Appraisal Skill to Rise in the World",
       "moduleId": "BiECa",
       "catalogPath": "Sources/English/001",
       "sourceName": "IPTV-org",
@@ -1446,55 +1704,53 @@
       ]
     },
     {
-      "aniListId": 206401,
-      "title": "FX Fighter Kurumi-chan",
-      "moduleId": "jg3nm",
-      "catalogPath": "Sources/English/007",
-      "sourceName": "Airflix",
-      "errors": [
-        "episode inventory mismatch: available=12 expected=3"
-      ]
-    },
-    {
-      "aniListId": 206401,
-      "title": "FX Fighter Kurumi-chan",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/022",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 206401,
-      "title": "FX Fighter Kurumi-chan",
+      "aniListId": 164702,
+      "title": "As a Reincarnated Aristocrat, I'll Use My Appraisal Skill to Rise in the World",
       "moduleId": "jwnFI",
-      "catalogPath": "Sources/English/008",
+      "catalogPath": "Sources/English/003",
       "sourceName": "XPass",
       "errors": [
-        "episode inventory mismatch: available=12 expected=3"
+        "episode inventory mismatch: available=28 expected=12"
       ]
     },
     {
-      "aniListId": 195604,
-      "title": "Black Clover Season 2",
+      "aniListId": 164702,
+      "title": "As a Reincarnated Aristocrat, I'll Use My Appraisal Skill to Rise in the World",
+      "moduleId": "jg3nm",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "Airflix",
+      "errors": [
+        "episode inventory mismatch: available=28 expected=12"
+      ]
+    },
+    {
+      "aniListId": 20,
+      "title": "Naruto",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/009",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "stream: extractStreamUrl returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 164702,
+      "title": "As a Reincarnated Aristocrat, I'll Use My Appraisal Skill to Rise in the World",
+      "moduleId": "jCtAp",
+      "catalogPath": "Sources/English/010",
+      "sourceName": "123Anime",
+      "errors": [
+        "No matching route found"
+      ]
+    },
+    {
+      "aniListId": 164702,
+      "title": "As a Reincarnated Aristocrat, I'll Use My Appraisal Skill to Rise in the World",
       "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/004",
+      "catalogPath": "Sources/English/008",
       "sourceName": "OneTouch TV",
       "errors": [
-        "probe process hard timeout after 16000ms"
-      ]
-    },
-    {
-      "aniListId": 206401,
-      "title": "FX Fighter Kurumi-chan",
-      "moduleId": "mangayomi_1742685193",
-      "catalogPath": "Sources/English/009",
-      "sourceName": "AniPM",
-      "errors": [
-        "episodes: ani.pm API HTTP 404 for /anime/series/7490f3562b707f45e9b07aa23d3dd482~3e0ca357186b07959ac1d5764071382212014a751a8c1656a156f78b6020d35f",
-        "episodes: ani.pm API HTTP 404 for /anime/series/7490f3562b707f45e9b07aa23d3dd482~3e0ca357186b07959ac1d5764071382212014a751a8c1656a156f78b6020d35f",
-        "episodes: ani.pm API HTTP 404 for /anime/series/7490f3562b707f45e9b07aa23d3dd482~3e0ca357186b07959ac1d5764071382212014a751a8c1656a156f78b6020d35f"
+        "search: searchResults returned an unusable result"
       ]
     },
     {
@@ -1512,50 +1768,8 @@
     {
       "aniListId": 20,
       "title": "Naruto",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/022",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "stream: extractStreamUrl returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 206401,
-      "title": "FX Fighter Kurumi-chan",
       "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 203490,
-      "title": "Please Excuse My Younger Brothers",
-      "moduleId": "mangayomi_892345671",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "JustAnime",
-      "errors": [
-        "episode inventory mismatch: available=24 expected=15",
-        "episode inventory mismatch: available=24 expected=15",
-        "episode inventory mismatch: available=24 expected=15"
-      ]
-    },
-    {
-      "aniListId": 203490,
-      "title": "Please Excuse My Younger Brothers",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 20,
-      "title": "Naruto",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/004",
+      "catalogPath": "Sources/English/008",
       "sourceName": "OneTouch TV",
       "errors": [
         "episodes: extractEpisodes returned an unusable result",
@@ -1564,135 +1778,53 @@
       ]
     },
     {
-      "aniListId": 203490,
-      "title": "Please Excuse My Younger Brothers",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 195600,
-      "title": "Daemons of the Shadow Realm",
+      "aniListId": 205896,
+      "title": "Full Clearing Another World under a Goddess with Zero Believers",
       "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/022",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 203490,
-      "title": "Please Excuse My Younger Brothers",
-      "moduleId": "jg3nm",
-      "catalogPath": "Sources/English/007",
-      "sourceName": "Airflix",
-      "errors": [
-        "episode inventory mismatch: available=24 expected=15",
-        "episode inventory mismatch: available=1 expected=15"
-      ]
-    },
-    {
-      "aniListId": 195600,
-      "title": "Daemons of the Shadow Realm",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 203490,
-      "title": "Please Excuse My Younger Brothers",
-      "moduleId": "jwnFI",
-      "catalogPath": "Sources/English/008",
-      "sourceName": "XPass",
-      "errors": [
-        "episode inventory mismatch: available=24 expected=15",
-        "episode inventory mismatch: available=1 expected=15"
-      ]
-    },
-    {
-      "aniListId": 203490,
-      "title": "Please Excuse My Younger Brothers",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/022",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 203490,
-      "title": "Please Excuse My Younger Brothers",
-      "moduleId": "mangayomi_1742685193",
       "catalogPath": "Sources/English/009",
-      "sourceName": "AniPM",
-      "errors": [
-        "stream: ani.pm: nothing playable for episode 1 (ani.pm player refused the session (HTTP 403))"
-      ]
-    },
-    {
-      "aniListId": 178434,
-      "title": "As a Reincarnated Aristocrat, I'll Use My Appraisal Skill to Rise in the World Season 2",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 178434,
-      "title": "As a Reincarnated Aristocrat, I'll Use My Appraisal Skill to Rise in the World Season 2",
-      "moduleId": "jg3nm",
-      "catalogPath": "Sources/English/007",
-      "sourceName": "Airflix",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 178434,
-      "title": "As a Reincarnated Aristocrat, I'll Use My Appraisal Skill to Rise in the World Season 2",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/022",
       "sourceName": "AnimeLand",
       "errors": [
         "search: searchResults returned an unusable result"
       ]
     },
     {
-      "aniListId": 178434,
-      "title": "As a Reincarnated Aristocrat, I'll Use My Appraisal Skill to Rise in the World Season 2",
-      "moduleId": "jwnFI",
-      "catalogPath": "Sources/English/008",
-      "sourceName": "XPass",
+      "aniListId": 205896,
+      "title": "Full Clearing Another World under a Goddess with Zero Believers",
+      "moduleId": "BiECa",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "IPTV-org",
       "errors": [
         "search: searchResults returned an unusable result"
       ]
     },
     {
-      "aniListId": 178434,
-      "title": "As a Reincarnated Aristocrat, I'll Use My Appraisal Skill to Rise in the World Season 2",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "OneTouch TV",
+      "aniListId": 205896,
+      "title": "Full Clearing Another World under a Goddess with Zero Believers",
+      "moduleId": "jwnFI",
+      "catalogPath": "Sources/English/003",
+      "sourceName": "XPass",
       "errors": [
-        "episodes: extractEpisodes timed out"
+        "episode inventory mismatch: available=12 expected=1"
       ]
     },
     {
-      "aniListId": 195600,
-      "title": "Daemons of the Shadow Realm",
+      "aniListId": 205896,
+      "title": "Full Clearing Another World under a Goddess with Zero Believers",
+      "moduleId": "jg3nm",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "Airflix",
+      "errors": [
+        "episode inventory mismatch: available=12 expected=1"
+      ]
+    },
+    {
+      "aniListId": 205896,
+      "title": "Full Clearing Another World under a Goddess with Zero Believers",
       "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/004",
+      "catalogPath": "Sources/English/008",
       "sourceName": "OneTouch TV",
       "errors": [
-        "probe process hard timeout after 16000ms"
+        "search: searchResults returned an unusable result"
       ]
     },
     {
@@ -1703,34 +1835,13 @@
       "sourceName": "IPTV-org",
       "errors": [
         "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 16498,
-      "title": "Attack on Titan",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 16498,
-      "title": "Attack on Titan",
-      "moduleId": "j0ksa",
-      "catalogPath": "Sources/English/012",
-      "sourceName": "VidHawk",
-      "errors": [
-        "stream: extractStreamUrl timed out",
-        "stream: extractStreamUrl timed out"
       ]
     },
     {
       "aniListId": 21355,
       "title": "Re:ZERO -Starting Life in Another World-",
       "moduleId": "jg3nm",
-      "catalogPath": "Sources/English/007",
+      "catalogPath": "Sources/English/005",
       "sourceName": "Airflix",
       "errors": [
         "episode inventory mismatch: available=85 expected=25",
@@ -1739,164 +1850,120 @@
       ]
     },
     {
-      "aniListId": 16498,
-      "title": "Attack on Titan",
-      "moduleId": "jwnFI",
-      "catalogPath": "Sources/English/008",
-      "sourceName": "XPass",
-      "errors": [
-        "episode inventory mismatch: available=1 expected=25",
-        "episodes: extractEpisodes returned an unusable result",
-        "episodes: extractEpisodes returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 21355,
-      "title": "Re:ZERO -Starting Life in Another World-",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "episode inventory mismatch: available=10 expected=25",
-        "episode inventory mismatch: available=1 expected=25",
-        "episode inventory mismatch: available=10 expected=25"
-      ]
-    },
-    {
-      "aniListId": 16498,
-      "title": "Attack on Titan",
-      "moduleId": "mangayomi_384756102",
-      "catalogPath": "Sources/English/014",
-      "sourceName": "1Anime",
-      "errors": [
-        "stream: extractStreamUrl timed out"
-      ]
-    },
-    {
-      "aniListId": 184356,
-      "title": "Tomb Raider King",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 184356,
-      "title": "Tomb Raider King",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
       "aniListId": 184356,
       "title": "Tomb Raider King",
       "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/022",
+      "catalogPath": "Sources/English/009",
       "sourceName": "AnimeLand",
       "errors": [
         "search: searchResults returned an unusable result"
       ]
     },
     {
-      "aniListId": 16498,
-      "title": "Attack on Titan",
-      "moduleId": "j0y3E",
-      "catalogPath": "Sources/English/011",
-      "sourceName": "Aniclipse",
+      "aniListId": 184356,
+      "title": "Tomb Raider King",
+      "moduleId": "BiECa",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "IPTV-org",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 21355,
+      "title": "Re:ZERO -Starting Life in Another World-",
+      "moduleId": "BmnXo",
+      "catalogPath": "Sources/English/008",
+      "sourceName": "OneTouch TV",
       "errors": [
         "probe process hard timeout after 16000ms"
       ]
     },
     {
-      "aniListId": 164702,
-      "title": "As a Reincarnated Aristocrat, I'll Use My Appraisal Skill to Rise in the World",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 206949,
-      "title": "Nia Liston: The Merciless Maiden",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 206949,
-      "title": "Nia Liston: The Merciless Maiden",
-      "moduleId": "mangayomi_892345671",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "JustAnime",
-      "errors": [
-        "episode inventory mismatch: available=25 expected=2",
-        "episode inventory mismatch: available=25 expected=2",
-        "episode inventory mismatch: available=25 expected=2"
-      ]
-    },
-    {
-      "aniListId": 164702,
-      "title": "As a Reincarnated Aristocrat, I'll Use My Appraisal Skill to Rise in the World",
-      "moduleId": "jg3nm",
-      "catalogPath": "Sources/English/007",
-      "sourceName": "Airflix",
-      "errors": [
-        "episode inventory mismatch: available=28 expected=12"
-      ]
-    },
-    {
-      "aniListId": 164702,
-      "title": "As a Reincarnated Aristocrat, I'll Use My Appraisal Skill to Rise in the World",
+      "aniListId": 184356,
+      "title": "Tomb Raider King",
       "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 206949,
-      "title": "Nia Liston: The Merciless Maiden",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 164702,
-      "title": "As a Reincarnated Aristocrat, I'll Use My Appraisal Skill to Rise in the World",
-      "moduleId": "jwnFI",
       "catalogPath": "Sources/English/008",
+      "sourceName": "OneTouch TV",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 189123,
+      "title": "Blue Box Season 2",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/009",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 189123,
+      "title": "Blue Box Season 2",
+      "moduleId": "jwnFI",
+      "catalogPath": "Sources/English/003",
       "sourceName": "XPass",
       "errors": [
-        "episode inventory mismatch: available=28 expected=12"
+        "search: searchResults returned an unusable result"
       ]
     },
     {
-      "aniListId": 206949,
-      "title": "Nia Liston: The Merciless Maiden",
+      "aniListId": 189123,
+      "title": "Blue Box Season 2",
+      "moduleId": "BiECa",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "IPTV-org",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 5114,
+      "title": "Fullmetal Alchemist: Brotherhood",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/009",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 189123,
+      "title": "Blue Box Season 2",
       "moduleId": "jg3nm",
-      "catalogPath": "Sources/English/007",
+      "catalogPath": "Sources/English/005",
       "sourceName": "Airflix",
       "errors": [
-        "episode inventory mismatch: available=25 expected=2"
+        "search: searchResults returned an unusable result"
       ]
     },
     {
-      "aniListId": 164702,
-      "title": "As a Reincarnated Aristocrat, I'll Use My Appraisal Skill to Rise in the World",
+      "aniListId": 189123,
+      "title": "Blue Box Season 2",
+      "moduleId": "mangayomi_892345671",
+      "catalogPath": "Sources/English/004",
+      "sourceName": "JustAnime",
+      "errors": [
+        "episode inventory mismatch: available=12 expected=2",
+        "episode inventory mismatch: available=12 expected=2",
+        "episode inventory mismatch: available=12 expected=2"
+      ]
+    },
+    {
+      "aniListId": 5114,
+      "title": "Fullmetal Alchemist: Brotherhood",
+      "moduleId": "BiECa",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "IPTV-org",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 5114,
+      "title": "Fullmetal Alchemist: Brotherhood",
       "moduleId": "jCtAp",
       "catalogPath": "Sources/English/010",
       "sourceName": "123Anime",
@@ -1905,142 +1972,100 @@
       ]
     },
     {
-      "aniListId": 206949,
-      "title": "Nia Liston: The Merciless Maiden",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/022",
-      "sourceName": "AnimeLand",
+      "aniListId": 178434,
+      "title": "As a Reincarnated Aristocrat, I'll Use My Appraisal Skill to Rise in the World Season 2",
+      "moduleId": "BiECa",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "IPTV-org",
       "errors": [
         "search: searchResults returned an unusable result"
       ]
     },
     {
-      "aniListId": 206949,
-      "title": "Nia Liston: The Merciless Maiden",
-      "moduleId": "mangayomi_1742685193",
+      "aniListId": 178434,
+      "title": "As a Reincarnated Aristocrat, I'll Use My Appraisal Skill to Rise in the World Season 2",
+      "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/009",
-      "sourceName": "AniPM",
-      "errors": [
-        "episodes: ani.pm API HTTP 404 for /anime/series/54cfda3cf1927d8562bb9cc88389516e~0c0bb37f29be55651f61b567eb27869dcaed83e2f3e7d0cbc22a5700e7bfc2b6",
-        "episodes: ani.pm API HTTP 404 for /anime/series/54cfda3cf1927d8562bb9cc88389516e~0c0bb37f29be55651f61b567eb27869dcaed83e2f3e7d0cbc22a5700e7bfc2b6",
-        "episodes: ani.pm API HTTP 404 for /anime/series/54cfda3cf1927d8562bb9cc88389516e~0c0bb37f29be55651f61b567eb27869dcaed83e2f3e7d0cbc22a5700e7bfc2b6"
-      ]
-    },
-    {
-      "aniListId": 164702,
-      "title": "As a Reincarnated Aristocrat, I'll Use My Appraisal Skill to Rise in the World",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/022",
       "sourceName": "AnimeLand",
       "errors": [
         "search: searchResults returned an unusable result"
       ]
     },
     {
-      "aniListId": 206949,
-      "title": "Nia Liston: The Merciless Maiden",
+      "aniListId": 178434,
+      "title": "As a Reincarnated Aristocrat, I'll Use My Appraisal Skill to Rise in the World Season 2",
       "moduleId": "jwnFI",
-      "catalogPath": "Sources/English/008",
+      "catalogPath": "Sources/English/003",
       "sourceName": "XPass",
       "errors": [
-        "episode inventory mismatch: available=25 expected=2"
+        "search: searchResults returned an unusable result"
       ]
     },
     {
-      "aniListId": 163142,
-      "title": "A Returner's Magic Should Be Special",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "IPTV-org",
+      "aniListId": 178434,
+      "title": "As a Reincarnated Aristocrat, I'll Use My Appraisal Skill to Rise in the World Season 2",
+      "moduleId": "jg3nm",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "Airflix",
       "errors": [
         "search: searchResults returned an unusable result"
       ]
     },
     {
-      "aniListId": 172192,
-      "title": "A Returner's Magic Should be Special Season 2",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 163142,
-      "title": "A Returner's Magic Should Be Special",
+      "aniListId": 5114,
+      "title": "Fullmetal Alchemist: Brotherhood",
       "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/004",
+      "catalogPath": "Sources/English/008",
       "sourceName": "OneTouch TV",
       "errors": [
+        "episodes: extractEpisodes returned an unusable result",
+        "episodes: extractEpisodes returned an unusable result",
+        "episode inventory mismatch: available=1 expected=64"
+      ]
+    },
+    {
+      "aniListId": 186497,
+      "title": "The Ramparts of Ice",
+      "moduleId": "BiECa",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "IPTV-org",
+      "errors": [
         "search: searchResults returned an unusable result"
       ]
     },
     {
-      "aniListId": 163142,
-      "title": "A Returner's Magic Should Be Special",
-      "moduleId": "jg3nm",
-      "catalogPath": "Sources/English/007",
-      "sourceName": "Airflix",
-      "errors": [
-        "episode inventory mismatch: available=24 expected=12"
-      ]
-    },
-    {
-      "aniListId": 163142,
-      "title": "A Returner's Magic Should Be Special",
+      "aniListId": 186497,
+      "title": "The Ramparts of Ice",
       "moduleId": "jwnFI",
-      "catalogPath": "Sources/English/008",
+      "catalogPath": "Sources/English/003",
       "sourceName": "XPass",
       "errors": [
-        "episode inventory mismatch: available=24 expected=12"
+        "episode inventory mismatch: available=28 expected=14"
       ]
     },
     {
-      "aniListId": 172192,
-      "title": "A Returner's Magic Should be Special Season 2",
+      "aniListId": 186497,
+      "title": "The Ramparts of Ice",
       "moduleId": "jg3nm",
-      "catalogPath": "Sources/English/007",
+      "catalogPath": "Sources/English/005",
       "sourceName": "Airflix",
       "errors": [
-        "search: searchResults returned an unusable result"
+        "episode inventory mismatch: available=28 expected=14"
       ]
     },
     {
-      "aniListId": 172192,
-      "title": "A Returner's Magic Should be Special Season 2",
-      "moduleId": "jwnFI",
-      "catalogPath": "Sources/English/008",
-      "sourceName": "XPass",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 172192,
-      "title": "A Returner's Magic Should be Special Season 2",
-      "moduleId": "mangayomi_1742685193",
+      "aniListId": 210031,
+      "title": "You and I Are Polar Opposites Season 2",
+      "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/009",
-      "sourceName": "AniPM",
-      "errors": [
-        "episodes: ani.pm API HTTP 404 for /anime/series/7485c5238f786e7ceeff86beb948e2ba~115dbc72ce7128455aa1b7bb0ecf11d6cf907d6845df89cf508f0762cc605441",
-        "episodes: ani.pm API HTTP 404 for /anime/series/7485c5238f786e7ceeff86beb948e2ba~115dbc72ce7128455aa1b7bb0ecf11d6cf907d6845df89cf508f0762cc605441",
-        "episodes: ani.pm API HTTP 404 for /anime/series/7485c5238f786e7ceeff86beb948e2ba~115dbc72ce7128455aa1b7bb0ecf11d6cf907d6845df89cf508f0762cc605441"
-      ]
-    },
-    {
-      "aniListId": 172192,
-      "title": "A Returner's Magic Should be Special Season 2",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/022",
       "sourceName": "AnimeLand",
       "errors": [
         "search: searchResults returned an unusable result"
       ]
     },
     {
-      "aniListId": 135865,
-      "title": "Saga of Tanya the Evil Season 2",
+      "aniListId": 210031,
+      "title": "You and I Are Polar Opposites Season 2",
       "moduleId": "BiECa",
       "catalogPath": "Sources/English/001",
       "sourceName": "IPTV-org",
@@ -2049,75 +2074,23 @@
       ]
     },
     {
-      "aniListId": 196187,
-      "title": "Smoking Behind the Supermarket with You",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/022",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 196187,
-      "title": "Smoking Behind the Supermarket with You",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 135865,
-      "title": "Saga of Tanya the Evil Season 2",
-      "moduleId": "jg3nm",
-      "catalogPath": "Sources/English/007",
-      "sourceName": "Airflix",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 135865,
-      "title": "Saga of Tanya the Evil Season 2",
+      "aniListId": 210031,
+      "title": "You and I Are Polar Opposites Season 2",
       "moduleId": "jwnFI",
-      "catalogPath": "Sources/English/008",
+      "catalogPath": "Sources/English/003",
       "sourceName": "XPass",
       "errors": [
         "search: searchResults returned an unusable result"
       ]
     },
     {
-      "aniListId": 135865,
-      "title": "Saga of Tanya the Evil Season 2",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/022",
-      "sourceName": "AnimeLand",
+      "aniListId": 210031,
+      "title": "You and I Are Polar Opposites Season 2",
+      "moduleId": "jg3nm",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "Airflix",
       "errors": [
         "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 196187,
-      "title": "Smoking Behind the Supermarket with You",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 135865,
-      "title": "Saga of Tanya the Evil Season 2",
-      "moduleId": "BmnXo",
-      "catalogPath": "Sources/English/004",
-      "sourceName": "OneTouch TV",
-      "errors": [
-        "episode inventory mismatch: available=1 expected=12",
-        "episode inventory mismatch: available=1 expected=12",
-        "episode inventory mismatch: available=1 expected=12"
       ]
     }
   ]
