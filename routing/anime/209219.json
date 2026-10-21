@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-21T07:45:10.751Z",
+  "generatedAt": "2026-10-21T13:53:08.386Z",
   "sourceCatalogRef": "config",
   "route": {
     "aniListId": 209219,
@@ -13,6 +13,42 @@
       "Tengobu"
     ],
     "routes": [
+      {
+        "moduleId": "jzppd",
+        "catalogPath": "Sources/English/009",
+        "sourceName": "AllManga",
+        "language": "English",
+        "searchResultHref": "https://allmanga.to/bangumi/6a8fa8b3e0cdfd520ab938cd",
+        "episodeRoutes": [
+          {
+            "episode": 1,
+            "href": "https://allmanga.to/bangumi/6a8fa8b3e0cdfd520ab938cd/p-1"
+          },
+          {
+            "episode": 2,
+            "href": "https://allmanga.to/bangumi/6a8fa8b3e0cdfd520ab938cd/p-2"
+          },
+          {
+            "episode": 3,
+            "href": "https://allmanga.to/bangumi/6a8fa8b3e0cdfd520ab938cd/p-3"
+          },
+          {
+            "episode": 4,
+            "href": "https://allmanga.to/bangumi/6a8fa8b3e0cdfd520ab938cd/p-4"
+          }
+        ],
+        "availableEpisodes": 4,
+        "verifiedEpisode": 4,
+        "searchMs": 174,
+        "episodesMs": 215,
+        "streamMs": 277,
+        "verificationMs": 494,
+        "firstEpisodeVerified": 1,
+        "firstEpisodeEpisodesMs": 221,
+        "firstEpisodeStreamMs": 739,
+        "firstEpisodeVerificationMs": 962,
+        "verifiedAt": "2026-10-21T13:53:08.386Z"
+      },
       {
         "moduleId": "mangayomi_892345671",
         "catalogPath": "Sources/English/004",
@@ -40,86 +76,14 @@
         "availableEpisodes": 4,
         "verifiedEpisode": 4,
         "searchMs": 385,
-        "episodesMs": 452,
-        "streamMs": 512,
-        "verificationMs": 967,
+        "episodesMs": 340,
+        "streamMs": 386,
+        "verificationMs": 734,
         "firstEpisodeVerified": 1,
-        "firstEpisodeEpisodesMs": 361,
-        "firstEpisodeStreamMs": 642,
-        "firstEpisodeVerificationMs": 1011,
-        "verifiedAt": "2026-10-21T07:45:10.751Z"
-      },
-      {
-        "moduleId": "animesogo-local",
-        "catalogPath": "Sources/English/008",
-        "sourceName": "AnimeSogo",
-        "language": "English",
-        "searchResultHref": "{\"path\":\"/watch/so-what-s-wrong-with-getting-reborn-as-a-goblin-founu\",\"title\":\"So What S Wrong With Getting Reborn As A Goblin\"}",
-        "episodeRoutes": [
-          {
-            "episode": 1,
-            "href": "{\"path\":\"/watch/so-what-s-wrong-with-getting-reborn-as-a-goblin-founu\",\"title\":\"So What S Wrong With Getting Reborn As A Goblin\",\"id\":\"9048\",\"number\":1,\"ids\":\"TnVEU2FERm1TWjRMb3ErVTVrMW03cTF0QzlwaGZMT3NCMmxIbmxEeDZ5Nmx4ZE9JUUoyU3NkNXVVdE1GbjNabHdLNDMxNUR5N21aRWE1Mkp4a0Q1L2FHLzZEWjdnM0xFcGd0Uy95OHBUeDNiWk1oaGpRYWtCdmxlMHNPeUxLUHlKSjdicjVXWHV0S2ZlNGVFVytmQ2tnPT0\"}"
-          },
-          {
-            "episode": 2,
-            "href": "{\"path\":\"/watch/so-what-s-wrong-with-getting-reborn-as-a-goblin-founu\",\"title\":\"So What S Wrong With Getting Reborn As A Goblin\",\"id\":\"9048\",\"number\":2,\"ids\":\"YnhSalo1c29XQnhsa0ZiZ3RFaXRuSVhXU3VDbWRCMEgrcEVqcjkzOHJsdGd1VFlva3VEMkpXSEtLV2craFQzUzNDK0QyUDFSdG56M0hMMzhIWWxGZExvdlRPeS9mbSs4QWVQcGVlNHBOeFlTK2k2UzV2VU56MVZFZlVxSjJIUlFRK2lEb1JqZ3V3NjFUQmhFUGhZRWFRPT0\"}"
-          },
-          {
-            "episode": 3,
-            "href": "{\"path\":\"/watch/so-what-s-wrong-with-getting-reborn-as-a-goblin-founu\",\"title\":\"So What S Wrong With Getting Reborn As A Goblin\",\"id\":\"9048\",\"number\":3,\"ids\":\"eXFoa01CdnFIVnR6MnZWWGVNZ3hjMVlVaDdkeW1lT2s3NFphalhGTmF6TTl5S1BsWElpL21ORjk3SlJaeDNpK0NYMnB3SE5mYU44SVNjSHA0RUxKVVpuSWR3TlE5VlA3S3AxZzhoK3FIUnpUZFVaa2prWnhOVEZiL2ZJaUFXOGhCVG5KMVU1V3JzSDFCb015dG5mTklBPT0\"}"
-          },
-          {
-            "episode": 4,
-            "href": "{\"path\":\"/watch/so-what-s-wrong-with-getting-reborn-as-a-goblin-founu\",\"title\":\"So What S Wrong With Getting Reborn As A Goblin\",\"id\":\"9048\",\"number\":4,\"ids\":\"bHJsSjduSHRPUG1JQW90NGJ0aUpFR3RsVXVtaHg0NmQ0cm00WTR0aDBWekMzRmpPYlEwQlF6QjJQR0R6OGE3TlY0VTcwNkR5M1F4b3BkcVVjZlVWb0FRU3FpbTlPanA0NEo5dnB1VE5LN2loL2oyMGluOEpUMzhHZWVqSkRxT2I4UXZYT0pvbUpEKzZERGYrNEd1R3NnPT0\"}"
-          }
-        ],
-        "availableEpisodes": 4,
-        "verifiedEpisode": 4,
-        "searchMs": 674,
-        "episodesMs": 669,
-        "streamMs": 368,
-        "verificationMs": 1043,
-        "firstEpisodeVerified": 1,
-        "firstEpisodeEpisodesMs": 558,
-        "firstEpisodeStreamMs": 395,
-        "firstEpisodeVerificationMs": 955,
-        "verifiedAt": "2026-10-21T07:45:10.751Z"
-      },
-      {
-        "moduleId": "jCtAp",
-        "catalogPath": "Sources/English/010",
-        "sourceName": "123Anime",
-        "language": "English",
-        "searchResultHref": "https://123animes.ru/anime/tensei-goblin-dakedo-shitsumon-aru",
-        "episodeRoutes": [
-          {
-            "episode": 1,
-            "href": "tensei-goblin-dakedo-shitsumon-aru/1/vidstreaming.io"
-          },
-          {
-            "episode": 2,
-            "href": "tensei-goblin-dakedo-shitsumon-aru/2/vidstreaming.io"
-          },
-          {
-            "episode": 3,
-            "href": "tensei-goblin-dakedo-shitsumon-aru/3/vidstreaming.io"
-          },
-          {
-            "episode": 4,
-            "href": "tensei-goblin-dakedo-shitsumon-aru/4/vidstreaming.io"
-          }
-        ],
-        "availableEpisodes": 4,
-        "verifiedEpisode": 4,
-        "searchMs": 778,
-        "episodesMs": 690,
-        "streamMs": 355,
-        "verificationMs": 1048,
-        "firstEpisodeVerified": 1,
-        "firstEpisodeEpisodesMs": 708,
-        "firstEpisodeStreamMs": 370,
-        "firstEpisodeVerificationMs": 1089,
-        "verifiedAt": "2026-10-21T07:45:10.751Z"
+        "firstEpisodeEpisodesMs": 387,
+        "firstEpisodeStreamMs": 525,
+        "firstEpisodeVerificationMs": 920,
+        "verifiedAt": "2026-10-21T13:53:08.386Z"
       },
       {
         "moduleId": "animekai-unoriginal-local",
@@ -148,14 +112,86 @@
         "availableEpisodes": 4,
         "verifiedEpisode": 4,
         "searchMs": 588,
-        "episodesMs": 866,
-        "streamMs": 421,
-        "verificationMs": 1293,
+        "episodesMs": 599,
+        "streamMs": 254,
+        "verificationMs": 858,
         "firstEpisodeVerified": 1,
-        "firstEpisodeEpisodesMs": 802,
-        "firstEpisodeStreamMs": 417,
-        "firstEpisodeVerificationMs": 1236,
-        "verifiedAt": "2026-10-21T07:45:10.751Z"
+        "firstEpisodeEpisodesMs": 524,
+        "firstEpisodeStreamMs": 297,
+        "firstEpisodeVerificationMs": 826,
+        "verifiedAt": "2026-10-21T13:53:08.386Z"
+      },
+      {
+        "moduleId": "animesogo-local",
+        "catalogPath": "Sources/English/008",
+        "sourceName": "AnimeSogo",
+        "language": "English",
+        "searchResultHref": "{\"path\":\"/watch/so-what-s-wrong-with-getting-reborn-as-a-goblin-founu\",\"title\":\"So What S Wrong With Getting Reborn As A Goblin\"}",
+        "episodeRoutes": [
+          {
+            "episode": 1,
+            "href": "{\"path\":\"/watch/so-what-s-wrong-with-getting-reborn-as-a-goblin-founu\",\"title\":\"So What S Wrong With Getting Reborn As A Goblin\",\"id\":\"9048\",\"number\":1,\"ids\":\"TnVEU2FERm1TWjRMb3ErVTVrMW03cTF0QzlwaGZMT3NCMmxIbmxEeDZ5Nmx4ZE9JUUoyU3NkNXVVdE1GbjNabHdLNDMxNUR5N21aRWE1Mkp4a0Q1L2FHLzZEWjdnM0xFcGd0Uy95OHBUeDNiWk1oaGpRYWtCdmxlMHNPeUxLUHlKSjdicjVXWHV0S2ZlNGVFVytmQ2tnPT0\"}"
+          },
+          {
+            "episode": 2,
+            "href": "{\"path\":\"/watch/so-what-s-wrong-with-getting-reborn-as-a-goblin-founu\",\"title\":\"So What S Wrong With Getting Reborn As A Goblin\",\"id\":\"9048\",\"number\":2,\"ids\":\"YnhSalo1c29XQnhsa0ZiZ3RFaXRuSVhXU3VDbWRCMEgrcEVqcjkzOHJsdGd1VFlva3VEMkpXSEtLV2craFQzUzNDK0QyUDFSdG56M0hMMzhIWWxGZExvdlRPeS9mbSs4QWVQcGVlNHBOeFlTK2k2UzV2VU56MVZFZlVxSjJIUlFRK2lEb1JqZ3V3NjFUQmhFUGhZRWFRPT0\"}"
+          },
+          {
+            "episode": 3,
+            "href": "{\"path\":\"/watch/so-what-s-wrong-with-getting-reborn-as-a-goblin-founu\",\"title\":\"So What S Wrong With Getting Reborn As A Goblin\",\"id\":\"9048\",\"number\":3,\"ids\":\"eXFoa01CdnFIVnR6MnZWWGVNZ3hjMVlVaDdkeW1lT2s3NFphalhGTmF6TTl5S1BsWElpL21ORjk3SlJaeDNpK0NYMnB3SE5mYU44SVNjSHA0RUxKVVpuSWR3TlE5VlA3S3AxZzhoK3FIUnpUZFVaa2prWnhOVEZiL2ZJaUFXOGhCVG5KMVU1V3JzSDFCb015dG5mTklBPT0\"}"
+          },
+          {
+            "episode": 4,
+            "href": "{\"path\":\"/watch/so-what-s-wrong-with-getting-reborn-as-a-goblin-founu\",\"title\":\"So What S Wrong With Getting Reborn As A Goblin\",\"id\":\"9048\",\"number\":4,\"ids\":\"bHJsSjduSHRPUG1JQW90NGJ0aUpFR3RsVXVtaHg0NmQ0cm00WTR0aDBWekMzRmpPYlEwQlF6QjJQR0R6OGE3TlY0VTcwNkR5M1F4b3BkcVVjZlVWb0FRU3FpbTlPanA0NEo5dnB1VE5LN2loL2oyMGluOEpUMzhHZWVqSkRxT2I4UXZYT0pvbUpEKzZERGYrNEd1R3NnPT0\"}"
+          }
+        ],
+        "availableEpisodes": 4,
+        "verifiedEpisode": 4,
+        "searchMs": 674,
+        "episodesMs": 595,
+        "streamMs": 317,
+        "verificationMs": 915,
+        "firstEpisodeVerified": 1,
+        "firstEpisodeEpisodesMs": 532,
+        "firstEpisodeStreamMs": 300,
+        "firstEpisodeVerificationMs": 842,
+        "verifiedAt": "2026-10-21T13:53:08.386Z"
+      },
+      {
+        "moduleId": "jCtAp",
+        "catalogPath": "Sources/English/010",
+        "sourceName": "123Anime",
+        "language": "English",
+        "searchResultHref": "https://123animes.ru/anime/tensei-goblin-dakedo-shitsumon-aru",
+        "episodeRoutes": [
+          {
+            "episode": 1,
+            "href": "tensei-goblin-dakedo-shitsumon-aru/1/vidstreaming.io"
+          },
+          {
+            "episode": 2,
+            "href": "tensei-goblin-dakedo-shitsumon-aru/2/vidstreaming.io"
+          },
+          {
+            "episode": 3,
+            "href": "tensei-goblin-dakedo-shitsumon-aru/3/vidstreaming.io"
+          },
+          {
+            "episode": 4,
+            "href": "tensei-goblin-dakedo-shitsumon-aru/4/vidstreaming.io"
+          }
+        ],
+        "availableEpisodes": 4,
+        "verifiedEpisode": 4,
+        "searchMs": 778,
+        "episodesMs": 640,
+        "streamMs": 315,
+        "verificationMs": 962,
+        "firstEpisodeVerified": 1,
+        "firstEpisodeEpisodesMs": 605,
+        "firstEpisodeStreamMs": 318,
+        "firstEpisodeVerificationMs": 927,
+        "verifiedAt": "2026-10-21T13:53:08.386Z"
       }
     ]
   }
