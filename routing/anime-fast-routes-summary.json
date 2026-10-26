@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-25T07:34:49.772Z",
+  "generatedAt": "2026-10-26T04:42:36.588Z",
   "mediaRequested": 5,
   "categories": {
     "trendingNow": {
@@ -22,15 +22,15 @@
   "modulesChecked": 3,
   "animeWithRoutes": 183,
   "routeCount": 807,
-  "refreshedAnime": 12,
+  "refreshedAnime": 13,
   "mergeExisting": true,
-  "unresolvedAnime": 3,
-  "rejectedAttempts": 27,
+  "unresolvedAnime": 0,
+  "rejectedAttempts": 26,
   "rejectedAttemptSummary": {
     "byReason": {
-      "search_no_usable_result": 19,
-      "implausible_match": 5,
+      "search_no_usable_result": 21,
       "media_probe_failed": 2,
+      "implausible_match": 2,
       "other": 1
     },
     "topModules": [
@@ -38,9 +38,9 @@
         "sourceName": "AnimeLand",
         "count": 13,
         "reasons": {
-          "search_no_usable_result": 7,
-          "implausible_match": 3,
+          "search_no_usable_result": 8,
           "media_probe_failed": 2,
+          "implausible_match": 2,
           "other": 1
         }
       },
@@ -48,57 +48,18 @@
         "sourceName": "IPTV-org",
         "count": 13,
         "reasons": {
-          "search_no_usable_result": 12,
-          "implausible_match": 1
-        }
-      },
-      {
-        "sourceName": "AnimeHeaven",
-        "count": 1,
-        "reasons": {
-          "implausible_match": 1
+          "search_no_usable_result": 13
         }
       }
     ]
   },
   "mediaProbeBudget": 24,
-  "mediaProbesUsed": 14,
+  "mediaProbesUsed": 15,
   "hostHealth": {
-    "successEvents": 12,
+    "successEvents": 13,
     "failureEvents": 2,
     "skippedByCooldown": 0,
     "coolingDownHosts": 1
   },
-  "failures": [
-    {
-      "aniListId": 189123,
-      "title": "Blue Box Season 2",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/017",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 189123,
-      "title": "Blue Box Season 2",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 189123,
-      "title": "Blue Box Season 2",
-      "moduleId": "mangayomi_1744325818",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "AnimeHeaven",
-      "errors": [
-        "implausible episode match: verified=3 available=3 expected<=4"
-      ]
-    }
-  ]
+  "failures": []
 }
