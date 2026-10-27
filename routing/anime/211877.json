@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-23T13:31:46.074Z",
+  "generatedAt": "2026-10-27T06:58:10.320Z",
   "sourceCatalogRef": "config",
   "route": {
     "aniListId": 211877,
@@ -11,40 +11,80 @@
     ],
     "routes": [
       {
+        "moduleId": "jzppd",
+        "catalogPath": "Sources/English/010",
+        "sourceName": "AllManga",
+        "language": "English",
+        "searchResultHref": "https://allmanga.to/bangumi/s5HXCJZizGRbZeRgd",
+        "episodeRoutes": [
+          {
+            "episode": 1,
+            "href": "https://allmanga.to/bangumi/s5HXCJZizGRbZeRgd/p-1"
+          },
+          {
+            "episode": 2,
+            "href": "https://allmanga.to/bangumi/s5HXCJZizGRbZeRgd/p-2"
+          },
+          {
+            "episode": 3,
+            "href": "https://allmanga.to/bangumi/s5HXCJZizGRbZeRgd/p-3"
+          },
+          {
+            "episode": 4,
+            "href": "https://allmanga.to/bangumi/s5HXCJZizGRbZeRgd/p-4"
+          }
+        ],
+        "availableEpisodes": 4,
+        "verifiedEpisode": 4,
+        "searchMs": 80,
+        "episodesMs": 114,
+        "streamMs": 108,
+        "verificationMs": 223,
+        "firstEpisodeVerified": 1,
+        "firstEpisodeEpisodesMs": 112,
+        "firstEpisodeStreamMs": 574,
+        "firstEpisodeVerificationMs": 687,
+        "verifiedAt": "2026-10-27T06:58:10.320Z"
+      },
+      {
         "moduleId": "animesogo-local",
-        "catalogPath": "Sources/English/008",
+        "catalogPath": "Sources/English/004",
         "sourceName": "AnimeSogo",
         "language": "English",
         "searchResultHref": "{\"path\":\"/watch/my-girlfriend-s-friend-nqwnq\",\"title\":\"My Girlfriend S Friend\"}",
         "episodeRoutes": [
           {
             "episode": 1,
-            "href": "{\"path\":\"/watch/my-girlfriend-s-friend-nqwnq\",\"title\":\"My Girlfriend S Friend\",\"id\":\"9045\",\"number\":1,\"ids\":\"V3QwYm9BL3ZuYkp0WFlFa1NSY1Vkek9DRS9zUjNUN0pYRnZFd04wVlF0bEN0MWJjR0k2Q2dITGNqUk5wYnNvUEExVytvTXFVK2pSK1NaYVkxWEx5TjM1S0FrMzhtSDVvd0hTdW0vWTdQVmtLNGpHVzZFbFdyMTJ2Rk9MM0lLMCtwNmtCN0lJekxkbkl0Qnl2c0pHeTNnPT0\"}"
+            "href": "{\"path\":\"/watch/my-girlfriend-s-friend-nqwnq\",\"title\":\"My Girlfriend S Friend\",\"id\":\"9045\",\"number\":1,\"ids\":\"V3QwYm9BL3ZuYkp0WFlFa1NSY1Vkek9DRS9zUjNUN0pYRnZFd04wVlF0bVJYd3QrR01kOEl4T0ZBY0c4c0k3d0hIdExaOHROV0wrWEVvZnBFdUZuSFlFeVNSb1pzNkt5b3dMVUozWkZ2bEp0cjF4aFN6N0lxb09TTWRaN0J5d2ZFWUpGc25lK1Fob24xUzhzUk1qeDVBPT0\"}"
           },
           {
             "episode": 2,
-            "href": "{\"path\":\"/watch/my-girlfriend-s-friend-nqwnq\",\"title\":\"My Girlfriend S Friend\",\"id\":\"9045\",\"number\":2,\"ids\":\"cDdON2NyeGxmZk1tUjJKK0F5ZGpWMUNnYjczREc3cWdrMlozTFJBMWhyWG1ZZXZlV3NMRjdCVi9ZSEt5NGJ5d0Q1RCtUNldHWktkRDNZZCtvYUZBQittNGlKeWxaWGphbmYvaXAyL1lidC9NeGRPQ0hrQmQ3ZUc2aXZvWUNRSzFOUXdjTWxKMDFGL3ZZUjZodzl1SHBBPT0\"}"
+            "href": "{\"path\":\"/watch/my-girlfriend-s-friend-nqwnq\",\"title\":\"My Girlfriend S Friend\",\"id\":\"9045\",\"number\":2,\"ids\":\"cDdON2NyeGxmZk1tUjJKK0F5ZGpWMUNnYjczREc3cWdrMlozTFJBMWhyVjJrMTZaS3NqQzJDVGQvVTMxbG50SlF4RkdvZUZiYjlpR0lSVlQrL0lxbndHa3M4RHQvZitobUpHazUvcFZybkFXdVB5TzhXck13QUpDdmQrcm5mbCtDMkJEUnhpV3RZejREZkhJNldqTGp3PT0\"}"
           },
           {
             "episode": 3,
-            "href": "{\"path\":\"/watch/my-girlfriend-s-friend-nqwnq\",\"title\":\"My Girlfriend S Friend\",\"id\":\"9045\",\"number\":3,\"ids\":\"UEdRemJmcTArZlF0YkZhaDBtL3cyb0RnUEdLNnA4OVNNRDVxNE1UWDJWRFB2RUtoK3NBTFhSd3ZJR1hjcDl4UlphcUFtUk9KbGRLenErNm1STWtzYm1SWnZmN1NLSDgxUnVISGorTVVzNlhmWHJ3OVhubjc5bkZyTlFVSitNRTZKUkFoSWQ1TkRBUTUwMXpYYmFBNDRBPT0\"}"
+            "href": "{\"path\":\"/watch/my-girlfriend-s-friend-nqwnq\",\"title\":\"My Girlfriend S Friend\",\"id\":\"9045\",\"number\":3,\"ids\":\"UEdRemJmcTArZlF0YkZhaDBtL3cyb0RnUEdLNnA4OVNNRDVxNE1UWDJWQU9BYy9sZXJmQVIxMXNBWmtqdDJBZW10V0lETEwrWERHYk1hL0hVWlZFbkkrcVpHRHhFQnhLSzhqZDMxR3B2Szg0M2lyWlpnbitoLyt6UlU1YVlRc0ppN2hJRDROVjIwTmJmRXk1ZHVJRUNBPT0\"}"
+          },
+          {
+            "episode": 4,
+            "href": "{\"path\":\"/watch/my-girlfriend-s-friend-nqwnq\",\"title\":\"My Girlfriend S Friend\",\"id\":\"9045\",\"number\":4,\"ids\":\"ek43RldFQ2lPcWJlNkY1WHNIOU45QmdHemJKbG5uMGpQMEhqZzN1UnhDbFVSUWxmSFZFT3hrWmxhQ2xpYUNLd0J1aWhsL29lenUrTFRDNDVCVEhQSHNaRjZRVVI4aXpvT2I4T3lKYlR4K0JaZmpVQ0tiYjdycXlxSHkrTzNEL2tzYW5JdnRET01QYXlBVHZSQW1MbkNBPT0\"}"
           }
         ],
-        "availableEpisodes": 3,
-        "verifiedEpisode": 3,
+        "availableEpisodes": 4,
+        "verifiedEpisode": 4,
         "searchMs": 222,
-        "episodesMs": 424,
-        "streamMs": 246,
-        "verificationMs": 672,
+        "episodesMs": 199,
+        "streamMs": 139,
+        "verificationMs": 339,
         "firstEpisodeVerified": 1,
-        "firstEpisodeEpisodesMs": 369,
-        "firstEpisodeStreamMs": 283,
-        "firstEpisodeVerificationMs": 654,
-        "verifiedAt": "2026-10-22T01:34:33.162Z"
+        "firstEpisodeEpisodesMs": 183,
+        "firstEpisodeStreamMs": 110,
+        "firstEpisodeVerificationMs": 295,
+        "verifiedAt": "2026-10-27T06:58:10.320Z"
       },
       {
         "moduleId": "jCtAp",
-        "catalogPath": "Sources/English/010",
+        "catalogPath": "Sources/English/008",
         "sourceName": "123Anime",
         "language": "English",
         "searchResultHref": "https://123animes.ru/anime/kanojo-no-tomodachi",
@@ -60,19 +100,23 @@
           {
             "episode": 3,
             "href": "kanojo-no-tomodachi/3/vidstreaming.io"
+          },
+          {
+            "episode": 4,
+            "href": "kanojo-no-tomodachi/4/vidstreaming.io"
           }
         ],
-        "availableEpisodes": 3,
-        "verifiedEpisode": 3,
+        "availableEpisodes": 4,
+        "verifiedEpisode": 4,
         "searchMs": 300,
-        "episodesMs": 424,
-        "streamMs": 309,
-        "verificationMs": 739,
+        "episodesMs": 318,
+        "streamMs": 214,
+        "verificationMs": 533,
         "firstEpisodeVerified": 1,
-        "firstEpisodeEpisodesMs": 587,
-        "firstEpisodeStreamMs": 367,
-        "firstEpisodeVerificationMs": 957,
-        "verifiedAt": "2026-10-22T01:34:33.162Z"
+        "firstEpisodeEpisodesMs": 337,
+        "firstEpisodeStreamMs": 284,
+        "firstEpisodeVerificationMs": 623,
+        "verifiedAt": "2026-10-27T06:58:10.320Z"
       }
     ]
   }

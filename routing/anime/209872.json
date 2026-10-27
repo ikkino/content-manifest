@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-23T13:31:46.074Z",
+  "generatedAt": "2026-10-27T06:58:10.320Z",
   "sourceCatalogRef": "config",
   "route": {
     "aniListId": 209872,
@@ -11,8 +11,44 @@
     ],
     "routes": [
       {
+        "moduleId": "jzppd",
+        "catalogPath": "Sources/English/010",
+        "sourceName": "AllManga",
+        "language": "English",
+        "searchResultHref": "https://allmanga.to/bangumi/dX6LcYMfDd4DDwmXJ",
+        "episodeRoutes": [
+          {
+            "episode": 1,
+            "href": "https://allmanga.to/bangumi/dX6LcYMfDd4DDwmXJ/p-1"
+          },
+          {
+            "episode": 2,
+            "href": "https://allmanga.to/bangumi/dX6LcYMfDd4DDwmXJ/p-2"
+          },
+          {
+            "episode": 3,
+            "href": "https://allmanga.to/bangumi/dX6LcYMfDd4DDwmXJ/p-3"
+          },
+          {
+            "episode": 4,
+            "href": "https://allmanga.to/bangumi/dX6LcYMfDd4DDwmXJ/p-4"
+          }
+        ],
+        "availableEpisodes": 4,
+        "verifiedEpisode": 4,
+        "searchMs": 115,
+        "episodesMs": 116,
+        "streamMs": 164,
+        "verificationMs": 281,
+        "firstEpisodeVerified": 1,
+        "firstEpisodeEpisodesMs": 114,
+        "firstEpisodeStreamMs": 546,
+        "firstEpisodeVerificationMs": 661,
+        "verifiedAt": "2026-10-27T06:58:10.320Z"
+      },
+      {
         "moduleId": "mangayomi_892345671",
-        "catalogPath": "Sources/English/004",
+        "catalogPath": "Sources/English/002",
         "sourceName": "JustAnime",
         "language": "English",
         "searchResultHref": "209872",
@@ -28,51 +64,23 @@
           {
             "episode": 3,
             "href": "209872||3"
+          },
+          {
+            "episode": 4,
+            "href": "209872||4"
           }
         ],
-        "availableEpisodes": 3,
-        "verifiedEpisode": 3,
+        "availableEpisodes": 4,
+        "verifiedEpisode": 4,
         "searchMs": 264,
-        "episodesMs": 311,
-        "streamMs": 516,
-        "verificationMs": 833,
+        "episodesMs": 116,
+        "streamMs": 219,
+        "verificationMs": 336,
         "firstEpisodeVerified": 1,
-        "firstEpisodeEpisodesMs": 254,
-        "firstEpisodeStreamMs": 441,
-        "firstEpisodeVerificationMs": 699,
-        "verifiedAt": "2026-10-22T01:34:33.162Z"
-      },
-      {
-        "moduleId": "jzppd",
-        "catalogPath": "Sources/English/019",
-        "sourceName": "AllAnime",
-        "language": "English",
-        "searchResultHref": "https://allmanga.to/bangumi/dX6LcYMfDd4DDwmXJ",
-        "episodeRoutes": [
-          {
-            "episode": 1,
-            "href": "https://allmanga.to/bangumi/dX6LcYMfDd4DDwmXJ/p-1"
-          },
-          {
-            "episode": 2,
-            "href": "https://allmanga.to/bangumi/dX6LcYMfDd4DDwmXJ/p-2"
-          },
-          {
-            "episode": 3,
-            "href": "https://allmanga.to/bangumi/dX6LcYMfDd4DDwmXJ/p-3"
-          }
-        ],
-        "availableEpisodes": 3,
-        "verifiedEpisode": 3,
-        "searchMs": 614,
-        "episodesMs": 293,
-        "streamMs": 1191,
-        "verificationMs": 1492,
-        "firstEpisodeVerified": 1,
-        "firstEpisodeEpisodesMs": 238,
-        "firstEpisodeStreamMs": 1007,
-        "firstEpisodeVerificationMs": 1247,
-        "verifiedAt": "2026-10-22T01:34:33.162Z"
+        "firstEpisodeEpisodesMs": 187,
+        "firstEpisodeStreamMs": 318,
+        "firstEpisodeVerificationMs": 505,
+        "verifiedAt": "2026-10-27T06:58:10.320Z"
       }
     ]
   }

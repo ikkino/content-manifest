@@ -1,28 +1,24 @@
 {
-  "sourceName": "IMDb",
-  "iconUrl": "https://m.media-amazon.com/images/G/01/imdb/images-ANDW73HA/favicon_iPhone_retina_180x180._CB1582158069_UX196_.png",
+  "sourceName": "Aniclipse",
+  "iconUrl": "https://aniclipse.com/logo/aniclipse-icon-192.png",
   "author": {
-    "name": "50/50",
-    "icon": "https://files.catbox.moe/741wp7.png"
+    "name": "MXFia19",
+    "icon": "https://i.pinimg.com/1200x/89/78/33/89783349d3270e4ab071db9a038db8ea.jpg",
+    "url": "https://github.com/MXFia19"
   },
   "version": "1.0.0",
   "language": "English",
-  "languageType": [
-    "Native"
-  ],
   "streamType": "HLS",
   "quality": "1080p",
-  "baseUrl": "https://www.imdb.com/",
-  "searchBaseUrl": "https://www.imdb.com/",
+  "baseUrl": "https://aniclipse.com/",
+  "searchBaseUrl": "https://aniclipse.com/",
   "scriptUrl": "https://raw.githubusercontent.com/ikkino/content-manifest/config/Sources/English/012/source.js",
-  "type": "shows/movies/anime",
+  "type": "anime",
+  "downloadSupport": true,
   "asyncJS": true,
   "softsub": true,
-  "downloadSupport": false,
   "supportsSora": true,
   "supportsLuna": true,
-  "supportsTsumi": true,
-  "supportsHiyoku": true,
-  "supportsEclipse": true,
-  "id": "mod_336052763"
+  "changelog": "first release: aniclipse catalogue and episodes (real titles, thumbnails, fillers), playback resolved through vidhawk's open chain",
+  "id": "j0y3E"
 }
