@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-28T05:37:54.193Z",
+  "generatedAt": "2026-10-29T01:48:20.412Z",
   "mediaRequested": 5,
   "categories": {
     "trendingNow": {
@@ -24,21 +24,21 @@
   "routeCount": 748,
   "refreshedAnime": 0,
   "mergeExisting": true,
-  "unresolvedAnime": 42,
-  "rejectedAttempts": 42,
+  "unresolvedAnime": 39,
+  "rejectedAttempts": 39,
   "rejectedAttemptSummary": {
     "byReason": {
-      "search_no_usable_result": 23,
-      "media_probe_failed": 10,
-      "implausible_match": 8,
+      "search_no_usable_result": 21,
+      "media_probe_failed": 11,
+      "implausible_match": 6,
       "other": 1
     },
     "topModules": [
       {
         "sourceName": "AnimeLand",
-        "count": 14,
+        "count": 13,
         "reasons": {
-          "search_no_usable_result": 9,
+          "search_no_usable_result": 8,
           "media_probe_failed": 2,
           "implausible_match": 2,
           "other": 1
@@ -46,61 +46,31 @@
       },
       {
         "sourceName": "IPTV-org",
-        "count": 14,
+        "count": 13,
         "reasons": {
-          "search_no_usable_result": 14
+          "search_no_usable_result": 13
         }
       },
       {
         "sourceName": "JustAnime",
-        "count": 14,
+        "count": 13,
         "reasons": {
-          "media_probe_failed": 8,
-          "implausible_match": 6
+          "media_probe_failed": 9,
+          "implausible_match": 4
         }
       }
     ]
   },
   "mediaProbeBudget": 24,
-  "mediaProbesUsed": 10,
+  "mediaProbesUsed": 11,
   "hostHealth": {
     "successEvents": 0,
-    "failureEvents": 10,
+    "failureEvents": 11,
     "skippedByCooldown": 0,
     "coolingDownHosts": 2
   },
   "failures": [
     {
-      "aniListId": 207329,
-      "title": "The Laid-Off Cheat-Granting Mage Enjoys a Second Lease on Life",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/022",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 207329,
-      "title": "The Laid-Off Cheat-Granting Mage Enjoys a Second Lease on Life",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 207329,
-      "title": "The Laid-Off Cheat-Granting Mage Enjoys a Second Lease on Life",
-      "moduleId": "mangayomi_892345671",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "JustAnime",
-      "errors": [
-        "media probe failed: host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response"
-      ]
-    },
-    {
       "aniListId": 195539,
       "title": "Cyberpunk: Edgerunners 2",
       "moduleId": "mod_942337115",
@@ -131,8 +101,8 @@
       ]
     },
     {
-      "aniListId": 206949,
-      "title": "Nia Liston: The Merciless Maiden",
+      "aniListId": 159042,
+      "title": "Reincarnated as a Sword Season 2",
       "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/022",
       "sourceName": "AnimeLand",
@@ -141,8 +111,8 @@
       ]
     },
     {
-      "aniListId": 206949,
-      "title": "Nia Liston: The Merciless Maiden",
+      "aniListId": 159042,
+      "title": "Reincarnated as a Sword Season 2",
       "moduleId": "BiECa",
       "catalogPath": "Sources/English/001",
       "sourceName": "IPTV-org",
@@ -151,18 +121,18 @@
       ]
     },
     {
-      "aniListId": 206949,
-      "title": "Nia Liston: The Merciless Maiden",
+      "aniListId": 159042,
+      "title": "Reincarnated as a Sword Season 2",
       "moduleId": "mangayomi_892345671",
       "catalogPath": "Sources/English/002",
       "sourceName": "JustAnime",
       "errors": [
-        "implausible episode match: verified=4 available=25 expected<=4"
+        "implausible episode match: verified=5 available=12 expected<=5"
       ]
     },
     {
-      "aniListId": 185874,
-      "title": "BLEACH: Thousand-Year Blood War - The Calamity",
+      "aniListId": 211778,
+      "title": "The World's Strongest Witch",
       "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/022",
       "sourceName": "AnimeLand",
@@ -171,8 +141,8 @@
       ]
     },
     {
-      "aniListId": 185874,
-      "title": "BLEACH: Thousand-Year Blood War - The Calamity",
+      "aniListId": 211778,
+      "title": "The World's Strongest Witch",
       "moduleId": "BiECa",
       "catalogPath": "Sources/English/001",
       "sourceName": "IPTV-org",
@@ -181,8 +151,128 @@
       ]
     },
     {
-      "aniListId": 185874,
-      "title": "BLEACH: Thousand-Year Blood War - The Calamity",
+      "aniListId": 211778,
+      "title": "The World's Strongest Witch",
+      "moduleId": "mangayomi_892345671",
+      "catalogPath": "Sources/English/002",
+      "sourceName": "JustAnime",
+      "errors": [
+        "media probe failed: host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response"
+      ]
+    },
+    {
+      "aniListId": 172192,
+      "title": "A Returner's Magic Should be Special Season 2",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/022",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 172192,
+      "title": "A Returner's Magic Should be Special Season 2",
+      "moduleId": "BiECa",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "IPTV-org",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 172192,
+      "title": "A Returner's Magic Should be Special Season 2",
+      "moduleId": "mangayomi_892345671",
+      "catalogPath": "Sources/English/002",
+      "sourceName": "JustAnime",
+      "errors": [
+        "media probe failed: host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response"
+      ]
+    },
+    {
+      "aniListId": 207329,
+      "title": "The Laid-Off Cheat-Granting Mage Enjoys a Second Lease on Life",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/022",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 207329,
+      "title": "The Laid-Off Cheat-Granting Mage Enjoys a Second Lease on Life",
+      "moduleId": "BiECa",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "IPTV-org",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 207329,
+      "title": "The Laid-Off Cheat-Granting Mage Enjoys a Second Lease on Life",
+      "moduleId": "mangayomi_892345671",
+      "catalogPath": "Sources/English/002",
+      "sourceName": "JustAnime",
+      "errors": [
+        "media probe failed: host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response"
+      ]
+    },
+    {
+      "aniListId": 195516,
+      "title": "The Apothecary Diaries Season 3",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/022",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 195516,
+      "title": "The Apothecary Diaries Season 3",
+      "moduleId": "BiECa",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "IPTV-org",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 195516,
+      "title": "The Apothecary Diaries Season 3",
+      "moduleId": "mangayomi_892345671",
+      "catalogPath": "Sources/English/002",
+      "sourceName": "JustAnime",
+      "errors": [
+        "implausible episode match: verified=4 available=12 expected<=4"
+      ]
+    },
+    {
+      "aniListId": 195604,
+      "title": "Black Clover Season 2",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/022",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 195604,
+      "title": "Black Clover Season 2",
+      "moduleId": "BiECa",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "IPTV-org",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 195604,
+      "title": "Black Clover Season 2",
       "moduleId": "mangayomi_892345671",
       "catalogPath": "Sources/English/002",
       "sourceName": "JustAnime",
@@ -218,126 +308,6 @@
       "sourceName": "JustAnime",
       "errors": [
         "implausible episode match: verified=5 available=12 expected<=5"
-      ]
-    },
-    {
-      "aniListId": 195516,
-      "title": "The Apothecary Diaries Season 3",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/022",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 195516,
-      "title": "The Apothecary Diaries Season 3",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 195516,
-      "title": "The Apothecary Diaries Season 3",
-      "moduleId": "mangayomi_892345671",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "JustAnime",
-      "errors": [
-        "implausible episode match: verified=4 available=12 expected<=4"
-      ]
-    },
-    {
-      "aniListId": 195604,
-      "title": "Black Clover Season 2",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/022",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 195604,
-      "title": "Black Clover Season 2",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 195604,
-      "title": "Black Clover Season 2",
-      "moduleId": "mangayomi_892345671",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "JustAnime",
-      "errors": [
-        "media probe failed: host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response"
-      ]
-    },
-    {
-      "aniListId": 159042,
-      "title": "Reincarnated as a Sword Season 2",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/022",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 159042,
-      "title": "Reincarnated as a Sword Season 2",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 159042,
-      "title": "Reincarnated as a Sword Season 2",
-      "moduleId": "mangayomi_892345671",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "JustAnime",
-      "errors": [
-        "implausible episode match: verified=4 available=12 expected<=4"
-      ]
-    },
-    {
-      "aniListId": 189123,
-      "title": "Blue Box Season 2",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/022",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 189123,
-      "title": "Blue Box Season 2",
-      "moduleId": "BiECa",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "IPTV-org",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 189123,
-      "title": "Blue Box Season 2",
-      "moduleId": "mangayomi_892345671",
-      "catalogPath": "Sources/English/002",
-      "sourceName": "JustAnime",
-      "errors": [
-        "implausible episode match: verified=4 available=12 expected<=4"
       ]
     },
     {
