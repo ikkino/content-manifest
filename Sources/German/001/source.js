@@ -209,7 +209,7 @@ function selectHoster(finishedList) {
 
   // Define the preferred providers and languages
   const providerList = ["VOE", "Filemoon", "Doodstream", "Vidmoly", "Vidoza", "mp4upload"];
-  const languageList = ["mit Untertitel Englisch", "Englisch", "mit Untertitel Deutsch", "Deutsch"];
+  const languageList = ["Deutsch", "mit Untertitel Deutsch", "mit Untertitel Englisch"];
 
 
 
