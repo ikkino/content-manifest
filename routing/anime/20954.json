@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-04T06:36:13.402Z",
+  "generatedAt": "2026-11-04T12:56:45.162Z",
   "sourceCatalogRef": "config",
   "route": {
     "aniListId": 20954,
@@ -29,7 +29,7 @@
     "routes": [
       {
         "moduleId": "jwnFI",
-        "catalogPath": "Sources/English/003",
+        "catalogPath": "Sources/English/002",
         "sourceName": "XPass",
         "language": "English",
         "searchResultHref": "movie/1171702",
@@ -44,16 +44,16 @@
         "searchMs": 270,
         "episodesMs": 1,
         "streamMs": 196,
-        "verificationMs": 200,
+        "verificationMs": 204,
         "firstEpisodeVerified": 1,
         "firstEpisodeEpisodesMs": 1,
-        "firstEpisodeStreamMs": 228,
-        "firstEpisodeVerificationMs": 232,
-        "verifiedAt": "2026-11-04T06:36:13.402Z"
+        "firstEpisodeStreamMs": 143,
+        "firstEpisodeVerificationMs": 146,
+        "verifiedAt": "2026-11-04T12:56:45.162Z"
       },
       {
         "moduleId": "jg3nm",
-        "catalogPath": "Sources/English/006",
+        "catalogPath": "Sources/English/004",
         "sourceName": "Airflix",
         "language": "English",
         "searchResultHref": "movie/378064",
@@ -67,17 +67,41 @@
         "verifiedEpisode": 1,
         "searchMs": 228,
         "episodesMs": 1,
-        "streamMs": 404,
-        "verificationMs": 408,
+        "streamMs": 360,
+        "verificationMs": 366,
         "firstEpisodeVerified": 1,
-        "firstEpisodeEpisodesMs": 2,
-        "firstEpisodeStreamMs": 351,
-        "firstEpisodeVerificationMs": 355,
-        "verifiedAt": "2026-11-04T06:36:13.402Z"
+        "firstEpisodeEpisodesMs": 1,
+        "firstEpisodeStreamMs": 267,
+        "firstEpisodeVerificationMs": 269,
+        "verifiedAt": "2026-11-04T12:56:45.162Z"
+      },
+      {
+        "moduleId": "mod_336052763",
+        "catalogPath": "Sources/English/011",
+        "sourceName": "IMDb",
+        "language": "English",
+        "searchResultHref": "movie/378064",
+        "episodeRoutes": [
+          {
+            "episode": 1,
+            "href": "/movie/378064"
+          }
+        ],
+        "availableEpisodes": 1,
+        "verifiedEpisode": 1,
+        "searchMs": 225,
+        "episodesMs": 1,
+        "streamMs": 490,
+        "verificationMs": 492,
+        "firstEpisodeVerified": 1,
+        "firstEpisodeEpisodesMs": 0,
+        "firstEpisodeStreamMs": 418,
+        "firstEpisodeVerificationMs": 420,
+        "verifiedAt": "2026-11-04T12:56:45.162Z"
       },
       {
         "moduleId": "B0b0R",
-        "catalogPath": "Sources/English/005",
+        "catalogPath": "Sources/English/010",
         "sourceName": "VidFast",
         "language": "English",
         "searchResultHref": "movie/1171702",
@@ -91,61 +115,37 @@
         "verifiedEpisode": 1,
         "searchMs": 269,
         "episodesMs": 1,
-        "streamMs": 446,
-        "verificationMs": 450,
+        "streamMs": 384,
+        "verificationMs": 387,
         "firstEpisodeVerified": 1,
-        "firstEpisodeEpisodesMs": 2,
-        "firstEpisodeStreamMs": 485,
-        "firstEpisodeVerificationMs": 489,
-        "verifiedAt": "2026-11-04T06:36:13.402Z"
+        "firstEpisodeEpisodesMs": 1,
+        "firstEpisodeStreamMs": 543,
+        "firstEpisodeVerificationMs": 546,
+        "verifiedAt": "2026-11-04T12:56:45.162Z"
       },
       {
-        "moduleId": "mod_336052763",
-        "catalogPath": "Sources/English/004",
-        "sourceName": "IMDb",
+        "moduleId": "animesogo-local",
+        "catalogPath": "Sources/English/006",
+        "sourceName": "AnimeSogo",
         "language": "English",
-        "searchResultHref": "movie/378064",
+        "searchResultHref": "{\"path\":\"/watch/a-silent-voice-fghla\",\"title\":\"A Silent Voice\"}",
         "episodeRoutes": [
           {
             "episode": 1,
-            "href": "/movie/378064"
+            "href": "{\"path\":\"/watch/a-silent-voice-fghla\",\"title\":\"A Silent Voice\",\"id\":\"60\",\"number\":1,\"ids\":\"ZE05dDFEelJ5TXVIbkdUcHNLRUZlSWlDc1krZm1pK240MERERHZnMTA2VjZlaDBrMGpCQjZJZW50VWFvdHVUc3JNMmFHR1BWTUp2YnhsNmVhczhFVjJTaG05R3hMeWVQSTV1Vm1PSWhyYU9aWllhMlZPeklLVFNOUUZLeVRGVThNM3RacTBMZGhPVFZrcmdWVXNpK0JBPT0\"}"
           }
         ],
         "availableEpisodes": 1,
         "verifiedEpisode": 1,
-        "searchMs": 225,
-        "episodesMs": 3,
-        "streamMs": 615,
-        "verificationMs": 624,
+        "searchMs": 359,
+        "episodesMs": 490,
+        "streamMs": 356,
+        "verificationMs": 849,
         "firstEpisodeVerified": 1,
-        "firstEpisodeEpisodesMs": 2,
-        "firstEpisodeStreamMs": 500,
-        "firstEpisodeVerificationMs": 508,
-        "verifiedAt": "2026-11-04T06:36:13.402Z"
-      },
-      {
-        "moduleId": "mod_942337115",
-        "catalogPath": "Sources/English/008",
-        "sourceName": "AnimeLand",
-        "language": "English",
-        "searchResultHref": "https://w7.animeland.tv/category/a-silent-voice-movie",
-        "episodeRoutes": [
-          {
-            "episode": 1,
-            "href": "https://w7.animeland.tv/a-silent-voice-movie-episode-1-dubbed"
-          }
-        ],
-        "availableEpisodes": 1,
-        "verifiedEpisode": 1,
-        "searchMs": 1711,
-        "episodesMs": 412,
-        "streamMs": 176,
-        "verificationMs": 590,
-        "firstEpisodeVerified": 1,
-        "firstEpisodeEpisodesMs": 296,
-        "firstEpisodeStreamMs": 172,
-        "firstEpisodeVerificationMs": 472,
-        "verifiedAt": "2026-11-04T06:36:13.402Z"
+        "firstEpisodeEpisodesMs": 448,
+        "firstEpisodeStreamMs": 357,
+        "firstEpisodeVerificationMs": 806,
+        "verifiedAt": "2026-11-04T12:56:45.162Z"
       }
     ]
   }
