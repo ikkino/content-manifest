@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-06T15:58:34.625Z",
+  "generatedAt": "2026-11-06T21:34:09.679Z",
   "sourceCatalogRef": "config",
   "route": {
     "aniListId": 211778,
@@ -14,6 +14,46 @@
       "せかまじょ"
     ],
     "routes": [
+      {
+        "moduleId": "jzppd",
+        "catalogPath": "Sources/English/010",
+        "sourceName": "AllManga",
+        "language": "English",
+        "searchResultHref": "https://allmanga.to/bangumi/6a53923c2bf009cdfca4ba0d",
+        "episodeRoutes": [
+          {
+            "episode": 1,
+            "href": "https://allmanga.to/bangumi/6a53923c2bf009cdfca4ba0d/p-1"
+          },
+          {
+            "episode": 2,
+            "href": "https://allmanga.to/bangumi/6a53923c2bf009cdfca4ba0d/p-2"
+          },
+          {
+            "episode": 3,
+            "href": "https://allmanga.to/bangumi/6a53923c2bf009cdfca4ba0d/p-3"
+          },
+          {
+            "episode": 4,
+            "href": "https://allmanga.to/bangumi/6a53923c2bf009cdfca4ba0d/p-4"
+          },
+          {
+            "episode": 5,
+            "href": "https://allmanga.to/bangumi/6a53923c2bf009cdfca4ba0d/p-5"
+          }
+        ],
+        "availableEpisodes": 5,
+        "verifiedEpisode": 5,
+        "searchMs": 213,
+        "episodesMs": 276,
+        "streamMs": 329,
+        "verificationMs": 609,
+        "firstEpisodeVerified": 1,
+        "firstEpisodeEpisodesMs": 223,
+        "firstEpisodeStreamMs": 700,
+        "firstEpisodeVerificationMs": 926,
+        "verifiedAt": "2026-11-06T21:34:09.679Z"
+      },
       {
         "moduleId": "mangayomi_892345671",
         "catalogPath": "Sources/English/004",
@@ -45,54 +85,14 @@
         "availableEpisodes": 5,
         "verifiedEpisode": 5,
         "searchMs": 353,
-        "episodesMs": 410,
-        "streamMs": 500,
-        "verificationMs": 917,
+        "episodesMs": 313,
+        "streamMs": 349,
+        "verificationMs": 668,
         "firstEpisodeVerified": 1,
-        "firstEpisodeEpisodesMs": 328,
-        "firstEpisodeStreamMs": 1010,
-        "firstEpisodeVerificationMs": 1341,
-        "verifiedAt": "2026-11-06T15:58:34.625Z"
-      },
-      {
-        "moduleId": "animekai-unoriginal-local",
-        "catalogPath": "Sources/English/008",
-        "sourceName": "AnimeKai (Unoriginal)",
-        "language": "English",
-        "searchResultHref": "{\"path\":\"/watch/the-world-s-strongest-witch-9wwis\",\"title\":\"The World S Strongest Witch\"}",
-        "episodeRoutes": [
-          {
-            "episode": 1,
-            "href": "{\"path\":\"/watch/the-world-s-strongest-witch-9wwis\",\"title\":\"The World S Strongest Witch\",\"id\":\"8999\",\"number\":1,\"ids\":\"RXB6amhBc1BNdW8xNHNTYVRJZkIzdVQzRDhLQjV1Q2xjV2lidjdNN0pkenhrVGxhaWtjelBoZExJM3pYZXIxdFJMRUpua0xzMThNVWRVSVNEdE1OM2ZJVmhuU0JOYndRakUvWU84T1JvZWovVTJ4SThzenl3Zk00S05lazk0azBqYTMxNjNiYjNLTWNzSyt5ZFVyNzVnPT0\"}"
-          },
-          {
-            "episode": 2,
-            "href": "{\"path\":\"/watch/the-world-s-strongest-witch-9wwis\",\"title\":\"The World S Strongest Witch\",\"id\":\"8999\",\"number\":2,\"ids\":\"YndLUEMrMjRqZlE2NXFlM3liZCtMSG9KaUdNV3FyMjFXRWpEQWxqK3ZTZDc5azNkSEZ4RUVvdjdSTXI0WkJrekJLRXpPZkNjc0hpOVg3U3UwdG1SaTE3Ukswck9QYmNnVTRDU1lMdE0wUVh5M0QwRUxtMXFZeE14azNCRDhPNHM0SFl3UWQ0WGVUVVFyQlJUSWt6V1VRPT0\"}"
-          },
-          {
-            "episode": 3,
-            "href": "{\"path\":\"/watch/the-world-s-strongest-witch-9wwis\",\"title\":\"The World S Strongest Witch\",\"id\":\"8999\",\"number\":3,\"ids\":\"TTFQbmJWQmFlOW92N0RIZHR3Z3RxV0JtVmlnUDZIYmZpNkoxdlJNaG91Ukdvb2kyQlA5L0hPRjFDbnFSTGVCNWFibG85WTVBNEpPeFQ1OXBNeTJlYURNaktkZGdoOG9ibWtFM1RxcEZ6M05GRkM5WGV6SWlubFcrakRiLzRmMU95MEpRWXJ6VkRKUDE4YTRyR2Q1WDJ3PT0\"}"
-          },
-          {
-            "episode": 4,
-            "href": "{\"path\":\"/watch/the-world-s-strongest-witch-9wwis\",\"title\":\"The World S Strongest Witch\",\"id\":\"8999\",\"number\":4,\"ids\":\"QWNzaGdmQVB0emJwQkk5OHJxeUxqMStNQTVkM3lobUhHZURjVVlXYnU5RGdsUmFUOFVUOUdrdHNKYWZmS1JVVGtQZlpCbVFYYkg4cWFSeHB6b1hHS09ISm02aVNhOW82RVFMRzl6K2lCcnFSMXRMVWtJSVRweUpnTW9yaGZMaU1DNVhId0dncXBTUDN5TXVxcnJKdGlnPT0\"}"
-          },
-          {
-            "episode": 5,
-            "href": "{\"path\":\"/watch/the-world-s-strongest-witch-9wwis\",\"title\":\"The World S Strongest Witch\",\"id\":\"8999\",\"number\":5,\"ids\":\"T1Z6UTA5aXF0WVJHWDZuZFdQdDNLVllaVG92TWpmN1RBQ2NjUlM3bytrZC9rRllybDIwa2lydk4rNGtXYkw2VmNVVzBsY2NwbVRqOUthdElXNURNSzNUZkw1WldENkwzblZKdVpiZDlrVmwybE94STl1WUxMc0xBY0R2KzBTQ1lib3ZDa2RuaXF4eTdoRld4RkJpNHV3PT0\"}"
-          }
-        ],
-        "availableEpisodes": 5,
-        "verifiedEpisode": 5,
-        "searchMs": 223,
-        "episodesMs": 755,
-        "streamMs": 847,
-        "verificationMs": 1608,
-        "firstEpisodeVerified": 1,
-        "firstEpisodeEpisodesMs": 689,
-        "firstEpisodeStreamMs": 403,
-        "firstEpisodeVerificationMs": 1095,
-        "verifiedAt": "2026-11-06T15:58:34.625Z"
+        "firstEpisodeEpisodesMs": 378,
+        "firstEpisodeStreamMs": 456,
+        "firstEpisodeVerificationMs": 843,
+        "verifiedAt": "2026-11-06T21:34:09.679Z"
       },
       {
         "moduleId": "animesogo-local",
@@ -125,14 +125,54 @@
         "availableEpisodes": 5,
         "verifiedEpisode": 5,
         "searchMs": 215,
-        "episodesMs": 766,
-        "streamMs": 380,
-        "verificationMs": 1154,
+        "episodesMs": 477,
+        "streamMs": 290,
+        "verificationMs": 769,
         "firstEpisodeVerified": 1,
-        "firstEpisodeEpisodesMs": 842,
-        "firstEpisodeStreamMs": 408,
-        "firstEpisodeVerificationMs": 1253,
-        "verifiedAt": "2026-11-06T15:58:34.625Z"
+        "firstEpisodeEpisodesMs": 598,
+        "firstEpisodeStreamMs": 308,
+        "firstEpisodeVerificationMs": 912,
+        "verifiedAt": "2026-11-06T21:34:09.679Z"
+      },
+      {
+        "moduleId": "animekai-unoriginal-local",
+        "catalogPath": "Sources/English/008",
+        "sourceName": "AnimeKai (Unoriginal)",
+        "language": "English",
+        "searchResultHref": "{\"path\":\"/watch/the-world-s-strongest-witch-9wwis\",\"title\":\"The World S Strongest Witch\"}",
+        "episodeRoutes": [
+          {
+            "episode": 1,
+            "href": "{\"path\":\"/watch/the-world-s-strongest-witch-9wwis\",\"title\":\"The World S Strongest Witch\",\"id\":\"8999\",\"number\":1,\"ids\":\"RXB6amhBc1BNdW8xNHNTYVRJZkIzdVQzRDhLQjV1Q2xjV2lidjdNN0pkenhrVGxhaWtjelBoZExJM3pYZXIxdFJMRUpua0xzMThNVWRVSVNEdE1OM2ZJVmhuU0JOYndRakUvWU84T1JvZWovVTJ4SThzenl3Zk00S05lazk0azBqYTMxNjNiYjNLTWNzSyt5ZFVyNzVnPT0\"}"
+          },
+          {
+            "episode": 2,
+            "href": "{\"path\":\"/watch/the-world-s-strongest-witch-9wwis\",\"title\":\"The World S Strongest Witch\",\"id\":\"8999\",\"number\":2,\"ids\":\"YndLUEMrMjRqZlE2NXFlM3liZCtMSG9KaUdNV3FyMjFXRWpEQWxqK3ZTZDc5azNkSEZ4RUVvdjdSTXI0WkJrekJLRXpPZkNjc0hpOVg3U3UwdG1SaTE3Ukswck9QYmNnVTRDU1lMdE0wUVh5M0QwRUxtMXFZeE14azNCRDhPNHM0SFl3UWQ0WGVUVVFyQlJUSWt6V1VRPT0\"}"
+          },
+          {
+            "episode": 3,
+            "href": "{\"path\":\"/watch/the-world-s-strongest-witch-9wwis\",\"title\":\"The World S Strongest Witch\",\"id\":\"8999\",\"number\":3,\"ids\":\"TTFQbmJWQmFlOW92N0RIZHR3Z3RxV0JtVmlnUDZIYmZpNkoxdlJNaG91Ukdvb2kyQlA5L0hPRjFDbnFSTGVCNWFibG85WTVBNEpPeFQ1OXBNeTJlYURNaktkZGdoOG9ibWtFM1RxcEZ6M05GRkM5WGV6SWlubFcrakRiLzRmMU95MEpRWXJ6VkRKUDE4YTRyR2Q1WDJ3PT0\"}"
+          },
+          {
+            "episode": 4,
+            "href": "{\"path\":\"/watch/the-world-s-strongest-witch-9wwis\",\"title\":\"The World S Strongest Witch\",\"id\":\"8999\",\"number\":4,\"ids\":\"QWNzaGdmQVB0emJwQkk5OHJxeUxqMStNQTVkM3lobUhHZURjVVlXYnU5RGdsUmFUOFVUOUdrdHNKYWZmS1JVVGtQZlpCbVFYYkg4cWFSeHB6b1hHS09ISm02aVNhOW82RVFMRzl6K2lCcnFSMXRMVWtJSVRweUpnTW9yaGZMaU1DNVhId0dncXBTUDN5TXVxcnJKdGlnPT0\"}"
+          },
+          {
+            "episode": 5,
+            "href": "{\"path\":\"/watch/the-world-s-strongest-witch-9wwis\",\"title\":\"The World S Strongest Witch\",\"id\":\"8999\",\"number\":5,\"ids\":\"T1Z6UTA5aXF0WVJHWDZuZFdQdDNLVllaVG92TWpmN1RBQ2NjUlM3bytrZC9rRllybDIwa2lydk4rNGtXYkw2VmNVVzBsY2NwbVRqOUthdElXNURNSzNUZkw1WldENkwzblZKdVpiZDlrVmwybE94STl1WUxMc0xBY0R2KzBTQ1lib3ZDa2RuaXF4eTdoRld4RkJpNHV3PT0\"}"
+          }
+        ],
+        "availableEpisodes": 5,
+        "verifiedEpisode": 5,
+        "searchMs": 223,
+        "episodesMs": 543,
+        "streamMs": 257,
+        "verificationMs": 804,
+        "firstEpisodeVerified": 1,
+        "firstEpisodeEpisodesMs": 672,
+        "firstEpisodeStreamMs": 299,
+        "firstEpisodeVerificationMs": 981,
+        "verifiedAt": "2026-11-06T21:34:09.679Z"
       }
     ]
   }
