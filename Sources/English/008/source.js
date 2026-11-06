@@ -1,5 +1,5 @@
-const ANIKOTO_BASE = "https://animesogo.to";
-const ANIKOTO_NAME = "AnimeSogo";
+const ANIKOTO_BASE = "https://animekaitv.to";
+const ANIKOTO_NAME = "AnimeKai (Unoriginal)";
 
 async function anikotoText(url, headers) {
   const response = await fetchv2(url, {
