@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-08T06:12:52.205Z",
+  "generatedAt": "2026-11-08T11:54:44.692Z",
   "sourceCatalogRef": "config",
   "route": {
     "aniListId": 195571,
@@ -11,8 +11,48 @@
     ],
     "routes": [
       {
+        "moduleId": "jzppd",
+        "catalogPath": "Sources/English/009",
+        "sourceName": "AllManga",
+        "language": "English",
+        "searchResultHref": "https://allmanga.to/bangumi/6a6426b208ee10a7bac3154b",
+        "episodeRoutes": [
+          {
+            "episode": 1,
+            "href": "https://allmanga.to/bangumi/6a6426b208ee10a7bac3154b/p-1"
+          },
+          {
+            "episode": 2,
+            "href": "https://allmanga.to/bangumi/6a6426b208ee10a7bac3154b/p-2"
+          },
+          {
+            "episode": 3,
+            "href": "https://allmanga.to/bangumi/6a6426b208ee10a7bac3154b/p-3"
+          },
+          {
+            "episode": 4,
+            "href": "https://allmanga.to/bangumi/6a6426b208ee10a7bac3154b/p-4"
+          },
+          {
+            "episode": 5,
+            "href": "https://allmanga.to/bangumi/6a6426b208ee10a7bac3154b/p-5"
+          }
+        ],
+        "availableEpisodes": 5,
+        "verifiedEpisode": 5,
+        "searchMs": 142,
+        "episodesMs": 212,
+        "streamMs": 222,
+        "verificationMs": 437,
+        "firstEpisodeVerified": 1,
+        "firstEpisodeEpisodesMs": 224,
+        "firstEpisodeStreamMs": 1292,
+        "firstEpisodeVerificationMs": 1520,
+        "verifiedAt": "2026-11-08T11:54:44.692Z"
+      },
+      {
         "moduleId": "mangayomi_892345671",
-        "catalogPath": "Sources/English/006",
+        "catalogPath": "Sources/English/004",
         "sourceName": "JustAnime",
         "language": "English",
         "searchResultHref": "195571",
@@ -41,58 +81,18 @@
         "availableEpisodes": 5,
         "verifiedEpisode": 5,
         "searchMs": 409,
-        "episodesMs": 249,
-        "streamMs": 403,
-        "verificationMs": 656,
+        "episodesMs": 349,
+        "streamMs": 362,
+        "verificationMs": 718,
         "firstEpisodeVerified": 1,
-        "firstEpisodeEpisodesMs": 231,
-        "firstEpisodeStreamMs": 536,
-        "firstEpisodeVerificationMs": 770,
-        "verifiedAt": "2026-11-08T06:12:52.205Z"
-      },
-      {
-        "moduleId": "animekai-unoriginal-local",
-        "catalogPath": "Sources/English/009",
-        "sourceName": "AnimeKai (Unoriginal)",
-        "language": "English",
-        "searchResultHref": "{\"path\":\"/watch/the-vermilion-mask-cr9yg\",\"title\":\"The Vermilion Mask\"}",
-        "episodeRoutes": [
-          {
-            "episode": 1,
-            "href": "{\"path\":\"/watch/the-vermilion-mask-cr9yg\",\"title\":\"The Vermilion Mask\",\"id\":\"9012\",\"number\":1,\"ids\":\"TzJWWk83MmdHbFFhdng0UlRaNmhBeVZrcW43dlVPRGlwUVVOZFl6K2ExamVoL3djeTV5T1JGcUtkdzlFR21OUWtzRXhxcVV0alduV0xZeDlkanlGbFR0QnlBb1N0S09lcDV0eFVlamErOGdaQUpvcWo1MGlSU0VnMGpGUGZPYXJBUkFjZVl3RjJiTFkzWW9QNU9ZQmhRPT0\"}"
-          },
-          {
-            "episode": 2,
-            "href": "{\"path\":\"/watch/the-vermilion-mask-cr9yg\",\"title\":\"The Vermilion Mask\",\"id\":\"9012\",\"number\":2,\"ids\":\"Mm5JUmJiZnVSYUhtTWsxZnpLdGNYYWVvbW1xMWlaYVdUMldCSjVjcUY3NkUvNUJ4Y1kvUDVTM0ttRCsvWTZuNWRqc2wyYzJKem1uTXNNdjNnSzZNUzJ5R1FBenRheC9LV3ZFNWZTR0gxOFd3U0NTUEd2c1ZrU3EyTzh1Mzhtbk9ZTDlaeFlWck1vUng1VGIwOWlpQnhnPT0\"}"
-          },
-          {
-            "episode": 3,
-            "href": "{\"path\":\"/watch/the-vermilion-mask-cr9yg\",\"title\":\"The Vermilion Mask\",\"id\":\"9012\",\"number\":3,\"ids\":\"dG9xa0RyMURmTU5aRElpbGliRTRETC9vS2Q3MHFBUVU0TFJIdjRLT21PSm9NWU5Ka2tWbkNDa1NvNXhZUHBtNG5pd3dTNGlPMDUzQ3ZvZEFHQjdCb1ZQY2g5elhzaHVWTDN4QWMxeHQrdWNZOGFHV2ZmMzZxWCtVbGduWXpjc3J5OFJYb0FVRkI5WGVGd0J4clhPK1hBPT0\"}"
-          },
-          {
-            "episode": 4,
-            "href": "{\"path\":\"/watch/the-vermilion-mask-cr9yg\",\"title\":\"The Vermilion Mask\",\"id\":\"9012\",\"number\":4,\"ids\":\"ajY0VUZlSk95WUFYYUt1b2dWTndxenlrK3BaMkxyU2dsWWNBL0JqV3k3czRrc2VJL2w5RlpOc3EyalpUczZIN0krQ0YwREwyRVZEa2p3Slc4ZzdLNDV4SXlkME5sU0lGRjI3NDhLa2NkbmhidStnMUtMM2xzNlJHWkVmS3k2VXZWTnNiMmlxMkdDZ3pDMlg4QlN1RGlBPT0\"}"
-          },
-          {
-            "episode": 5,
-            "href": "{\"path\":\"/watch/the-vermilion-mask-cr9yg\",\"title\":\"The Vermilion Mask\",\"id\":\"9012\",\"number\":5,\"ids\":\"azZaVWttYWdWMTdmTm9ZbUF1SFJKdm5OQkQ1SkRJZm9heFdYVklFenF4cnRrOStXQTFscGI0T2FwNXRtZGI4YXVkQ25sZFFqWFdZbDBINUY5ZldhV1NVMFI4MGZlRHhqYVd2S3FQWHJSS1diNU1EL2pqNXk5MFJqbXlsS0ZTQmN1RnZONTI2NlIyNlJwQmMzcUZBNkZnPT0\"}"
-          }
-        ],
-        "availableEpisodes": 5,
-        "verifiedEpisode": 5,
-        "searchMs": 207,
-        "episodesMs": 490,
-        "streamMs": 258,
-        "verificationMs": 758,
-        "firstEpisodeVerified": 1,
-        "firstEpisodeEpisodesMs": 532,
-        "firstEpisodeStreamMs": 270,
-        "firstEpisodeVerificationMs": 808,
-        "verifiedAt": "2026-11-08T06:12:52.205Z"
+        "firstEpisodeEpisodesMs": 285,
+        "firstEpisodeStreamMs": 350,
+        "firstEpisodeVerificationMs": 640,
+        "verifiedAt": "2026-11-08T11:54:44.692Z"
       },
       {
         "moduleId": "animesogo-local",
-        "catalogPath": "Sources/English/008",
+        "catalogPath": "Sources/English/006",
         "sourceName": "AnimeSogo",
         "language": "English",
         "searchResultHref": "{\"path\":\"/watch/the-vermilion-mask-dibyv\",\"title\":\"The Vermilion Mask\"}",
@@ -121,14 +121,54 @@
         "availableEpisodes": 5,
         "verifiedEpisode": 5,
         "searchMs": 183,
-        "episodesMs": 499,
-        "streamMs": 265,
-        "verificationMs": 771,
+        "episodesMs": 457,
+        "streamMs": 300,
+        "verificationMs": 760,
         "firstEpisodeVerified": 1,
-        "firstEpisodeEpisodesMs": 503,
-        "firstEpisodeStreamMs": 280,
-        "firstEpisodeVerificationMs": 787,
-        "verifiedAt": "2026-11-08T06:12:52.205Z"
+        "firstEpisodeEpisodesMs": 483,
+        "firstEpisodeStreamMs": 285,
+        "firstEpisodeVerificationMs": 770,
+        "verifiedAt": "2026-11-08T11:54:44.692Z"
+      },
+      {
+        "moduleId": "animekai-unoriginal-local",
+        "catalogPath": "Sources/English/007",
+        "sourceName": "AnimeKai (Unoriginal)",
+        "language": "English",
+        "searchResultHref": "{\"path\":\"/watch/the-vermilion-mask-cr9yg\",\"title\":\"The Vermilion Mask\"}",
+        "episodeRoutes": [
+          {
+            "episode": 1,
+            "href": "{\"path\":\"/watch/the-vermilion-mask-cr9yg\",\"title\":\"The Vermilion Mask\",\"id\":\"9012\",\"number\":1,\"ids\":\"TzJWWk83MmdHbFFhdng0UlRaNmhBeVZrcW43dlVPRGlwUVVOZFl6K2ExamVoL3djeTV5T1JGcUtkdzlFR21OUWtzRXhxcVV0alduV0xZeDlkanlGbFR0QnlBb1N0S09lcDV0eFVlamErOGdaQUpvcWo1MGlSU0VnMGpGUGZPYXJBUkFjZVl3RjJiTFkzWW9QNU9ZQmhRPT0\"}"
+          },
+          {
+            "episode": 2,
+            "href": "{\"path\":\"/watch/the-vermilion-mask-cr9yg\",\"title\":\"The Vermilion Mask\",\"id\":\"9012\",\"number\":2,\"ids\":\"Mm5JUmJiZnVSYUhtTWsxZnpLdGNYYWVvbW1xMWlaYVdUMldCSjVjcUY3NkUvNUJ4Y1kvUDVTM0ttRCsvWTZuNWRqc2wyYzJKem1uTXNNdjNnSzZNUzJ5R1FBenRheC9LV3ZFNWZTR0gxOFd3U0NTUEd2c1ZrU3EyTzh1Mzhtbk9ZTDlaeFlWck1vUng1VGIwOWlpQnhnPT0\"}"
+          },
+          {
+            "episode": 3,
+            "href": "{\"path\":\"/watch/the-vermilion-mask-cr9yg\",\"title\":\"The Vermilion Mask\",\"id\":\"9012\",\"number\":3,\"ids\":\"dG9xa0RyMURmTU5aRElpbGliRTRETC9vS2Q3MHFBUVU0TFJIdjRLT21PSm9NWU5Ka2tWbkNDa1NvNXhZUHBtNG5pd3dTNGlPMDUzQ3ZvZEFHQjdCb1ZQY2g5elhzaHVWTDN4QWMxeHQrdWNZOGFHV2ZmMzZxWCtVbGduWXpjc3J5OFJYb0FVRkI5WGVGd0J4clhPK1hBPT0\"}"
+          },
+          {
+            "episode": 4,
+            "href": "{\"path\":\"/watch/the-vermilion-mask-cr9yg\",\"title\":\"The Vermilion Mask\",\"id\":\"9012\",\"number\":4,\"ids\":\"ajY0VUZlSk95WUFYYUt1b2dWTndxenlrK3BaMkxyU2dsWWNBL0JqV3k3czRrc2VJL2w5RlpOc3EyalpUczZIN0krQ0YwREwyRVZEa2p3Slc4ZzdLNDV4SXlkME5sU0lGRjI3NDhLa2NkbmhidStnMUtMM2xzNlJHWkVmS3k2VXZWTnNiMmlxMkdDZ3pDMlg4QlN1RGlBPT0\"}"
+          },
+          {
+            "episode": 5,
+            "href": "{\"path\":\"/watch/the-vermilion-mask-cr9yg\",\"title\":\"The Vermilion Mask\",\"id\":\"9012\",\"number\":5,\"ids\":\"azZaVWttYWdWMTdmTm9ZbUF1SFJKdm5OQkQ1SkRJZm9heFdYVklFenF4cnRrOStXQTFscGI0T2FwNXRtZGI4YXVkQ25sZFFqWFdZbDBINUY5ZldhV1NVMFI4MGZlRHhqYVd2S3FQWHJSS1diNU1EL2pqNXk5MFJqbXlsS0ZTQmN1RnZONTI2NlIyNlJwQmMzcUZBNkZnPT0\"}"
+          }
+        ],
+        "availableEpisodes": 5,
+        "verifiedEpisode": 5,
+        "searchMs": 207,
+        "episodesMs": 518,
+        "streamMs": 275,
+        "verificationMs": 799,
+        "firstEpisodeVerified": 1,
+        "firstEpisodeEpisodesMs": 484,
+        "firstEpisodeStreamMs": 272,
+        "firstEpisodeVerificationMs": 759,
+        "verifiedAt": "2026-11-08T11:54:44.692Z"
       }
     ]
   }

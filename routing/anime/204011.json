@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-08T06:12:52.205Z",
+  "generatedAt": "2026-11-08T11:54:44.692Z",
   "sourceCatalogRef": "config",
   "route": {
     "aniListId": 204011,
@@ -12,8 +12,44 @@
     ],
     "routes": [
       {
+        "moduleId": "jzppd",
+        "catalogPath": "Sources/English/009",
+        "sourceName": "AllManga",
+        "language": "English",
+        "searchResultHref": "https://allmanga.to/bangumi/6a70043236b439e7571d37a1",
+        "episodeRoutes": [
+          {
+            "episode": 1,
+            "href": "https://allmanga.to/bangumi/6a70043236b439e7571d37a1/p-1"
+          },
+          {
+            "episode": 2,
+            "href": "https://allmanga.to/bangumi/6a70043236b439e7571d37a1/p-2"
+          },
+          {
+            "episode": 3,
+            "href": "https://allmanga.to/bangumi/6a70043236b439e7571d37a1/p-3"
+          },
+          {
+            "episode": 4,
+            "href": "https://allmanga.to/bangumi/6a70043236b439e7571d37a1/p-4"
+          }
+        ],
+        "availableEpisodes": 4,
+        "verifiedEpisode": 4,
+        "searchMs": 146,
+        "episodesMs": 266,
+        "streamMs": 261,
+        "verificationMs": 535,
+        "firstEpisodeVerified": 1,
+        "firstEpisodeEpisodesMs": 212,
+        "firstEpisodeStreamMs": 1033,
+        "firstEpisodeVerificationMs": 1247,
+        "verifiedAt": "2026-11-08T11:54:44.692Z"
+      },
+      {
         "moduleId": "mangayomi_892345671",
-        "catalogPath": "Sources/English/006",
+        "catalogPath": "Sources/English/004",
         "sourceName": "JustAnime",
         "language": "English",
         "searchResultHref": "204011",
@@ -38,54 +74,18 @@
         "availableEpisodes": 4,
         "verifiedEpisode": 4,
         "searchMs": 258,
-        "episodesMs": 205,
-        "streamMs": 269,
-        "verificationMs": 478,
+        "episodesMs": 477,
+        "streamMs": 613,
+        "verificationMs": 1099,
         "firstEpisodeVerified": 1,
-        "firstEpisodeEpisodesMs": 158,
-        "firstEpisodeStreamMs": 397,
-        "firstEpisodeVerificationMs": 557,
-        "verifiedAt": "2026-11-07T11:43:52.382Z"
-      },
-      {
-        "moduleId": "animesogo-local",
-        "catalogPath": "Sources/English/008",
-        "sourceName": "AnimeSogo",
-        "language": "English",
-        "searchResultHref": "{\"path\":\"/watch/psyren-ooedj\",\"title\":\"Psyren\"}",
-        "episodeRoutes": [
-          {
-            "episode": 1,
-            "href": "{\"path\":\"/watch/psyren-ooedj\",\"title\":\"Psyren\",\"id\":\"9049\",\"number\":1,\"ids\":\"RjBaRWNTY0EwTjc0QllrOTlWYWRUaGhRNUZyVklhcGdYMlJVMkFQVngzdWUySUExUGpYUk55cGxBNFkzalIwZ3JOMGhRbnY5ZTBmd2NUU1dxZkRBZ3c0MUpQYUt1ZzhRcUZuSmRRRm1EbStjMm41bVVLWEwwYVE2aW1lRlo0TzVOUm51OHliZlNBdmVSWWZwb2MyQVdnPT0\"}"
-          },
-          {
-            "episode": 2,
-            "href": "{\"path\":\"/watch/psyren-ooedj\",\"title\":\"Psyren\",\"id\":\"9049\",\"number\":2,\"ids\":\"TkNSdGFUYklIL1JNUFZMckVZZHBPdythcGdQL0RPUFJBSWxNdUxadTZXSXpVWU00WDNuMTVzQktQalMvd2pscXlBN21hSng2azVOaWdXQStlZDNCNkNWYWgxVCtITEV4ZXN2NExaa25tRUNQV2J1TUlJQlJvQXVRUkZTQWkxY1g3TXVNMmp2OU1UYnRkSU43Zk1PZVJ3PT0\"}"
-          },
-          {
-            "episode": 3,
-            "href": "{\"path\":\"/watch/psyren-ooedj\",\"title\":\"Psyren\",\"id\":\"9049\",\"number\":3,\"ids\":\"QzQ2OU41ZnhhMVYyWiszOGZiV01BMGNldTlvMmpZWGlRYm4vY056UlVKTEowZldBV0tGTGw0UFJweFpyQ2ZIYkp0SHVzNi9pZy96ZFNyZm1MMWpaN3M3d1ViNkNvS09hSFpkNU1hTUpLMTNITjg0S0RTSEoyelEyU01WWkt2T1FlZTFkNXArbnUzTGMzK29iZW5lMi9RPT0\"}"
-          },
-          {
-            "episode": 4,
-            "href": "{\"path\":\"/watch/psyren-ooedj\",\"title\":\"Psyren\",\"id\":\"9049\",\"number\":4,\"ids\":\"VUloa3hjNWZQZ3U3aGtQclNpMWxscURHR1MrZ0ZFMGhvcExoVGFUTjAyQTFiVGhMV2xUYS9TUlpHcTJOSnBFYzNTSVRnWEhBSnZjQTIzRXZtL3ErMkRQNGlkQjN2emlHZ1JCeGVoUUpoTnh1Z3VzZzFtSUtrQXdiSklLUC9jdnMwRFozUTVlOFdySnd2WjZHdzFZMGd3PT0\"}"
-          }
-        ],
-        "availableEpisodes": 4,
-        "verifiedEpisode": 4,
-        "searchMs": 168,
-        "episodesMs": 403,
-        "streamMs": 253,
-        "verificationMs": 664,
-        "firstEpisodeVerified": 1,
-        "firstEpisodeEpisodesMs": 326,
-        "firstEpisodeStreamMs": 253,
-        "firstEpisodeVerificationMs": 580,
-        "verifiedAt": "2026-11-07T11:43:52.382Z"
+        "firstEpisodeEpisodesMs": 342,
+        "firstEpisodeStreamMs": 495,
+        "firstEpisodeVerificationMs": 854,
+        "verifiedAt": "2026-11-08T11:54:44.692Z"
       },
       {
         "moduleId": "animekai-unoriginal-local",
-        "catalogPath": "Sources/English/009",
+        "catalogPath": "Sources/English/007",
         "sourceName": "AnimeKai (Unoriginal)",
         "language": "English",
         "searchResultHref": "{\"path\":\"/watch/psyren-ij4vg\",\"title\":\"Psyren\"}",
@@ -110,18 +110,54 @@
         "availableEpisodes": 4,
         "verifiedEpisode": 4,
         "searchMs": 163,
-        "episodesMs": 526,
-        "streamMs": 252,
-        "verificationMs": 779,
+        "episodesMs": 698,
+        "streamMs": 312,
+        "verificationMs": 1014,
         "firstEpisodeVerified": 1,
-        "firstEpisodeEpisodesMs": 399,
-        "firstEpisodeStreamMs": 259,
-        "firstEpisodeVerificationMs": 659,
-        "verifiedAt": "2026-11-07T11:43:52.382Z"
+        "firstEpisodeEpisodesMs": 577,
+        "firstEpisodeStreamMs": 295,
+        "firstEpisodeVerificationMs": 877,
+        "verifiedAt": "2026-11-08T11:54:44.692Z"
+      },
+      {
+        "moduleId": "animesogo-local",
+        "catalogPath": "Sources/English/006",
+        "sourceName": "AnimeSogo",
+        "language": "English",
+        "searchResultHref": "{\"path\":\"/watch/psyren-ooedj\",\"title\":\"Psyren\"}",
+        "episodeRoutes": [
+          {
+            "episode": 1,
+            "href": "{\"path\":\"/watch/psyren-ooedj\",\"title\":\"Psyren\",\"id\":\"9049\",\"number\":1,\"ids\":\"RjBaRWNTY0EwTjc0QllrOTlWYWRUaGhRNUZyVklhcGdYMlJVMkFQVngzdWUySUExUGpYUk55cGxBNFkzalIwZ3JOMGhRbnY5ZTBmd2NUU1dxZkRBZ3c0MUpQYUt1ZzhRcUZuSmRRRm1EbStjMm41bVVLWEwwYVE2aW1lRlo0TzVOUm51OHliZlNBdmVSWWZwb2MyQVdnPT0\"}"
+          },
+          {
+            "episode": 2,
+            "href": "{\"path\":\"/watch/psyren-ooedj\",\"title\":\"Psyren\",\"id\":\"9049\",\"number\":2,\"ids\":\"TkNSdGFUYklIL1JNUFZMckVZZHBPdythcGdQL0RPUFJBSWxNdUxadTZXSXpVWU00WDNuMTVzQktQalMvd2pscXlBN21hSng2azVOaWdXQStlZDNCNkNWYWgxVCtITEV4ZXN2NExaa25tRUNQV2J1TUlJQlJvQXVRUkZTQWkxY1g3TXVNMmp2OU1UYnRkSU43Zk1PZVJ3PT0\"}"
+          },
+          {
+            "episode": 3,
+            "href": "{\"path\":\"/watch/psyren-ooedj\",\"title\":\"Psyren\",\"id\":\"9049\",\"number\":3,\"ids\":\"QzQ2OU41ZnhhMVYyWiszOGZiV01BMGNldTlvMmpZWGlRYm4vY056UlVKTEowZldBV0tGTGw0UFJweFpyQ2ZIYkp0SHVzNi9pZy96ZFNyZm1MMWpaN3M3d1ViNkNvS09hSFpkNU1hTUpLMTNITjg0S0RTSEoyelEyU01WWkt2T1FlZTFkNXArbnUzTGMzK29iZW5lMi9RPT0\"}"
+          },
+          {
+            "episode": 4,
+            "href": "{\"path\":\"/watch/psyren-ooedj\",\"title\":\"Psyren\",\"id\":\"9049\",\"number\":4,\"ids\":\"VUloa3hjNWZQZ3U3aGtQclNpMWxscURHR1MrZ0ZFMGhvcExoVGFUTjAyQTFiVGhMV2xUYS9TUlpHcTJOSnBFYzNTSVRnWEhBSnZjQTIzRXZtL3ErMkRQNGlkQjN2emlHZ1JCeGVoUUpoTnh1Z3VzZzFtSUtrQXdiSklLUC9jdnMwRFozUTVlOFdySnd2WjZHdzFZMGd3PT0\"}"
+          }
+        ],
+        "availableEpisodes": 4,
+        "verifiedEpisode": 4,
+        "searchMs": 168,
+        "episodesMs": 678,
+        "streamMs": 324,
+        "verificationMs": 1007,
+        "firstEpisodeVerified": 1,
+        "firstEpisodeEpisodesMs": 719,
+        "firstEpisodeStreamMs": 308,
+        "firstEpisodeVerificationMs": 1043,
+        "verifiedAt": "2026-11-08T11:54:44.692Z"
       },
       {
         "moduleId": "jCtAp",
-        "catalogPath": "Sources/English/016",
+        "catalogPath": "Sources/English/014",
         "sourceName": "123Anime",
         "language": "English",
         "searchResultHref": "https://123animes.ru/anime/psyren",
@@ -146,14 +182,14 @@
         "availableEpisodes": 4,
         "verifiedEpisode": 4,
         "searchMs": 434,
-        "episodesMs": 627,
-        "streamMs": 533,
-        "verificationMs": 1162,
+        "episodesMs": 803,
+        "streamMs": 841,
+        "verificationMs": 1646,
         "firstEpisodeVerified": 1,
-        "firstEpisodeEpisodesMs": 668,
+        "firstEpisodeEpisodesMs": 953,
         "firstEpisodeStreamMs": 537,
-        "firstEpisodeVerificationMs": 1211,
-        "verifiedAt": "2026-11-07T11:43:52.382Z"
+        "firstEpisodeVerificationMs": 1492,
+        "verifiedAt": "2026-11-08T11:54:44.692Z"
       }
     ]
   }
