@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-09T11:43:58.700Z",
+  "generatedAt": "2026-11-09T13:47:49.587Z",
   "sourceCatalogRef": "config",
   "route": {
     "aniListId": 203275,
@@ -14,8 +14,72 @@
     ],
     "routes": [
       {
+        "moduleId": "vidlink-local",
+        "catalogPath": "Sources/English/009",
+        "sourceName": "VidLink",
+        "language": "English",
+        "searchResultHref": "tv/328010/1/1",
+        "episodeRoutes": [
+          {
+            "episode": 1,
+            "href": "/tv/328010/1/1"
+          },
+          {
+            "episode": 2,
+            "href": "/tv/328010/1/2"
+          },
+          {
+            "episode": 3,
+            "href": "/tv/328010/1/3"
+          }
+        ],
+        "availableEpisodes": 3,
+        "verifiedEpisode": 2,
+        "searchMs": 113,
+        "episodesMs": 162,
+        "streamMs": 200,
+        "verificationMs": 365,
+        "firstEpisodeVerified": 1,
+        "firstEpisodeEpisodesMs": 167,
+        "firstEpisodeStreamMs": 202,
+        "firstEpisodeVerificationMs": 370,
+        "verifiedAt": "2026-11-09T13:47:49.587Z"
+      },
+      {
+        "moduleId": "mod_336052763",
+        "catalogPath": "Sources/English/008",
+        "sourceName": "IMDb",
+        "language": "English",
+        "searchResultHref": "tv/328010/1/1",
+        "episodeRoutes": [
+          {
+            "episode": 1,
+            "href": "/tv/328010/1/1"
+          },
+          {
+            "episode": 2,
+            "href": "/tv/328010/1/2"
+          },
+          {
+            "episode": 3,
+            "href": "/tv/328010/1/3"
+          }
+        ],
+        "availableEpisodes": 3,
+        "verifiedEpisode": 2,
+        "searchMs": 146,
+        "episodesMs": 196,
+        "streamMs": 184,
+        "verificationMs": 381,
+        "firstEpisodeVerified": 1,
+        "firstEpisodeEpisodesMs": 169,
+        "firstEpisodeStreamMs": 234,
+        "firstEpisodeVerificationMs": 404,
+        "verifiedAt": "2026-11-09T13:47:49.587Z"
+      },
+      {
         "moduleId": "jwnFI",
-        "catalogPath": "Sources/English/002",
+        "catalogPath": "Sources/English/003",
         "sourceName": "XPass",
         "language": "English",
         "searchResultHref": "tv/328010/1/1",
@@ -36,14 +100,46 @@
         "availableEpisodes": 3,
         "verifiedEpisode": 2,
         "searchMs": 377,
-        "episodesMs": 346,
-        "streamMs": 79,
-        "verificationMs": 430,
+        "episodesMs": 255,
+        "streamMs": 82,
+        "verificationMs": 345,
         "firstEpisodeVerified": 1,
-        "firstEpisodeEpisodesMs": 267,
-        "firstEpisodeStreamMs": 45,
-        "firstEpisodeVerificationMs": 314,
-        "verifiedAt": "2026-11-08T11:54:44.692Z"
+        "firstEpisodeEpisodesMs": 303,
+        "firstEpisodeStreamMs": 81,
+        "firstEpisodeVerificationMs": 387,
+        "verifiedAt": "2026-11-09T13:47:49.587Z"
+      },
+      {
+        "moduleId": "B0b0R",
+        "catalogPath": "Sources/English/011",
+        "sourceName": "VidFast",
+        "language": "English",
+        "searchResultHref": "tv/328010/1/1",
+        "episodeRoutes": [
+          {
+            "episode": 1,
+            "href": "/tv/328010/1/1"
+          },
+          {
+            "episode": 2,
+            "href": "/tv/328010/1/2"
+          },
+          {
+            "episode": 3,
+            "href": "/tv/328010/1/3"
+          }
+        ],
+        "availableEpisodes": 3,
+        "verifiedEpisode": 2,
+        "searchMs": 131,
+        "episodesMs": 278,
+        "streamMs": 363,
+        "verificationMs": 645,
+        "firstEpisodeVerified": 1,
+        "firstEpisodeEpisodesMs": 203,
+        "firstEpisodeStreamMs": 237,
+        "firstEpisodeVerificationMs": 443,
+        "verifiedAt": "2026-11-09T13:47:49.587Z"
       },
       {
         "moduleId": "jg3nm",
@@ -68,102 +164,14 @@
         "availableEpisodes": 3,
         "verifiedEpisode": 2,
         "searchMs": 368,
-        "episodesMs": 320,
-        "streamMs": 221,
-        "verificationMs": 547,
+        "episodesMs": 264,
+        "streamMs": 235,
+        "verificationMs": 501,
         "firstEpisodeVerified": 1,
-        "firstEpisodeEpisodesMs": 266,
-        "firstEpisodeStreamMs": 241,
-        "firstEpisodeVerificationMs": 509,
-        "verifiedAt": "2026-11-08T11:54:44.692Z"
-      },
-      {
-        "moduleId": "B0b0R",
-        "catalogPath": "Sources/English/012",
-        "sourceName": "VidFast",
-        "language": "English",
-        "searchResultHref": "tv/328010/1/1",
-        "episodeRoutes": [
-          {
-            "episode": 1,
-            "href": "/tv/328010/1/1"
-          },
-          {
-            "episode": 2,
-            "href": "/tv/328010/1/2"
-          },
-          {
-            "episode": 3,
-            "href": "/tv/328010/1/3"
-          }
-        ],
-        "availableEpisodes": 3,
-        "verifiedEpisode": 2,
-        "searchMs": 131,
-        "episodesMs": 277,
-        "streamMs": 414,
-        "verificationMs": 694,
-        "firstEpisodeVerified": 1,
-        "firstEpisodeEpisodesMs": 281,
-        "firstEpisodeStreamMs": 411,
-        "firstEpisodeVerificationMs": 702,
-        "verifiedAt": "2026-11-08T11:54:44.692Z"
-      },
-      {
-        "moduleId": "animesogo-local",
-        "catalogPath": "Sources/English/006",
-        "sourceName": "AnimeSogo",
-        "language": "English",
-        "searchResultHref": "{\"path\":\"/watch/devils-crest-ciqii\",\"title\":\"Devils Crest\"}",
-        "episodeRoutes": [
-          {
-            "episode": 1,
-            "href": "{\"path\":\"/watch/devils-crest-ciqii\",\"title\":\"Devils Crest\",\"id\":\"9196\",\"number\":1,\"ids\":\"akVZMG5SY2taU0phaHVIaCswdUdGVkwvcHZpM3ZIaHROWG9YdDFOd0FrV2xUTmVTd045T2k0akd2K1JRWnBweGlEa2ZRNDJqYjZ1OUt4bVJ6OGR0bG05RkV4Vy9XMnJzYTB2cFRFNHVCUWJ3U01HU0crYXBaY3NCVmJyRnIzWVAvUytVR2ZBMllLcElTN2t0MzhsTUdBPT0\"}"
-          },
-          {
-            "episode": 2,
-            "href": "{\"path\":\"/watch/devils-crest-ciqii\",\"title\":\"Devils Crest\",\"id\":\"9196\",\"number\":2,\"ids\":\"aUhqRW83VVJHUjMwNUhXSC9Wc1RzdU1qdWRMVVI3b21RWHFOSlVWMVBIaXpib0pkWnBJSWova1ZRS2RxWXN6L3F3Zm9zVWxQSlN3bzk1WlpXc2pjcVJlNnFuT29Bb1cvYkFxTXVuTFNEd0d3SUowM3pLUjEraTJ5QlpIK1VEYWU0RElwc3FSdkozUXJIOTRJbnhZUUxBPT0\"}"
-          }
-        ],
-        "availableEpisodes": 2,
-        "verifiedEpisode": 2,
-        "searchMs": 407,
-        "episodesMs": 481,
-        "streamMs": 292,
-        "verificationMs": 775,
-        "firstEpisodeVerified": 1,
-        "firstEpisodeEpisodesMs": 412,
-        "firstEpisodeStreamMs": 302,
-        "firstEpisodeVerificationMs": 715,
-        "verifiedAt": "2026-11-08T11:54:44.692Z"
-      },
-      {
-        "moduleId": "mangayomi_892345671",
-        "catalogPath": "Sources/English/004",
-        "sourceName": "JustAnime",
-        "language": "English",
-        "searchResultHref": "203275",
-        "episodeRoutes": [
-          {
-            "episode": 1,
-            "href": "203275||1"
-          },
-          {
-            "episode": 2,
-            "href": "203275||2"
-          }
-        ],
-        "availableEpisodes": 2,
-        "verifiedEpisode": 2,
-        "searchMs": 373,
-        "episodesMs": 280,
-        "streamMs": 527,
-        "verificationMs": 814,
-        "firstEpisodeVerified": 1,
-        "firstEpisodeEpisodesMs": 272,
-        "firstEpisodeStreamMs": 533,
-        "firstEpisodeVerificationMs": 811,
-        "verifiedAt": "2026-11-08T11:54:44.692Z"
+        "firstEpisodeEpisodesMs": 221,
+        "firstEpisodeStreamMs": 192,
+        "firstEpisodeVerificationMs": 415,
+        "verifiedAt": "2026-11-09T13:47:49.587Z"
       }
     ]
   }
