@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-13T09:39:23.497Z",
+  "generatedAt": "2026-11-13T17:49:35.388Z",
   "sourceCatalogRef": "config",
   "route": {
     "aniListId": 206814,
@@ -11,124 +11,44 @@
     ],
     "routes": [
       {
-        "moduleId": "jzBDQ",
-        "catalogPath": "Sources/English/011",
-        "sourceName": "AniDB",
+        "moduleId": "jzppd",
+        "catalogPath": "Sources/English/004",
+        "sourceName": "AllManga",
         "language": "English",
-        "searchResultHref": "https://anidb.se/anime/dragon-ball-super-beerus/",
+        "searchResultHref": "https://allmanga.to/bangumi/6a7fd70785a895a6a111c92f",
         "episodeRoutes": [
           {
             "episode": 1,
-            "href": "https://anidb.se/dragon-ball-super-beerus-episode-1-english-subbed/"
+            "href": "https://allmanga.to/bangumi/6a7fd70785a895a6a111c92f/p-1"
           },
           {
             "episode": 2,
-            "href": "https://anidb.se/dragon-ball-super-beerus-episode-2-english-subbed/"
+            "href": "https://allmanga.to/bangumi/6a7fd70785a895a6a111c92f/p-2"
           },
           {
             "episode": 3,
-            "href": "https://anidb.se/dragon-ball-super-beerus-episode-3-english-subbed/"
+            "href": "https://allmanga.to/bangumi/6a7fd70785a895a6a111c92f/p-3"
           },
           {
             "episode": 4,
-            "href": "https://anidb.se/dragon-ball-super-beerus-episode-4-english-subbed/"
+            "href": "https://allmanga.to/bangumi/6a7fd70785a895a6a111c92f/p-4"
           },
           {
             "episode": 5,
-            "href": "https://anidb.se/dragon-ball-super-beerus-episode-5-english-subbed/"
+            "href": "https://allmanga.to/bangumi/6a7fd70785a895a6a111c92f/p-5"
           }
         ],
         "availableEpisodes": 5,
         "verifiedEpisode": 5,
-        "searchMs": 807,
-        "episodesMs": 371,
-        "streamMs": 145,
-        "verificationMs": 520,
+        "searchMs": 422,
+        "episodesMs": 275,
+        "streamMs": 382,
+        "verificationMs": 661,
         "firstEpisodeVerified": 1,
-        "firstEpisodeEpisodesMs": 418,
-        "firstEpisodeStreamMs": 134,
-        "firstEpisodeVerificationMs": 554,
-        "verifiedAt": "2026-11-13T09:39:23.497Z"
-      },
-      {
-        "moduleId": "animesogo-local",
-        "catalogPath": "Sources/English/003",
-        "sourceName": "AnimeSogo",
-        "language": "English",
-        "searchResultHref": "{\"path\":\"/watch/dragon-ball-super-beerus-ugcfu\",\"title\":\"Dragon Ball Super Beerus\"}",
-        "episodeRoutes": [
-          {
-            "episode": 1,
-            "href": "{\"path\":\"/watch/dragon-ball-super-beerus-ugcfu\",\"title\":\"Dragon Ball Super Beerus\",\"id\":\"9079\",\"number\":1,\"ids\":\"bitoSFYrVm1hY2JscGlDc1lRUUMvd1lMc2hXQkRtMkU5cVhRK0FzR3A3SEhiRitTVkIzbDQydDlESlFXKzZwS0hReElLUnR6WE11ak9HaVBHcDM4K0s1WGtEeEdpZ01KMFRqTTJVOTRnT0NsdUVORERKM3dodGdjaFBtSjNMZGFFRUk5SlN3YjQ4YWorU2VON2ZjdytBPT0\"}"
-          },
-          {
-            "episode": 2,
-            "href": "{\"path\":\"/watch/dragon-ball-super-beerus-ugcfu\",\"title\":\"Dragon Ball Super Beerus\",\"id\":\"9079\",\"number\":2,\"ids\":\"dzluNTdrU2lGV2wrSERFY1laQWtsRk1yWU5EUEY3ZTlwSEJMeTR4cGl5VHZGYmRVR2Vhak5xa2dodlJlWDUwSmtoSGRnemhCN3E1aUR0YWJCYTNsK3UxemRnblpGczkvUytvQTlRSi9OMEIwWSs5LytQVU1YTFZTelNzeGJHelFVdXBSelIwRFdHTEsxWmpiVGdFQUJBPT0\"}"
-          },
-          {
-            "episode": 3,
-            "href": "{\"path\":\"/watch/dragon-ball-super-beerus-ugcfu\",\"title\":\"Dragon Ball Super Beerus\",\"id\":\"9079\",\"number\":3,\"ids\":\"c0pxeXlaRHVBekRyREJiSkwxdzM4b3hjSit1U0xFZE9sOHYrOTdzZCtCb01ycWR6dHo3bmxKVU8wWnZQblA4cDU5OEZvOFJhUTFGakhVYWhGVzgxdFhWUUxTaVZYOHFFa2ZBaWNRNXM3eVZOeXZNcVA4eGFZaWxmVkpVaXdQaE1yVk8xak9TUnQ2bkhYeXZsYW5Fem5nPT0\"}"
-          },
-          {
-            "episode": 4,
-            "href": "{\"path\":\"/watch/dragon-ball-super-beerus-ugcfu\",\"title\":\"Dragon Ball Super Beerus\",\"id\":\"9079\",\"number\":4,\"ids\":\"QVdPT0ZnWldSVG5kbVYzOGllcUtmd1kyS1pTTTkvU3VLOC9EcXhmZlQ0MHNlQ052NWxKZ1FLRVNMZUs1RU56L3llV1UvY2dQQUkyY2VpWGxJNW9mM3N5VkVGTWNzdWQzQlJ0Tjlwb0NSRnNBZDZmOTNQeFB1UGlrZUp5MUMvVlBkemV5N2IzM1dxMjYxL2x4ejZqK2x3PT0\"}"
-          },
-          {
-            "episode": 5,
-            "href": "{\"path\":\"/watch/dragon-ball-super-beerus-ugcfu\",\"title\":\"Dragon Ball Super Beerus\",\"id\":\"9079\",\"number\":5,\"ids\":\"a3VXTHhIemhTdjhTTU93dGRWUTMyaC9zbmRZN2IxWU00b1JkSXBjdjliNUU0a3FsWG9GV0VOMUNwK0Zsc2xkSms3RlJPQmxCY0VXZi9aUDVrNWdHQTR0ZTU1eHFIT0FHOGt0clNPQ2h2eS9PTWdJUGh0b0Ywc2Z5cHpnOEYvK3NNWFlKTWFZKzAzL1luSWhwU2NMMWNRPT0\"}"
-          }
-        ],
-        "availableEpisodes": 5,
-        "verifiedEpisode": 5,
-        "searchMs": 215,
-        "episodesMs": 504,
-        "streamMs": 269,
-        "verificationMs": 777,
-        "firstEpisodeVerified": 1,
-        "firstEpisodeEpisodesMs": 401,
-        "firstEpisodeStreamMs": 257,
-        "firstEpisodeVerificationMs": 660,
-        "verifiedAt": "2026-11-13T09:39:23.497Z"
-      },
-      {
-        "moduleId": "animekai-unoriginal-local",
-        "catalogPath": "Sources/English/007",
-        "sourceName": "AnimeKai (Unoriginal)",
-        "language": "English",
-        "searchResultHref": "{\"path\":\"/watch/dragon-ball-super-beerus-qsqaw\",\"title\":\"Dragon Ball Super Beerus\"}",
-        "episodeRoutes": [
-          {
-            "episode": 1,
-            "href": "{\"path\":\"/watch/dragon-ball-super-beerus-qsqaw\",\"title\":\"Dragon Ball Super Beerus\",\"id\":\"9019\",\"number\":1,\"ids\":\"M2hBbHprdnJ5TGxSY2dFSXFHeWhSdzBkRk9uZmk1NUlZOXYyVHpxL0IvUGMzQkhnUWhwdnBwb1c3SzhjNWJ2WmYvSEJLOW4reXpJU2h4NWlzWXQ0MVVjZ1RSQTkwMTJDVHdjUGFCVlg2RU02eEl4TVJMVG9DbVdvRDFpZk8yaDJESEV4NE1RR3Y5L1JYY2pWNmIrTVpBPT0\"}"
-          },
-          {
-            "episode": 2,
-            "href": "{\"path\":\"/watch/dragon-ball-super-beerus-qsqaw\",\"title\":\"Dragon Ball Super Beerus\",\"id\":\"9019\",\"number\":2,\"ids\":\"Mlo2RDVseHhOUmltZEgzbWlpS1VLc1pRdnVJK0FjbVc2TERJb2VYclNmS2FjSldvWmFmajc5YjZibDZLSGVvcU1vYno1aFBFTVYxaGxDSFpzRVZqcmk1cnNvR2E3dEZvbk1ya0g0QlptbjVOSjBpZXdoUWlVUHVpVUpabHB6aXdiUE1iQ2tLSk4wa0ZKWno3MTU1dTRBPT0\"}"
-          },
-          {
-            "episode": 3,
-            "href": "{\"path\":\"/watch/dragon-ball-super-beerus-qsqaw\",\"title\":\"Dragon Ball Super Beerus\",\"id\":\"9019\",\"number\":3,\"ids\":\"M1JlRzYyUHJqZmZiZmNxUTNkc0Uvckl1SjhseEdqNEgrQjgwcUI2d3NVMHROVlBMMlhWdW92SGdhdXJqbkFTNFV4K2hwVXM3N0tDNk4vcGl4VTQvTTRmV29VcTJhRnFGc2lYSFA3bFdZa21Za25QUWlwb25qMi9uRDZxbnMvZTQvQnd6L21nK0VjT003SDRESDl5YVF3PT0\"}"
-          },
-          {
-            "episode": 4,
-            "href": "{\"path\":\"/watch/dragon-ball-super-beerus-qsqaw\",\"title\":\"Dragon Ball Super Beerus\",\"id\":\"9019\",\"number\":4,\"ids\":\"ZUp4UW1EUWloOUdmd2g4c3VvaHBLTG54bDlITEdTVU9OUTVrZ2ZIc3UvdzFZTldud3ZLSWFBR0YrRm1JVzkrVjBhY0VPUU05UEliMzZnc2pTeHNEZCs4MGh1TDVqUnNUcytSODhSM3hyVkx6elMyUGlzMmNVTE1SdlZXRWhhQkd4V2I4RlVDVkx1aFVkcS8vKzZYVU9RPT0\"}"
-          },
-          {
-            "episode": 5,
-            "href": "{\"path\":\"/watch/dragon-ball-super-beerus-qsqaw\",\"title\":\"Dragon Ball Super Beerus\",\"id\":\"9019\",\"number\":5,\"ids\":\"TGg5YVVSVXhEYWVGaStxSmtaLytTRHllZWJ1aVJjS1hEMU1pY3VRa1JNQy94MSt0eEZ1UTYrTk9iK1RvY1FxWmZRakpRYy9nYzI1Z3dDZFVRMlVpZURwKzUzOGZ6TnlUVytEaGRlV2QvbUVQMnovd2xoQUQzekxmcGZXdG53dS9kYmtlTGJWakVZMnI2di9aQjRvVEtBPT0\"}"
-          }
-        ],
-        "availableEpisodes": 5,
-        "verifiedEpisode": 5,
-        "searchMs": 227,
-        "episodesMs": 452,
-        "streamMs": 269,
-        "verificationMs": 723,
-        "firstEpisodeVerified": 1,
-        "firstEpisodeEpisodesMs": 491,
-        "firstEpisodeStreamMs": 878,
-        "firstEpisodeVerificationMs": 1376,
-        "verifiedAt": "2026-11-13T09:39:23.497Z"
+        "firstEpisodeEpisodesMs": 226,
+        "firstEpisodeStreamMs": 641,
+        "firstEpisodeVerificationMs": 870,
+        "verifiedAt": "2026-11-13T17:49:35.388Z"
       },
       {
         "moduleId": "mangayomi_892345671",
@@ -161,54 +81,134 @@
         "availableEpisodes": 5,
         "verifiedEpisode": 5,
         "searchMs": 407,
-        "episodesMs": 274,
-        "streamMs": 420,
-        "verificationMs": 697,
+        "episodesMs": 345,
+        "streamMs": 385,
+        "verificationMs": 737,
         "firstEpisodeVerified": 1,
-        "firstEpisodeEpisodesMs": 222,
-        "firstEpisodeStreamMs": 536,
-        "firstEpisodeVerificationMs": 760,
-        "verifiedAt": "2026-11-13T09:39:23.497Z"
+        "firstEpisodeEpisodesMs": 439,
+        "firstEpisodeStreamMs": 604,
+        "firstEpisodeVerificationMs": 1055,
+        "verifiedAt": "2026-11-13T17:49:35.388Z"
       },
       {
-        "moduleId": "jCtAp",
-        "catalogPath": "Sources/English/008",
-        "sourceName": "123Anime",
+        "moduleId": "animesogo-local",
+        "catalogPath": "Sources/English/003",
+        "sourceName": "AnimeSogo",
         "language": "English",
-        "searchResultHref": "https://123animes.ru/anime/dragon-ball-super-beerus",
+        "searchResultHref": "{\"path\":\"/watch/dragon-ball-super-beerus-ugcfu\",\"title\":\"Dragon Ball Super Beerus\"}",
         "episodeRoutes": [
           {
             "episode": 1,
-            "href": "dragon-ball-super-beerus/1/vidstreaming.io"
+            "href": "{\"path\":\"/watch/dragon-ball-super-beerus-ugcfu\",\"title\":\"Dragon Ball Super Beerus\",\"id\":\"9079\",\"number\":1,\"ids\":\"bitoSFYrVm1hY2JscGlDc1lRUUMvd1lMc2hXQkRtMkU5cVhRK0FzR3A3RUNJRDkzcjZjRW95bThYaFhqelNjYkY0RXRueTl5S0tsaUpmRmpubWsyazVDcS9ic0NOb09MbUQ4NW1rMXR0KzdLK3pWRVRqYWE3WHk0dm55Q1RGcURWTXVUcFlyWFhaYTlhNmEwK1AyQmJBPT0\"}"
           },
           {
             "episode": 2,
-            "href": "dragon-ball-super-beerus/2/vidstreaming.io"
+            "href": "{\"path\":\"/watch/dragon-ball-super-beerus-ugcfu\",\"title\":\"Dragon Ball Super Beerus\",\"id\":\"9079\",\"number\":2,\"ids\":\"dzluNTdrU2lGV2wrSERFY1laQWtsRk1yWU5EUEY3ZTlwSEJMeTR4cGl5UkhtZEdnS0E1T2VTT2ZCNE8xUUZ4MTNLNmVXbjlWNndWejB0eXJZWDVzZFhrUU95VFRVYkZuMEl6NVAvWlM4K0IwOTlMZ2poUHM2T2dSMXRFeU91aFgzN3lFaEw0cUVmbi9Pcmg4blovbWZRPT0\"}"
           },
           {
             "episode": 3,
-            "href": "dragon-ball-super-beerus/3/vidstreaming.io"
+            "href": "{\"path\":\"/watch/dragon-ball-super-beerus-ugcfu\",\"title\":\"Dragon Ball Super Beerus\",\"id\":\"9079\",\"number\":3,\"ids\":\"c0pxeXlaRHVBekRyREJiSkwxdzM4b3hjSit1U0xFZE9sOHYrOTdzZCtCcmFObHJtM2NIcjJaUjN0Q0hram55TmcwMU1UWUR4R0U4Q3J3YU54SjVZN3pMV3ZyLzdjY09DL2MzYXUxTngzeGl0UVVmaG1uaE8xa21BM1M5bXZYamNaangwdHYrS0NXYnVMQ1VrWXdKaFFnPT0\"}"
           },
           {
             "episode": 4,
-            "href": "dragon-ball-super-beerus/4/vidstreaming.io"
+            "href": "{\"path\":\"/watch/dragon-ball-super-beerus-ugcfu\",\"title\":\"Dragon Ball Super Beerus\",\"id\":\"9079\",\"number\":4,\"ids\":\"QVdPT0ZnWldSVG5kbVYzOGllcUtmd1kyS1pTTTkvU3VLOC9EcXhmZlQ0MFc2S1VZczh0NzJBd2dwUDNVYXdqemNzTHg3a2VxWU5Cc1RrdVR5MTNPbDlOY0JiUkREVEFnSnJRd29XcGc1UDdCUWJydTBzOWJ2eDgvMzdkakxMWWx0ak95YjFXU3RWU1VCMVNvMnU2Vld3PT0\"}"
           },
           {
             "episode": 5,
-            "href": "dragon-ball-super-beerus/5/vidstreaming.io"
+            "href": "{\"path\":\"/watch/dragon-ball-super-beerus-ugcfu\",\"title\":\"Dragon Ball Super Beerus\",\"id\":\"9079\",\"number\":5,\"ids\":\"a3VXTHhIemhTdjhTTU93dGRWUTMyaC9zbmRZN2IxWU00b1JkSXBjdjliNVV5S0t0dTdpR2ZoSUlLb3pQYVpCVjFHWlk1TUo2by9zUWYvVXJFVHRaU0tCS0lSOHJQNkhwQ0NnemU4dDFJL0RETzZqVTJOWmhURlZTMHNyMlFSTWpTdkxjWERnTnJmMFQyN2JBb3cvL0l3PT0\"}"
           }
         ],
         "availableEpisodes": 5,
         "verifiedEpisode": 5,
-        "searchMs": 549,
-        "episodesMs": 866,
-        "streamMs": 1265,
-        "verificationMs": 2133,
+        "searchMs": 215,
+        "episodesMs": 484,
+        "streamMs": 284,
+        "verificationMs": 773,
         "firstEpisodeVerified": 1,
-        "firstEpisodeEpisodesMs": 874,
-        "firstEpisodeStreamMs": 517,
-        "firstEpisodeVerificationMs": 1392,
-        "verifiedAt": "2026-11-13T09:39:23.497Z"
+        "firstEpisodeEpisodesMs": 592,
+        "firstEpisodeStreamMs": 290,
+        "firstEpisodeVerificationMs": 889,
+        "verifiedAt": "2026-11-13T17:49:35.388Z"
+      },
+      {
+        "moduleId": "jzBDQ",
+        "catalogPath": "Sources/English/011",
+        "sourceName": "AniDB",
+        "language": "English",
+        "searchResultHref": "https://anidb.se/anime/dragon-ball-super-beerus/",
+        "episodeRoutes": [
+          {
+            "episode": 1,
+            "href": "https://anidb.se/dragon-ball-super-beerus-episode-1-english-subbed/"
+          },
+          {
+            "episode": 2,
+            "href": "https://anidb.se/dragon-ball-super-beerus-episode-2-english-subbed/"
+          },
+          {
+            "episode": 3,
+            "href": "https://anidb.se/dragon-ball-super-beerus-episode-3-english-subbed/"
+          },
+          {
+            "episode": 4,
+            "href": "https://anidb.se/dragon-ball-super-beerus-episode-4-english-subbed/"
+          },
+          {
+            "episode": 5,
+            "href": "https://anidb.se/dragon-ball-super-beerus-episode-5-english-subbed/"
+          }
+        ],
+        "availableEpisodes": 5,
+        "verifiedEpisode": 5,
+        "searchMs": 807,
+        "episodesMs": 791,
+        "streamMs": 476,
+        "verificationMs": 1279,
+        "firstEpisodeVerified": 1,
+        "firstEpisodeEpisodesMs": 531,
+        "firstEpisodeStreamMs": 504,
+        "firstEpisodeVerificationMs": 1044,
+        "verifiedAt": "2026-11-13T17:49:35.388Z"
+      },
+      {
+        "moduleId": "animekai-unoriginal-local",
+        "catalogPath": "Sources/English/007",
+        "sourceName": "AnimeKai (Unoriginal)",
+        "language": "English",
+        "searchResultHref": "{\"path\":\"/watch/dragon-ball-super-beerus-qsqaw\",\"title\":\"Dragon Ball Super Beerus\"}",
+        "episodeRoutes": [
+          {
+            "episode": 1,
+            "href": "{\"path\":\"/watch/dragon-ball-super-beerus-qsqaw\",\"title\":\"Dragon Ball Super Beerus\",\"id\":\"9019\",\"number\":1,\"ids\":\"M2hBbHprdnJ5TGxSY2dFSXFHeWhSdzBkRk9uZmk1NUlZOXYyVHpxL0IvUHBRdHhxQko1cjI2WGZhK0Z1QjkzK1VOblRNb3hLMTZjdFhCM2VGdFo1U0dHMzl1bUtiQTJJSEhjSVFpOUU4QTk2SllXOEtPM253WktNWWVXWk50OE8vMEI3WUFiRFFvRnZxQnEzZUQrLzdBPT0\"}"
+          },
+          {
+            "episode": 2,
+            "href": "{\"path\":\"/watch/dragon-ball-super-beerus-qsqaw\",\"title\":\"Dragon Ball Super Beerus\",\"id\":\"9019\",\"number\":2,\"ids\":\"Mlo2RDVseHhOUmltZEgzbWlpS1VLc1pRdnVJK0FjbVc2TERJb2VYclNmTFRjZVpKejNVTkhBZFBaV3JISG0zU1FRNnZuZEdXdEg1enZkbFFlcDUwSHpneEs4ZXVlZEpxREV3aC8rUzZ0SnVibVFpa1gybERlSmZnNHhEQjZxUlc5bDZ5SGhZSThodzNla1JpenBYY3ZBPT0\"}"
+          },
+          {
+            "episode": 3,
+            "href": "{\"path\":\"/watch/dragon-ball-super-beerus-qsqaw\",\"title\":\"Dragon Ball Super Beerus\",\"id\":\"9019\",\"number\":3,\"ids\":\"M1JlRzYyUHJqZmZiZmNxUTNkc0Uvckl1SjhseEdqNEgrQjgwcUI2d3NVMEpEc1NjQzFFNXg4RjJYcnVROTRDYVRiZHQ1MzNXY0ZabUVqYzZFdFJzL0RrQm1La1pvOCtTS1Y3dkNrL0lCN3BlaVBNWWgwQ05OSXk3V0JHQkwvbmtrSTJvN2M3VXU1NzB3NzRvd1Ura0NBPT0\"}"
+          },
+          {
+            "episode": 4,
+            "href": "{\"path\":\"/watch/dragon-ball-super-beerus-qsqaw\",\"title\":\"Dragon Ball Super Beerus\",\"id\":\"9019\",\"number\":4,\"ids\":\"ZUp4UW1EUWloOUdmd2g4c3VvaHBLTG54bDlITEdTVU9OUTVrZ2ZIc3UvenowUm02eGswTjBHZ3l4UEJseEpZSnlYU05MWW9OZFlrL2xmd2FXdVkwV1dvV0hjYzdzTjVKSTBqVkdleVdhWGVYSlZVUUdRMFNpWFMxUmhhbkpXODZzUTBmYWg1U1hxaFpZNld1WTlhUDVBPT0\"}"
+          },
+          {
+            "episode": 5,
+            "href": "{\"path\":\"/watch/dragon-ball-super-beerus-qsqaw\",\"title\":\"Dragon Ball Super Beerus\",\"id\":\"9019\",\"number\":5,\"ids\":\"TGg5YVVSVXhEYWVGaStxSmtaLytTRHllZWJ1aVJjS1hEMU1pY3VRa1JNQVdhbW1YSm1YZ2IrVE1jNU9pTHlOQlQ3SjBXQ2Y1ZjhsaC9mTFM5eEkxSDFSMGJoUHJmb04rL2VnK2dWbEh6d0VWMXh1bms4OVJQblAvNm95TEZERGtDTzI2NmNJcTVTRGRuL1ExZTVNbG1RPT0\"}"
+          }
+        ],
+        "availableEpisodes": 5,
+        "verifiedEpisode": 5,
+        "searchMs": 227,
+        "episodesMs": 518,
+        "streamMs": 640,
+        "verificationMs": 1160,
+        "firstEpisodeVerified": 1,
+        "firstEpisodeEpisodesMs": 628,
+        "firstEpisodeStreamMs": 589,
+        "firstEpisodeVerificationMs": 1219,
+        "verifiedAt": "2026-11-13T17:49:35.388Z"
       }
     ]
   }
