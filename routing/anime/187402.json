@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-14T06:36:55.608Z",
+  "generatedAt": "2026-11-14T14:14:29.134Z",
   "sourceCatalogRef": "config",
   "route": {
     "aniListId": 187402,
@@ -13,6 +13,110 @@
     ],
     "routes": [
       {
+        "moduleId": "jzBDQ",
+        "catalogPath": "Sources/English/011",
+        "sourceName": "AniDB",
+        "language": "English",
+        "searchResultHref": "https://anidb.se/anime/a-tale-of-the-secret-saint/",
+        "episodeRoutes": [
+          {
+            "episode": 1,
+            "href": "https://anidb.se/a-tale-of-the-secret-saint-episode-1-english-subbed/"
+          },
+          {
+            "episode": 2,
+            "href": "https://anidb.se/a-tale-of-the-secret-saint-episode-2-english-subbed/"
+          },
+          {
+            "episode": 3,
+            "href": "https://anidb.se/a-tale-of-the-secret-saint-episode-3-english-subbed/"
+          },
+          {
+            "episode": 4,
+            "href": "https://anidb.se/a-tale-of-the-secret-saint-episode-4-english-subbed/"
+          },
+          {
+            "episode": 5,
+            "href": "https://anidb.se/a-tale-of-the-secret-saint-episode-5-english-subbed/"
+          },
+          {
+            "episode": 6,
+            "href": "https://anidb.se/a-tale-of-the-secret-saint-episode-6-english-subbed/"
+          },
+          {
+            "episode": 7,
+            "href": "https://anidb.se/a-tale-of-the-secret-saint-episode-7-english-subbed/"
+          },
+          {
+            "episode": 8,
+            "href": "https://anidb.se/a-tale-of-the-secret-saint-episode-8-english-subbed/"
+          }
+        ],
+        "availableEpisodes": 8,
+        "verifiedEpisode": 8,
+        "searchMs": 866,
+        "episodesMs": 289,
+        "streamMs": 197,
+        "verificationMs": 489,
+        "firstEpisodeVerified": 1,
+        "firstEpisodeEpisodesMs": 436,
+        "firstEpisodeStreamMs": 202,
+        "firstEpisodeVerificationMs": 641,
+        "verifiedAt": "2026-11-14T14:14:29.134Z"
+      },
+      {
+        "moduleId": "mangayomi_892345671",
+        "catalogPath": "Sources/English/001",
+        "sourceName": "JustAnime",
+        "language": "English",
+        "searchResultHref": "187402",
+        "episodeRoutes": [
+          {
+            "episode": 1,
+            "href": "187402||1"
+          },
+          {
+            "episode": 2,
+            "href": "187402||2"
+          },
+          {
+            "episode": 3,
+            "href": "187402||3"
+          },
+          {
+            "episode": 4,
+            "href": "187402||4"
+          },
+          {
+            "episode": 5,
+            "href": "187402||5"
+          },
+          {
+            "episode": 6,
+            "href": "187402||6"
+          },
+          {
+            "episode": 7,
+            "href": "187402||7"
+          },
+          {
+            "episode": 8,
+            "href": "187402||8"
+          }
+        ],
+        "availableEpisodes": 8,
+        "verifiedEpisode": 8,
+        "searchMs": 438,
+        "episodesMs": 290,
+        "streamMs": 425,
+        "verificationMs": 718,
+        "firstEpisodeVerified": 1,
+        "firstEpisodeEpisodesMs": 576,
+        "firstEpisodeStreamMs": 458,
+        "firstEpisodeVerificationMs": 1038,
+        "verifiedAt": "2026-11-14T14:14:29.134Z"
+      },
+      {
         "moduleId": "animesogo-local",
         "catalogPath": "Sources/English/003",
         "sourceName": "AnimeSogo",
@@ -21,92 +125,48 @@
         "episodeRoutes": [
           {
             "episode": 1,
-            "href": "{\"path\":\"/watch/a-tale-of-the-secret-saint-12jne\",\"title\":\"A Tale Of The Secret Saint\",\"id\":\"9027\",\"number\":1,\"ids\":\"ZFFuUVFVdmRjN3k4MUV4Y2VZL2E1MXpuQ1JMYkFlbHJtUFZJRHN3TTBldkYzTXVVUFdpaVZIVzNyOUROU0FySCtsV0N1ek13bjZML1BQWG05aXlYc0d5cERobTdMdVd1eFgzYVBabkhEN3ZDaVNTdkpxK05MMTVWOFcrSmp4Q3crVURjc0FmcDZvVnBMaGFrTDh5b1FRPT0\"}"
+            "href": "{\"path\":\"/watch/a-tale-of-the-secret-saint-12jne\",\"title\":\"A Tale Of The Secret Saint\",\"id\":\"9027\",\"number\":1,\"ids\":\"ZFFuUVFVdmRjN3k4MUV4Y2VZL2E1MXpuQ1JMYkFlbHJtUFZJRHN3TTBldUtMelNVOGtQc05YeXppdWpXYmZwVE1EQmlsQVFQeU5BamVnc1RId1dPMjJJVlNSUzNwVDdCbkcweHlaZHY4bFRmWlVrL3J0Y0JEV0ZHWEN0eS9wcHhOWlRyMjZxT2FGUDdxUWpHUnZqQy93PT0\"}"
           },
           {
             "episode": 2,
-            "href": "{\"path\":\"/watch/a-tale-of-the-secret-saint-12jne\",\"title\":\"A Tale Of The Secret Saint\",\"id\":\"9027\",\"number\":2,\"ids\":\"T2dZQmJKS3BNVEhLSEFVbnF5M0xyYTUremtFREpOSFArZHZNZ2ZCL2FMME5mem5WekZjQXJYdEFHVFRUSUR1WmUzdUtGcEZtZ1RacUdWL2s0WmpzZmNhc3VlUDV2WFpTVGtidkRHcXZOZzJKVEVvRlIrZnREbXNHdmpxQjdUaVlLL21zZTlWbWtsV1NSaHdiemJzbnh3PT0\"}"
+            "href": "{\"path\":\"/watch/a-tale-of-the-secret-saint-12jne\",\"title\":\"A Tale Of The Secret Saint\",\"id\":\"9027\",\"number\":2,\"ids\":\"T2dZQmJKS3BNVEhLSEFVbnF5M0xyYTUremtFREpOSFArZHZNZ2ZCL2FMMlhtUnJQeVQrOWtoY1M0anExS3o4dlRreURpZ3lPN05JTUdBWVUyOEFoUWl1ZDNuQmYzcTFaNDhLbEJ1UUFnRWZmQ2U5SDJEbHlOcm9ncDZzcFhRS1E0Y1IyR0VrUkZNeHFTb25zYTRvczlnPT0\"}"
           },
           {
             "episode": 3,
-            "href": "{\"path\":\"/watch/a-tale-of-the-secret-saint-12jne\",\"title\":\"A Tale Of The Secret Saint\",\"id\":\"9027\",\"number\":3,\"ids\":\"Mm5JUmJiZnVSYUhtTWsxZnpLdGNYYWVvbW1xMWlaYVdUMldCSjVjcUY3NnlTRklrWSt3cUZ3S1FlNjlhanFJaS94c3kxZWdJQWp2QTVtNzQ2aGNZN0krdytrSDNDc3BiaDdndkVWUURmOXl5Y28wZkpVNnVla0xWcmRlbVVnUlJDbXc4OC80K1c1N2w1alVSQzcvMC9BPT0\"}"
+            "href": "{\"path\":\"/watch/a-tale-of-the-secret-saint-12jne\",\"title\":\"A Tale Of The Secret Saint\",\"id\":\"9027\",\"number\":3,\"ids\":\"Mm5JUmJiZnVSYUhtTWsxZnpLdGNYYWVvbW1xMWlaYVdUMldCSjVjcUY3NnRZWm54SXYzQ3RPWmVjSG9uQUJGbjBWeDV5cjFwODQ2bklpOVNaREpjbzBaSzhDOE9KWm9GS01rc2hIM29raDVITGh5QjBTakZqZXVhOXB0QnptMVZPOGtDNXdoVWlSV1U4MExwb1QvTUpBPT0\"}"
           },
           {
             "episode": 4,
-            "href": "{\"path\":\"/watch/a-tale-of-the-secret-saint-12jne\",\"title\":\"A Tale Of The Secret Saint\",\"id\":\"9027\",\"number\":4,\"ids\":\"Vm5rUHdSRkdGZ0dFUzRraHVKemhDdzlvejBFazhKQjRBblFadVZlSVZJK1plcENKN0xCcTRtcENMV1VWcFJhY2VFZGtTMkYyWXB6WEhFSkNOOG5DZEIxWm92V2xVd2h3YXE3WUVFckFpMVI3blZVcWZlaTgyUXA5d1JCb1JsdU9YYTEzYVNITXJKckFxVHViNWFuL093PT0\"}"
+            "href": "{\"path\":\"/watch/a-tale-of-the-secret-saint-12jne\",\"title\":\"A Tale Of The Secret Saint\",\"id\":\"9027\",\"number\":4,\"ids\":\"Vm5rUHdSRkdGZ0dFUzRraHVKemhDdzlvejBFazhKQjRBblFadVZlSVZJOVRWbzlwQ09YMytrZUxKVElIM0FkZDM1MkpBeFZFZ2ZGQ0lIWE5jMVdtcGJFc2lMdlEybGRad3JsQmtjQ3NTeXM4RmtpTGpOc1lLcFpDemtFVFNnUGx2eUpVSFdLZGRhSFF1SVFCaG5zbG9nPT0\"}"
           },
           {
             "episode": 5,
-            "href": "{\"path\":\"/watch/a-tale-of-the-secret-saint-12jne\",\"title\":\"A Tale Of The Secret Saint\",\"id\":\"9027\",\"number\":5,\"ids\":\"L0ViYit2S1VwaGxtTk8zT0V4TGtBaThBdGMvNVhQcHlIMkY3RmpVU1dwUWtnaEV6VEwvTzUvVUZ6ajdWeTVKWDlNc1gxa0VEdFRoVXl4Um1XOGZnVVBMUWdoMkpsVjB6NW13dllJUm91Q0hvS3hOVGZIMExqNE1iY1Z3Sk9rMHVwMjdBbGVNaDR6RGdXSXk4ais5bUFnPT0\"}"
+            "href": "{\"path\":\"/watch/a-tale-of-the-secret-saint-12jne\",\"title\":\"A Tale Of The Secret Saint\",\"id\":\"9027\",\"number\":5,\"ids\":\"L0ViYit2S1VwaGxtTk8zT0V4TGtBaThBdGMvNVhQcHlIMkY3RmpVU1dwVHpDd01xTEsrcUUwYSt5UU9ManZxNFVRSFdla0FQdGJjcXB0U3g3RWxad2I1a2E5Z2ZDaG9lcmlmOE9BZFRtMm5uT2gvOXZ0blppTGh4MnlIUElXaUlJdVB1Z0xEVHQ3ZVlXRkt5cDI5OUZnPT0\"}"
           },
           {
             "episode": 6,
-            "href": "{\"path\":\"/watch/a-tale-of-the-secret-saint-12jne\",\"title\":\"A Tale Of The Secret Saint\",\"id\":\"9027\",\"number\":6,\"ids\":\"dVJMUXNFNFRDWlliTG9BUjRjT0dMV2tRL20yWmJaL0IxMkxOY3haLzJVQWFTdFhZWEdqcGdTbWx3Qi9mVUNhZkFjby8vODRoMTd3c1BuWjA2MnFJcXlwU0c5QjZGUkNSWEE5aTl4ZXZmdDgxak9zaldTZ1k4VXorR0lhc2s3V1dNK045TFdEa2pBQ3RmbW9NSzNNZjdRPT0\"}"
+            "href": "{\"path\":\"/watch/a-tale-of-the-secret-saint-12jne\",\"title\":\"A Tale Of The Secret Saint\",\"id\":\"9027\",\"number\":6,\"ids\":\"dVJMUXNFNFRDWlliTG9BUjRjT0dMV2tRL20yWmJaL0IxMkxOY3haLzJVREpWT0x0bGZJSjVJa2RMdENhSjNQM0R1aExRYTlJWXN5VmpPTytUdmZlaWVpWCszdndTamRNRU12TlRuYWZXcDJwRWd5SFVTMTY0cmo3a1BMMUYrdFo5bU9sZWhaaTFRUE4xNUt6bkM4OFJnPT0\"}"
           },
           {
             "episode": 7,
-            "href": "{\"path\":\"/watch/a-tale-of-the-secret-saint-12jne\",\"title\":\"A Tale Of The Secret Saint\",\"id\":\"9027\",\"number\":7,\"ids\":\"MHZyZHR1VUlPdStpNlhYV3k3clA1bDQ5VUdDWVRzZHJqQXlQaEFMWFZMSTNGWkRQSloyNlMwdjlacDEzZE4yVG10Yzd0WWJYcmVOWFVKUlhLbkRYaG1VTnZLODBYb1lsWlN0bFB3cmxjVHc5UngvR2xBUGRpTFlQSkoyVHNRMEs1Wm01VEZKKzlFV21nbzlXYnZjclR3PT0\"}"
+            "href": "{\"path\":\"/watch/a-tale-of-the-secret-saint-12jne\",\"title\":\"A Tale Of The Secret Saint\",\"id\":\"9027\",\"number\":7,\"ids\":\"MHZyZHR1VUlPdStpNlhYV3k3clA1bDQ5VUdDWVRzZHJqQXlQaEFMWFZMS3hlLzB4bDVEa3czek1sSC9iWFVwajNabFFLVHEveTVYVDZxQzNhUVFlWnJTZlhGTll3cXJDTGorbUZSSkQwTEhCa0d6a3pIaFNqZWJ5SGZ4ekQrKzJ3eVlYTm4zYWhmWVVvR2E4OENveTFBPT0\"}"
+          },
+          {
+            "episode": 8,
+            "href": "{\"path\":\"/watch/a-tale-of-the-secret-saint-12jne\",\"title\":\"A Tale Of The Secret Saint\",\"id\":\"9027\",\"number\":8,\"ids\":\"MlpxZ3dRa0JKaGFudzdNK0dGaEpJMHlEdVdHTndpaENlQlNwd2U2NFdrcThJbExLUG1ZRThmTlRtSHdBd0Q2SXp4d3RYVk1mT2ZHOHhTU2xrckU4eFBFcll3QmwwZ0ZhRUdaME0wdnJEeVdocHNvQWpjN3FaeURSUjJuNnRXUVY0NWR0ZHZINC9KWjdDTWttYTJocDR3PT0\"}"
           }
         ],
-        "availableEpisodes": 7,
-        "verifiedEpisode": 7,
+        "availableEpisodes": 8,
+        "verifiedEpisode": 8,
         "searchMs": 240,
-        "episodesMs": 213,
-        "streamMs": 135,
-        "verificationMs": 349,
+        "episodesMs": 603,
+        "streamMs": 355,
+        "verificationMs": 961,
         "firstEpisodeVerified": 1,
-        "firstEpisodeEpisodesMs": 182,
-        "firstEpisodeStreamMs": 138,
-        "firstEpisodeVerificationMs": 321,
-        "verifiedAt": "2026-11-12T09:59:24.083Z"
-      },
-      {
-        "moduleId": "jzppd",
-        "catalogPath": "Sources/English/004",
-        "sourceName": "AllManga",
-        "language": "English",
-        "searchResultHref": "https://allmanga.to/bangumi/fo5Q7LbJfQddCEc6v",
-        "episodeRoutes": [
-          {
-            "episode": 1,
-            "href": "https://allmanga.to/bangumi/fo5Q7LbJfQddCEc6v/p-1"
-          },
-          {
-            "episode": 2,
-            "href": "https://allmanga.to/bangumi/fo5Q7LbJfQddCEc6v/p-2"
-          },
-          {
-            "episode": 3,
-            "href": "https://allmanga.to/bangumi/fo5Q7LbJfQddCEc6v/p-3"
-          },
-          {
-            "episode": 4,
-            "href": "https://allmanga.to/bangumi/fo5Q7LbJfQddCEc6v/p-4"
-          },
-          {
-            "episode": 5,
-            "href": "https://allmanga.to/bangumi/fo5Q7LbJfQddCEc6v/p-5"
-          },
-          {
-            "episode": 6,
-            "href": "https://allmanga.to/bangumi/fo5Q7LbJfQddCEc6v/p-6"
-          },
-          {
-            "episode": 7,
-            "href": "https://allmanga.to/bangumi/fo5Q7LbJfQddCEc6v/p-7"
-          }
-        ],
-        "availableEpisodes": 7,
-        "verifiedEpisode": 7,
-        "searchMs": 222,
-        "episodesMs": 117,
-        "streamMs": 585,
-        "verificationMs": 703,
-        "firstEpisodeVerified": 1,
-        "firstEpisodeEpisodesMs": 116,
-        "firstEpisodeStreamMs": 681,
-        "firstEpisodeVerificationMs": 799,
-        "verifiedAt": "2026-11-12T09:59:24.083Z"
+        "firstEpisodeEpisodesMs": 519,
+        "firstEpisodeStreamMs": 347,
+        "firstEpisodeVerificationMs": 868,
+        "verifiedAt": "2026-11-14T14:14:29.134Z"
       },
       {
         "moduleId": "animekai-unoriginal-local",
@@ -117,44 +177,100 @@
         "episodeRoutes": [
           {
             "episode": 1,
-            "href": "{\"path\":\"/watch/a-tale-of-the-secret-saint-wgnjo\",\"title\":\"A Tale Of The Secret Saint\",\"id\":\"8962\",\"number\":1,\"ids\":\"Wjh1QXY5WDJSWHlCTDRzZi9GZ3phWDl0NVZrTEZ2ak00R0tqaFB4a2JkUXBuMTRySU1CWU9HMk9aU05PRDZ4cS9BclhJOWRGMXBEc1V5aW1DVFpvZjg2cThFZ1VXM1J5NlY4VXhvREVOVVhwMGFrdlZtd2l4eTJ5aHprN21Gc0I0Z2lPa0MyenVKcUZvWHNoSFlqelZBPT0\"}"
+            "href": "{\"path\":\"/watch/a-tale-of-the-secret-saint-wgnjo\",\"title\":\"A Tale Of The Secret Saint\",\"id\":\"8962\",\"number\":1,\"ids\":\"Wjh1QXY5WDJSWHlCTDRzZi9GZ3phWDl0NVZrTEZ2ak00R0tqaFB4a2JkU0wzRlU5ckZic3B4TVlIb2tlUWVjdjFKcG80S09GYktSSm5JcWdIeHhTNnNUdEVYRVMxZjRHUGkydHg5WktoQXg5QW5qR1hXdDZFQW9ySndqYkw4QVkrVVNQVDhnUTB1SjBOZFhUOVBpdmFnPT0\"}"
           },
           {
             "episode": 2,
-            "href": "{\"path\":\"/watch/a-tale-of-the-secret-saint-wgnjo\",\"title\":\"A Tale Of The Secret Saint\",\"id\":\"8962\",\"number\":2,\"ids\":\"WGZRSHBxOEpyUHdoSlc5enhyNXNNWWhQS0N3WUZUVjMweEVmTnZ3Y2pJUitTQUl0emV5VDUyeDBOSjJCT2tmczVNUlVwVGdranZCclZ0enhFUkowRndPRjFlM0ZJM2pZaUl6MnQyMjVVV3EwWWM1VDhjYkRibi9Ld1pzbk9ZaVNzOHRsZ285dzdpaVBSYy9IcUpHY3lBPT0\"}"
+            "href": "{\"path\":\"/watch/a-tale-of-the-secret-saint-wgnjo\",\"title\":\"A Tale Of The Secret Saint\",\"id\":\"8962\",\"number\":2,\"ids\":\"WGZRSHBxOEpyUHdoSlc5enhyNXNNWWhQS0N3WUZUVjMweEVmTnZ3Y2pJVE13R1BUajlPNHNGb0k3MURQUTRCekFGUFBMSnBNT2VOZEhJQUljbnRFZlIrV012NFB3T3huUG8ydUJUdkxzV2hOQW5BSytpb0RkY0w4bTJtQjBZbjlYNXJZczRzcVpNUHJGbDdKUlU5T3BRPT0\"}"
           },
           {
             "episode": 3,
-            "href": "{\"path\":\"/watch/a-tale-of-the-secret-saint-wgnjo\",\"title\":\"A Tale Of The Secret Saint\",\"id\":\"8962\",\"number\":3,\"ids\":\"Yll0OVU2RWZ3L1BnRUhnN0pxRTAra2Y5RzVvWGloa3ZrQzQ4UEZja2tjQ3d3clkwY3hGVEJCK0tlQjdHQ2w3V0tWcmNpclAzcEVIVnYxTDF3MzMrRms3S0Y0aDhFcVRpN0JhYUNUY2l3djFXeTVSeitJUSt4N1hOc1ZJR0l5TnZIeUNjUW9QOGovSUlTSDRXbTNpUll3PT0\"}"
+            "href": "{\"path\":\"/watch/a-tale-of-the-secret-saint-wgnjo\",\"title\":\"A Tale Of The Secret Saint\",\"id\":\"8962\",\"number\":3,\"ids\":\"Yll0OVU2RWZ3L1BnRUhnN0pxRTAra2Y5RzVvWGloa3ZrQzQ4UEZja2tjQVArR3RvMlcwVjJsZXFIZUhOa0paRE5xV0p4SkY3WGFXUWV1ck5Qc2U1YjdJcHl2R1hSNFRaRWhmbFNWL0w2dEVHUGNlT21QZXlyMkJ4OFRscnA1NnN0U1ZKWW1JNStOQ1ZNWUhZdTNJbTRRPT0\"}"
           },
           {
             "episode": 4,
-            "href": "{\"path\":\"/watch/a-tale-of-the-secret-saint-wgnjo\",\"title\":\"A Tale Of The Secret Saint\",\"id\":\"8962\",\"number\":4,\"ids\":\"Y1NYTEhuVUhNZ0RYOG5PZURtOHlGSTBkaE9NUCsydDRVTHZGdTNKdzIvWHI4bkJMTTE3eXlKamwrdGJicGY2Zm5ZUldZSFpER3NEb3BZb2hHdFNBcHFna2VLSGJaWG4wd1ZtNzhzRzc1VlBaZnppekJ4aEdoZ2FRengrOTdyUlVCNUJtSE94WXVsWGlMeDM1Q1FwM3ZBPT0\"}"
+            "href": "{\"path\":\"/watch/a-tale-of-the-secret-saint-wgnjo\",\"title\":\"A Tale Of The Secret Saint\",\"id\":\"8962\",\"number\":4,\"ids\":\"Y1NYTEhuVUhNZ0RYOG5PZURtOHlGSTBkaE9NUCsydDRVTHZGdTNKdzIvVzBXcWc1K2JtVkRCaUxpaHFjV3Bmc1ZBSzZFcGNtVFNnVGRqWlZxK1pnVzhIWFNNaFJqVE0xd2xPTXRVMHU4ODhUVTYwYlJZUWZQbDNBa3NXQU1PVGVWT0JEb2M5ZEUwQ1lvQnBVT1B3UzNnPT0\"}"
           },
           {
             "episode": 5,
-            "href": "{\"path\":\"/watch/a-tale-of-the-secret-saint-wgnjo\",\"title\":\"A Tale Of The Secret Saint\",\"id\":\"8962\",\"number\":5,\"ids\":\"S2ZXQ09qUEE3T3FNdmowUXdoalh6MnlJakhQY3JyRG1kb1p4NmdYMWx6Z2hqZklMaGZkVHJXWDNERnJER28vYzI0bHRCN1UwNWkySlRGcGtpQTNaUktmeGF1eTl0VFA2MEdNNUJQN1YxY3YzZjhDQk1UZ29vOHM0UWh5VGRJYnhMYlhaM1V2bTNsS3FOajZhaTN2RHhBPT0\"}"
+            "href": "{\"path\":\"/watch/a-tale-of-the-secret-saint-wgnjo\",\"title\":\"A Tale Of The Secret Saint\",\"id\":\"8962\",\"number\":5,\"ids\":\"S2ZXQ09qUEE3T3FNdmowUXdoalh6MnlJakhQY3JyRG1kb1p4NmdYMWx6Z0FGWUI0OHRxNUppNVpOMVIxeFpEQStnSFlZL1Vhbjl6cVNmbDlBU3pHaTdxWjNSb0pTZjBFNVp2T1BPeGRjcU1EN0d5T0FtUTcrQkQ2dFg0S2VnM3M1a1JiWTNGMkd6TnREcjlNMFM3djNRPT0\"}"
           },
           {
             "episode": 6,
-            "href": "{\"path\":\"/watch/a-tale-of-the-secret-saint-wgnjo\",\"title\":\"A Tale Of The Secret Saint\",\"id\":\"8962\",\"number\":6,\"ids\":\"VHFaQ0tXUU1jY016TExPcTREamlhZkQ5cmR6c0RueEhkQy9aUzZmbFdsbUhDVjJyNXVZZ0xVL3hPSVRzMkZ6VndkYkl5LzZDVGFxUlF2aDJmZjZVcElKdDFXazVpelRZQ0JqZ1UxSW9mVnorcFhCZ2tQdXRacGExQ3J5WTZjVEdhTUxJUWpXT1RWTjVvT25NVGZuMzhnPT0\"}"
+            "href": "{\"path\":\"/watch/a-tale-of-the-secret-saint-wgnjo\",\"title\":\"A Tale Of The Secret Saint\",\"id\":\"8962\",\"number\":6,\"ids\":\"VHFaQ0tXUU1jY016TExPcTREamlhZkQ5cmR6c0RueEhkQy9aUzZmbFdsbkVJSDJad1cvODNYdE1ZOEwrUldJdzV4cjFMSGR1cUlhNWhqdHd1ZEg1ZzA4QlgvSnNHRWZWR1ZLSGI4bk1oOTlEY2h3OFJFdm1janhEbjIyNXVUckYzeG9qa1Z2QjRPUGw0ZlArOElLNEhBPT0\"}"
           },
           {
             "episode": 7,
-            "href": "{\"path\":\"/watch/a-tale-of-the-secret-saint-wgnjo\",\"title\":\"A Tale Of The Secret Saint\",\"id\":\"8962\",\"number\":7,\"ids\":\"cmFUREIwZ1ZEYWNWTXV2b2Q4ZVM1VzE0RGxKUWhGeXdQSm9GWE5RUUg2OWZZTkw2N2tway96NU1aUWRXOGNMYVcvQ2YzNUgwVkg4bjllcDJyaE5HMTJMNEpYMVdKTUdDcXVWUXhpdExiOUFhOWtUL2x6Z1RiL2lzQWVGaTdzMnQxZWNsYXJ0S09wZXgyTDVFWFAvaXp3PT0\"}"
+            "href": "{\"path\":\"/watch/a-tale-of-the-secret-saint-wgnjo\",\"title\":\"A Tale Of The Secret Saint\",\"id\":\"8962\",\"number\":7,\"ids\":\"cmFUREIwZ1ZEYWNWTXV2b2Q4ZVM1VzE0RGxKUWhGeXdQSm9GWE5RUUg2K0QzOWEvcXFYWjhDdUovNnBDeW1KMHczQUpnNHo0Y1BQVTd2RTRldnRKakpRM1Zyc0dyRmxqa0VCcDcrZWdMUFpQd3NHUlFOT1VXK2RMWlBQZXVWRjdUb3ZNOURGZTdNeG9tWFVmcEE0K2R3PT0\"}"
+          },
+          {
+            "episode": 8,
+            "href": "{\"path\":\"/watch/a-tale-of-the-secret-saint-wgnjo\",\"title\":\"A Tale Of The Secret Saint\",\"id\":\"8962\",\"number\":8,\"ids\":\"dGVxYVJsVkVmOGJKWmZCTlo2WjNxK1FIeTY3NzlONkZuVDBDRXdHMmlEQWU0RWNOYmwvVnFZWXVtVWwxUlVSZ2QzV2RaZU54cElkdEw5ZHJvaXlBNHBoSFd4Q3Z3NVRoeWltNC9PQ3FCWlBubkdqbEV2RGZQRlFCdWZJcUc2ekNRVTVJaUhuYktQb3VyUHcvZ2xXWW1BPT0\"}"
           }
         ],
-        "availableEpisodes": 7,
-        "verifiedEpisode": 7,
+        "availableEpisodes": 8,
+        "verifiedEpisode": 8,
         "searchMs": 245,
-        "episodesMs": 216,
-        "streamMs": 589,
-        "verificationMs": 806,
+        "episodesMs": 721,
+        "streamMs": 353,
+        "verificationMs": 1081,
         "firstEpisodeVerified": 1,
-        "firstEpisodeEpisodesMs": 248,
-        "firstEpisodeStreamMs": 711,
-        "firstEpisodeVerificationMs": 959,
-        "verifiedAt": "2026-11-12T09:59:24.083Z"
+        "firstEpisodeEpisodesMs": 610,
+        "firstEpisodeStreamMs": 338,
+        "firstEpisodeVerificationMs": 950,
+        "verifiedAt": "2026-11-14T14:14:29.134Z"
+      },
+      {
+        "moduleId": "jCtAp",
+        "catalogPath": "Sources/English/008",
+        "sourceName": "123Anime",
+        "language": "English",
+        "searchResultHref": "https://123animes.ru/anime/tensei-shita-daiseijo-wa-seijo-de-aru-koto-wo-hitakakusu",
+        "episodeRoutes": [
+          {
+            "episode": 1,
+            "href": "tensei-shita-daiseijo-wa-seijo-de-aru-koto-wo-hitakakusu/1/vidstreaming.io"
+          },
+          {
+            "episode": 2,
+            "href": "tensei-shita-daiseijo-wa-seijo-de-aru-koto-wo-hitakakusu/2/vidstreaming.io"
+          },
+          {
+            "episode": 3,
+            "href": "tensei-shita-daiseijo-wa-seijo-de-aru-koto-wo-hitakakusu/3/vidstreaming.io"
+          },
+          {
+            "episode": 4,
+            "href": "tensei-shita-daiseijo-wa-seijo-de-aru-koto-wo-hitakakusu/4/vidstreaming.io"
+          },
+          {
+            "episode": 5,
+            "href": "tensei-shita-daiseijo-wa-seijo-de-aru-koto-wo-hitakakusu/5/vidstreaming.io"
+          },
+          {
+            "episode": 6,
+            "href": "tensei-shita-daiseijo-wa-seijo-de-aru-koto-wo-hitakakusu/6/vidstreaming.io"
+          },
+          {
+            "episode": 7,
+            "href": "tensei-shita-daiseijo-wa-seijo-de-aru-koto-wo-hitakakusu/7/vidstreaming.io"
+          },
+          {
+            "episode": 8,
+            "href": "tensei-shita-daiseijo-wa-seijo-de-aru-koto-wo-hitakakusu/8/vidstreaming.io"
+          }
+        ],
+        "availableEpisodes": 8,
+        "verifiedEpisode": 8,
+        "searchMs": 624,
+        "episodesMs": 595,
+        "streamMs": 844,
+        "verificationMs": 1441,
+        "firstEpisodeVerified": 1,
+        "firstEpisodeEpisodesMs": 560,
+        "firstEpisodeStreamMs": 416,
+        "firstEpisodeVerificationMs": 978,
+        "verifiedAt": "2026-11-14T14:14:29.134Z"
       }
     ]
   }
