@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-21T11:17:23.195Z",
+  "generatedAt": "2026-11-21T19:24:08.157Z",
   "sourceCatalogRef": "config",
   "route": {
     "aniListId": 199007,
@@ -13,6 +13,54 @@
     ],
     "routes": [
       {
+        "moduleId": "jzppd",
+        "catalogPath": "Sources/English/004",
+        "sourceName": "AllManga",
+        "language": "English",
+        "searchResultHref": "https://allmanga.to/bangumi/6a696cb23eaa572c4635a137",
+        "episodeRoutes": [
+          {
+            "episode": 1,
+            "href": "https://allmanga.to/bangumi/6a696cb23eaa572c4635a137/p-1"
+          },
+          {
+            "episode": 2,
+            "href": "https://allmanga.to/bangumi/6a696cb23eaa572c4635a137/p-2"
+          },
+          {
+            "episode": 3,
+            "href": "https://allmanga.to/bangumi/6a696cb23eaa572c4635a137/p-3"
+          },
+          {
+            "episode": 4,
+            "href": "https://allmanga.to/bangumi/6a696cb23eaa572c4635a137/p-4"
+          },
+          {
+            "episode": 5,
+            "href": "https://allmanga.to/bangumi/6a696cb23eaa572c4635a137/p-5"
+          },
+          {
+            "episode": 6,
+            "href": "https://allmanga.to/bangumi/6a696cb23eaa572c4635a137/p-6"
+          },
+          {
+            "episode": 7,
+            "href": "https://allmanga.to/bangumi/6a696cb23eaa572c4635a137/p-7"
+          }
+        ],
+        "availableEpisodes": 7,
+        "verifiedEpisode": 7,
+        "searchMs": 206,
+        "episodesMs": 352,
+        "streamMs": 440,
+        "verificationMs": 795,
+        "firstEpisodeVerified": 1,
+        "firstEpisodeEpisodesMs": 270,
+        "firstEpisodeStreamMs": 1049,
+        "firstEpisodeVerificationMs": 1322,
+        "verifiedAt": "2026-11-21T19:24:08.157Z"
+      },
+      {
         "moduleId": "animesogo-local",
         "catalogPath": "Sources/English/003",
         "sourceName": "AnimeSogo",
@@ -21,40 +69,92 @@
         "episodeRoutes": [
           {
             "episode": 1,
-            "href": "{\"path\":\"/watch/i-m-looking-for-a-zombie-goxvt\",\"title\":\"I M Looking For A Zombie\",\"id\":\"9030\",\"number\":1,\"ids\":\"Vk9QQ1pWbktNYWJpbVJUR25hYit4YmFsbDR0MmxOKzgrUUxrNy9YYW9RRG1Cc05xZ1Z4R3lEZS9DRTRMdUJsbXJTZC9WWURvaXQxQk1iVjA4a0VOWTlod1dVSEtyV2tQNnp0Sjc4RGhUSGNDVzlZeEV0S0hMbU9rSXVqQjdremk2VlNZeTIrQTRpc2tVK2IwbXBmUENRPT0\"}"
+            "href": "{\"path\":\"/watch/i-m-looking-for-a-zombie-goxvt\",\"title\":\"I M Looking For A Zombie\",\"id\":\"9030\",\"number\":1,\"ids\":\"Vk9QQ1pWbktNYWJpbVJUR25hYit4YmFsbDR0MmxOKzgrUUxrNy9YYW9RRDVzcEw0d21qUzlUank0U2hESG1MOTJHTEtPY1BwMzE3VW9SeVdBTjl6R2pheitFQ1NwYXFHWmNzZHVjdlBSakUzbzhxTUdsaEN3REh5ZmdBNk1LaWtIejNZS0puOVB1cEY5UHpndkFaZHNRPT0\"}"
           },
           {
             "episode": 2,
-            "href": "{\"path\":\"/watch/i-m-looking-for-a-zombie-goxvt\",\"title\":\"I M Looking For A Zombie\",\"id\":\"9030\",\"number\":2,\"ids\":\"VFRVWlhtSlVvekJzVnM4T01ZMENtTVNoc2NnZFRGSGJSVFZpK2x6UjFucXVzS2l2Q2lRVkNBUlY2RXUySFV2dGR2ak5rcWlaOXlvZENJaExDSkduU2F6TlpkekloQlBqb05jWU9yemRFOE92a3JDcUFQNkUyS29adzM4YWZNc2pCZktzMUZuK21GTEl6bVo1UHVnUSt3PT0\"}"
+            "href": "{\"path\":\"/watch/i-m-looking-for-a-zombie-goxvt\",\"title\":\"I M Looking For A Zombie\",\"id\":\"9030\",\"number\":2,\"ids\":\"VFRVWlhtSlVvekJzVnM4T01ZMENtTVNoc2NnZFRGSGJSVFZpK2x6UjFubzZzT1F0RWhmZW11QkxXejdxTmVZR2Zsbjh4UHR0cDl6WjFYdDdwRVBoaU5JdnhubDk3RzFNN2Z1Um5SeWVjdFh4Umw2WEhSRnVaRTNxVThNdWZVWUF6QU1oMitzTmtaS3IxVnM0eUw0TU93PT0\"}"
           },
           {
             "episode": 3,
-            "href": "{\"path\":\"/watch/i-m-looking-for-a-zombie-goxvt\",\"title\":\"I M Looking For A Zombie\",\"id\":\"9030\",\"number\":3,\"ids\":\"Z2FWem5zaTZtZG1FdmI5Q0tEbmRjWW1UZFhXUyt6aGlMYmgwWkxVeTAydDE3aWp1RW5TeHo1Ymk5UXJDdytMUElkTlpRam4rV3J2NjJPd1V4c0Nad0FnWCtPbW91VzJoTHg3UEY5OFFsMmRVNWtFaXU2RjZpK1Zja29Lb1NwMFRZQmw3VXNJVlhOWlRROUdqVjF3Z0x3PT0\"}"
+            "href": "{\"path\":\"/watch/i-m-looking-for-a-zombie-goxvt\",\"title\":\"I M Looking For A Zombie\",\"id\":\"9030\",\"number\":3,\"ids\":\"Z2FWem5zaTZtZG1FdmI5Q0tEbmRjWW1UZFhXUyt6aGlMYmgwWkxVeTAydTdlR3NDK2NsdGY4enVQeUcxQnpLcUdINFBuUW9ieG9PeXRuaS9qTWZmOTVYQXRSZWN3c3NaQ2FyVjJaQWdNdEdBTXFpVm0xUUF2WjdoK1pGYWE4TENJeUhqQW0zVVcyS29UaHRHVjZzTUp3PT0\"}"
           },
           {
             "episode": 4,
-            "href": "{\"path\":\"/watch/i-m-looking-for-a-zombie-goxvt\",\"title\":\"I M Looking For A Zombie\",\"id\":\"9030\",\"number\":4,\"ids\":\"cktNamFUWXhKYno5bVdONzgvTU1DbEdMWnhMOVlSMGhFekNrL3J5Y0ZjUGV2Z2J0RXVUNDhqcGJHTnZWMjB6cUd5c3ZuVmVjS3UzcjNLUllkemNqMUhYcjZkNUZqaDZ3K0ora3RqenJFSTVqeDIrb0R6UHplVDBncXY0LzhGS3RDeWtnMytjSUxVTVBXRGh3MnpUKzhBPT0\"}"
+            "href": "{\"path\":\"/watch/i-m-looking-for-a-zombie-goxvt\",\"title\":\"I M Looking For A Zombie\",\"id\":\"9030\",\"number\":4,\"ids\":\"cktNamFUWXhKYno5bVdONzgvTU1DbEdMWnhMOVlSMGhFekNrL3J5Y0ZjTWVCa1VaN3AxaWxyc1cxKzY4NVMxNTM2YnRrMStLRDAwWVZMQkhMQTY4TnNCcHRuOExjalB5RHpjT0pBYmxpTmxrNERDaXVZWUhGUVB6Zm0vWmZ1ZVJBK1krdEJEb3NtdFI0UFE1cUVFNktnPT0\"}"
           },
           {
             "episode": 5,
-            "href": "{\"path\":\"/watch/i-m-looking-for-a-zombie-goxvt\",\"title\":\"I M Looking For A Zombie\",\"id\":\"9030\",\"number\":5,\"ids\":\"bDVZcHo1bW9hdHFFRHAxRzhwTzFYdnpDMmV0NWtxUHJGRXVpM3FZKzVvQm9GV0dOcjJBOEFuUGFmaVdKRmZoLzFHWTI4bElqK1hqcEpkdUxCajdIek5kdTl6UUFSVVQ4SjBFa3hNMmU0K0JXRm84QXcwZUNpMHlZelFyeUdTN2tKRHVuWEdkODdBNlNNK2MybVp6MUhnPT0\"}"
+            "href": "{\"path\":\"/watch/i-m-looking-for-a-zombie-goxvt\",\"title\":\"I M Looking For A Zombie\",\"id\":\"9030\",\"number\":5,\"ids\":\"bDVZcHo1bW9hdHFFRHAxRzhwTzFYdnpDMmV0NWtxUHJGRXVpM3FZKzVvQ2w2L3p5TWtweG9XT2djaWhZSXQ3b3FRRmtNNGZzTEFrbi9qNkZ1Z25CUm9PWU92R3ZmM2w4QjJ1dWlKMWM1b3FVaFIzckF0LzFYUnNsb21HREYzTDY0bUVLT2hyWGdGcUtnQTlvdE52QkRnPT0\"}"
           },
           {
             "episode": 6,
-            "href": "{\"path\":\"/watch/i-m-looking-for-a-zombie-goxvt\",\"title\":\"I M Looking For A Zombie\",\"id\":\"9030\",\"number\":6,\"ids\":\"dm1wSHBLVEtHcEgxN01PMlgxMVlCSzRxc0NEUFBiZEdjVmxjMm5IMmwzdjA3NFFvSXB0OXZuci9BVlY5U3JtMEhieWptNmdwTzJCbjhJTnFQbWNUWlg5Q0V4UVJpb0VhQXRnVFpzQlgyZTFmWElXZ2FXOEdVS3NEYy9BN0hDT3l3MXpGdktUMjNDOFB3YU9ZMktSTWpnPT0\"}"
+            "href": "{\"path\":\"/watch/i-m-looking-for-a-zombie-goxvt\",\"title\":\"I M Looking For A Zombie\",\"id\":\"9030\",\"number\":6,\"ids\":\"dm1wSHBLVEtHcEgxN01PMlgxMVlCSzRxc0NEUFBiZEdjVmxjMm5IMmwzc21kWlRVcU5oNXoyai8yUzZRL2FjQ0pJdGVGWjdZTG1hZTZuRUV6NjdCK2ZRdHEwNE1MaVcrYXN5RjliTjFTOVd6TTEvRVAwVXM2RFRNVlB1YmtndDlQYlNIbzhWTDd3RFFab1RiTHlpN213PT0\"}"
+          },
+          {
+            "episode": 7,
+            "href": "{\"path\":\"/watch/i-m-looking-for-a-zombie-goxvt\",\"title\":\"I M Looking For A Zombie\",\"id\":\"9030\",\"number\":7,\"ids\":\"MGRmeHBvalJsZGJCZVd1dXR6OHJxZDJxWVlRMElNRFRCYk1QWENjbW1nMy9QbHFNV3ZXRTRwYlZOWTZHUXg5c0hKTmJua3ZCOVVLTTlpWW9EUVI4RXNrZWVVVWt4NUVuOHdWaGFxdlBydVRyT3AwOWVETUhySitFN3pPRFZSeTBCaEk2dUtvMDVnMGNFN21BRDd5SmNBPT0\"}"
           }
         ],
-        "availableEpisodes": 6,
-        "verifiedEpisode": 6,
+        "availableEpisodes": 7,
+        "verifiedEpisode": 7,
         "searchMs": 387,
-        "episodesMs": 505,
-        "streamMs": 338,
-        "verificationMs": 848,
+        "episodesMs": 585,
+        "streamMs": 399,
+        "verificationMs": 989,
         "firstEpisodeVerified": 1,
-        "firstEpisodeEpisodesMs": 491,
-        "firstEpisodeStreamMs": 634,
-        "firstEpisodeVerificationMs": 1126,
-        "verifiedAt": "2026-11-15T02:45:33.011Z"
+        "firstEpisodeEpisodesMs": 502,
+        "firstEpisodeStreamMs": 407,
+        "firstEpisodeVerificationMs": 912,
+        "verifiedAt": "2026-11-21T19:24:08.157Z"
+      },
+      {
+        "moduleId": "jCtAp",
+        "catalogPath": "Sources/English/008",
+        "sourceName": "123Anime",
+        "language": "English",
+        "searchResultHref": "https://123animes.ru/anime/zombie-sagashitemasu-dub",
+        "episodeRoutes": [
+          {
+            "episode": 1,
+            "href": "zombie-sagashitemasu-dub/1/vidstreaming.io"
+          },
+          {
+            "episode": 2,
+            "href": "zombie-sagashitemasu-dub/2/vidstreaming.io"
+          },
+          {
+            "episode": 3,
+            "href": "zombie-sagashitemasu-dub/3/vidstreaming.io"
+          },
+          {
+            "episode": 4,
+            "href": "zombie-sagashitemasu-dub/4/vidstreaming.io"
+          },
+          {
+            "episode": 5,
+            "href": "zombie-sagashitemasu-dub/5/vidstreaming.io"
+          },
+          {
+            "episode": 6,
+            "href": "zombie-sagashitemasu-dub/6/vidstreaming.io"
+          },
+          {
+            "episode": 7,
+            "href": "zombie-sagashitemasu-dub/7/vidstreaming.io"
+          }
+        ],
+        "availableEpisodes": 7,
+        "verifiedEpisode": 7,
+        "searchMs": 811,
+        "episodesMs": 603,
+        "streamMs": 470,
+        "verificationMs": 1075,
+        "firstEpisodeVerified": 1,
+        "firstEpisodeEpisodesMs": 623,
+        "firstEpisodeStreamMs": 471,
+        "firstEpisodeVerificationMs": 1103,
+        "verifiedAt": "2026-11-21T19:24:08.157Z"
       },
       {
         "moduleId": "animekai-unoriginal-local",
@@ -65,40 +165,44 @@
         "episodeRoutes": [
           {
             "episode": 1,
-            "href": "{\"path\":\"/watch/i-m-looking-for-a-zombie-ngv37\",\"title\":\"I M Looking For A Zombie\",\"id\":\"8965\",\"number\":1,\"ids\":\"ajdvdFQzSGM3ODBhVXBmM1QxRG12dFFwL05WQmwyL0tiQ1BHSDlCRnFJNnVMQmVad0dYWG0xS1l4VUVPMGtsOXdYNHdHZTNKMFhMUUVnak1Kb0R1eTlMcGYrOWZMeWdsanVzT1VWRllsNGNGREpmZ0pGdnI2anN0T2wvU1kzM0hCUVlyZUhsQkxBOEh6WDk4RDU5djFRPT0\"}"
+            "href": "{\"path\":\"/watch/i-m-looking-for-a-zombie-ngv37\",\"title\":\"I M Looking For A Zombie\",\"id\":\"8965\",\"number\":1,\"ids\":\"ajdvdFQzSGM3ODBhVXBmM1QxRG12dFFwL05WQmwyL0tiQ1BHSDlCRnFJNC9DREVTNGl0eER2WGYrWFRJY0kvY2hVTDhtUGtrWkVjWHJKa0FsYjF2UExqUzk1OFBhb0hSZzJPdDdmQVlteDg0dXA5d2NDOWNjenVMZFVycWE5RHNXMW1ySFYwbi85bFFsRVdjVnJvc1BnPT0\"}"
           },
           {
             "episode": 2,
-            "href": "{\"path\":\"/watch/i-m-looking-for-a-zombie-ngv37\",\"title\":\"I M Looking For A Zombie\",\"id\":\"8965\",\"number\":2,\"ids\":\"cFdFUGpGTDJWeXNlUE04V0RzKzc3dVRITHVORCtya1k3MExHeTFIZG5rWnlNdDhuSTJuWHZFczA5QjNadTRZMlBrTGdsL2FlekZrMDYzRWVUZFcvek93SEtTNW5SYUFYR0h3T2lNeWVxdFE4dkdUV2lMRno2OWx2cnhYMnkrUnNob3RtTExQeE43ZjNiQzl4L25qQVBnPT0\"}"
+            "href": "{\"path\":\"/watch/i-m-looking-for-a-zombie-ngv37\",\"title\":\"I M Looking For A Zombie\",\"id\":\"8965\",\"number\":2,\"ids\":\"cFdFUGpGTDJWeXNlUE04V0RzKzc3dVRITHVORCtya1k3MExHeTFIZG5rWUFCRkpmaHZJb2pPMUhZN1hPRXNZUWlaNXJvZEJMYm5OTkVzejRsOWVZVE82UTJDREJiSUlHMXNnNEpLUmZ0QkxnUWdzQi9vN0hDMTVkcDV4Q0NmaENRdE05ME5mS0NWR2Y3T3VwS2RsMmR3PT0\"}"
           },
           {
             "episode": 3,
-            "href": "{\"path\":\"/watch/i-m-looking-for-a-zombie-ngv37\",\"title\":\"I M Looking For A Zombie\",\"id\":\"8965\",\"number\":3,\"ids\":\"TzZhR3lHTk5GeTRzdEliUm1nUEIwZXNHQWc5eHFtZlRCVVc2cTRGYjZvOXNkc3Q5RjFzN2QvK0d0TXAxeDIvd1M5NWl4SnpUS1pUbVBnZE1hZmhibU5nWlhwbTgrcVJzdTFnb3ArUnBnK1VnakJmNi9hRGhLU1NsUUg0SHc4RGF4SlpieS9rVUtRem5jVWtmS2RZV3ZBPT0\"}"
+            "href": "{\"path\":\"/watch/i-m-looking-for-a-zombie-ngv37\",\"title\":\"I M Looking For A Zombie\",\"id\":\"8965\",\"number\":3,\"ids\":\"TzZhR3lHTk5GeTRzdEliUm1nUEIwZXNHQWc5eHFtZlRCVVc2cTRGYjZvOFpBZDI2bm9zUGpiUFE4MTZ1MnpmQXhPbVBwL3NYc0J6bE84TUtkaXBLSmFDV2xjZGJqbXJka1Y3RTFUcEtHeTdpZ0NqeWdCM0F5RE1wQXVXM3Mwb1ovL1NhZ0hXQ0tPenZXckU5UDl6bEtRPT0\"}"
           },
           {
             "episode": 4,
-            "href": "{\"path\":\"/watch/i-m-looking-for-a-zombie-ngv37\",\"title\":\"I M Looking For A Zombie\",\"id\":\"8965\",\"number\":4,\"ids\":\"T3EyWTRnSUM2dHJ2andqODJtT0NSOW1LYU1QNTVLUTZFcVNkNDg0allZZUVWYTc0R3AzMHkrbjBvZkh3QlhGMG5TcWZ6RWhNUW9XN2RCVGdNZEFzT2pEMDdlbndTcGY0bkpLS3FWc3ZqL0VBS2ZackZpbFVnSlduYW5DUGYzMzFxVldOWUtoUDZCUUcxdEszRk40WDJBPT0\"}"
+            "href": "{\"path\":\"/watch/i-m-looking-for-a-zombie-ngv37\",\"title\":\"I M Looking For A Zombie\",\"id\":\"8965\",\"number\":4,\"ids\":\"T3EyWTRnSUM2dHJ2andqODJtT0NSOW1LYU1QNTVLUTZFcVNkNDg0allZZVdoekNrOSs3RjBkTHRsMDNnZ09HaVo4NVd1UzE1bDVNcityOWZXNEJEbzFEQ2VadCtvTEEvRVJlN3ZTQVVoWExxa2xNZHYyTlgxR21ZNExGcDZJRFB0WE0zL0g5QUg2cG81SkhQSFFUYndRPT0\"}"
           },
           {
             "episode": 5,
-            "href": "{\"path\":\"/watch/i-m-looking-for-a-zombie-ngv37\",\"title\":\"I M Looking For A Zombie\",\"id\":\"8965\",\"number\":5,\"ids\":\"MWZmWUx6dWY3Wk50VEk0WDVoWHpEUS9TMGZlTXdCU3RRRm8vWUFmaFUxUlVoTHFkNjVqRU9XK09wT21xYU8wY2pJQk1pTGpjanhSM2hFS0tzdFVrdG5CWnFyWTVWMkZpT2pYY3ZlWHlqRWNiQkZOdGdMeUw4WFpTT1dFY3Z3K2ZnVTBsRHlteUdQWHhBSHFaMW15c3ZBPT0\"}"
+            "href": "{\"path\":\"/watch/i-m-looking-for-a-zombie-ngv37\",\"title\":\"I M Looking For A Zombie\",\"id\":\"8965\",\"number\":5,\"ids\":\"MWZmWUx6dWY3Wk50VEk0WDVoWHpEUS9TMGZlTXdCU3RRRm8vWUFmaFUxU2lwaUpoa00zNGN0MGs4bUdXZTMrRCtZakFnT20vazBWS2cwaXJHRkhFaldkOEw1bituaTBuMGMxK3c5UTRVNjdTdjBySitkOVoxcC9FVEVYV3dwZ0s3ZnpCbGc2SDZLN1dVUkttVllrVjFnPT0\"}"
           },
           {
             "episode": 6,
-            "href": "{\"path\":\"/watch/i-m-looking-for-a-zombie-ngv37\",\"title\":\"I M Looking For A Zombie\",\"id\":\"8965\",\"number\":6,\"ids\":\"RWM2UnBNWUt4Y1p5SVpsY1ozcUJ5Znp0MTJmd1k2ajBLMy9QSFQwYnhuajBhTG5TOFRwaGNUaFRZNWhHNGs5UFdOeU1SU1QxVGsrSFpKZ1N4K2hzc2pCeDhveGdWMzByNUw2dy9ZU0h4bklZMHUvelJCWWsxbzJ3TXM1anpVYTZ1c3haM0oxSGw5UHEyZnR5Nk83bFNnPT0\"}"
+            "href": "{\"path\":\"/watch/i-m-looking-for-a-zombie-ngv37\",\"title\":\"I M Looking For A Zombie\",\"id\":\"8965\",\"number\":6,\"ids\":\"RWM2UnBNWUt4Y1p5SVpsY1ozcUJ5Znp0MTJmd1k2ajBLMy9QSFQwYnhuZzZ5ZzcwdWwvckRMdlJ2a3lOeVdzK25UZTRCRDdEclZkRitoTU4rdXorMGFGNkwvWGFVbE03eHNWNnlZQ3BobVdHZldUZGdHMDd4ZnBINWtxSjlRR1ZsVHVXcFlDRjFXZXpTZGlGZU1pNmZnPT0\"}"
+          },
+          {
+            "episode": 7,
+            "href": "{\"path\":\"/watch/i-m-looking-for-a-zombie-ngv37\",\"title\":\"I M Looking For A Zombie\",\"id\":\"8965\",\"number\":7,\"ids\":\"WStkQi8zYk00T2hmNkNmZFo1aDd2dHpHWnZobEtOTUNTQkUxRGxRUzV1Ym9CZy9SZGRVZ0ViQnNRY1JmaDBwUEVram5MeHdPSU5mQVdPZjdFR2Z2TTVVVTJOM3QrUTYxTUQrQ3l3VmU1ZmNtbFh0U1gxVS9NNkJyL3l0bVBYWVlteE5Ua09TVExBOWhWT0xYdkFUeGVRPT0\"}"
           }
         ],
-        "availableEpisodes": 6,
-        "verifiedEpisode": 6,
+        "availableEpisodes": 7,
+        "verifiedEpisode": 7,
         "searchMs": 624,
-        "episodesMs": 596,
-        "streamMs": 616,
-        "verificationMs": 1221,
+        "episodesMs": 632,
+        "streamMs": 881,
+        "verificationMs": 1518,
         "firstEpisodeVerified": 1,
-        "firstEpisodeEpisodesMs": 581,
-        "firstEpisodeStreamMs": 626,
-        "firstEpisodeVerificationMs": 1208,
-        "verifiedAt": "2026-11-15T02:45:33.011Z"
+        "firstEpisodeEpisodesMs": 653,
+        "firstEpisodeStreamMs": 951,
+        "firstEpisodeVerificationMs": 1606,
+        "verifiedAt": "2026-11-21T19:24:08.157Z"
       }
     ]
   }
