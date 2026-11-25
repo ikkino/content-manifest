@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-24T12:28:22.349Z",
+  "generatedAt": "2026-11-25T11:17:01.803Z",
   "mediaRequested": 5,
   "categories": {
     "trendingNow": {
@@ -29,9 +29,8 @@
   "rejectedAttemptSummary": {
     "byReason": {
       "search_no_usable_result": 14,
-      "timeout": 13,
-      "implausible_match": 6,
-      "media_probe_failed": 4,
+      "media_probe_failed": 14,
+      "implausible_match": 9,
       "other": 2
     },
     "topModules": [
@@ -39,8 +38,8 @@
         "sourceName": "AnimeLand",
         "count": 26,
         "reasons": {
-          "implausible_match": 6,
           "search_no_usable_result": 14,
+          "implausible_match": 6,
           "media_probe_failed": 4,
           "other": 2
         }
@@ -49,21 +48,52 @@
         "sourceName": "JustAnime",
         "count": 13,
         "reasons": {
-          "timeout": 13
+          "media_probe_failed": 10,
+          "implausible_match": 3
         }
       }
     ]
   },
   "mediaProbeBudget": 24,
-  "mediaProbesUsed": 4,
+  "mediaProbesUsed": 14,
   "hostHealth": {
     "successEvents": 0,
-    "failureEvents": 4,
+    "failureEvents": 14,
     "skippedByCooldown": 0,
-    "coolingDownHosts": 1
+    "coolingDownHosts": 2
   },
   "failures": [
     {
+      "aniListId": 207329,
+      "title": "The Laid-Off Cheat-Granting Mage Enjoys a Second Lease on Life",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 207329,
+      "title": "The Laid-Off Cheat-Granting Mage Enjoys a Second Lease on Life",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/014",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 207329,
+      "title": "The Laid-Off Cheat-Granting Mage Enjoys a Second Lease on Life",
+      "moduleId": "mangayomi_892345671",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "JustAnime",
+      "errors": [
+        "media probe failed: host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response"
+      ]
+    },
+    {
       "aniListId": 21,
       "title": "ONE PIECE",
       "moduleId": "mod_942337115",
@@ -90,7 +120,7 @@
       "catalogPath": "Sources/English/001",
       "sourceName": "JustAnime",
       "errors": [
-        "search: searchResults timed out"
+        "media probe failed: host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response"
       ]
     },
     {
@@ -120,7 +150,37 @@
       "catalogPath": "Sources/English/001",
       "sourceName": "JustAnime",
       "errors": [
-        "search: searchResults timed out"
+        "media probe failed: host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response"
+      ]
+    },
+    {
+      "aniListId": 206949,
+      "title": "Nia Liston: The Merciless Maiden",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 206949,
+      "title": "Nia Liston: The Merciless Maiden",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/014",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 206949,
+      "title": "Nia Liston: The Merciless Maiden",
+      "moduleId": "mangayomi_892345671",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "JustAnime",
+      "errors": [
+        "implausible episode match: verified=8 available=25 expected<=8"
       ]
     },
     {
@@ -150,67 +210,7 @@
       "catalogPath": "Sources/English/001",
       "sourceName": "JustAnime",
       "errors": [
-        "search: searchResults timed out"
-      ]
-    },
-    {
-      "aniListId": 207191,
-      "title": "Hello, I am a Witch and my Crush Wants me to Make a Love Potion!",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 207191,
-      "title": "Hello, I am a Witch and my Crush Wants me to Make a Love Potion!",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/014",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 207191,
-      "title": "Hello, I am a Witch and my Crush Wants me to Make a Love Potion!",
-      "moduleId": "mangayomi_892345671",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "JustAnime",
-      "errors": [
-        "search: searchResults timed out"
-      ]
-    },
-    {
-      "aniListId": 209219,
-      "title": "So What's Wrong with Getting Reborn as a Goblin?",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 209219,
-      "title": "So What's Wrong with Getting Reborn as a Goblin?",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/014",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 209219,
-      "title": "So What's Wrong with Getting Reborn as a Goblin?",
-      "moduleId": "mangayomi_892345671",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "JustAnime",
-      "errors": [
-        "search: searchResults timed out"
+        "media probe failed: host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response"
       ]
     },
     {
@@ -240,7 +240,7 @@
       "catalogPath": "Sources/English/001",
       "sourceName": "JustAnime",
       "errors": [
-        "search: searchResults timed out"
+        "media probe failed: host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response"
       ]
     },
     {
@@ -270,7 +270,7 @@
       "catalogPath": "Sources/English/001",
       "sourceName": "JustAnime",
       "errors": [
-        "search: searchResults timed out"
+        "media probe failed: host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response"
       ]
     },
     {
@@ -300,7 +300,7 @@
       "catalogPath": "Sources/English/001",
       "sourceName": "JustAnime",
       "errors": [
-        "search: searchResults timed out"
+        "implausible episode match: verified=7 available=12 expected<=7"
       ]
     },
     {
@@ -330,7 +330,7 @@
       "catalogPath": "Sources/English/001",
       "sourceName": "JustAnime",
       "errors": [
-        "search: searchResults timed out"
+        "media probe failed: host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response"
       ]
     },
     {
@@ -360,7 +360,7 @@
       "catalogPath": "Sources/English/001",
       "sourceName": "JustAnime",
       "errors": [
-        "search: searchResults timed out"
+        "implausible episode match: verified=1 available=1 expected<=26"
       ]
     },
     {
@@ -390,7 +390,7 @@
       "catalogPath": "Sources/English/001",
       "sourceName": "JustAnime",
       "errors": [
-        "search: searchResults timed out"
+        "media probe failed: host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response"
       ]
     },
     {
@@ -420,7 +420,7 @@
       "catalogPath": "Sources/English/001",
       "sourceName": "JustAnime",
       "errors": [
-        "search: searchResults timed out"
+        "media probe failed: host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response"
       ]
     },
     {
@@ -450,7 +450,7 @@
       "catalogPath": "Sources/English/001",
       "sourceName": "JustAnime",
       "errors": [
-        "search: searchResults timed out"
+        "media probe failed: host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response"
       ]
     }
   ]
