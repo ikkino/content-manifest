@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-25T11:17:01.803Z",
+  "generatedAt": "2026-11-26T08:11:41.442Z",
   "mediaRequested": 5,
   "categories": {
     "trendingNow": {
@@ -24,76 +24,46 @@
   "routeCount": 617,
   "refreshedAnime": 0,
   "mergeExisting": true,
-  "unresolvedAnime": 39,
-  "rejectedAttempts": 39,
+  "unresolvedAnime": 42,
+  "rejectedAttempts": 42,
   "rejectedAttemptSummary": {
     "byReason": {
-      "search_no_usable_result": 14,
-      "media_probe_failed": 14,
-      "implausible_match": 9,
+      "media_probe_failed": 16,
+      "search_no_usable_result": 16,
+      "implausible_match": 8,
       "other": 2
     },
     "topModules": [
       {
         "sourceName": "AnimeLand",
-        "count": 26,
+        "count": 28,
         "reasons": {
-          "search_no_usable_result": 14,
           "implausible_match": 6,
+          "search_no_usable_result": 16,
           "media_probe_failed": 4,
           "other": 2
         }
       },
       {
         "sourceName": "JustAnime",
-        "count": 13,
+        "count": 14,
         "reasons": {
-          "media_probe_failed": 10,
-          "implausible_match": 3
+          "media_probe_failed": 12,
+          "implausible_match": 2
         }
       }
     ]
   },
   "mediaProbeBudget": 24,
-  "mediaProbesUsed": 14,
+  "mediaProbesUsed": 16,
   "hostHealth": {
     "successEvents": 0,
-    "failureEvents": 14,
+    "failureEvents": 16,
     "skippedByCooldown": 0,
     "coolingDownHosts": 2
   },
   "failures": [
     {
-      "aniListId": 207329,
-      "title": "The Laid-Off Cheat-Granting Mage Enjoys a Second Lease on Life",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 207329,
-      "title": "The Laid-Off Cheat-Granting Mage Enjoys a Second Lease on Life",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/014",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 207329,
-      "title": "The Laid-Off Cheat-Granting Mage Enjoys a Second Lease on Life",
-      "moduleId": "mangayomi_892345671",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "JustAnime",
-      "errors": [
-        "media probe failed: host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response"
-      ]
-    },
-    {
       "aniListId": 21,
       "title": "ONE PIECE",
       "moduleId": "mod_942337115",
@@ -154,8 +124,8 @@
       ]
     },
     {
-      "aniListId": 206949,
-      "title": "Nia Liston: The Merciless Maiden",
+      "aniListId": 211778,
+      "title": "The World's Strongest Witch",
       "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/005",
       "sourceName": "AnimeLand",
@@ -164,8 +134,8 @@
       ]
     },
     {
-      "aniListId": 206949,
-      "title": "Nia Liston: The Merciless Maiden",
+      "aniListId": 211778,
+      "title": "The World's Strongest Witch",
       "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/014",
       "sourceName": "AnimeLand",
@@ -174,18 +144,18 @@
       ]
     },
     {
-      "aniListId": 206949,
-      "title": "Nia Liston: The Merciless Maiden",
+      "aniListId": 211778,
+      "title": "The World's Strongest Witch",
       "moduleId": "mangayomi_892345671",
       "catalogPath": "Sources/English/001",
       "sourceName": "JustAnime",
       "errors": [
-        "implausible episode match: verified=8 available=25 expected<=8"
+        "media probe failed: host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response"
       ]
     },
     {
-      "aniListId": 195604,
-      "title": "Black Clover Season 2",
+      "aniListId": 159042,
+      "title": "Reincarnated as a Sword Season 2",
       "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/005",
       "sourceName": "AnimeLand",
@@ -194,8 +164,8 @@
       ]
     },
     {
-      "aniListId": 195604,
-      "title": "Black Clover Season 2",
+      "aniListId": 159042,
+      "title": "Reincarnated as a Sword Season 2",
       "moduleId": "mod_942337115",
       "catalogPath": "Sources/English/014",
       "sourceName": "AnimeLand",
@@ -204,8 +174,38 @@
       ]
     },
     {
-      "aniListId": 195604,
-      "title": "Black Clover Season 2",
+      "aniListId": 159042,
+      "title": "Reincarnated as a Sword Season 2",
+      "moduleId": "mangayomi_892345671",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "JustAnime",
+      "errors": [
+        "media probe failed: host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response"
+      ]
+    },
+    {
+      "aniListId": 207329,
+      "title": "The Laid-Off Cheat-Granting Mage Enjoys a Second Lease on Life",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 207329,
+      "title": "The Laid-Off Cheat-Granting Mage Enjoys a Second Lease on Life",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/014",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 207329,
+      "title": "The Laid-Off Cheat-Granting Mage Enjoys a Second Lease on Life",
       "moduleId": "mangayomi_892345671",
       "catalogPath": "Sources/English/001",
       "sourceName": "JustAnime",
@@ -266,6 +266,36 @@
     {
       "aniListId": 195516,
       "title": "The Apothecary Diaries Season 3",
+      "moduleId": "mangayomi_892345671",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "JustAnime",
+      "errors": [
+        "media probe failed: host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response"
+      ]
+    },
+    {
+      "aniListId": 195604,
+      "title": "Black Clover Season 2",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 195604,
+      "title": "Black Clover Season 2",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/014",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 195604,
+      "title": "Black Clover Season 2",
       "moduleId": "mangayomi_892345671",
       "catalogPath": "Sources/English/001",
       "sourceName": "JustAnime",
