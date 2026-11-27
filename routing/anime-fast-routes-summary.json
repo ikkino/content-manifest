@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-26T08:11:41.442Z",
+  "generatedAt": "2026-11-27T04:15:22.122Z",
   "mediaRequested": 5,
   "categories": {
     "trendingNow": {
@@ -24,46 +24,137 @@
   "routeCount": 617,
   "refreshedAnime": 0,
   "mergeExisting": true,
-  "unresolvedAnime": 42,
-  "rejectedAttempts": 42,
+  "unresolvedAnime": 45,
+  "rejectedAttempts": 45,
   "rejectedAttemptSummary": {
     "byReason": {
-      "media_probe_failed": 16,
-      "search_no_usable_result": 16,
+      "search_no_usable_result": 18,
+      "media_probe_failed": 13,
       "implausible_match": 8,
+      "media_not_found": 4,
       "other": 2
     },
     "topModules": [
       {
         "sourceName": "AnimeLand",
-        "count": 28,
+        "count": 30,
         "reasons": {
+          "search_no_usable_result": 18,
           "implausible_match": 6,
-          "search_no_usable_result": 16,
-          "media_probe_failed": 4,
+          "media_not_found": 4,
           "other": 2
         }
       },
       {
         "sourceName": "JustAnime",
-        "count": 14,
+        "count": 15,
         "reasons": {
-          "media_probe_failed": 12,
+          "media_probe_failed": 13,
           "implausible_match": 2
         }
       }
     ]
   },
   "mediaProbeBudget": 24,
-  "mediaProbesUsed": 16,
+  "mediaProbesUsed": 17,
   "hostHealth": {
     "successEvents": 0,
-    "failureEvents": 16,
+    "failureEvents": 17,
     "skippedByCooldown": 0,
     "coolingDownHosts": 2
   },
   "failures": [
     {
+      "aniListId": 213457,
+      "title": "Fool Night",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 213457,
+      "title": "Fool Night",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/014",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 213457,
+      "title": "Fool Night",
+      "moduleId": "mangayomi_892345671",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "JustAnime",
+      "errors": [
+        "media probe failed: host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response"
+      ]
+    },
+    {
+      "aniListId": 180136,
+      "title": "The Exiled Heavy Knight Knows How to Game the System",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 180136,
+      "title": "The Exiled Heavy Knight Knows How to Game the System",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/014",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 180136,
+      "title": "The Exiled Heavy Knight Knows How to Game the System",
+      "moduleId": "mangayomi_892345671",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "JustAnime",
+      "errors": [
+        "media probe failed: host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response"
+      ]
+    },
+    {
+      "aniListId": 213805,
+      "title": "The Ramparts of Ice Season 2",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 213805,
+      "title": "The Ramparts of Ice Season 2",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/014",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 213805,
+      "title": "The Ramparts of Ice Season 2",
+      "moduleId": "mangayomi_892345671",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "JustAnime",
+      "errors": [
+        "media probe failed: host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response"
+      ]
+    },
+    {
       "aniListId": 21,
       "title": "ONE PIECE",
       "moduleId": "mod_942337115",
@@ -94,96 +185,6 @@
       ]
     },
     {
-      "aniListId": 212888,
-      "title": "Overgeared",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 212888,
-      "title": "Overgeared",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/014",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 212888,
-      "title": "Overgeared",
-      "moduleId": "mangayomi_892345671",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "JustAnime",
-      "errors": [
-        "media probe failed: host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response"
-      ]
-    },
-    {
-      "aniListId": 211778,
-      "title": "The World's Strongest Witch",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 211778,
-      "title": "The World's Strongest Witch",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/014",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 211778,
-      "title": "The World's Strongest Witch",
-      "moduleId": "mangayomi_892345671",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "JustAnime",
-      "errors": [
-        "media probe failed: host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response"
-      ]
-    },
-    {
-      "aniListId": 159042,
-      "title": "Reincarnated as a Sword Season 2",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/005",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 159042,
-      "title": "Reincarnated as a Sword Season 2",
-      "moduleId": "mod_942337115",
-      "catalogPath": "Sources/English/014",
-      "sourceName": "AnimeLand",
-      "errors": [
-        "search: searchResults returned an unusable result"
-      ]
-    },
-    {
-      "aniListId": 159042,
-      "title": "Reincarnated as a Sword Season 2",
-      "moduleId": "mangayomi_892345671",
-      "catalogPath": "Sources/English/001",
-      "sourceName": "JustAnime",
-      "errors": [
-        "media probe failed: host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response"
-      ]
-    },
-    {
       "aniListId": 207329,
       "title": "The Laid-Off Cheat-Granting Mage Enjoys a Second Lease on Life",
       "moduleId": "mod_942337115",
@@ -296,6 +297,36 @@
     {
       "aniListId": 195604,
       "title": "Black Clover Season 2",
+      "moduleId": "mangayomi_892345671",
+      "catalogPath": "Sources/English/001",
+      "sourceName": "JustAnime",
+      "errors": [
+        "media probe failed: host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response; host=fetch.nexabloom.top empty media response"
+      ]
+    },
+    {
+      "aniListId": 212888,
+      "title": "Overgeared",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/005",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 212888,
+      "title": "Overgeared",
+      "moduleId": "mod_942337115",
+      "catalogPath": "Sources/English/014",
+      "sourceName": "AnimeLand",
+      "errors": [
+        "search: searchResults returned an unusable result"
+      ]
+    },
+    {
+      "aniListId": 212888,
+      "title": "Overgeared",
       "moduleId": "mangayomi_892345671",
       "catalogPath": "Sources/English/001",
       "sourceName": "JustAnime",
@@ -340,7 +371,7 @@
       "catalogPath": "Sources/English/005",
       "sourceName": "AnimeLand",
       "errors": [
-        "media probe failed: host=animesource.me fetch failed"
+        "media probe failed: host=animesource.me HTTP 404 media_not_found"
       ]
     },
     {
@@ -350,7 +381,7 @@
       "catalogPath": "Sources/English/014",
       "sourceName": "AnimeLand",
       "errors": [
-        "media probe failed: host=animesource.me fetch failed"
+        "media probe failed: host=animesource.me HTTP 404 media_not_found"
       ]
     },
     {
@@ -460,7 +491,7 @@
       "catalogPath": "Sources/English/005",
       "sourceName": "AnimeLand",
       "errors": [
-        "media probe failed: host=animesource.me fetch failed"
+        "media probe failed: host=animesource.me HTTP 404 media_not_found"
       ]
     },
     {
@@ -470,7 +501,7 @@
       "catalogPath": "Sources/English/014",
       "sourceName": "AnimeLand",
       "errors": [
-        "media probe failed: host=animesource.me fetch failed"
+        "media probe failed: host=animesource.me HTTP 404 media_not_found"
       ]
     },
     {
